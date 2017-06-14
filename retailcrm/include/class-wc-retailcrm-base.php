@@ -191,21 +191,58 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                 'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
             );
 
-            $this->form_fields[] = array(
-                'title' => __( 'Настройки выгрузки', 'woocommerce' ),
-                'type' => 'title',
-                'description' => '',
-                'id' => 'upload_options'
-            );
+            $options = array_filter(get_option( 'woocommerce_integration-ecomlogic_settings' ));
 
-            $this->form_fields['uploadToCrm'] = array(
-                'label'       => __( 'Выгрузить все заказы и клиентов', 'textdomain' ),
-                'title'       => 'Выгрузка заказов и клиентов',
-                'class'       => 'checkbox',
-                'type'        => 'checkbox',
-                'description' => 'Поставьте галочку, и нажмите сохранить, чтобы выгрузить все существующие заказы и клиентов.'
-            );
+            if (!isset($options['uploads'])) {
+                $this->form_fields[] = array(
+                    'title' => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
+                    'type' => 'title',
+                    'description' => '',
+                    'id' => 'upload_options'
+                );
+               
+                $this->form_fields['upload-button'] = array(
+                    'label'             => 'Выгрузить',
+                    'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-ecomlogic' ),
+                    'type'              => 'button',
+                    'description'       => __( 'Пакетная выгрузка существующих клиентов и заказов.', 'woocommerce-integration-ecomlogic' ),
+                    'desc_tip'          => true,
+                    'id'                => 'uploads-ecomlogic'
+                );
+            }
         }
+    }
+
+    public function generate_button_html( $key, $data ) {
+        $field    = $this->plugin_id . $this->id . '_' . $key;
+        $defaults = array(
+            'class'             => 'button-secondary',
+            'css'               => '',
+            'custom_attributes' => array(),
+            'desc_tip'          => false,
+            'description'       => '',
+            'title'             => '',
+        );
+
+        $data = wp_parse_args( $data, $defaults );
+
+        ob_start();
+        ?>
+        <tr valign="top">
+            <th scope="row" class="titledesc">
+                <label for="<?php echo esc_attr( $field ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></label>
+                <?php echo $this->get_tooltip_html( $data ); ?>
+            </th>
+            <td class="forminp">
+                <fieldset>
+                    <legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['label'] ); ?></span></legend>
+                    <button id="<?php echo $data['id']; ?>" class="<?php echo esc_attr( $data['class'] ); ?>" type="button" name="<?php echo esc_attr( $field ); ?>" id="<?php echo esc_attr( $field ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" <?php echo $this->get_custom_attribute_html( $data ); ?>><?php echo wp_kses_post( $data['label'] ); ?></button>
+                    <?php echo $this->get_description_html( $data ); ?>
+                </fieldset>
+            </td>
+        </tr>
+        <?php
+        return ob_get_clean();
     }
 }
 
