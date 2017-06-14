@@ -294,32 +294,23 @@ function upload_to_crm() {
 
     $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
 
-    if ($options['uploadToCrm'] == 'yes' && !isset($options['uploaded'])) {
-        $options['uploadToCrm'] = 'no';
-        $options['uploaded'] = 'yes';
+    $orders = new WC_Retailcrm_Orders();
+    $customers = new WC_Retailcrm_Customers();
+    $customers->customersUpload();
+    $orders->ordersUpload();
 
-        $orders = new WC_Retailcrm_Orders();
-        $customers = new WC_Retailcrm_Customers();
-        $customers->customersUpload();
-        $orders->ordersUpload();
-
-        update_option('woocommerce_integration-retailcrm_settings', $options);
-    }
-
-    if (isset($options['uploaded'])) {
-        $options['uploadToCrm'] = 'no';
-        update_option('woocommerce_integration-retailcrm_settings', $options);
-    }
+    $options['uploads'] = 'yes';
+    update_option('woocommerce_integration-ecomlogic_settings', $options);
 }
 
 function ajax_upload() {
     $ajax_url = admin_url('admin-ajax.php');
     ?>
     <script type="text/javascript" >
-    jQuery(document).ready(function($) {
-        $.ajax({
+    jQuery('#uploads-ecomlogic').bind('click', function() {
+        jQuery.ajax({
             type: "POST",
-            url: "<?php echo $ajax_url; ?>?action=do_upload",
+            url: '<?php echo $ajax_url; ?>?action=do_upload',
             success: function (response) {
                 console.log('AJAX response : ',response);
             }
