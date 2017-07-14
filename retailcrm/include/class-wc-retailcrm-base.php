@@ -62,11 +62,11 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
         if ($this->get_option( 'api_url' ) != '' && $this->get_option( 'api_key' ) != '') {
 
-            if ( ! class_exists( 'WC_Retailcrm_Client' ) ) {
-                include_once( __DIR__ . '/api/class-wc-retailcrm-client.php' );
+            if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
+                include_once( __DIR__ . '/api/class-wc-retailcrm-proxy.php' );
             }
 
-            $retailcrm = new WC_Retailcrm_Client(
+            $retailcrm = new WC_Retailcrm_Proxy(
                 $this->get_option( 'api_url' ),
                 $this->get_option( 'api_key' )
             );
@@ -191,7 +191,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                 'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
             );
 
-            $options = array_filter(get_option( 'woocommerce_integration-ecomlogic_settings' ));
+            $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
 
             if (!isset($options['uploads'])) {
                 $this->form_fields[] = array(
@@ -203,11 +203,11 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                
                 $this->form_fields['upload-button'] = array(
                     'label'             => 'Выгрузить',
-                    'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-ecomlogic' ),
+                    'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-retailcrm' ),
                     'type'              => 'button',
-                    'description'       => __( 'Пакетная выгрузка существующих клиентов и заказов.', 'woocommerce-integration-ecomlogic' ),
+                    'description'       => __( 'Пакетная выгрузка существующих клиентов и заказов.', 'woocommerce-integration-retailcrm' ),
                     'desc_tip'          => true,
-                    'id'                => 'uploads-ecomlogic'
+                    'id'                => 'uploads-retailcrm'
                 );
             }
         }

@@ -300,14 +300,14 @@ function upload_to_crm() {
     $orders->ordersUpload();
 
     $options['uploads'] = 'yes';
-    update_option('woocommerce_integration-ecomlogic_settings', $options);
+    update_option('woocommerce_integration-retailcrm_settings', $options);
 }
 
 function ajax_upload() {
     $ajax_url = admin_url('admin-ajax.php');
     ?>
     <script type="text/javascript" >
-    jQuery('#uploads-ecomlogic').bind('click', function() {
+    jQuery('#uploads-retailcrm').bind('click', function() {
         jQuery.ajax({
             type: "POST",
             url: '<?php echo $ajax_url; ?>?action=do_upload',
