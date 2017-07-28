@@ -5,9 +5,9 @@
 	 *
 	 * WC_Retailcrm_Exception_Curl class
 	 *
-	 * @category Retailcrm
+	 * @category RetailCRM
 	 * @package  WC_Retailcrm_Exception_Curl
-	 * @author   Retailcrm <dev@retailcrm.ru>
+	 * @author   RetailCRM <dev@retailcrm.ru>
 	 * @license  https://opensource.org/licenses/MIT MIT License
 	 * @link     http://retailcrm.ru/docs/Developers/ApiVersion4
 	 */

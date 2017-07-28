@@ -1,9 +1,9 @@
 <?php
 /**
- * Version: 1.0
- * Plugin Name: WooCommerce Retailcrm
+ * Version: 1.1
+ * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/retailcrm/
- * Description: Интеграционный плагин для WooCommerce & Retailcrm
+ * Description: Integration plugin for WooCommerce & RetailCRM
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.ru/
  */
@@ -278,7 +278,7 @@ function filter_cron_schedules($param) {
         ),
             'fiveteen_minutes' => array(
             'interval' => 900, // seconds
-            'display'  => __('Every 1 hour')
+            'display'  => __('Every 15 minutes')
         )
     );
 }
@@ -293,7 +293,7 @@ function upload_to_crm() {
     }
 
     $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
-
+  
     $orders = new WC_Retailcrm_Orders();
     $customers = new WC_Retailcrm_Customers();
     $customers->customersUpload();
@@ -320,6 +320,15 @@ function ajax_upload() {
     <?php
 }
 
+function update_order($order_id) {
+    if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
+        include_once( __DIR__ . check_custom_order() );
+    }
+
+    $order_class = new WC_Retailcrm_Orders();
+    $order_class->updateOrder($order_id);
+}
+
 register_activation_hook( __FILE__, 'retailcrm_install' );
 register_deactivation_hook( __FILE__, 'retailcrm_deactivation' );
 
@@ -327,10 +336,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     load_plugin_textdomain('wc_retailcrm', false, dirname(plugin_basename( __FILE__ )) . '/');
     add_filter('cron_schedules', 'filter_cron_schedules', 10, 1);
     add_action('woocommerce_thankyou', 'retailcrm_process_order', 10, 1);
-    add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-    add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
-    add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
-    add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
     add_action('retailcrm_history', 'retailcrm_history_get');
     add_action('retailcrm_icml', 'generate_icml');
     add_action('retailcrm_inventories', 'load_stocks');
@@ -341,4 +346,13 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     add_action('admin_print_footer_scripts', 'ajax_upload', 99);
     add_action( 'woocommerce_created_customer', 'create_customer', 10, 1 );
     add_action( 'woocommerce_checkout_update_user_meta', 10, 2 );
+
+    if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+        add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
+        add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
+        add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
+        add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
+    } else {
+        add_action('woocommerce_update_order', 'update_order', 11, 1);
+    }
 }

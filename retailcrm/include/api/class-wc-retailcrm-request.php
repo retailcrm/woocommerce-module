@@ -7,9 +7,8 @@
 	 *
 	 * @category Integration
 	 * @package  WC_Retailcrm_Request
-	 * @author   Retailcrm <dev@retailcrm.ru>
+	 * @author   RetailCRM <dev@retailcrm.ru>
 	 * @license  https://opensource.org/licenses/MIT MIT License
-	 * @link     http://retailcrm.ru/docs/Developers/ApiVersion4
 	 */
 
 	if ( ! class_exists( 'WC_Retailcrm_Exception_Curl' ) ) {

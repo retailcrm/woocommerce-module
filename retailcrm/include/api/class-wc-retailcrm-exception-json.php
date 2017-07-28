@@ -5,11 +5,10 @@
 	 *
 	 * WC_Retailcrm_Exception_Json class
 	 *
-	 * @category Retailcrm
+	 * @category RetailCRM
 	 * @package  WC_Retailcrm_Exception_Json
-	 * @author   Retailcrm <dev@retailcrm.ru>
+	 * @author   RetailCRM <dev@retailcrm.ru>
 	 * @license  https://opensource.org/licenses/MIT MIT License
-	 * @link     http://retailcrm.ru/docs/Developers/ApiVersion4
 	 */
 
 	class WC_Retailcrm_Exception_Json extends \DomainException

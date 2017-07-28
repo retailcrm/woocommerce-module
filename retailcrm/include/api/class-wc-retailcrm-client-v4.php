@@ -6,8 +6,8 @@
 	 * Request class
 	 *
 	 * @category Integration
-	 * @package  WC_RetailCrm_Client
-	 * @author   Retailcrm <dev@retailcrm.ru>
+	 * @package  WC_Retailcrm_Client
+	 * @author   RetailCRM <dev@retailcrm.ru>
 	 * @license  https://opensource.org/licenses/MIT MIT License
 	 * @link     http://retailcrm.ru/docs/Developers/ApiVersion4
 	 */
@@ -20,9 +20,8 @@
 		include_once( __DIR__ . '/class-wc-retailcrm-response.php' );
 	}
 
-	class WC_Retailcrm_Client
+	class WC_Retailcrm_Client_V4
 	{
-
 	    const VERSION = 'v4';
 
 	    protected $client;
@@ -33,7 +32,7 @@
 	    protected $siteCode;
 
 	    /**
-	     * WC_Retailcrm_Request creating
+	     * Client creating
 	     *
 	     * @param string $url    api url
 	     * @param string $apiKey api key
