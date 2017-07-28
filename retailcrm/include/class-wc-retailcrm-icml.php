@@ -330,6 +330,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                         $product = wc_get_product($theid);
                     } 
                     elseif (get_post_type($theid) == 'product_variation') {
+                        $post = get_post($theid);
                         if (get_post($post->post_parent)) {
                             $product = wc_get_product($theid);
                             $parent = wc_get_product($product->get_parent_id());
