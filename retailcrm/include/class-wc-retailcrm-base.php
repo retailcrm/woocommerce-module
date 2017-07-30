@@ -1,10 +1,10 @@
 <?php
 /**
- * Retailcrm Integration.
+ * RetailCRM Integration.
  *
  * @package  WC_Retailcrm_Base
  * @category Integration
- * @author   Retailcrm
+ * @author   RetailCRM
  */
 
 if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
@@ -24,7 +24,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         //global $woocommerce;
 
         $this->id                 = 'integration-retailcrm';
-        $this->method_title       = __( 'Retailcrm', 'woocommerce-integration-retailcrm' );
+        $this->method_title       = __( 'RetailCRM', 'woocommerce-integration-retailcrm' );
         $this->method_description = __( 'Интеграция с системой управления Retailcrm.', 'woocommerce-integration-retailcrm' );
 
         // Load the settings.
@@ -42,7 +42,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
     public function init_form_fields() {
 
         $this->form_fields = array(
-            array( 'title' => __( 'Общие настройки', 'woocommerce' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
+            array( 'title' => __( 'General Options', 'woocommerce' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
 
             'api_url' => array(
                 'title'             => __( 'API URL', 'woocommerce-integration-retailcrm' ),
@@ -52,12 +52,31 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                 'default'           => ''
             ),
             'api_key' => array(
-                'title'             => __( 'API Ключ', 'woocommerce-integration-retailcrm' ),
+                'title'             => __( 'API Key', 'woocommerce-integration-retailcrm' ),
                 'type'              => 'text',
                 'description'       => __( 'Введите ключ API. Вы можете найти его в интерфейсе администратора Retailcrm.', 'woocommerce-integration-retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             )
+        );
+
+        $api_version_list = array('v4' => 'v4','v5' => 'v5');
+
+        $this->form_fields[] = array(
+            'title' => __( 'Настройки API', 'woocommerce' ),
+            'type' => 'title',
+            'description' => '',
+            'id' => 'api_options'
+        );
+
+        $this->form_fields['api_version'] = array(
+            'title'          => __( 'API версия', 'textdomain' ),
+            'description' => __( 'Выберите версию API, которую Вы хотите использовать', 'textdomain' ),
+            'css'            => 'min-width:50px;',
+            'class'          => 'select',
+            'type'           => 'select',
+            'options'        => $api_version_list,
+            'desc_tip'    =>  true,
         );
 
         if ($this->get_option( 'api_url' ) != '' && $this->get_option( 'api_key' ) != '') {
@@ -68,7 +87,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
             $retailcrm = new WC_Retailcrm_Proxy(
                 $this->get_option( 'api_url' ),
-                $this->get_option( 'api_key' )
+                $this->get_option( 'api_key' ),
+                $this->get_option( 'api_version')
             );
 
             /**
@@ -185,9 +205,9 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
             $this->form_fields['sync'] = array(
                 'label'          => __( 'Выгружать остатки из CRM', 'textdomain' ),
-                'title'       => 'Остатки',
+                'title'       => 'Inventories',
                 'class'          => 'checkbox',
-                'type'           => 'checkbox',
+                'type'           => 'checkbox'б
                 'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
             );
 
@@ -243,6 +263,22 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         </tr>
         <?php
         return ob_get_clean();
+    }
+
+    public function validate_api_version_field( $key, $value ) {
+        $api = new WC_Retailcrm_Proxy(
+            $_POST['woocommerce_integration-retailcrm_api_url'],
+            $_POST['woocommerce_integration-retailcrm_api_key'],
+            $value
+        );
+
+        $response = $api->statisticUpdate();
+        
+        if (!$response->isSuccessful()) {
+            WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-demo' ) );
+        }
+
+        return $value;
     }
 }
 

@@ -15,7 +15,7 @@
  *
  *
  * @link       https://wordpress.org/plugins/retailcrm/
- * @since      1.0
+ * @since      1.1
  *
  * @package    RetailCRM
  */

@@ -1,10 +1,10 @@
 <?php
 /**
- * Retailcrm Integration.
+ * RetailCRM Integration.
  *
  * @package  WC_Retailcrm_History
  * @category Integration
- * @author   Retailcrm
+ * @author   RetailCRM
  */
 
 if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
@@ -28,7 +28,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $this->retailcrm = new WC_Retailcrm_Proxy(
                 $this->retailcrm_settings['api_url'],
-                $this->retailcrm_settings['api_key']
+                $this->retailcrm_settings['api_key'],
+                $this->retailcrm_settings['api_version']
             );
 
             $this->startDate = new DateTime(date('Y-m-d H:i:s', strtotime('-1 days', strtotime(date('Y-m-d H:i:s')))));
@@ -155,11 +156,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
                         
                     elseif($record['field'] == 'order_product.quantity' && $record['newValue']) {
+
                         $order = new WC_Order($record['order']['externalId']);
                         $product = wc_get_product($record['item']['offer']['externalId']);
                         $items = $order->get_items();
-                        $args = array('qty' => $record['newValue']);
-
+                        
                         foreach ($items as $order_item_id => $item) {
                             if ($item['variation_id'] != 0 ) {
                                 $offer_id = $item['variation_id'];
@@ -167,8 +168,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                                 $offer_id = $item['product_id'];
                             } 
                             if ($offer_id == $record['item']['offer']['externalId']) {
-                                $order->update_product($order_item_id, $product, $args);
-
+                                wc_delete_order_item($order_item_id);  
+                                $order->add_product($product, $record['newValue']);
                                 $this->update_total($order);
                             }   
                         }    
@@ -185,8 +186,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                                 $offer_id = $item['product_id'];
                             } 
                             if ($offer_id == $record['item']['offer']['externalId']) {
-                                wc_delete_order_item($order_item_id);
-                                  
+                                wc_delete_order_item($order_item_id);  
                                 $this->update_total($order);
                             }   
                         }
@@ -219,34 +219,22 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                     elseif ($record['field'] == 'delivery_address.region') {
                         $order = new WC_Order($record['order']['externalId']);
-                        $address = array(
-                            'state' => $record['newValue']
-                        );
-                        $order->set_address($address, 'shipping');
+                        $order->set_shipping_state($record['newValue']);
                     }
 
                     elseif ($record['field'] == 'delivery_address.city') {
                         $order = new WC_Order($record['order']['externalId']);
-                        $address = array(
-                            'city' => $record['newValue']
-                        );
-                        $order->set_address($address, 'shipping');
+                        $order->set_shipping_city($record['newValue']);
                     }
 
                     elseif ($record['field'] == 'delivery_address.street') {
                         $order = new WC_Order($record['order']['externalId']);
-                        $address = array(
-                            'address_1' => $record['newValue']
-                        );
-                        $order->set_address($address, 'shipping');
+                        $order->set_shipping_address1($record['newValue']);
                     }
 
                     elseif ($record['field'] == 'delivery_address.building') {
                         $order = new WC_Order($record['order']['externalId']);
-                        $address = array(
-                            'address_2' => $record['newValue']
-                        );
-                        $order->set_address($address, 'shipping');
+                        $order->set_shipping_address2($record['newValue']);
                     }
                         
                     elseif ($record['field'] == 'payment_type') {
@@ -256,7 +244,40 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $payment = new WC_Payment_Gateways();
                             $payment_types = $payment->get_available_payment_gateways();
                             if (isset($payment_types[$options[$newValue]])) {
-                                $order->set_payment_method($payment_types[$options[$newValue]]);
+                                update_post_meta($order->get_id(), '_payment_method', $payment->id);
+                            }
+                        }
+                    }
+
+                    elseif ($record['field'] == 'payments') {
+                        $response = $this->retailcrm->ordersGet($record['order']['externalId']);
+
+                        if ($response->isSuccessful()) { 
+                            $order_data = $response['order'];
+                            $order = new WC_Order($record['order']['externalId']);
+                            $payment = new WC_Payment_Gateways();
+                            $payment_types = $payment->get_available_payment_gateways();
+
+                            if (count($order_data['payments']) == 1) {
+                                $paymentType = end($order_data['payments']);
+                                if (isset($payment_types[$options[$paymentType['type']]])) {
+                                    $payment = $payment_types[$options[$paymentType['type']]];
+                                    update_post_meta($order->get_id(), '_payment_method', $payment->id);
+                                }
+                            } else {
+                                foreach ($order_data['payments'] as $payment_data) {
+                                    if (isset($payment_data['externalId'])) {
+                                        $paymentType = $payment_data;
+                                    }
+                                }
+
+                                if (!isset($paymentType)) {
+                                    $paymentType = $order_data['payments'][0];
+                                }
+
+                                if (isset($payment_types[$options[$paymentType['type']]])) {
+                                    update_post_meta($order->get_id(), '_payment_method', $payment->id);
+                                }
                             }
                         }
                     }
@@ -303,11 +324,26 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             'country'    => $order_record['customer']['address']['countryIso']
                         );
                             
-                        if ($order_record['paymentType']) {
-                            $payment = new WC_Payment_Gateways();
-                            $payment_types = $payment->get_available_payment_gateways();
-                            if (isset($payment_types[$options[$order_record['paymentType']]])) {
-                                $order->set_payment_method($payment_types[$options[$order_record['paymentType']]]);
+                        if ($this->retailcrm_settings['api_version'] == 'v5') {    
+                            if ($order_record['payments']) {
+                                $payment = new WC_Payment_Gateways();
+
+                                if (count($order_record['payments']) == 1) {
+                                    $payment_types = $payment->get_available_payment_gateways();
+                                    $paymentType = end($order_record['payments']);
+                                    
+                                    if (isset($payment_types[$options[$paymentType['type']]])) {
+                                        $order->set_payment_method($payment_types[$options[$paymentType['type']]]);
+                                    }
+                                }
+                            }
+                        } else {
+                            if ($order_record['paymentType']) {
+                                $payment = new WC_Payment_Gateways();
+                                $payment_types = $payment->get_available_payment_gateways();
+                                if (isset($payment_types[$options[$order_record['paymentType']]])) {
+                                    $order->set_payment_method($payment_types[$options[$order_record['paymentType']]]);
+                                }
                             }
                         }
 
@@ -358,30 +394,47 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         protected function removeFuncsHook() 
-        {
-            remove_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-            remove_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
-            remove_action('update_post_meta', 'retailcrm_update_order', 11, 4);
-            remove_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
-            remove_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
+        {      
+            if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+                remove_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
+                remove_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
+                remove_action('update_post_meta', 'retailcrm_update_order', 11, 4);
+                remove_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
+                remove_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
+            } else {
+                remove_action('woocommerce_update_order', 'update_order', 11, 1);
+                remove_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
+            }
         }
 
         protected function addFuncsHook() 
-        {       
-            if (!has_action('woocommerce_checkout_update_user_meta', 'update_customer')) {
-                add_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
-            }
-            if (!has_action('woocommerce_order_status_changed', 'retailcrm_update_order_status')) {
-                add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-            }
-            if (!has_action('woocommerce_saved_order_items', 'retailcrm_update_order_items')) {
-                add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
-            }
-            if (!has_action('update_post_meta', 'retailcrm_update_order')) {
-                add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
-            }
-            if (!has_action('woocommerce_payment_complete', 'retailcrm_update_order_payment')) {
-                add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
+        {   
+            if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+                if (!has_action('woocommerce_checkout_update_user_meta', 'update_customer')) {
+                    add_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
+                }
+                if (!has_action('woocommerce_order_status_changed', 'retailcrm_update_order_status')) {
+                    add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
+                }
+                if (!has_action('woocommerce_saved_order_items', 'retailcrm_update_order_items')) {
+                    add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
+                }
+                if (!has_action('update_post_meta', 'retailcrm_update_order')) {
+                    add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
+                }
+                if (!has_action('woocommerce_payment_complete', 'retailcrm_update_order_payment')) {
+                    add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
+                }
+            } else {
+                if (!has_action('woocommerce_update_order', 'update_order')) {
+                    add_action('woocommerce_update_order', 'update_order', 11, 1);
+                }
+                if (!has_action('woocommerce_checkout_update_user_meta', 'update_customer')) {
+                    add_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
+                }
+                if (!has_action('woocommerce_order_status_changed', 'retailcrm_update_order_status')) {
+                    add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
+                }
             }
         }
 
@@ -400,7 +453,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         protected function update_total($order)
         {   
-            $order->update_taxes();
             $order->calculate_totals();
         }
     }

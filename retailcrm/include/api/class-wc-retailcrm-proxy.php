@@ -1,10 +1,10 @@
 <?php
 /**
- * Retailcrm Integration.
+ * RetailCRM Integration.
  *
  * @package  WC_Retailcrm_Proxy
  * @category Integration
- * @author   Retailcrm
+ * @author   RetailCRM
  */
 
 if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
@@ -14,16 +14,36 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
      */
     class WC_Retailcrm_Proxy
     {
-        public function __construct($api_url, $api_key)
+        public function __construct($api_url, $api_key, $api_vers = 'v4')
         {
             $this->logger = new WC_Logger();
 
-            if ( ! class_exists( 'WC_Retailcrm_Client' ) ) {
-                include_once( __DIR__ . '/class-wc-retailcrm-client.php' );
+            if ( ! class_exists( 'WC_Retailcrm_Client_V3' ) ) {
+                include_once( __DIR__ . '/class-wc-retailcrm-client-v3.php' );
+            }
+
+            if ( ! class_exists( 'WC_Retailcrm_Client_V4' ) ) {
+                include_once( __DIR__ . '/class-wc-retailcrm-client-v4.php' );
+            }
+
+            if ( ! class_exists( 'WC_Retailcrm_Client_V5' ) ) {
+                include_once( __DIR__ . '/class-wc-retailcrm-client-v5.php' );
             }
 
             if ($api_url && $api_key) {
-                $this->retailcrm = new WC_Retailcrm_Client($api_url, $api_key);
+                switch ($api_vers) {
+                    case 'v3':
+                        $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key);
+                        break;
+
+                    case 'v4':
+                        $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key);
+                        break;
+
+                    case 'v5':
+                        $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key);
+                        break;                    
+                }
             }
         }
 

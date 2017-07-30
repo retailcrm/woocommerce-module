@@ -1,10 +1,10 @@
 <?php
 /**
- * Retailcrm Integration.
+ * RetailCRM Integration.
  *
  * @package  WC_Retailcrm_Inventories
  * @category Integration
- * @author   Retailcrm
+ * @author   RetailCRM
  */
 
 if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
@@ -24,7 +24,8 @@ if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
 
             $this->retailcrm = new WC_Retailcrm_Proxy(
                 $this->retailcrm_settings['api_url'],
-                $this->retailcrm_settings['api_key']
+                $this->retailcrm_settings['api_key'],
+                $this->retailcrm_settings['api_version']
             );
         }
 

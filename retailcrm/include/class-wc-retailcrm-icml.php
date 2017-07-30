@@ -1,10 +1,10 @@
 <?php
 /**
- * Retailcrm Integration.
+ * RetailCRM Integration.
  *
  * @package  WC_Retailcrm_Icml
  * @category Integration
- * @author   Retailcrm
+ * @author   RetailCRM
  */
 
 if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
@@ -327,75 +327,88 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 } 
                 else {
                     if (get_post_type($theid) == 'product') {
-                        $product = new WC_Product_Simple($theid);
+                        $product = wc_get_product($theid);
                     } 
                     elseif (get_post_type($theid) == 'product_variation') {
                         $post = get_post($theid);
-                        
                         if (get_post($post->post_parent)) {
-                            $product = new WC_Product_Variation($theid);
-                            $parent = new WC_Product_Simple($product->get_parent_id());
-                        } 
-                    }
-                }
-
-                if ($this->get_parent_product($product) > 0) {
-                    $image = wp_get_attachment_image_src( get_post_thumbnail_id( $parent->get_id() ), 'single-post-thumbnail' );
-                    $term_list = wp_get_post_terms($parent->get_id(), 'product_cat', array('fields' => 'ids'));
-                    $attributes = get_post_meta( $parent->get_id() , '_product_attributes' );
-                } else {
-                    $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
-                    $term_list = wp_get_post_terms($product->get_id(), 'product_cat', array('fields' => 'ids'));
-                    $attributes = get_post_meta( $product->get_id() , '_product_attributes' );
-                }
-
-                $attributes = (isset($attributes[0])) ? $attributes[0] : $attributes;
-
-                $params = array();
-
-                $weight = $product->get_weight();
-
-                if (!empty($weight)) {
-                    $params[] = array('code' => 'weight', 'name' => 'Weight', 'value' => $weight);
-                }
-
-                if (!empty($attributes)) {
-                    foreach ($attributes as $attribute_name => $attribute) {
-                        $attributeValue = get_post_meta($product->get_id(), 'attribute_'.$attribute_name);
-                        $attributeValue = end($attributeValue);
-                        if ($attribute['is_visible'] == 1 && !empty($attribute['value'])) {
-                            $params[] = array(
-                                'code' => $attribute_name, 
-                                'name' => $attribute['name'], 
-                                'value' => $attributeValue
-                            );
+                            $product = wc_get_product($theid);
+                            $parent = wc_get_product($product->get_parent_id());
+                        } else {
+                            continue;
                         }
                     }
                 }
 
-                if ($product->get_sku() != '') {
-                    $params[] = array('code' => 'sku', 'name' => 'SKU', 'value' => $product->get_sku());
+                if ($product->get_type() == 'variable') continue;
+
+                if ((isset($parent) && $parent->get_type() == 'variable') || $product->get_type() == 'simple') {
+                    if ($this->get_parent_product($product) > 0) {
+                        $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
+                        $term_list = wp_get_post_terms($parent->get_id(), 'product_cat', array('fields' => 'ids'));
+                        $attributes = get_post_meta( $parent->get_id() , '_product_attributes' );
+                    } else {
+                        $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
+                        $term_list = wp_get_post_terms($product->get_id(), 'product_cat', array('fields' => 'ids'));
+                        $attributes = get_post_meta( $product->get_id() , '_product_attributes' );
+                    }
+
+                    $attributes = (isset($attributes[0])) ? $attributes[0] : $attributes;
+
+                    $params = array();
+
+                    $weight = $product->get_weight();
+                    
+                    if (!empty($weight)) {
+                        $params[] = array('code' => 'weight', 'name' => 'Weight', 'value' => $weight);
+                    }
+
+                    $attrName = '';
+
+                    if (!empty($attributes)) {
+                        foreach ($attributes as $attribute_name => $attribute) {
+                            $attributeValue = get_post_meta($product->get_id(), 'attribute_'.$attribute_name);
+                            $attributeValue = end($attributeValue);
+                            if ($attribute['is_visible'] == 1 && !empty($attribute['value'])) {
+                                $params[] = array(
+                                    'code' => $attribute_name, 
+                                    'name' => $attribute['name'], 
+                                    'value' => $attributeValue
+                                );
+
+                                $attrName .= (!empty($attributeValue)) ? ' - ' . $attributeValue : '';
+                            }
+                        }
+                    }
+
+                    if ($product->get_sku() != '') {
+                        $params[] = array('code' => 'sku', 'name' => 'SKU', 'value' => $product->get_sku());
+                    }
+
+                    $name = ($post->post_title == $product->get_title()) ?
+                        $post->post_title . $attrName :
+                        $post->post_title;
+
+                    $product_data = array(
+                        'id' => $product->get_id(), 
+                        'productId' => ($this->get_parent_product($product) > 0) ? $parent->get_id() : $product->get_id(),
+                        'name' => $name,
+                        'productName' => ($this->get_parent_product($product) > 0) ? $parent->get_title() : $product->get_title(),
+                        'price' => $this->get_price_with_tax($product),
+                        'purchasePrice' => $product->get_regular_price(),
+                        'picture' => $image[0],
+                        'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
+                        'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
+                        'categoryId' => $term_list
+                    );
+
+                    if (!empty($params)) {
+                        $product_data['params'] = $params;
+                    }
+                    
+                    $full_product_list[$theid] = $product_data;
+                    unset($product_data);
                 }
-
-                $product_data = array(
-                    'id' => $product->get_id(),
-                    'productId' => ($this->get_parent_product($product) > 0) ? $parent->get_id() : $product->get_id(),
-                    'name' => $product->get_title(),
-                    'productName' => ($this->get_parent_product($product) > 0) ? $parent->get_title() : $product->get_title(),
-                    'price' => $this->get_price_with_tax($product),
-                    'purchasePrice' => $product->get_regular_price(),
-                    'picture' => $image[0],
-                    'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
-                    'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
-                    'categoryId' => $term_list
-                );
-
-                if (!empty($params)) {
-                    $product_data['params'] = $params;
-                }
-
-                $full_product_list[] = $product_data;
-                unset($product_data);
             endwhile;
 
             return $full_product_list;
