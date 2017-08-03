@@ -285,7 +285,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $status = $order->get_status();
             $order_data['status'] = $this->retailcrm_settings[$status];
             
-            $user_data = $order->get_address();
+            $user_data = $order->get_address('shipping');
 
             if (!empty($user_data)) {
 
