@@ -49,24 +49,25 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
 
         public function __call($method, $arguments)
         {
-        try {
-            $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
-            
-            if ($response->isSuccessful()) {
-                $result = ' Ok';
-            } else {
-                $result = sprintf(
-                    $method ." : Error: [HTTP-code %s] %s",
-                    $response->getStatusCode(),
-                    $response->getErrorMsg()
-                );
+            if (!isset($this->retailcrm)) return;
+            try {
+                $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
+                
+                if ($response->isSuccessful()) {
+                    $result = ' Ok';
+                } else {
+                    $result = sprintf(
+                        $method ." : Error: [HTTP-code %s] %s",
+                        $response->getStatusCode(),
+                        $response->getErrorMsg()
+                    );
 
-                if (isset($response['errors'])) {
-                        foreach ($response['errors'] as $error) {
-                        $result .= " $error";
+                    if (isset($response['errors'])) {
+                            foreach ($response['errors'] as $error) {
+                            $result .= " $error";
+                        }
                     }
                 }
-            }
 
                 $this->logger->add('retailcrm', sprintf("[%s] %s", $method, $result));
             } catch (WC_Retailcrm_Exception_Curl $exception) {

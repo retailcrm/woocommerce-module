@@ -335,7 +335,7 @@ register_deactivation_hook( __FILE__, 'retailcrm_deactivation' );
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option( 'active_plugins')))) {
     load_plugin_textdomain('wc_retailcrm', false, dirname(plugin_basename( __FILE__ )) . '/');
     add_filter('cron_schedules', 'filter_cron_schedules', 10, 1);
-    add_action('woocommerce_thankyou', 'retailcrm_process_order', 10, 1);
+    add_action('woocommerce_checkout_order_processed', 'retailcrm_process_order', 10, 1);
     add_action('retailcrm_history', 'retailcrm_history_get');
     add_action('retailcrm_icml', 'generate_icml');
     add_action('retailcrm_inventories', 'load_stocks');
