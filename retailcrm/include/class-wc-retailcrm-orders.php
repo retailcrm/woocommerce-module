@@ -250,6 +250,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $order_data['externalId'] = $order->id;
             $order_data['number'] = $order->get_order_number();
             $order_data['createdAt'] = $order->order_date;
+            $order_data['customerComment'] = $order->get_customer_note();
 
             if ($this->retailcrm_settings['api_version'] == 'v5') {
                 $discount = $order->data['discount_total'] + $order->data['discount_tax'];
@@ -285,15 +286,19 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $status = $order->get_status();
             $order_data['status'] = $this->retailcrm_settings[$status];
             
+            $user_data_billing = $order->get_address('billing');
+
+            if (!empty($user_data_billing)) {
+                if (!empty($user_data_billing['phone'])) $order_data['phone'] = $user_data_billing['phone'];
+                if (!empty($user_data_billing['email'])) $order_data['email'] = $user_data_billing['email'];
+            }
+
             $user_data = $order->get_address('shipping');
 
             if (!empty($user_data)) {
 
                 if (!empty($user_data['first_name'])) $order_data['firstName'] = $user_data['first_name'];
-                if (!empty($user_data['last_name'])) $order_data['lastName'] = $user_data['last_name'];
-                if (!empty($user_data['phone'])) $order_data['phone'] = $user_data['phone'];
-                if (!empty($user_data['email'])) $order_data['email'] = $user_data['email'];
-
+                if (!empty($user_data['last_name'])) $order_data['lastName'] = $user_data['last_name'];    
                 if (!empty($user_data['postcode'])) $order_data['delivery']['address']['index'] = $user_data['postcode'];
                 if (!empty($user_data['city'])) $order_data['delivery']['address']['city'] = $user_data['city'];
                 if (!empty($user_data['country'])) $order_data['delivery']['address']['countryIso'] = $user_data['country'];

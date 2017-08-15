@@ -58,7 +58,6 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
         public function generate()
         {
             $categories = $this->get_wc_categories_taxonomies();
-            $offers = $this->get_wc_products_taxonomies();
 
             if (file_exists($this->tmpFile)) {
                 if (filectime($this->tmpFile) + $this->fileLifeTime < time()) {
@@ -74,12 +73,8 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     $this->writeCategories($categories);
                     unset($categories);
                 }
-
-                if (!empty($offers)) {
-                    $this->writeOffers($offers);
-                    unset($offers);
-                }
-
+                
+                $this->get_wc_products_taxonomies();
                 $dom = dom_import_simplexml(simplexml_load_file($this->tmpFile))->ownerDocument;
                 $dom->formatOutput = true;
                 $formatted = $dom->saveXML();
@@ -317,101 +312,109 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
          */
         private function get_wc_products_taxonomies() {
             $full_product_list = array();
-            $loop = new WP_Query(array('post_type' => array('product', 'product_variation'), 'posts_per_page' => -1));
+            $offset = 0;
+            $limit = 100;
 
-            while ($loop->have_posts()) : $loop->the_post();
-                $theid = get_the_ID();
-                if ( version_compare( get_option( 'woocommerce_db_version' ), '3.0', '<' ) ) {
-                    $product = new WC_Product($theid);
-                    $parent = new WC_Product($product->get_parent());
-                } 
-                else {
-                    if (get_post_type($theid) == 'product') {
-                        $product = wc_get_product($theid);
+            do {
+                $loop = new WP_Query(array('post_type' => array('product', 'product_variation'), 'posts_per_page' => $limit, 'offset' => $offset));
+
+                while ($loop->have_posts()) : $loop->the_post();
+                    $theid = get_the_ID();
+
+                    if ( version_compare( get_option( 'woocommerce_db_version' ), '3.0', '<' ) ) {
+                        $product = new WC_Product($theid);
+                        $parent = new WC_Product($product->get_parent());
                     } 
-                    elseif (get_post_type($theid) == 'product_variation') {
+                    else {
                         $post = get_post($theid);
-                        if (get_post($post->post_parent)) {
+
+                        if (get_post_type($theid) == 'product') {
                             $product = wc_get_product($theid);
-                            $parent = wc_get_product($product->get_parent_id());
-                        } else {
-                            continue;
+                            $parent = false;
+                        } 
+                        elseif (get_post_type($theid) == 'product_variation') {
+
+                            if (get_post($post->post_parent)) {
+                                $product = wc_get_product($theid);
+                                $parent = wc_get_product($product->get_parent_id());
+                            } 
                         }
                     }
-                }
 
-                if ($product->get_type() == 'variable') continue;
+                    if ($product->get_type() == 'variable') continue;
 
-                if ((isset($parent) && $parent->get_type() == 'variable') || $product->get_type() == 'simple') {
-                    if ($this->get_parent_product($product) > 0) {
-                        $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
-                        $term_list = wp_get_post_terms($parent->get_id(), 'product_cat', array('fields' => 'ids'));
-                        $attributes = get_post_meta( $parent->get_id() , '_product_attributes' );
-                    } else {
-                        $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
-                        $term_list = wp_get_post_terms($product->get_id(), 'product_cat', array('fields' => 'ids'));
-                        $attributes = get_post_meta( $product->get_id() , '_product_attributes' );
-                    }
+                    if ($product->get_type() == 'simple' || $parent && $parent->get_type() == 'variable') {
+                        if ($this->get_parent_product($product) > 0) {
+                            $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
+                            $term_list = wp_get_post_terms($parent->get_id(), 'product_cat', array('fields' => 'ids'));
+                            $attributes = get_post_meta( $parent->get_id() , '_product_attributes' );
+                        } else {
+                            $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
+                            $term_list = wp_get_post_terms($product->get_id(), 'product_cat', array('fields' => 'ids'));
+                            $attributes = get_post_meta( $product->get_id() , '_product_attributes' );
+                        }
 
-                    $attributes = (isset($attributes[0])) ? $attributes[0] : $attributes;
+                        $attributes = (isset($attributes[0])) ? $attributes[0] : $attributes;
 
-                    $params = array();
+                        $params = array();
 
-                    $weight = $product->get_weight();
-                    
-                    if (!empty($weight)) {
-                        $params[] = array('code' => 'weight', 'name' => 'Weight', 'value' => $weight);
-                    }
+                        $weight = $product->get_weight();
 
-                    $attrName = '';
+                        if (!empty($weight)) {
+                            $params[] = array('code' => 'weight', 'name' => 'Weight', 'value' => $weight);
+                        }
 
-                    if (!empty($attributes)) {
-                        foreach ($attributes as $attribute_name => $attribute) {
-                            $attributeValue = get_post_meta($product->get_id(), 'attribute_'.$attribute_name);
-                            $attributeValue = end($attributeValue);
-                            if ($attribute['is_visible'] == 1 && !empty($attribute['value'])) {
-                                $params[] = array(
-                                    'code' => $attribute_name, 
-                                    'name' => $attribute['name'], 
-                                    'value' => $attributeValue
-                                );
+                        $attrName = '';
 
-                                $attrName .= (!empty($attributeValue)) ? ' - ' . $attributeValue : '';
+                        if (!empty($attributes)) {
+                            foreach ($attributes as $attribute_name => $attribute) {
+                                $attributeValue = end(get_post_meta($product->get_id(), 'attribute_'.$attribute_name));
+                                if ($attribute['is_visible'] == 1 && !empty($attribute['value'])) {
+                                    $params[] = array(
+                                        'code' => $attribute_name, 
+                                        'name' => $attribute['name'], 
+                                        'value' => $attributeValue
+                                    );
+                                    $attrName .= (!empty($attributeValue)) ? ' - ' . $attributeValue : '';
+                                }
                             }
                         }
-                    }
 
-                    if ($product->get_sku() != '') {
-                        $params[] = array('code' => 'sku', 'name' => 'SKU', 'value' => $product->get_sku());
-                    }
+                        if ($product->get_sku() != '') {
+                            $params[] = array('code' => 'sku', 'name' => 'SKU', 'value' => $product->get_sku());
+                        }
 
-                    $name = ($post->post_title == $product->get_title()) ?
-                        $post->post_title . $attrName :
-                        $post->post_title;
+                        $name = ($post->post_title == $product->get_title()) ?
+                            $post->post_title . $attrName :
+                            $post->post_title;
 
-                    $product_data = array(
+                        $product_data = array(
                         'id' => $product->get_id(), 
                         'productId' => ($this->get_parent_product($product) > 0) ? $parent->get_id() : $product->get_id(),
                         'name' => $name,
                         'productName' => ($this->get_parent_product($product) > 0) ? $parent->get_title() : $product->get_title(),
                         'price' => $this->get_price_with_tax($product),
-                        'purchasePrice' => $product->get_regular_price(),
                         'picture' => $image[0],
                         'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
                         'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
                         'categoryId' => $term_list
                     );
 
-                    if (!empty($params)) {
-                        $product_data['params'] = $params;
-                    }
-                    
-                    $full_product_list[$theid] = $product_data;
-                    unset($product_data);
-                }
-            endwhile;
+                        if (!empty($params)) {
+                            $product_data['params'] = $params;
+                        }
 
-            return $full_product_list;
+                        $full_product_list[] = $product_data;
+                        unset($product_data);
+                    }
+                endwhile;
+
+            $this->writeOffers($full_product_list);
+            unset($full_product_list);
+
+            $offset += $limit;
+                
+            } while ($loop->have_posts());
         }
 
         /**

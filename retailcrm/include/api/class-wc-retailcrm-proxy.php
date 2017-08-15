@@ -14,8 +14,9 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
      */
     class WC_Retailcrm_Proxy
     {
-        public function __construct($api_url, $api_key, $api_vers = 'v4')
-        {
+        public function __construct($api_url, $api_key, $api_vers)
+        {   
+            if (!$api_vers) $api_vers = 'v4';
             $this->logger = new WC_Logger();
 
             if ( ! class_exists( 'WC_Retailcrm_Client_V3' ) ) {

@@ -214,7 +214,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                 'label'          => __( 'Выгружать остатки из CRM', 'textdomain' ),
                 'title'       => 'Inventories',
                 'class'          => 'checkbox',
-                'type'           => 'checkbox'б
+                'type'           => 'checkbox',
                 'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
             );
 
