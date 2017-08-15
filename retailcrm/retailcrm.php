@@ -312,6 +312,7 @@ function ajax_upload() {
             type: "POST",
             url: '<?php echo $ajax_url; ?>?action=do_upload',
             success: function (response) {
+                alert('Заказы и клиенты выгружены');
                 console.log('AJAX response : ',response);
             }
         });
