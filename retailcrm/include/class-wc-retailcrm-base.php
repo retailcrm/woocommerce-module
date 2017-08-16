@@ -284,7 +284,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
         $response = $api->statisticUpdate();
         
-        if (!$response->isSuccessful()) {
+        if ($response['errorMsg'] == 'API method not found') {
             WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-demo' ) );
         }
 

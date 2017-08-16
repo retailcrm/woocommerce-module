@@ -40,26 +40,17 @@ if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
 
                 foreach ($result['offers'] as $offer) {
                     if (isset($offer['externalId'])) {
-                        $post = get_post($offer['externalId']);
-                         
-                        if ($post->post_type == 'product') {
-                            $product = new WC_Product_Simple($offer['externalId']);
-                            update_post_meta($offer['externalId'], '_manage_stock', 'yes');
-                            $product->set_stock($offer['quantity']);
-                        } elseif ($post->post_type == 'product_variation') {
-                            $args = array();
-                            if ($post->post_parent) {
-                                $args['parent_id'] = $post->post_parent;
-                                $args['parent'] = new WC_Product_Simple($post->post_parent);
-                            }
-                            $product = new WC_Product_Variation($offer['externalId'], $args);
-                            update_post_meta($offer['externalId'], '_manage_stock', 'yes');
-                            $product->set_stock($offer['quantity']);
-                        }
+                        $product = wc_get_product($offer['externalId']);
+                        
+                        if ($product == false || $product->get_type() == 'variable') continue;
+                        
+                        update_post_meta($offer['externalId'], '_manage_stock', 'yes');
+                        $product->set_stock_quantity($offer['quantity']);
+                        $product->save();
                     }
                 }
 
-            } while ($page < $totalPageCount);
+            } while ($page <= $totalPageCount);
         }
 
         public function updateQuantity()
