@@ -70,6 +70,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         public function orderCreate($order_id)
         {
             $order_data = $this->processOrder($order_id);
+            file_put_contents('test.log', var_export($order_data, true));
 
             $order = new WC_Order($order_id);
             $customer = $order->get_user();
@@ -91,7 +92,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     $order_data['customer']['externalId'] = $search['customer']['externalId'];
                 }
             }
-            
+
             $res = $this->retailcrm->ordersCreate($order_data);
         }
 
@@ -105,7 +106,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $response = $this->retailcrm->ordersEdit($address);
         }
-        
+
         /**
          * Update order status
          *
@@ -158,7 +159,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
         }
-        
+
         /**
          * Update order payment
          *
@@ -181,7 +182,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
                 $this->retailcrm->ordersPaymentsEdit($payment);
             }
-            
+
         }
 
         /**
@@ -234,7 +235,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $shipping_cost = str_replace(',', '.', $shipping_cost);
                 $order_data['delivery']['cost'] = $shipping_cost;
             }
-            
+
             $response = $this->retailcrm->ordersEdit($order_data);
         }
 
@@ -285,39 +286,49 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $status = $order->get_status();
             $order_data['status'] = $this->retailcrm_settings[$status];
-            
+
             $user_data_billing = $order->get_address('billing');
 
             if (!empty($user_data_billing)) {
+
                 if (!empty($user_data_billing['phone'])) $order_data['phone'] = $user_data_billing['phone'];
                 if (!empty($user_data_billing['email'])) $order_data['email'] = $user_data_billing['email'];
+                if (!empty($user_data_billing['first_name'])) $order_data['firstName'] = $user_data_billing['first_name'];
+                if (!empty($user_data_billing['last_name'])) $order_data['lastName'] = $user_data_billing['last_name'];
+                if (!empty($user_data_billing['postcode'])) $order_data['delivery']['address']['index'] = $user_data_billing['postcode'];
+                if (!empty($user_data_billing['city'])) $order_data['delivery']['address']['city'] = $user_data_billing['city'];
+                if (!empty($user_data_billing['country'])) $order_data['delivery']['address']['countryIso'] = $user_data_billing['country'];
+
             }
 
             $user_data = $order->get_address('shipping');
 
             if (!empty($user_data)) {
 
+                if (!empty($user_data['phone'])) $order_data['phone'] = $user_data['phone'];
+                if (!empty($user_data['email'])) $order_data['email'] = $user_data['email'];
                 if (!empty($user_data['first_name'])) $order_data['firstName'] = $user_data['first_name'];
-                if (!empty($user_data['last_name'])) $order_data['lastName'] = $user_data['last_name'];    
+                if (!empty($user_data['last_name'])) $order_data['lastName'] = $user_data['last_name'];
                 if (!empty($user_data['postcode'])) $order_data['delivery']['address']['index'] = $user_data['postcode'];
                 if (!empty($user_data['city'])) $order_data['delivery']['address']['city'] = $user_data['city'];
                 if (!empty($user_data['country'])) $order_data['delivery']['address']['countryIso'] = $user_data['country'];
 
-                $order_data['delivery']['address']['text'] = sprintf(
-                    "%s %s %s %s",
-                    $user_data['postcode'],
-                    $user_data['city'],
-                    $user_data['address_1'],
-                    $user_data['address_2']
-                );
             }
+
+            $order_data['delivery']['address']['text'] = sprintf(
+                "%s %s %s %s",
+                !empty($user_data_billing['postcode']) ? $user_data_billing['postcode'] : $user_data['postcode'],
+                !empty($user_data_billing['city']) ? $user_data_billing['city'] : $user_data['city'],
+                !empty($user_data_billing['address_1']) ? $user_data_billing['address_1'] : $user_data['address_1'],
+                !empty($user_data_billing['address_2']) ? $user_data_billing['address_2'] : $user_data['address_2']
+            );
 
             $order_items = array();
 
             foreach ($order->get_items() as $item) {
                 $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
                 $_product = wc_get_product($uid);
-                
+
                 if ($_product) {
                     if ($this->retailcrm_settings['api_version'] != 'v3') {
                         $order_item = array(
@@ -393,7 +404,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $pay_date = $order->get_date_paid();
                 $payment['paidAt'] = $pay_date->date('Y-m-d H:i:s');
             }
-            
+
             $this->retailcrm->ordersPaymentCreate($payment);
         }
 
