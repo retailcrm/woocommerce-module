@@ -70,7 +70,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         public function orderCreate($order_id)
         {
             $order_data = $this->processOrder($order_id);
-            file_put_contents('test.log', var_export($order_data, true));
 
             $order = new WC_Order($order_id);
             $customer = $order->get_user();
