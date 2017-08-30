@@ -287,7 +287,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
             WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-retailcrm' ) );
         } else {
             return $value;
-
+        }
     }
 
     public function validate_api_url_field( $key, $value ) {
