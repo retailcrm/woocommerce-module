@@ -26,7 +26,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
             include_once( __DIR__ . '/api/class-wc-retailcrm-proxy.php' );
         }
-        
+
         $this->id                 = 'integration-retailcrm';
         $this->method_title       = __( 'RetailCRM', 'woocommerce-integration-retailcrm' );
         $this->method_description = __( 'Интеграция с системой управления Retailcrm.', 'woocommerce-integration-retailcrm' );
@@ -141,7 +141,6 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                 }
 
                 $wc_payment = new WC_Payment_Gateways();
-                $wc_payment_list = $wc_payment->get_available_payment_gateways();
 
                 $this->form_fields[] = array(
                     'title' => __( 'Способы оплаты', 'woocommerce' ),
@@ -150,7 +149,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     'id' => 'payment_options'
                 );
 
-                foreach ( $wc_payment_list as $payment ) {
+                foreach ( $wc_payment->payment_gateways as $payment ) {
                     if ( isset( $payment->enabled ) && $payment->enabled == 'yes' ) {
                         $key = $payment->id;
                         $name = $key;
@@ -230,7 +229,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     'description' => '',
                     'id' => 'upload_options'
                 );
-               
+
                 $this->form_fields['upload-button'] = array(
                     'label'             => 'Выгрузить',
                     'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-retailcrm' ),
@@ -283,12 +282,12 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         );
 
         $response = $api->deliveryTypesList();
-        
+
         if (isset($response['errorMsg']) && $response['errorMsg'] == 'API method not found') {
             WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-retailcrm' ) );
         } else {
             return $value;
-        } 
+
     }
 
     public function validate_api_url_field( $key, $value ) {
@@ -299,7 +298,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         );
 
         $response = $api->deliveryTypesList();
-        
+
         if ($response == NULL) {
             WC_Admin_Settings::add_error( esc_html__( '"Введите корректный адрес CRM"', 'woocommerce-integration-retailcrm' ) );
         } else {
