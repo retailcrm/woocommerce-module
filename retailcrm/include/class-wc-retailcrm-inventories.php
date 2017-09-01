@@ -42,11 +42,14 @@ if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
                     if (isset($offer['externalId'])) {
                         $product = wc_get_product($offer['externalId']);
                         
-                        if ($product == false || $product->get_type() == 'variable') continue;
-                        
-                        update_post_meta($offer['externalId'], '_manage_stock', 'yes');
-                        $product->set_stock_quantity($offer['quantity']);
-                        $product->save();
+                        if ($product != false) {
+                            if ($product->get_type() == 'variable') {
+                                continue;
+                            }
+                            update_post_meta($offer['externalId'], '_manage_stock', 'yes');
+                            $product->set_stock_quantity($offer['quantity']);
+                            $product->save();
+                        }
                     }
                 }
 
