@@ -390,7 +390,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             
                         $this->retailcrm->ordersFixExternalIds($ids);
                     }
-
                     $this->addFuncsHook();
                 }
 
@@ -453,7 +452,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected function getShippingItemId($items)
         {
             if ($items) {
-
                 foreach ($items as $key => $value) {
                     $item_id[] = $key;
                 }
