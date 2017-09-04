@@ -404,13 +404,18 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                             $product_data['params'] = $params;
                         }
 
-                        $full_product_list[] = $product_data;
+                        if (isset($product_data)) {
+                            $full_product_list[] = $product_data;
+                        }
+                        
                         unset($product_data);
                     }
                 endwhile;
 
-            $this->writeOffers($full_product_list);
-            unset($full_product_list);
+            if (isset($full_product_list) && $full_product_list) {
+                $this->writeOffers($full_product_list);
+                unset($full_product_list);
+            }
 
             $offset += $limit;
                 

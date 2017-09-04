@@ -229,12 +229,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                     elseif ($record['field'] == 'delivery_address.street') {
                         $order = new WC_Order($record['order']['externalId']);
-                        $order->set_shipping_address1($record['newValue']);
+                        $order->set_shipping_address_1($record['newValue']);
                     }
 
                     elseif ($record['field'] == 'delivery_address.building') {
                         $order = new WC_Order($record['order']['externalId']);
-                        $order->set_shipping_address2($record['newValue']);
+                        $order->set_shipping_address_2($record['newValue']);
                     }
                         
                     elseif ($record['field'] == 'payment_type') {
@@ -366,8 +366,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             }
                         }
 
-                        $shipping_rate = new WC_Shipping_Rate($shipping_method_id, isset($shipping_method_title) ? $shipping_method_title : '', isset($shipping_total) ? floatval($shipping_total) : 0, array(), $shipping_method_id);
-                        $order->add_shipping($shipping_rate);
+                        if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+                            $shipping_rate = new WC_Shipping_Rate($shipping_method_id, isset($shipping_method_title) ? $shipping_method_title : '', isset($shipping_total) ? floatval($shipping_total) : 0, array(), $shipping_method_id);
+                            $order->add_shipping($shipping_rate);
+                        } else {
+                            $shipping = new WC_Order_Item_Shipping();
+                            $shipping->set_props( array(
+                                'method_title' => $shipping_method_title,
+                                'method_id'    => $shipping_method_id,
+                                'total'        => wc_format_decimal($shipping_total),
+                                'order_id'     => $order->id
+                            ) );
+                            $shipping->save();
+                            $order->add_item( $shipping );
+                        }
                             
                         $this->update_total($order);
 
@@ -378,7 +390,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             
                         $this->retailcrm->ordersFixExternalIds($ids);
                     }
-
                     $this->addFuncsHook();
                 }
 
@@ -441,7 +452,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected function getShippingItemId($items)
         {
             if ($items) {
-
                 foreach ($items as $key => $value) {
                     $item_id[] = $key;
                 }
