@@ -368,7 +368,9 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
 
                         if (!empty($attributes)) {
                             foreach ($attributes as $attribute_name => $attribute) {
-                                $attributeValue = end(get_post_meta($product->get_id(), 'attribute_'.$attribute_name));
+                                $id_product = $product->get_id();
+                                $arrAttributeValue = get_post_meta($id_product, 'attribute_'.$attribute_name);
+                                $attributeValue = end($arrAttributeValue);
                                 if ($attribute['is_visible'] == 1 && !empty($attribute['value'])) {
                                     $params[] = array(
                                         'code' => $attribute_name, 
