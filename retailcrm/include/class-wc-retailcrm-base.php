@@ -84,160 +84,161 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         );
 
         if ($this->get_option( 'api_url' ) != '' && $this->get_option( 'api_key' ) != '') {
-
-            $retailcrm = new WC_Retailcrm_Proxy(
-                $this->get_option( 'api_url' ),
-                $this->get_option( 'api_key' ),
-                $this->get_option( 'api_version')
-            );
-
-            /**
-             * Shipping options
-             */
-            $shipping_option_list = array();
-            $retailcrm_shipping_list = $retailcrm->deliveryTypesList();
-
-            if ($retailcrm_shipping_list->isSuccessful()) {
-                foreach ($retailcrm_shipping_list['deliveryTypes'] as $retailcrm_shipping_type) {
-                    $shipping_option_list[$retailcrm_shipping_type['code']] = $retailcrm_shipping_type['name'];
-                }
-
-                $wc_shipping = new WC_Shipping();
-                $wc_shipping_list = $wc_shipping->get_shipping_methods();
-
-                $this->form_fields[] = array(
-                    'title' => __( 'Способы доставки', 'woocommerce' ),
-                    'type' => 'title',
-                    'description' => '',
-                    'id' => 'shipping_options'
+            if (isset($_GET['page']) && $_GET['page'] == 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] == 'integration') {
+                $retailcrm = new WC_Retailcrm_Proxy(
+                    $this->get_option( 'api_url' ),
+                    $this->get_option( 'api_key' ),
+                    $this->get_option( 'api_version')
                 );
 
-                foreach ( $wc_shipping_list as $shipping ) {
-                    if ( isset( $shipping->enabled ) && $shipping->enabled == 'yes' ) {
-                        $key = $shipping->id;
-                        $name = $key;
-                        $this->form_fields[$name] = array(
-                            'title'          => __( $shipping->method_title, 'textdomain' ),
-                            'description' => __( $shipping->method_description, 'textdomain' ),
+                /**
+                 * Shipping options
+                 */
+                $shipping_option_list = array();
+                $retailcrm_shipping_list = $retailcrm->deliveryTypesList();
+
+                if ($retailcrm_shipping_list->isSuccessful()) {
+                    foreach ($retailcrm_shipping_list['deliveryTypes'] as $retailcrm_shipping_type) {
+                        $shipping_option_list[$retailcrm_shipping_type['code']] = $retailcrm_shipping_type['name'];
+                    }
+
+                    $wc_shipping = new WC_Shipping();
+                    $wc_shipping_list = $wc_shipping->get_shipping_methods();
+
+                    $this->form_fields[] = array(
+                        'title' => __( 'Способы доставки', 'woocommerce' ),
+                        'type' => 'title',
+                        'description' => '',
+                        'id' => 'shipping_options'
+                    );
+
+                    foreach ( $wc_shipping_list as $shipping ) {
+                        if ( isset( $shipping->enabled ) && $shipping->enabled == 'yes' ) {
+                            $key = $shipping->id;
+                            $name = $key;
+                            $this->form_fields[$name] = array(
+                                'title'          => __( $shipping->method_title, 'textdomain' ),
+                                'description' => __( $shipping->method_description, 'textdomain' ),
+                                'css'            => 'min-width:350px;',
+                                'class'          => 'select',
+                                'type'           => 'select',
+                                'options'        => $shipping_option_list,
+                                'desc_tip'    =>  true,
+                            );
+                        }
+                    }
+                }
+
+                /**
+                 * Payment options
+                 */
+                $payment_option_list = array();
+                $retailcrm_payment_list = $retailcrm->paymentTypesList();
+
+                if ($retailcrm_payment_list->isSuccessful()) {
+                    foreach ($retailcrm_payment_list['paymentTypes'] as $retailcrm_payment_type) {
+                        $payment_option_list[$retailcrm_payment_type['code']] = $retailcrm_payment_type['name'];
+                    }
+
+                    $wc_payment = new WC_Payment_Gateways();
+
+                    $this->form_fields[] = array(
+                        'title' => __( 'Способы оплаты', 'woocommerce' ),
+                        'type' => 'title',
+                        'description' => '',
+                        'id' => 'payment_options'
+                    );
+
+                    foreach ( $wc_payment->payment_gateways as $payment ) {
+                        if ( isset( $payment->enabled ) && $payment->enabled == 'yes' ) {
+                            $key = $payment->id;
+                            $name = $key;
+                            $this->form_fields[$name] = array(
+                                'title'          => __( $payment->method_title, 'textdomain' ),
+                                'description' => __( $payment->method_description, 'textdomain' ),
+                                'css'            => 'min-width:350px;',
+                                'class'          => 'select',
+                                'type'           => 'select',
+                                'options'        => $payment_option_list,
+                                'desc_tip'    =>  true,
+                            );
+                        }
+                    }
+                }
+
+                /**
+                 * Statuses options
+                 */
+                $statuses_option_list = array();
+                $retailcrm_statuses_list = $retailcrm->statusesList();
+
+                if ($retailcrm_statuses_list->isSuccessful()) {
+                    foreach ($retailcrm_statuses_list['statuses'] as $retailcrm_status) {
+                        $statuses_option_list[$retailcrm_status['code']] = $retailcrm_status['name'];
+                    }
+
+                    $wc_statuses = wc_get_order_statuses();
+
+                    $this->form_fields[] = array(
+                        'title' => __( 'Статусы', 'woocommerce' ),
+                        'type' => 'title',
+                        'description' => '',
+                        'id' => 'statuses_options'
+                    );
+
+                    foreach ( $wc_statuses as $idx => $name ) {
+                        $uid = str_replace('wc-', '', $idx);
+                        $this->form_fields[$uid] = array(
+                            'title'          => __( $name, 'textdomain' ),
                             'css'            => 'min-width:350px;',
                             'class'          => 'select',
                             'type'           => 'select',
-                            'options'        => $shipping_option_list,
+                            'options'        => $statuses_option_list,
                             'desc_tip'    =>  true,
                         );
                     }
                 }
-            }
 
-            /**
-             * Payment options
-             */
-            $payment_option_list = array();
-            $retailcrm_payment_list = $retailcrm->paymentTypesList();
-
-            if ($retailcrm_payment_list->isSuccessful()) {
-                foreach ($retailcrm_payment_list['paymentTypes'] as $retailcrm_payment_type) {
-                    $payment_option_list[$retailcrm_payment_type['code']] = $retailcrm_payment_type['name'];
-                }
-
-                $wc_payment = new WC_Payment_Gateways();
-
+                /**
+                 * Inventories options
+                 */
                 $this->form_fields[] = array(
-                    'title' => __( 'Способы оплаты', 'woocommerce' ),
+                    'title' => __( 'Настройки остатков', 'woocommerce' ),
                     'type' => 'title',
                     'description' => '',
-                    'id' => 'payment_options'
+                    'id' => 'invent_options'
                 );
 
-                foreach ( $wc_payment->payment_gateways as $payment ) {
-                    if ( isset( $payment->enabled ) && $payment->enabled == 'yes' ) {
-                        $key = $payment->id;
-                        $name = $key;
-                        $this->form_fields[$name] = array(
-                            'title'          => __( $payment->method_title, 'textdomain' ),
-                            'description' => __( $payment->method_description, 'textdomain' ),
-                            'css'            => 'min-width:350px;',
-                            'class'          => 'select',
-                            'type'           => 'select',
-                            'options'        => $payment_option_list,
-                            'desc_tip'    =>  true,
-                        );
-                    }
-                }
-            }
-
-            /**
-             * Statuses options
-             */
-            $statuses_option_list = array();
-            $retailcrm_statuses_list = $retailcrm->statusesList();
-
-            if ($retailcrm_statuses_list->isSuccessful()) {
-                foreach ($retailcrm_statuses_list['statuses'] as $retailcrm_status) {
-                    $statuses_option_list[$retailcrm_status['code']] = $retailcrm_status['name'];
-                }
-
-                $wc_statuses = wc_get_order_statuses();
-
-                $this->form_fields[] = array(
-                    'title' => __( 'Статусы', 'woocommerce' ),
-                    'type' => 'title',
-                    'description' => '',
-                    'id' => 'statuses_options'
+                $this->form_fields['sync'] = array(
+                    'label'          => __( 'Выгружать остатки из CRM', 'textdomain' ),
+                    'title'       => 'Inventories',
+                    'class'          => 'checkbox',
+                    'type'           => 'checkbox',
+                    'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
                 );
 
-                foreach ( $wc_statuses as $idx => $name ) {
-                    $uid = str_replace('wc-', '', $idx);
-                    $this->form_fields[$uid] = array(
-                        'title'          => __( $name, 'textdomain' ),
-                        'css'            => 'min-width:350px;',
-                        'class'          => 'select',
-                        'type'           => 'select',
-                        'options'        => $statuses_option_list,
-                        'desc_tip'    =>  true,
+                /**
+                 * Uploads options
+                 */
+                $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
+
+                if (!isset($options['uploads'])) {
+                    $this->form_fields[] = array(
+                        'title' => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
+                        'type' => 'title',
+                        'description' => '',
+                        'id' => 'upload_options'
+                    );
+
+                    $this->form_fields['upload-button'] = array(
+                        'label'             => 'Выгрузить',
+                        'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-retailcrm' ),
+                        'type'              => 'button',
+                        'description'       => __( 'Пакетная выгрузка существующих клиентов и заказов.', 'woocommerce-integration-retailcrm' ),
+                        'desc_tip'          => true,
+                        'id'                => 'uploads-retailcrm'
                     );
                 }
-            }
-
-            /**
-             * Inventories options
-             */
-            $this->form_fields[] = array(
-                'title' => __( 'Настройки остатков', 'woocommerce' ),
-                'type' => 'title',
-                'description' => '',
-                'id' => 'invent_options'
-            );
-
-            $this->form_fields['sync'] = array(
-                'label'          => __( 'Выгружать остатки из CRM', 'textdomain' ),
-                'title'       => 'Inventories',
-                'class'          => 'checkbox',
-                'type'           => 'checkbox',
-                'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
-            );
-
-            /**
-             * Uploads options
-             */
-            $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
-
-            if (!isset($options['uploads'])) {
-                $this->form_fields[] = array(
-                    'title' => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
-                    'type' => 'title',
-                    'description' => '',
-                    'id' => 'upload_options'
-                );
-
-                $this->form_fields['upload-button'] = array(
-                    'label'             => 'Выгрузить',
-                    'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-retailcrm' ),
-                    'type'              => 'button',
-                    'description'       => __( 'Пакетная выгрузка существующих клиентов и заказов.', 'woocommerce-integration-retailcrm' ),
-                    'desc_tip'          => true,
-                    'id'                => 'uploads-retailcrm'
-                );
             }
         }
     }
