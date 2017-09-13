@@ -22,8 +22,6 @@
 
 	class WC_Retailcrm_Client_V4
 	{
-	    const VERSION = 'v4';
-
 	    protected $client;
 
 	    /**
@@ -40,18 +38,28 @@
 	     *
 	     * @throws \InvalidArgumentException
 	     */
-	    public function __construct($url, $apiKey, $site = null)
+	    public function __construct($url, $apiKey, $version = null, $site = null)
 	    {
 	        if ('/' !== $url[strlen($url) - 1]) {
 	            $url .= '/';
 	        }
 
-	        $url = $url . 'api/' . self::VERSION;
+	        $url = $version == null ? $url . 'api' : $url . 'api/' . $version;
 
 	        $this->client = new WC_Retailcrm_Request($url, array('apiKey' => $apiKey));
 	        $this->siteCode = $site;
 	    }
-
+            
+            /**
+             * Returns api versions list
+             * 
+             * @return WC_Retailcrm_Response
+             */
+            public function apiVersions()
+            {
+                return $this->client->makeRequest('/api-versions', WC_Retailcrm_Request::METHOD_GET);
+            }
+            
 	    /**
 	     * Returns users list
 	     *
