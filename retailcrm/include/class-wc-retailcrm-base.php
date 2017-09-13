@@ -276,29 +276,35 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
     }
 
     public function validate_api_version_field( $key, $value ) {
+        $versionMap = array(
+            'v3' => '3.0',
+            'v4' => '4.0',
+            'v5' => '5.0'
+        );
+        
         $api = new WC_Retailcrm_Proxy(
             $_POST['woocommerce_integration-retailcrm_api_url'],
-            $_POST['woocommerce_integration-retailcrm_api_key'],
-            $value
+            $_POST['woocommerce_integration-retailcrm_api_key']
         );
 
-        $response = $api->deliveryTypesList();
+        $response = $api->apiVersions();
 
-        if (isset($response['errorMsg']) && $response['errorMsg'] == 'API method not found') {
-            WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-retailcrm' ) );
-        } else {
-            return $value;
+        if ($response && $response->isSuccessful()) {
+            if (!in_array($versionMap[$value], $response['versions'])) {
+                WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-retailcrm' ) );
+            } else {
+                return $value;
+            }
         }
     }
 
     public function validate_api_url_field( $key, $value ) {
         $api = new WC_Retailcrm_Proxy(
             $value,
-            $_POST['woocommerce_integration-retailcrm_api_key'],
-            'v4'
+            $_POST['woocommerce_integration-retailcrm_api_key']
         );
 
-        $response = $api->deliveryTypesList();
+        $response = $api->apiVersions();
 
         if ($response == NULL) {
             WC_Admin_Settings::add_error( esc_html__( '"Введите корректный адрес CRM"', 'woocommerce-integration-retailcrm' ) );

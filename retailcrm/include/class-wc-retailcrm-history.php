@@ -61,6 +61,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $generatedAt = $response->generatedAt;
 
                 foreach ($response['history'] as $record) {
+                    if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
+                        continue;
+                    }
                     
                     $this->removeFuncsHook();
 
@@ -136,6 +139,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $generatedAt = $response->generatedAt;
 
                 foreach ($response['history'] as $record) {
+                    if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
+                        continue;
+                    }
                     
                     $this->removeFuncsHook();
 

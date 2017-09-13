@@ -14,9 +14,8 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
      */
     class WC_Retailcrm_Proxy
     {
-        public function __construct($api_url, $api_key, $api_vers)
+        public function __construct($api_url, $api_key, $api_vers = null)
         {   
-            if (!$api_vers) $api_vers = 'v4';
             $this->logger = new WC_Logger();
 
             if ( ! class_exists( 'WC_Retailcrm_Client_V3' ) ) {
@@ -34,23 +33,27 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
             if ($api_url && $api_key) {
                 switch ($api_vers) {
                     case 'v3':
-                        $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key);
+                        $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
                         break;
-
                     case 'v4':
-                        $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key);
+                        $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key, $api_vers);
                         break;
-
                     case 'v5':
-                        $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key);
-                        break;                    
+                        $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key, $api_vers);
+                        break;
+                    case null:
+                        $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
+                        break;
                 }
             }
         }
 
         public function __call($method, $arguments)
         {
-            if (!isset($this->retailcrm)) return;
+            if (!isset($this->retailcrm)) {
+                return;
+            }
+            
             try {
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
                 

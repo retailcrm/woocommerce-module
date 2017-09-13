@@ -22,8 +22,6 @@
 
     class WC_Retailcrm_Client_V3
     {
-        const VERSION = 'v3';
-
         protected $client;
 
         /**
@@ -38,18 +36,28 @@
          * @param  string $apiKey
          * @param  string $site
          */
-        public function __construct($url, $apiKey, $site = null)
+        public function __construct($url, $apiKey, $version = null, $site = null)
         {
             if ('/' != substr($url, strlen($url) - 1, 1)) {
                 $url .= '/';
             }
 
-            $url = $url . 'api/' . self::VERSION;
+            $url = $version == null ? $url . 'api' : $url . 'api/' . $version;
 
             $this->client = new WC_Retailcrm_Request($url, array('apiKey' => $apiKey));
             $this->siteCode = $site;
         }
-
+        
+        /**
+         * Returns api versions list
+         * 
+         * @return WC_Retailcrm_Response
+         */
+        public function apiVersions()
+        {
+            return $this->client->makeRequest('/api-versions', WC_Retailcrm_Request::METHOD_GET);
+        }
+        
         /**
          * Create a order
          *
