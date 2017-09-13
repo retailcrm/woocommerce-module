@@ -297,7 +297,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!empty($user_data_billing['postcode'])) $order_data['delivery']['address']['index'] = $user_data_billing['postcode'];
                 if (!empty($user_data_billing['city'])) $order_data['delivery']['address']['city'] = $user_data_billing['city'];
                 if (!empty($user_data_billing['country'])) $order_data['delivery']['address']['countryIso'] = $user_data_billing['country'];
-
+                if (!empty($user_data_billing['state'])) $order_data['delivery']['address']['region'] = $user_data_billing['state'];
             }
 
             $user_data = $order->get_address('shipping');
@@ -311,12 +311,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!empty($user_data['postcode'])) $order_data['delivery']['address']['index'] = $user_data['postcode'];
                 if (!empty($user_data['city'])) $order_data['delivery']['address']['city'] = $user_data['city'];
                 if (!empty($user_data['country'])) $order_data['delivery']['address']['countryIso'] = $user_data['country'];
-
+                if (!empty($user_data['state'])) $order_data['delivery']['address']['region'] = $user_data['state'];
             }
 
             $order_data['delivery']['address']['text'] = sprintf(
-                "%s %s %s %s",
+                "%s %s %s %s %s",
                 !empty($user_data_billing['postcode']) ? $user_data_billing['postcode'] : $user_data['postcode'],
+                !empty($user_data_billing['state']) ? $user_data_billing['state'] : $user_data['state'],
                 !empty($user_data_billing['city']) ? $user_data_billing['city'] : $user_data['city'],
                 !empty($user_data_billing['address_1']) ? $user_data_billing['address_1'] : $user_data['address_1'],
                 !empty($user_data_billing['address_2']) ? $user_data_billing['address_2'] : $user_data['address_2']
