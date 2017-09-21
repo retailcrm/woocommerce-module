@@ -238,6 +238,45 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $response = $this->retailcrm->ordersEdit($order_data);
         }
 
+        /**
+         * get order data depending on woocommerce version
+         *
+         * @param int $order_id
+         *
+         * @return arr
+         */
+        public function getOrderData($order_id) {
+            $order = new WC_Order( $order_id );
+            $order_data_arr = [];
+
+            if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+                $order_data_arr['id']              = $order->id;
+                $order_data_arr['date']            = $order->order_date;
+                $order_data_arr['payment_method']  = $order->payment_method;
+                $order_data_arr['discount_total']  = $order->data['discount_total'];
+                $order_data_arr['discount_tax']    = $order->data['discount_tax'];
+                $order_data_arr['customer_comment'] = $order->data['customerComment'];
+            } else {
+                $order_info = $order->get_data();
+
+                $order_data_arr['id']              = $order_info['id'];
+                $order_data_arr['payment_method']  = $order->get_payment_method();
+                $order_data_arr['date']            = $order_info['date_created']->date('Y-m-d H:i:s');
+                $order_data_arr['discount_total']  = $order_info['discount_total'];
+                $order_data_arr['discount_tax']    = $order_info['discount_tax'];
+                $order_data_arr['customer_comment'] = $order->get_customer_note();
+            }
+
+            return $order_data_arr;
+        }
+
+        /**
+         * process to combine order data
+         *
+         * @param int $order_id
+         *
+         * @return arr
+         */
         public function processOrder($order_id)
         {
             if ( !$order_id ){
@@ -245,23 +284,26 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             $order = new WC_Order( $order_id );
+            $order_data_info = $this->getOrderData($order_id);
             $order_data = array();
 
-            $order_data['externalId'] = $order->id;
+            $order_data['externalId'] = $order_data_info['id'];
             $order_data['number'] = $order->get_order_number();
-            $order_data['createdAt'] = $order->order_date;
-            $order_data['customerComment'] = $order->get_customer_note();
+            $order_data['createdAt'] = $order_data_info['date'];
+            $order_data['customerComment'] = $order_data_info['customer_comment'];
 
-            if ($this->retailcrm_settings['api_version'] == 'v5') {
-                $discount = $order->data['discount_total'] + $order->data['discount_tax'];
-                if ($discount > 0) $order_data['discountManualAmount'] = $discount;
-            } else {
-                $discount = $order->data['discount_total'] + $order->data['discount_tax'];
-                if ($discount > 0) $order_data['discount'] = $discount;
+            if ( $order_data_info['discount_total'] ) {
+                $discount = $order_data_info['discount_total'] + $order_data_info['discount_tax'];
+
+                if ($this->retailcrm_settings['api_version'] == 'v5') {
+                    if ($discount > 0) $order_data['discountManualAmount'] = $discount;
+                } else {
+                    if ($discount > 0) $order_data['discount'] = $discount;
+                }
             }
 
-            if (!empty($order->payment_method) && !empty($this->retailcrm_settings[$order->payment_method]) && $this->retailcrm_settings['api_version'] != 'v5') {
-                $order_data['paymentType'] = $this->retailcrm_settings[$order->payment_method];
+            if ( !empty( $order_data_info['payment_method'] ) && !empty($this->retailcrm_settings[$order_data_info['payment_method']]) && $this->retailcrm_settings['api_version'] != 'v5') {
+                $order_data['paymentType'] = $this->retailcrm_settings[$order_data_info['payment_method']];
             }
 
             if(!empty($order->get_items( 'shipping' )) && $order->get_items( 'shipping' ) != '') {
@@ -362,8 +404,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     'externalId' => $order_id
                 );
 
-                if (!empty($order->payment_method) && !empty($this->retailcrm_settings[$order->payment_method])) {
-                    $payment['type'] = $this->retailcrm_settings[$order->payment_method];
+                if (!empty($order_data_info['payment_method']) && !empty($this->retailcrm_settings[$order_data_info['payment_method']])) {
+                    $payment['type'] = $this->retailcrm_settings[$order_data_info['payment_method']];
                 }
 
                 if ($order->is_paid()) {
