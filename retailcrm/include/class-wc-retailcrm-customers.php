@@ -69,50 +69,69 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             }
         }
 
+        /**
+         * crearte crm customer
+         *
+         * @param int $customer_id
+         *
+         * @return void
+         */
         public function createCustomer($customer_id)
         {
-            $customer = new WC_Customer($customer_id);
+            if (get_userdata($customer_id)->roles[0] == 'customer'){
 
-            if ($customer->get_role() == 'customer'){
+                $data_customer = $this->processCustomer($customer_id);
 
-                $data_customer = $this->processCustomer($customer);
-
-                $this->retailcrm->customersCreate($data_customer);
+                $res = $this->retailcrm->customersCreate($data_customer);
             }
         }
 
+        /**
+         * update crm customer
+         *
+         * @param int $customer_id
+         *
+         * @return void
+         */
         public function updateCustomer($customer_id)
         {
-            $customer = new WC_Customer($customer_id);
+            if (get_userdata($customer_id)->roles[0] == 'customer'){
 
-            if ($customer->get_role() == 'customer'){
+                $data_customer = $this->processCustomer($customer_id);
 
-                $data_customer = $this->processCustomer($customer);
-
-                $this->retailcrm->customersEdit($data_customer);
+                $res = $this->retailcrm->customersEdit($data_customer);
             }
         }
 
-        protected function processCustomer($customer)
+        /**
+         * get customer data
+         *
+         * @param int $customer_id
+         *
+         * @return void
+         */
+        protected function processCustomer($customer_id)
         {
-            $createdAt = $customer->get_date_created();
+            $customer_data = get_userdata( $customer_id );
+            $customer_meta = get_user_meta( $customer_id );
+
             $data_customer = array(
-                'createdAt' => $createdAt->date('Y-m-d H:i:s '),
-                'externalId' => $customer_id,
-                'firstName' => !empty($customer->get_first_name()) ? $customer->get_first_name() : $customer->get_username(),
-                'lastName' => $customer->get_last_name(),
-                'email' => $customer->get_email(),
+                'createdAt' => $customer_data->user_registered,
+                'externalId' => $customer_data->ID,
+                'firstName' => !empty($customer_meta['first_name'][0]) ? $customer_meta['first_name'][0] : $customer_meta['billing_first_name'][0],
+                'lastName' => $customer_meta['last_name'][0],
+                'email' => $customer_data->user_email,
                 'phones' => array(
                     array(
-                        'number' => $customer->get_billing_phone()
+                        'number' => $customer_meta['billing_phone'][0]
                     )
                 ),
                 'address' => array(
-                    'index' => $customer->get_billing_postcode(),
-                    'countryIso' => $customer->get_billing_country(),
-                    'region' => $customer->get_billing_state(),
-                    'city' => $customer->get_billing_city(),
-                    'text' => $customer->get_billing_address_1() . ',' . $customer->get_billing_address_2()
+                    'index' => $customer_meta['billing_postcode'][0],
+                    'countryIso' => $customer_meta['billing_country'][0],
+                    'region' => $customer_meta['billing_state'][0],
+                    'city' => $customer_meta['billing_city'][0],
+                    'text' => $customer_meta['billing_address_1'][0] . ',' . $customer_meta['billing_address_2'][0]
                 )
             );
 
@@ -120,3 +139,4 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
         }
     }
 endif;
+1

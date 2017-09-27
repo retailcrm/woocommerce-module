@@ -225,6 +225,13 @@ function retailcrm_history_get()
     $history_class->getHistory();
 }
 
+/**
+ * create custormer
+ *
+ * @param int $customer_id
+ *
+ * @return void
+ */
 function create_customer($customer_id) {
     if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) {
         include_once( __DIR__ . '/include/class-wc-retailcrm-customers.php' );
@@ -234,7 +241,14 @@ function create_customer($customer_id) {
     $customer_class->createCustomer($customer_id);
 }
 
-function update_customer($customer_id, $data) {
+/**
+ * update custormer
+ *
+ * @param int $customer_id
+ *
+ * @return void
+ */
+function update_customer($customer_id) {
     if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) {
         include_once( __DIR__ . '/include/class-wc-retailcrm-customers.php' );
     }
@@ -321,6 +335,13 @@ function ajax_upload() {
     <?php
 }
 
+/**
+ * update order
+ *
+ * @param int $order_id
+ *
+ * @return void
+ */
 function update_order($order_id) {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
         include_once( __DIR__ . check_custom_order() );
@@ -330,30 +351,61 @@ function update_order($order_id) {
     $order_class->updateOrder($order_id);
 }
 
+/**
+ * create order
+ *
+ * @param int $order_id
+ *
+ * @return void
+ */
+function create_order($order_id) {
+    if ( get_post_type($order_id) == 'shop_order' && get_post_status( $order_id ) != 'auto-draft' ) {
+        if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
+            include_once( __DIR__ . check_custom_order() );
+        }
+
+        $order_class = new WC_Retailcrm_Orders();
+        $order_class->orderCreate($order_id);
+    }
+}
+
 register_activation_hook( __FILE__, 'retailcrm_install' );
 register_deactivation_hook( __FILE__, 'retailcrm_deactivation' );
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option( 'active_plugins')))) {
     load_plugin_textdomain('wc_retailcrm', false, dirname(plugin_basename( __FILE__ )) . '/');
+
     add_filter('cron_schedules', 'filter_cron_schedules', 10, 1);
-    add_action('woocommerce_checkout_order_processed', 'retailcrm_process_order', 10, 1);
-    add_action('retailcrm_history', 'retailcrm_history_get');
-    add_action('retailcrm_icml', 'generate_icml');
-    add_action('retailcrm_inventories', 'load_stocks');
-    add_action( 'init', 'check_inventories');
+
     add_action( 'init', 'register_icml_generation');
+    add_action('retailcrm_icml', 'generate_icml');
+
+    add_action( 'init', 'check_inventories');
+    add_action('retailcrm_inventories', 'load_stocks');
+
     add_action( 'init', 'register_retailcrm_history');
+    add_action('retailcrm_history', 'retailcrm_history_get');
+
     add_action( 'wp_ajax_do_upload', 'upload_to_crm' );
     add_action('admin_print_footer_scripts', 'ajax_upload', 99);
+
+    // create customer frontend area
     add_action( 'woocommerce_created_customer', 'create_customer', 10, 1 );
-    add_action( 'woocommerce_checkout_update_user_meta', 10, 2 );
+    // update customer frontend area
+    add_action( 'woocommerce_customer_save_address', 'update_customer' );
+    // update customer admin area
+    add_action( 'profile_update', 'update_customer' );
+
+    // add_action( 'woocommerce_checkout_update_user_meta', 10, 2 );
 
     if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+        add_action('woocommerce_checkout_order_processed', 'retailcrm_process_order', 10, 1);
         add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
         add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
         add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
         add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
     } else {
         add_action('woocommerce_update_order', 'update_order', 11, 1);
+        add_action('wp_insert_post', 'create_order' );
     }
 }
