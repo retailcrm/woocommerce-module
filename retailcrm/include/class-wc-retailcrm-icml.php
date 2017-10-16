@@ -383,7 +383,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                         }
 
                         if ($product->get_sku() != '') {
-                            $params[] = array('code' => 'sku', 'name' => 'SKU', 'value' => $product->get_sku());
+                            $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
                         }
 
                         $name = ($post->post_title == $product->get_title()) ?
