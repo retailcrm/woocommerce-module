@@ -346,6 +346,11 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     if ($product->get_type() == 'simple' || $parent && $parent->get_type() == 'variable') {
                         if ($this->get_parent_product($product) > 0) {
                             $image = wp_get_attachment_image_src( get_post_thumbnail_id( $theid ), 'single-post-thumbnail' );
+
+                            if (!$image) {
+                                $image = wp_get_attachment_image_src( get_post_thumbnail_id( $product->get_parent_id() ), 'single-post-thumbnail' );
+                            }
+
                             $term_list = wp_get_post_terms($parent->get_id(), 'product_cat', array('fields' => 'ids'));
                             $attributes = get_post_meta( $parent->get_id() , '_product_attributes' );
                         } else {
