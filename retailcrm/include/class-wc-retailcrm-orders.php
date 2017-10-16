@@ -250,20 +250,20 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $order_data_arr = [];
 
             if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-                $order_data_arr['id']              = $order->id;
-                $order_data_arr['date']            = $order->order_date;
-                $order_data_arr['payment_method']  = $order->payment_method;
-                $order_data_arr['discount_total']  = $order->data['discount_total'];
-                $order_data_arr['discount_tax']    = $order->data['discount_tax'];
-                $order_data_arr['customer_comment'] = $order->data['customerComment'];
+                $order_data_arr['id']               = $order->id;
+                $order_data_arr['date']             = $order->order_date;
+                $order_data_arr['payment_method']   = $order->payment_method;
+                $order_data_arr['discount_total']   = $order->get_total_discount();
+                $order_data_arr['discount_tax']     = $order->cart_discount_tax;
+                $order_data_arr['customer_comment'] = $order->customer_message;
             } else {
                 $order_info = $order->get_data();
 
-                $order_data_arr['id']              = $order_info['id'];
-                $order_data_arr['payment_method']  = $order->get_payment_method();
-                $order_data_arr['date']            = $order_info['date_created']->date('Y-m-d H:i:s');
-                $order_data_arr['discount_total']  = $order_info['discount_total'];
-                $order_data_arr['discount_tax']    = $order_info['discount_tax'];
+                $order_data_arr['id']               = $order_info['id'];
+                $order_data_arr['date']             = $order_info['date_created']->date('Y-m-d H:i:s');
+                $order_data_arr['payment_method']   = $order->get_payment_method();
+                $order_data_arr['discount_total']   = $order_info['discount_total'];
+                $order_data_arr['discount_tax']     = $order_info['discount_tax'];
                 $order_data_arr['customer_comment'] = $order->get_customer_note();
             }
 
@@ -450,16 +450,23 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $this->retailcrm->ordersPaymentCreate($payment);
         }
 
+        /**
+         * update order
+         *
+         * @param int $order_id
+         *
+         * @return void
+         */
         public function updateOrder($order_id)
         {
-            $order = $this->processOrder($order_id);
-
-            $response = $this->retailcrm->ordersEdit($order);
-
             $order = new WC_Order($order_id);
+            $order_data = $this->processOrder($order_id);
+            $order_data_info = $this->getOrderData($order_id);
+
+            $response = $this->retailcrm->ordersEdit($order_data);
 
             if ($response->isSuccessful()) {
-                $this->orderUpdatePaymentType($order_id, $order->payment_method);
+                $this->orderUpdatePaymentType($order_id, $order_data_info['payment_method']);
             }
         }
     }
