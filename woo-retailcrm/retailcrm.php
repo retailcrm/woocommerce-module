@@ -1,8 +1,8 @@
 <?php
 /**
- * Version: 1.1
+ * Version: 1.2.1
  * Plugin Name: WooCommerce RetailCRM
- * Plugin URI: https://wordpress.org/plugins/retailcrm/
+ * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.ru/
@@ -55,22 +55,67 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     $WC_Integration_Retailcrm = new WC_Integration_Retailcrm( __FILE__ );
 endif;
 
+/*
+ * Check icml custom class
+ */
 function check_custom_icml()
 {
-    if (file_exists( __DIR__ . '/include-custom/class-wc-retailcrm-icml.php' )) {
-        $file = '/include-custom/class-wc-retailcrm-icml.php';
+    if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-icml.php' )) {
+        $file = WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-icml.php';
     } else {
-        $file = '/include/class-wc-retailcrm-icml.php';
+        $file = __DIR__ . '/include/class-wc-retailcrm-icml.php';
     }
     return $file;
 }
 
-function check_custom_order()
+/*
+ * Check orders custom class
+ */
+function check_custom_orders()
 {
-    if (file_exists( __DIR__ . '/include-custom/class-wc-retailcrm-orders.php' )) {
-        $file = '/include-custom/class-wc-retailcrm-orders.php';
+    if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-orders.php' )) {
+        $file =  WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-orders.php';
     } else {
-        $file = '/include/class-wc-retailcrm-orders.php';
+        $file = __DIR__ . '/include/class-wc-retailcrm-orders.php';
+    }
+    return $file;
+}
+
+/*
+ * Check customers custom class
+ */
+function check_custom_customers()
+{
+    if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-customers.php' )) {
+        $file = WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-customers.php';
+    } else {
+        $file = __DIR__ . '/include/class-wc-retailcrm-customers.php';
+    }
+    return $file;
+}
+
+/*
+ * Check inventories custom class
+ */
+function check_custom_inventories()
+{
+    if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-inventories.php' )) {
+        $file = WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-inventories.php';
+    } else {
+        $file = __DIR__ . '/include/class-wc-retailcrm-inventories.php';
+    }
+    return $file;
+}
+
+/*
+ * Check history custom class
+ */
+function check_custom_history()
+{
+    if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-history.php' )) {
+        $file = WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-history.php';
+    } else {
+        $file = __DIR__ . '/include/class-wc-retailcrm-history.php';
     }
     return $file;
 }
@@ -101,7 +146,7 @@ function retailcrm_deactivation()
 function load_stocks()
 {
     if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) {
-        include_once( __DIR__ . '/include/class-wc-retailcrm-inventories.php' );
+        include_once( check_custom_inventories() );
     }
 
     $inventories = new WC_Retailcrm_Inventories();
@@ -114,7 +159,7 @@ function load_stocks()
 function generate_icml() 
 {
     if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) {
-        include_once( __DIR__ . check_custom_icml() );
+        include_once( check_custom_icml() );
     }
 
     $icml = new WC_Retailcrm_Icml();
@@ -129,7 +174,7 @@ function generate_icml()
 function retailcrm_process_order($order_id)
 {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
 
     $order_class = new WC_Retailcrm_Orders();
@@ -144,7 +189,7 @@ function retailcrm_process_order($order_id)
 function retailcrm_update_order_status($order_id)
 {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
 
     $order_class = new WC_Retailcrm_Orders();
@@ -159,7 +204,7 @@ function retailcrm_update_order_status($order_id)
 function retailcrm_update_order_payment($order_id)
 {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
 
     $order_class = new WC_Retailcrm_Orders();
@@ -174,7 +219,7 @@ function retailcrm_update_order_payment($order_id)
 function retailcrm_update_order($meta_id, $order_id, $meta_key, $_meta_value)
 {   
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
     $order_class = new WC_Retailcrm_Orders();
 
@@ -208,7 +253,7 @@ function retailcrm_update_order($meta_id, $order_id, $meta_key, $_meta_value)
 function retailcrm_update_order_items($order_id, $data)
 {   
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
 
     $order_class = new WC_Retailcrm_Orders();
@@ -218,7 +263,7 @@ function retailcrm_update_order_items($order_id, $data)
 function retailcrm_history_get()
 {
     if ( ! class_exists( 'WC_Retailcrm_History' ) ) {
-        include_once( __DIR__ . '/include/class-wc-retailcrm-history.php' );
+        include_once( check_custom_history() );
     }
 
     $history_class = new WC_Retailcrm_History();
@@ -227,7 +272,7 @@ function retailcrm_history_get()
 
 function create_customer($customer_id) {
     if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) {
-        include_once( __DIR__ . '/include/class-wc-retailcrm-customers.php' );
+        include_once( check_custom_customers() );
     }
 
     $customer_class = new WC_Retailcrm_Customers();
@@ -236,7 +281,7 @@ function create_customer($customer_id) {
 
 function update_customer($customer_id, $data) {
     if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) {
-        include_once( __DIR__ . '/include/class-wc-retailcrm-customers.php' );
+        include_once( check_custom_customers() );
     }
 
     $customer_class = new WC_Retailcrm_Customers();
@@ -285,11 +330,11 @@ function filter_cron_schedules($param) {
 
 function upload_to_crm() {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
 
     if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) {
-        include_once( __DIR__ . '/include/class-wc-retailcrm-customers.php' );
+        include_once( check_custom_customers() );
     }
 
     $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
@@ -323,7 +368,7 @@ function ajax_upload() {
 
 function update_order($order_id) {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( __DIR__ . check_custom_order() );
+        include_once( check_custom_orders() );
     }
 
     $order_class = new WC_Retailcrm_Orders();
