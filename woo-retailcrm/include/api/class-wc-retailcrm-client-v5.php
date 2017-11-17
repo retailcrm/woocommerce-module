@@ -295,9 +295,9 @@
          *
          * @return WC_Retailcrm_Response
          */
-        public function customDictionariesList(array $filter = [], $limit = null, $page = null)
+        public function customDictionariesList(array $filter = array(), $limit = null, $page = null)
         {
-            $parameters = [];
+            $parameters = array();
 
             if (count($filter)) {
                 $parameters['filter'] = $filter;

@@ -14,8 +14,8 @@
  * - Repeat things for multisite. Once for a single site in the network, once sitewide.
  *
  *
- * @link       https://wordpress.org/plugins/retailcrm/
- * @since      1.1
+ * @link       https://wordpress.org/plugins/woo-retailcrm/
+ * @since      1.2.1
  *
  * @package    RetailCRM
  */
