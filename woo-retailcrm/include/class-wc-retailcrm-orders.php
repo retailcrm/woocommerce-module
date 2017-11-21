@@ -372,18 +372,22 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $_product = wc_get_product($uid);
 
                 if ($_product) {
+                    $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+                    $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
+                    $price_item = $product_price + $product_tax;
+
                     if ($this->retailcrm_settings['api_version'] != 'v3') {
                         $order_item = array(
                             'offer' => array('externalId' => $uid),
                             'productName' => $item['name'],
-                            'initialPrice' => (float)$_product->get_price(),
+                            'initialPrice' => (float)$price_item,
                             'quantity' => $item['qty'],
                         );
                     } else {
                         $order_item = array(
                             'productId' => $uid,
                             'productName' => $item['name'],
-                            'initialPrice' => (float)$_product->get_price(),
+                            'initialPrice' => (float)$price_item,
                             'quantity' => $item['qty'],
                         );
                     }
