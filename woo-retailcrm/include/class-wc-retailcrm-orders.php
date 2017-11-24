@@ -247,7 +247,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public function getOrderData($order_id) {
             $order = new WC_Order( $order_id );
-            $order_data_arr = [];
+            $order_data_arr = array();
 
             if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
                 $order_data_arr['id']              = $order->id;
@@ -306,7 +306,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $order_data['paymentType'] = $this->retailcrm_settings[$order_data_info['payment_method']];
             }
 
-            if(!empty($order->get_items( 'shipping' )) && $order->get_items( 'shipping' ) != '') {
+            if ($order->get_items( 'shipping' )) {
                 $shipping = end($order->get_items( 'shipping' ));
                 $shipping_code = explode(':', $shipping['method_id']);
                 $shipping_method = $shipping_code[0];
@@ -372,18 +372,22 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $_product = wc_get_product($uid);
 
                 if ($_product) {
+                    $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+                    $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
+                    $price_item = $product_price + $product_tax;
+
                     if ($this->retailcrm_settings['api_version'] != 'v3') {
                         $order_item = array(
                             'offer' => array('externalId' => $uid),
                             'productName' => $item['name'],
-                            'initialPrice' => (float)$_product->get_price(),
+                            'initialPrice' => (float)$price_item,
                             'quantity' => $item['qty'],
                         );
                     } else {
                         $order_item = array(
                             'productId' => $uid,
                             'productName' => $item['name'],
-                            'initialPrice' => (float)$_product->get_price(),
+                            'initialPrice' => (float)$price_item,
                             'quantity' => $item['qty'],
                         );
                     }

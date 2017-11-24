@@ -73,8 +73,9 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     $this->writeCategories($categories);
                     unset($categories);
                 }
-                
-                $this->get_wc_products_taxonomies();
+
+                $status_args = $this->checkPostStatuses();
+                $this->get_wc_products_taxonomies($status_args);
                 $dom = dom_import_simplexml(simplexml_load_file($this->tmpFile))->ownerDocument;
                 $dom->formatOutput = true;
                 $formatted = $dom->saveXML();
@@ -310,13 +311,24 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
          *
          * @return array
          */
-        private function get_wc_products_taxonomies() {
+        private function get_wc_products_taxonomies($status_args) {
+            if (!$status_args) {
+                $status_args = array('publish');
+            }
+
             $full_product_list = array();
             $offset = 0;
             $limit = 100;
 
             do {
-                $loop = new WP_Query(array('post_type' => array('product', 'product_variation'), 'posts_per_page' => $limit, 'offset' => $offset));
+                $loop = new WP_Query(
+                    array(
+                        'post_type' => array('product', 'product_variation'),
+                        'post_status' => $status_args,
+                        'posts_per_page' => $limit,
+                        'offset' => $offset
+                    )
+                );
 
                 while ($loop->have_posts()) : $loop->the_post();
                     $theid = get_the_ID();
@@ -483,6 +495,19 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             } else {
                 return wc_get_price_including_tax($product);
             }
+        }
+
+        private function checkPostStatuses() {
+            $options = get_option( 'woocommerce_integration-retailcrm_settings' );
+            $status_args = array();
+
+            foreach (get_post_statuses() as $key => $value) {
+                if (isset($options['p_' . $key]) && $options['p_' . $key] == 'yes') {
+                    $status_args[] = $key;
+                }
+            }
+
+            return $status_args;
         }
     }
 

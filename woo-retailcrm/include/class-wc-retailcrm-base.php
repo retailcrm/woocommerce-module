@@ -67,21 +67,39 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         $api_version_list = array('v4' => 'v4','v5' => 'v5');
 
         $this->form_fields[] = array(
-            'title' => __( 'Настройки API', 'woocommerce' ),
-            'type' => 'title',
+            'title'       => __( 'Настройки API', 'woocommerce' ),
+            'type'        => 'title',
             'description' => '',
-            'id' => 'api_options'
+            'id'          => 'api_options'
         );
 
         $this->form_fields['api_version'] = array(
-            'title'          => __( 'API версия', 'textdomain' ),
+            'title'       => __( 'API версия', 'textdomain' ),
             'description' => __( 'Выберите версию API, которую Вы хотите использовать', 'textdomain' ),
-            'css'            => 'min-width:50px;',
-            'class'          => 'select',
-            'type'           => 'select',
-            'options'        => $api_version_list,
+            'css'         => 'min-width:50px;',
+            'class'       => 'select',
+            'type'        => 'select',
+            'options'     => $api_version_list,
             'desc_tip'    =>  true,
         );
+
+        $this->form_fields[] = array(
+            'title'       => __( 'Настройки каталога', 'woocommerce' ),
+            'type'        => 'title',
+            'description' => '',
+            'id'          => 'catalog_options'
+        );
+
+        foreach (get_post_statuses() as $status_key => $status_value) {
+            $this->form_fields['p_' . $status_key] = array(
+                'title'       => __( $status_value, 'textdomain' ),
+                'label'       => __( ' ', 'textdomain' ), 
+                'description' => '',
+                'class'       => 'checkbox',
+                'type'        => 'checkbox',
+                'desc_tip'    =>  true,
+            );
+        }
 
         if ($this->get_option( 'api_url' ) != '' && $this->get_option( 'api_key' ) != '') {
             if (isset($_GET['page']) && $_GET['page'] == 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] == 'integration') {
@@ -180,21 +198,21 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     $wc_statuses = wc_get_order_statuses();
 
                     $this->form_fields[] = array(
-                        'title' => __( 'Статусы', 'woocommerce' ),
-                        'type' => 'title',
+                        'title'       => __( 'Статусы', 'woocommerce' ),
+                        'type'        => 'title',
                         'description' => '',
-                        'id' => 'statuses_options'
+                        'id'          => 'statuses_options'
                     );
 
                     foreach ( $wc_statuses as $idx => $name ) {
                         $uid = str_replace('wc-', '', $idx);
                         $this->form_fields[$uid] = array(
-                            'title'          => __( $name, 'textdomain' ),
-                            'css'            => 'min-width:350px;',
-                            'class'          => 'select',
-                            'type'           => 'select',
-                            'options'        => $statuses_option_list,
-                            'desc_tip'    =>  true,
+                            'title'    => __( $name, 'textdomain' ),
+                            'css'      => 'min-width:350px;',
+                            'class'    => 'select',
+                            'type'     => 'select',
+                            'options'  => $statuses_option_list,
+                            'desc_tip' =>  true,
                         );
                     }
                 }
@@ -203,17 +221,17 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                  * Inventories options
                  */
                 $this->form_fields[] = array(
-                    'title' => __( 'Настройки остатков', 'woocommerce' ),
-                    'type' => 'title',
+                    'title'       => __( 'Настройки остатков', 'woocommerce' ),
+                    'type'        => 'title',
                     'description' => '',
-                    'id' => 'invent_options'
+                    'id'          => 'invent_options'
                 );
 
                 $this->form_fields['sync'] = array(
-                    'label'          => __( 'Выгружать остатки из CRM', 'textdomain' ),
+                    'label'       => __( 'Выгружать остатки из CRM', 'textdomain' ),
                     'title'       => 'Inventories',
-                    'class'          => 'checkbox',
-                    'type'           => 'checkbox',
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
                     'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
                 );
 
@@ -224,10 +242,10 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
                 if (!isset($options['uploads'])) {
                     $this->form_fields[] = array(
-                        'title' => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
-                        'type' => 'title',
+                        'title'       => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
+                        'type'        => 'title',
                         'description' => '',
-                        'id' => 'upload_options'
+                        'id'          => 'upload_options'
                     );
 
                     $this->form_fields['upload-button'] = array(
