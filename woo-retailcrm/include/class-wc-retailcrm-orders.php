@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
 
             if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
-                include_once( __DIR__ . '/api/class-wc-retailcrm-proxy.php' );
+                include_once( WP_PLUGIN_DIR . '/woo-retailcrm/include/api/class-wc-retailcrm-proxy.php' );
             }
 
             $this->retailcrm = new WC_Retailcrm_Proxy(
@@ -338,8 +338,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!empty($user_data_billing['last_name'])) $order_data['lastName'] = $user_data_billing['last_name'];
                 if (!empty($user_data_billing['postcode'])) $order_data['delivery']['address']['index'] = $user_data_billing['postcode'];
                 if (!empty($user_data_billing['city'])) $order_data['delivery']['address']['city'] = $user_data_billing['city'];
-                if (!empty($user_data_billing['country'])) $order_data['delivery']['address']['countryIso'] = $user_data_billing['country'];
                 if (!empty($user_data_billing['state'])) $order_data['delivery']['address']['region'] = $user_data_billing['state'];
+                if (!empty($user_data_billing['country'])) $order_data['countryIso'] = $user_data_billing['country'];
             }
 
             $user_data = $order->get_address('shipping');
@@ -352,8 +352,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!empty($user_data['last_name'])) $order_data['lastName'] = $user_data['last_name'];
                 if (!empty($user_data['postcode'])) $order_data['delivery']['address']['index'] = $user_data['postcode'];
                 if (!empty($user_data['city'])) $order_data['delivery']['address']['city'] = $user_data['city'];
-                if (!empty($user_data['country'])) $order_data['delivery']['address']['countryIso'] = $user_data['country'];
                 if (!empty($user_data['state'])) $order_data['delivery']['address']['region'] = $user_data['state'];
+                if (!empty($user_data['country'])) $order_data['countryIso'] = $user_data['country'];
             }
 
             $order_data['delivery']['address']['text'] = sprintf(

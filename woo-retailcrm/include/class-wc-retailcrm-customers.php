@@ -19,7 +19,7 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
 
             if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
-                include_once( __DIR__ . '/api/class-wc-retailcrm-proxy.php' );
+                include_once( WP_PLUGIN_DIR . '/woo-retailcrm/include/api/class-wc-retailcrm-proxy.php' );
             }
 
             $this->retailcrm = new WC_Retailcrm_Proxy(
