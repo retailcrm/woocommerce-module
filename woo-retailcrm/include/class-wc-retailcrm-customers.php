@@ -38,11 +38,11 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
                 if ($user->roles[0] != 'customer') continue;
 
                 $customer = new WC_Customer($user->ID);
-
+                $firstName = $customer->get_first_name();
                 $data_customer = array(
                     'createdAt' => $user->data->user_registered,
                     'externalId' => $user->ID,
-                    'firstName' => !empty($customer->get_first_name()) ? $customer->get_first_name() : $customer->get_username(),
+                    'firstName' => $firstName ? $firstName : $customer->get_username(),
                     'lastName' => $customer->get_last_name(),
                     'email' => $user->data->user_email,
                     'phones' => array(
@@ -96,10 +96,11 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
         protected function processCustomer($customer)
         {
             $createdAt = $customer->get_date_created();
+            $firstName = $customer->get_first_name();
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s '),
                 'externalId' => $customer_id,
-                'firstName' => !empty($customer->get_first_name()) ? $customer->get_first_name() : $customer->get_username(),
+                'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),
                 'email' => $customer->get_email(),
                 'phones' => array(

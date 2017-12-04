@@ -33,33 +33,27 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                 include_once( __DIR__ . '/class-wc-retailcrm-client-v5.php' );
             }
 
-            if ($api_url && $api_key) {
-                switch ($api_vers) {
-                    case 'v3':
-                        $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
-                        break;
-                    case 'v4':
-                        $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key, $api_vers);
-                        break;
-                    case 'v5':
-                        $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key, $api_vers);
-                        break;
-                    case null:
-                        $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
-                        break;
-                }
+            switch ($api_vers) {
+                case 'v3':
+                    $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
+                    break;
+                case 'v4':
+                    $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key, $api_vers);
+                    break;
+                case 'v5':
+                    $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key, $api_vers);
+                    break;
+                case null:
+                    $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
+                    break;
             }
         }
 
         public function __call($method, $arguments)
         {
-            if (!$this->retailcrm) {
-                return;
-            }
-            
             try {
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
-                
+
                 if ($response->isSuccessful()) {
                     $result = ' Ok';
                 } else {

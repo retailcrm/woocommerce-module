@@ -120,8 +120,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                         $shipping_option_list[$retailcrm_shipping_type['code']] = $retailcrm_shipping_type['name'];
                     }
 
-                    $wc_shipping = new WC_Shipping();
-                    $wc_shipping_list = $wc_shipping->get_shipping_methods();
+                    $wc_shipping_list = get_wc_shipping_methods();
 
                     $this->form_fields[] = array(
                         'title' => __( 'Способы доставки', 'woocommerce' ),
@@ -130,13 +129,11 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                         'id' => 'shipping_options'
                     );
 
-                    foreach ( $wc_shipping_list as $shipping ) {
-                        if ( isset( $shipping->enabled ) && $shipping->enabled == 'yes' ) {
-                            $key = $shipping->id;
-                            $name = $key;
-                            $this->form_fields[$name] = array(
-                                'title'          => __( $shipping->method_title, 'textdomain' ),
-                                'description' => __( $shipping->method_description, 'textdomain' ),
+                    foreach ( $wc_shipping_list as  $shipping_code => $shipping ) {
+                        if ( isset( $shipping['enabled'] ) && $shipping['enabled'] == 'yes' ) {
+                            $this->form_fields[$shipping_code] = array(
+                                'title'          => __( $shipping['title'], 'textdomain' ),
+                                'description' => __( $shipping['description'], 'textdomain' ),
                                 'css'            => 'min-width:350px;',
                                 'class'          => 'select',
                                 'type'           => 'select',
@@ -221,7 +218,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                  * Inventories options
                  */
                 $this->form_fields[] = array(
-                    'title'       => __( 'Настройки остатков', 'woocommerce' ),
+                    'title'       => __( 'Настройки выгрузки остатков', 'woocommerce' ),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'invent_options'
@@ -229,7 +226,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
                 $this->form_fields['sync'] = array(
                     'label'       => __( 'Выгружать остатки из CRM', 'textdomain' ),
-                    'title'       => 'Inventories',
+                    'title'       => 'Остатки',
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
@@ -257,6 +254,25 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                         'id'                => 'uploads-retailcrm'
                     );
                 }
+                
+                /*
+                 * Generate icml file
+                 */
+                $this->form_fields[] = array(
+                    'title'       => __( 'Генерация каталога товаров', 'woocommerce' ),
+                    'type'        => 'title',
+                    'description' => '',
+                    'id'          => 'icml_options'
+                );
+                
+                $this->form_fields[] = array(
+                    'label'             => 'Сгенерировать',
+                    'title'             => __( 'Генерация icml', 'woocommerce-integration-retailcrm' ),
+                    'type'              => 'button',
+                    'description'       => __( 'Данный функционал позволяет сгенерировать каталог товаров для выгрузки в CRM.', 'woocommerce-integration-retailcrm' ),
+                    'desc_tip'          => true,
+                    'id'                => 'icml-retailcrm'
+                );
             }
         }
     }
@@ -294,6 +310,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
     }
 
     public function validate_api_version_field( $key, $value ) {
+        $post = $this->get_post_data();
         $versionMap = array(
             'v3' => '3.0',
             'v4' => '4.0',
@@ -301,8 +318,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         );
         
         $api = new WC_Retailcrm_Proxy(
-            $_POST['woocommerce_integration-retailcrm_api_url'],
-            $_POST['woocommerce_integration-retailcrm_api_key']
+            $post[$this->plugin_id . $this->id . '_api_url'],
+            $post[$this->plugin_id . $this->id . '_api_key']
         );
 
         $response = $api->apiVersions();
@@ -310,25 +327,49 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         if ($response && $response->isSuccessful()) {
             if (!in_array($versionMap[$value], $response['versions'])) {
                 WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-retailcrm' ) );
-            } else {
-                return $value;
+                $value = '';
             }
+
+            return $value;
         }
     }
 
     public function validate_api_url_field( $key, $value ) {
+        $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
             $value,
-            $_POST['woocommerce_integration-retailcrm_api_key']
+            $post[$this->plugin_id . $this->id . '_api_key']
         );
 
         $response = $api->apiVersions();
 
         if ($response == NULL) {
             WC_Admin_Settings::add_error( esc_html__( '"Введите корректный адрес CRM"', 'woocommerce-integration-retailcrm' ) );
-        } else {
-            return $value;
+            $value = '';
         }
+
+        return $value;
+    }
+    
+    public function validate_api_key_field( $key, $value ) {
+        $post = $this->get_post_data();
+        $api = new WC_Retailcrm_Proxy(
+            $post[$this->plugin_id . $this->id . '_api_url'],
+            $value
+        );
+
+        $response = $api->apiVersions();
+
+        if (!is_object($response)) {
+            $value = '';
+        }
+
+        if (!$response->isSuccessful()) {
+            WC_Admin_Settings::add_error( esc_html__( '"Введитe правильный API ключ"', 'woocommerce-integration-retailcrm' ) );
+            $value = '';
+        }
+
+        return $value;
     }
 }
 
