@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 1.2.3
+ * Version: 2.0.0
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
@@ -32,6 +32,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function init() {
             if ( class_exists( 'WC_Integration' ) ) {
                 include_once 'include/class-wc-retailcrm-base.php';
+                include_once 'include/functions.php';
                 add_filter( 'woocommerce_integrations', array( $this, 'add_integration' ) );
             } else {
                 // throw an admin error if you like
@@ -366,6 +367,24 @@ function ajax_upload() {
     <?php
 }
 
+function ajax_generate_icml() {
+    $ajax_url = admin_url('admin-ajax.php');
+    ?>
+    <script type="text/javascript" >
+    jQuery('#icml-retailcrm').bind('click', function() {
+        jQuery.ajax({
+            type: "POST",
+            url: '<?php echo $ajax_url; ?>?action=generate_icml',
+            success: function (response) {
+                alert('Каталог товаров сформирован');
+                console.log('AJAX response : ',response);
+            }
+        });
+    });
+    </script>
+    <?php
+}
+
 function update_order($order_id) {
     if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
         include_once( check_custom_orders() );
@@ -389,7 +408,9 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     add_action( 'init', 'register_icml_generation');
     add_action( 'init', 'register_retailcrm_history');
     add_action( 'wp_ajax_do_upload', 'upload_to_crm' );
+    add_action( 'wp_ajax_generate_icml', 'generate_icml' );
     add_action('admin_print_footer_scripts', 'ajax_upload', 99);
+    add_action('admin_print_footer_scripts', 'ajax_generate_icml', 99);
     add_action( 'woocommerce_created_customer', 'create_customer', 10, 1 );
     add_action( 'woocommerce_checkout_update_user_meta', 10, 2 );
 

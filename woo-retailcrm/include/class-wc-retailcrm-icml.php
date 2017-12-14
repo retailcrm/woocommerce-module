@@ -240,6 +240,10 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     array_walk($offer['params'], array($this, 'setOffersParams'), $e);
                 }
 
+                if ($offer['dimension']) {
+                    $e->addChild('dimension', $offer['dimension']);
+                }
+
                 unset($offers[$key]);
             }
         }
@@ -316,6 +320,14 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 $status_args = array('publish');
             }
 
+            $attribute_taxonomies = wc_get_attribute_taxonomies();
+            $product_attributes = array();
+
+            foreach ($attribute_taxonomies as $product_attribute) {
+                $attribute_id = wc_attribute_taxonomy_name_by_id($product_attribute->attribute_id);
+                $product_attributes[$attribute_id] = $product_attribute->attribute_label;
+            }
+
             $full_product_list = array();
             $offset = 0;
             $limit = 100;
@@ -373,25 +385,16 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
 
                         $attributes = (isset($attributes[0])) ? $attributes[0] : $attributes;
 
-                        $params = array();
-
-                        $weight = $product->get_weight();
-
-                        if (!empty($weight)) {
-                            $params[] = array('code' => 'weight', 'name' => 'Weight', 'value' => $weight);
-                        }
-
                         $attrName = '';
+                        $params = array();
 
                         if (!empty($attributes)) {
                             foreach ($attributes as $attribute_name => $attribute) {
-                                $id_product = $product->get_id();
-                                $arrAttributeValue = get_post_meta($id_product, 'attribute_'.$attribute_name);
-                                $attributeValue = end($arrAttributeValue);
-                                if ($attribute['is_visible'] == 1 && !empty($attribute['value'])) {
+                                $attributeValue = $product->get_attribute($attribute_name);
+                                if ($attribute['is_visible'] == 1 && !empty($attributeValue)) {
                                     $params[] = array(
-                                        'code' => $attribute_name, 
-                                        'name' => $attribute['name'], 
+                                        'code' => $attribute_name,
+                                        'name' => $product_attributes[$attribute_name],
                                         'value' => $attributeValue
                                     );
                                     $attrName .= (!empty($attributeValue)) ? ' - ' . $attributeValue : '';
@@ -399,25 +402,44 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                             }
                         }
 
-                        if ($product->get_sku() != '') {
-                            $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
-                        }
-
                         $name = ($post->post_title == $product->get_title()) ?
                             $post->post_title . $attrName :
                             $post->post_title;
 
+                        if ($product->get_weight() != '') {
+                            $params[] = array('code' => 'weight', 'name' => 'Вес', 'value' => $product->get_weight());
+                        }
+
+                        if ($product->get_sku() != '') {
+                            $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
+                        }
+
+                        $dimension = '';
+
+                        if ($product->get_length() != '') {
+                            $dimension = $product->get_length();
+                        }
+
+                        if ($product->get_width() != '') {
+                            $dimension .= '/' . $product->get_width();
+                        }
+
+                        if ($product->get_height() != '') {
+                            $dimension .= '/' . $product->get_height();
+                        }
+
                         $product_data = array(
-                        'id' => $product->get_id(), 
-                        'productId' => ($this->get_parent_product($product) > 0) ? $parent->get_id() : $product->get_id(),
-                        'name' => $name,
-                        'productName' => ($this->get_parent_product($product) > 0) ? $parent->get_title() : $product->get_title(),
-                        'price' => $this->get_price_with_tax($product),
-                        'picture' => $image[0],
-                        'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
-                        'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
-                        'categoryId' => $term_list
-                    );
+                            'id' => $product->get_id(), 
+                            'productId' => ($this->get_parent_product($product) > 0) ? $parent->get_id() : $product->get_id(),
+                            'name' => $name,
+                            'productName' => ($this->get_parent_product($product) > 0) ? $parent->get_title() : $product->get_title(),
+                            'price' => $this->get_price_with_tax($product),
+                            'picture' => $image[0],
+                            'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
+                            'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
+                            'categoryId' => $term_list,
+                            'dimension' => $dimension
+                        );
 
                         if (!empty($params)) {
                             $product_data['params'] = $params;

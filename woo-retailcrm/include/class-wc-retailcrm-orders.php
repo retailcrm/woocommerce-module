@@ -289,7 +289,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $order_data['externalId'] = $order_data_info['id'];
             $order_data['number'] = $order->get_order_number();
-            $order_data['createdAt'] = $order_data_info['date'];
+            $order_data['createdAt'] = trim($order_data_info['date']);
             $order_data['customerComment'] = $order_data_info['customer_comment'];
 
             if ( $order_data_info['discount_total'] ) {
@@ -309,7 +309,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if ($order->get_items( 'shipping' )) {
                 $shipping = end($order->get_items( 'shipping' ));
                 $shipping_code = explode(':', $shipping['method_id']);
-                $shipping_method = $shipping_code[0];
+
+                if (isset($this->retailcrm_settings[$shipping])) {
+                    $shipping_method = $shipping;
+                } else {
+                    $shipping_method = $shipping_code[0];
+                }
+
                 $shipping_cost = $shipping['cost'];
 
                 if (!empty($shipping_method) && !empty($this->retailcrm_settings[$shipping_method])) {
@@ -418,7 +424,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
                 if ($order->get_date_paid()) {
                     $pay_date = $order->get_date_paid();
-                    $payment['paidAt'] = $pay_date->date('Y-m-d H:i:s');
+                    $payment['paidAt'] = trim($pay_date->date('Y-m-d H:i:s'));
                 }
 
                 $order_data['payments'][] = $payment;
@@ -448,7 +454,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             if ($order->get_date_paid()) {
                 $pay_date = $order->get_date_paid();
-                $payment['paidAt'] = $pay_date->date('Y-m-d H:i:s');
+                $payment['paidAt'] = trim($pay_date->date('Y-m-d H:i:s'));
             }
 
             $this->retailcrm->ordersPaymentCreate($payment);
