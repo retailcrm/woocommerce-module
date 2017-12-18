@@ -240,8 +240,12 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     array_walk($offer['params'], array($this, 'setOffersParams'), $e);
                 }
 
-                if ($offer['dimension']) {
+                if (array_key_exists('dimension', $offer)) {
                     $e->addChild('dimension', $offer['dimension']);
+                }
+
+                if (array_key_exists('weight', $offer)) {
+                    $e->addChild('weight', $offer['weight']);
                 }
 
                 unset($offers[$key]);
@@ -365,7 +369,9 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                         }
                     }
 
-                    if ($product->get_type() == 'variable') continue;
+                    if ($product->get_type() == 'variable') { 
+                        continue;
+                    }
 
                     if ($product->get_type() == 'simple' || $parent && $parent->get_type() == 'variable') {
                         if ($this->get_parent_product($product) > 0) {
@@ -406,10 +412,6 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                             $post->post_title . $attrName :
                             $post->post_title;
 
-                        if ($product->get_weight() != '') {
-                            $params[] = array('code' => 'weight', 'name' => 'Вес', 'value' => $product->get_weight());
-                        }
-
                         if ($product->get_sku() != '') {
                             $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
                         }
@@ -417,15 +419,21 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                         $dimension = '';
 
                         if ($product->get_length() != '') {
-                            $dimension = $product->get_length();
+                            $dimension = wc_get_dimension($product->get_length(), 'cm');
                         }
 
                         if ($product->get_width() != '') {
-                            $dimension .= '/' . $product->get_width();
+                            $dimension .= '/' . wc_get_dimension($product->get_width(), 'cm');
                         }
 
                         if ($product->get_height() != '') {
-                            $dimension .= '/' . $product->get_height();
+                            $dimension .= '/' . wc_get_dimension($product->get_height(), 'cm');
+                        }
+
+                        $weight = '';
+
+                        if ($product->get_weight() != '') {
+                            $weight = wc_get_weight($product->get_weight(), 'kg');
                         }
 
                         $product_data = array(
@@ -438,7 +446,8 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                             'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
                             'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
                             'categoryId' => $term_list,
-                            'dimension' => $dimension
+                            'dimension' => $dimension,
+                            'weight' => $weight
                         );
 
                         if (!empty($params)) {
@@ -501,6 +510,15 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             return $categories;
         }
 
+        /**
+         * Get product id
+         * 
+         * @global object $woocommerce
+         * 
+         * @param object $product
+         * 
+         * @return int
+         */
         private function get_parent_product($product) {
             global $woocommerce;
             if ( version_compare( $woocommerce->version, '3.0', '<' ) ) {
@@ -510,6 +528,15 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             }
         }
 
+        /**
+         * Get product price
+         * 
+         * @global object $woocommerce
+         * 
+         * @param object $product
+         * 
+         * @return float
+         */
         private function get_price_with_tax($product) {
             global $woocommerce;
             if ( version_compare( $woocommerce->version, '3.0', '<' ) ) {
@@ -519,6 +546,11 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             }
         }
 
+        /**
+         * Get product statuses
+         * 
+         * @return array
+         */
         private function checkPostStatuses() {
             $options = get_option( 'woocommerce_integration-retailcrm_settings' );
             $status_args = array();
