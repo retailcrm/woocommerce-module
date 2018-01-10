@@ -28,7 +28,12 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
                 $this->retailcrm_settings['api_version']
             );
         }
-        
+
+        /**
+         * Upload customers to CRM
+         * 
+         * @return void
+         */
         public function customersUpload()
         {
             $users = get_users();
@@ -69,6 +74,13 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             }
         }
 
+        /**
+         * Create customer in CRM
+         * 
+         * @param int $customer_id
+         * 
+         * @return void
+         */
         public function createCustomer($customer_id)
         {
             $customer = new WC_Customer($customer_id);
@@ -81,6 +93,13 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             }
         }
 
+        /**
+         * Edit customer in CRM
+         * 
+         * @param int $customer_id
+         * 
+         * @return void
+         */
         public function updateCustomer($customer_id)
         {
             $customer = new WC_Customer($customer_id);
@@ -93,12 +112,19 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             }
         }
 
+        /**
+         * Process customer
+         * 
+         * @param object $customer
+         * 
+         * @return array $data_customer
+         */
         protected function processCustomer($customer)
         {
             $createdAt = $customer->get_date_created();
             $firstName = $customer->get_first_name();
             $data_customer = array(
-                'createdAt' => $createdAt->date('Y-m-d H:i:s '),
+                'createdAt' => $createdAt->date('Y-m-d H:i:s'),
                 'externalId' => $customer_id,
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),

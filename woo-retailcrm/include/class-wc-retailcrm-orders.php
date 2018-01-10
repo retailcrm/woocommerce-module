@@ -14,6 +14,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
      */
     class WC_Retailcrm_Orders
     {
+        protected $retailcrm_settings;
+        protected $retailcrm;
+
         public function __construct()
         {
             $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
@@ -275,7 +278,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          *
          * @param int $order_id
          *
-         * @return arr
+         * @return array $order_data
          */
         public function processOrder($order_id)
         {
@@ -291,16 +294,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $order_data['number'] = $order->get_order_number();
             $order_data['createdAt'] = trim($order_data_info['date']);
             $order_data['customerComment'] = $order_data_info['customer_comment'];
-
-            if ( $order_data_info['discount_total'] ) {
-                $discount = $order_data_info['discount_total'] + $order_data_info['discount_tax'];
-
-                if ($this->retailcrm_settings['api_version'] == 'v5') {
-                    if ($discount > 0) $order_data['discountManualAmount'] = $discount;
-                } else {
-                    if ($discount > 0) $order_data['discount'] = $discount;
-                }
-            }
 
             if ( !empty( $order_data_info['payment_method'] ) && !empty($this->retailcrm_settings[$order_data_info['payment_method']]) && $this->retailcrm_settings['api_version'] != 'v5') {
                 $order_data['paymentType'] = $this->retailcrm_settings[$order_data_info['payment_method']];
@@ -376,26 +369,25 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             foreach ($order->get_items() as $item) {
                 $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
                 $_product = wc_get_product($uid);
+                $price = wc_get_price_including_tax($_product);
 
                 if ($_product) {
                     $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
                     $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
                     $price_item = $product_price + $product_tax;
+                    $discount_price = $price - $price_item;
 
-                    if ($this->retailcrm_settings['api_version'] != 'v3') {
-                        $order_item = array(
-                            'offer' => array('externalId' => $uid),
-                            'productName' => $item['name'],
-                            'initialPrice' => (float)$price_item,
-                            'quantity' => $item['qty'],
-                        );
-                    } else {
-                        $order_item = array(
-                            'productId' => $uid,
-                            'productName' => $item['name'],
-                            'initialPrice' => (float)$price_item,
-                            'quantity' => $item['qty'],
-                        );
+                    $order_item = array(
+                        'offer' => array('externalId' => $uid),
+                        'productName' => $item['name'],
+                        'initialPrice' => (float)$price,
+                        'quantity' => $item['qty'],
+                    );
+
+                    if ($this->retailcrm_settings['api_version'] == 'v5') {
+                        $order_item['discountManualAmount'] = $discount_price;
+                    } elseif ($this->retailcrm_settings['api_version'] == 'v4') {
+                        $order_item['discount'] = $discount_price;
                     }
                 }
 
