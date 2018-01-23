@@ -311,8 +311,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
     public function validate_api_version_field( $key, $value ) {
         $post = $this->get_post_data();
+
         $versionMap = array(
-            'v3' => '3.0',
             'v4' => '4.0',
             'v5' => '5.0'
         );
