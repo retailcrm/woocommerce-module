@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 2.0.2
+ * Version: 2.0.3
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
@@ -413,13 +413,5 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     add_action('admin_print_footer_scripts', 'ajax_generate_icml', 99);
     add_action( 'woocommerce_created_customer', 'create_customer', 10, 1 );
     add_action( 'woocommerce_checkout_update_user_meta', 10, 2 );
-
-    if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-        add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-        add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
-        add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
-        add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
-    } else {
-        add_action('woocommerce_update_order', 'update_order', 11, 1);
-    }
+    add_action('woocommerce_update_order', 'update_order', 11, 1);
 }

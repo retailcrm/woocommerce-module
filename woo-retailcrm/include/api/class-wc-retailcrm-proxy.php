@@ -21,10 +21,6 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
         {   
             $this->logger = new WC_Logger();
 
-            if ( ! class_exists( 'WC_Retailcrm_Client_V3' ) ) {
-                include_once( __DIR__ . '/class-wc-retailcrm-client-v3.php' );
-            }
-
             if ( ! class_exists( 'WC_Retailcrm_Client_V4' ) ) {
                 include_once( __DIR__ . '/class-wc-retailcrm-client-v4.php' );
             }
@@ -34,9 +30,6 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
             }
 
             switch ($api_vers) {
-                case 'v3':
-                    $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
-                    break;
                 case 'v4':
                     $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key, $api_vers);
                     break;
@@ -44,7 +37,7 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                     $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key, $api_vers);
                     break;
                 case null:
-                    $this->retailcrm = new WC_Retailcrm_Client_V3($api_url, $api_key, $api_vers);
+                    $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key, $api_vers);
                     break;
             }
         }

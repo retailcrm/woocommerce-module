@@ -277,10 +277,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * process to combine order data
          *
          * @param int $order_id
-         *
+         * @param boolean $update
+         * 
          * @return array $order_data
          */
-        public function processOrder($order_id)
+        public function processOrder($order_id, $update = false)
         {
             if ( !$order_id ){
                 return;
@@ -303,8 +304,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $shipping = end($order->get_items( 'shipping' ));
                 $shipping_code = explode(':', $shipping['method_id']);
 
-                if (isset($this->retailcrm_settings[$shipping])) {
-                    $shipping_method = $shipping;
+                if (isset($this->retailcrm_settings[$shipping['method_id']])) {
+                    $shipping_method = $shipping['method_id'];
                 } else {
                     $shipping_method = $shipping_code[0];
                 }
@@ -369,7 +370,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             foreach ($order->get_items() as $item) {
                 $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
                 $_product = wc_get_product($uid);
-                $price = wc_get_price_including_tax($_product);
+                $price = round($item['line_subtotal'] + $item['line_subtotal_tax'], 2);
 
                 if ($_product) {
                     $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
@@ -384,10 +385,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                         'quantity' => $item['qty'],
                     );
 
-                    if ($this->retailcrm_settings['api_version'] == 'v5') {
-                        $order_item['discountManualAmount'] = $discount_price;
-                    } elseif ($this->retailcrm_settings['api_version'] == 'v4') {
-                        $order_item['discount'] = $discount_price;
+                    if ($this->retailcrm_settings['api_version'] == 'v5' && round($discount_price, 2)) {
+                        $order_item['discountManualAmount'] = round($discount_price, 2);
+                    } elseif ($this->retailcrm_settings['api_version'] == 'v4' && round($discount_price, 2)) {
+                        $order_item['discount'] = round($discount_price, 2);
                     }
                 }
 
@@ -419,12 +420,24 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     $payment['paidAt'] = trim($pay_date->date('Y-m-d H:i:s'));
                 }
 
-                $order_data['payments'][] = $payment;
+                if (!$update) {
+                    $order_data['payments'][] = $payment;
+                } else {
+                    $this->editPayment($payment);
+                }
             }
 
             return $order_data;
         }
 
+        /**
+         * Create payment in CRM
+         * 
+         * @param WC_Order $order
+         * @param int $order_id
+         * 
+         * @return void
+         */
         protected function createPayment($order, $order_id)
         {
             $payment = array(
@@ -452,16 +465,35 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $this->retailcrm->ordersPaymentCreate($payment);
         }
 
+        /**
+         * Edit payment in CRM
+         * 
+         * @param array $payment
+         * 
+         * @return void
+         */
+        protected function editPayment($payment)
+        {
+            $this->retailcrm->ordersPaymentEdit($payment);
+        }
+
+        /**
+         * Edit order in CRM
+         * 
+         * @param int $order_id
+         * 
+         * @return void
+         */
         public function updateOrder($order_id)
         {
-            $order = $this->processOrder($order_id);
+            $order = $this->processOrder($order_id, true);
 
             $response = $this->retailcrm->ordersEdit($order);
 
-            $order = new WC_Order($order_id);
+            $orderWc = new WC_Order($order_id);
 
             if ($response->isSuccessful()) {
-                $this->orderUpdatePaymentType($order_id, $order->payment_method);
+                $this->orderUpdatePaymentType($order_id, $orderWc->payment_method);
             }
         }
     }
