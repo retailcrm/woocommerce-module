@@ -40,7 +40,9 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             $data_customers = array();
 
             foreach ($users as $user) {
-                if ($user->roles[0] != 'customer') continue;
+                if (!in_array('customer', $user->roles)) {
+                    continue;
+                }
 
                 $customer = new WC_Customer($user->ID);
                 $firstName = $customer->get_first_name();
@@ -50,11 +52,6 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
                     'firstName' => $firstName ? $firstName : $customer->get_username(),
                     'lastName' => $customer->get_last_name(),
                     'email' => $user->data->user_email,
-                    'phones' => array(
-                        array(
-                            'number' => $customer->get_billing_phone()
-                        )
-                    ),
                     'address' => array(
                         'index' => $customer->get_billing_postcode(),
                         'countryIso' => $customer->get_billing_country(),
@@ -63,6 +60,12 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
                         'text' => $customer->get_billing_address_1() . ',' . $customer->get_billing_address_2()
                     )
                 );
+
+                if ($customer->get_billing_phone()) {
+                    $data_customer['phones'][] = array(
+                        'number' => $customer->get_billing_phone()
+                    );
+                }
 
                 $data_customers[] = $data_customer;
             }
@@ -86,7 +89,6 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             $customer = new WC_Customer($customer_id);
 
             if ($customer->get_role() == 'customer'){
-
                 $data_customer = $this->processCustomer($customer);
 
                 $this->retailcrm->customersCreate($data_customer);
@@ -105,7 +107,6 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             $customer = new WC_Customer($customer_id);
 
             if ($customer->get_role() == 'customer'){
-
                 $data_customer = $this->processCustomer($customer);
 
                 $this->retailcrm->customersEdit($data_customer);
@@ -125,15 +126,10 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
             $firstName = $customer->get_first_name();
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
-                'externalId' => $customer_id,
+                'externalId' => $customer->get_id(),
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),
                 'email' => $customer->get_email(),
-                'phones' => array(
-                    array(
-                        'number' => $customer->get_billing_phone()
-                    )
-                ),
                 'address' => array(
                     'index' => $customer->get_billing_postcode(),
                     'countryIso' => $customer->get_billing_country(),
@@ -142,6 +138,12 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
                     'text' => $customer->get_billing_address_1() . ',' . $customer->get_billing_address_2()
                 )
             );
+
+            if ($customer->get_billing_phone()) {
+                $data_customer['phones'][] = array(
+                   'number' => $customer->get_billing_phone()
+                );
+            }
 
             return $data_customer;
         }
