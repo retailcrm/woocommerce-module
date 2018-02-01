@@ -48,7 +48,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             foreach ($orders as $data_order) {
                 $order_data = $this->processOrder($data_order->ID);
 
-                $order = new WC_Order($order_id);
+                $order = new WC_Order($data_order->ID);
                 $customer = $order->get_user();
 
                 if ($customer != false) {
@@ -89,13 +89,12 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     );
 
                     $this->retailcrm->customersCreate($customer_data);
-
                 } else {
                     $order_data['customer']['externalId'] = $search['customer']['externalId'];
                 }
             }
 
-            $res = $this->retailcrm->ordersCreate($order_data);
+            $this->retailcrm->ordersCreate($order_data);
         }
 
         /**
@@ -106,7 +105,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         public function orderUpdateShippingAddress($order_id, $address) {
             $address['externalId'] = $order_id;
 
-            $response = $this->retailcrm->ordersEdit($address);
+            $this->retailcrm->ordersEdit($address);
         }
 
         /**
@@ -122,7 +121,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 'status' => $this->retailcrm_settings[$order->get_status()]
             );
 
-            $response = $this->retailcrm->ordersEdit($order_data);
+            $this->retailcrm->ordersEdit($order_data);
         }
 
         /**
@@ -238,7 +237,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $order_data['delivery']['cost'] = $shipping_cost;
             }
 
-            $response = $this->retailcrm->ordersEdit($order_data);
+            $this->retailcrm->ordersEdit($order_data);
         }
 
         /**
@@ -369,27 +368,24 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             foreach ($order->get_items() as $item) {
                 $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
-                $_product = wc_get_product($uid);
                 $price = round($item['line_subtotal'] + $item['line_subtotal_tax'], 2);
 
-                if ($_product) {
-                    $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
-                    $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
-                    $price_item = $product_price + $product_tax;
-                    $discount_price = $price - $price_item;
+                $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+                $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
+                $price_item = $product_price + $product_tax;
+                $discount_price = $price - $price_item;
 
-                    $order_item = array(
-                        'offer' => array('externalId' => $uid),
-                        'productName' => $item['name'],
-                        'initialPrice' => (float)$price,
-                        'quantity' => $item['qty'],
-                    );
+                $order_item = array(
+                    'offer' => array('externalId' => $uid),
+                    'productName' => $item['name'],
+                    'initialPrice' => (float)$price,
+                    'quantity' => $item['qty'],
+                );
 
-                    if ($this->retailcrm_settings['api_version'] == 'v5' && round($discount_price, 2)) {
-                        $order_item['discountManualAmount'] = round($discount_price, 2);
-                    } elseif ($this->retailcrm_settings['api_version'] == 'v4' && round($discount_price, 2)) {
-                        $order_item['discount'] = round($discount_price, 2);
-                    }
+                if ($this->retailcrm_settings['api_version'] == 'v5' && round($discount_price, 2)) {
+                    $order_item['discountManualAmount'] = round($discount_price, 2);
+                } elseif ($this->retailcrm_settings['api_version'] == 'v4' && round($discount_price, 2)) {
+                    $order_item['discount'] = round($discount_price, 2);
                 }
 
                 $order_items[] = $order_item;
