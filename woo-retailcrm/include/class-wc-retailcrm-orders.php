@@ -368,7 +368,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             foreach ($order->get_items() as $item) {
                 $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
-                $price = round($item['line_subtotal'] + $item['line_subtotal_tax'], 2);
+                $price = round(($item['line_subtotal'] / $item->get_quantity()) + ($item['line_subtotal_tax'] / $item->get_quantity()), 2);
 
                 $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
                 $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
