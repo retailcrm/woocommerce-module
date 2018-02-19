@@ -128,8 +128,14 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * Update order payment type
          *
          * @param $order_id
+         * 
+         * @return null
          */
         public function orderUpdatePaymentType($order_id, $payment_method) {
+
+            if (!isset($this->retailcrm_settings[$payment_method])) {
+                return;
+            }
 
             if ($this->retailcrm_settings['api_version'] != 'v5') {
                 $order_data = array(
@@ -141,7 +147,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             } else {
                 $response = $this->retailcrm->ordersGet($order_id);
 
-                if ($response->isSuccessful()) $order = $response['order'];
+                if ($response->isSuccessful()) {
+                    $order = $response['order'];
+                }
 
                 foreach ($order['payments'] as $payment_data) {
                     if ($payment_data['externalId'] == $order_id) {
@@ -300,7 +308,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if ($order->get_items( 'shipping' )) {
-                $shipping = end($order->get_items( 'shipping' ));
+                $shippings = $order->get_items( 'shipping' );
+                $shipping = end($shippings);
                 $shipping_code = explode(':', $shipping['method_id']);
 
                 if (isset($this->retailcrm_settings[$shipping['method_id']])) {
@@ -489,7 +498,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $orderWc = new WC_Order($order_id);
 
             if ($response->isSuccessful()) {
-                $this->orderUpdatePaymentType($order_id, $orderWc->payment_method);
+                $this->orderUpdatePaymentType($order_id, $orderWc->get_payment_method());
             }
         }
     }

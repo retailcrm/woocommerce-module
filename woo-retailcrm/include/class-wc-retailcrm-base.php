@@ -103,12 +103,47 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
         if ($this->get_option( 'api_url' ) != '' && $this->get_option( 'api_key' ) != '') {
             if (isset($_GET['page']) && $_GET['page'] == 'wc-settings' && isset($_GET['tab']) && $_GET['tab'] == 'integration') {
+                add_action('admin_print_footer_scripts', array($this, 'show_blocks'), 99);
+
                 $retailcrm = new WC_Retailcrm_Proxy(
                     $this->get_option( 'api_url' ),
                     $this->get_option( 'api_key' ),
                     $this->get_option( 'api_version')
                 );
 
+                /**
+                 * Order methods options
+                 */
+                $order_methods_option = array();
+                $order_methods_list = $retailcrm->orderMethodsList();
+
+                if ($order_methods_list->isSuccessful()) {
+                    foreach ($order_methods_list['orderMethods'] as $order_method) {
+                        if ($order_method['active'] == false) {
+                            continue;
+                        }
+
+                        $order_methods_option[$order_method['code']] = $order_method['name'];
+                    }
+
+                    $this->form_fields[] = array(
+                        'title' => __( 'Способы оформления заказа', 'woocommerce' ),
+                        'type' => 'heading',
+                        'description' => '',
+                        'id' => 'order_methods_options'
+                    );
+
+                    $this->form_fields['order_methods'] = array(
+                        'label'       => __( ' ', 'textdomain' ),
+                        'title'       => 'Способы оформления заказа, доступные для выгрузки из RetailCRM',
+                        'class'       => '',
+                        'type'        => 'multiselect',
+                        'description' => 'Выберите способы оформления для заказов, которые будут выгружаться из RetailCRM на сайт',
+                        'options'     => $order_methods_option,
+                        'select_buttons' => true
+                    );
+                }
+                
                 /**
                  * Shipping options
                  */
@@ -124,7 +159,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
                     $this->form_fields[] = array(
                         'title' => __( 'Способы доставки', 'woocommerce' ),
-                        'type' => 'title',
+                        'type' => 'heading',
                         'description' => '',
                         'id' => 'shipping_options'
                     );
@@ -159,7 +194,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
                     $this->form_fields[] = array(
                         'title' => __( 'Способы оплаты', 'woocommerce' ),
-                        'type' => 'title',
+                        'type' => 'heading',
                         'description' => '',
                         'id' => 'payment_options'
                     );
@@ -196,7 +231,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
                     $this->form_fields[] = array(
                         'title'       => __( 'Статусы', 'woocommerce' ),
-                        'type'        => 'title',
+                        'type'        => 'heading',
                         'description' => '',
                         'id'          => 'statuses_options'
                     );
@@ -219,7 +254,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                  */
                 $this->form_fields[] = array(
                     'title'       => __( 'Настройки выгрузки остатков', 'woocommerce' ),
-                    'type'        => 'title',
+                    'type'        => 'heading',
                     'description' => '',
                     'id'          => 'invent_options'
                 );
@@ -240,7 +275,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                 if (!isset($options['uploads'])) {
                     $this->form_fields[] = array(
                         'title'       => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
-                        'type'        => 'title',
+                        'type'        => 'heading',
                         'description' => '',
                         'id'          => 'upload_options'
                     );
@@ -277,6 +312,14 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         }
     }
 
+    /**
+     * Generate html button
+     * 
+     * @param string $key
+     * @param array $data
+     * 
+     * @return string
+     */
     public function generate_button_html( $key, $data ) {
         $field    = $this->plugin_id . $this->id . '_' . $key;
         $defaults = array(
@@ -309,6 +352,44 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         return ob_get_clean();
     }
 
+    /**
+     * Generate html title block settings
+     * 
+     * @param string $key
+     * @param array $data
+     * 
+     * @return string
+     */
+    public function generate_heading_html($key, $data) {
+        $field_key = $this->get_field_key( $key );
+        $defaults  = array(
+            'title' => '',
+            'class' => '',
+        );
+
+        $data = wp_parse_args( $data, $defaults );
+
+        ob_start();
+        ?>
+            </table>
+            <h2 class="wc-settings-sub-title retailcrm_hidden <?php echo esc_attr( $data['class'] ); ?>" id="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <span style="opacity:0.5;float: right;">&#11015;</span></h2>
+            <?php if ( ! empty( $data['description'] ) ) : ?>
+                <p><?php echo wp_kses_post( $data['description'] ); ?></p>
+            <?php endif; ?>
+            <table class="form-table" style="display: none;">
+        <?php
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Validate API version
+     * 
+     * @param string $key
+     * @param string $value
+     * 
+     * @return string
+     */
     public function validate_api_version_field( $key, $value ) {
         $post = $this->get_post_data();
 
@@ -334,6 +415,14 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         }
     }
 
+    /**
+     * Validate API url
+     * 
+     * @param string $key
+     * @param string $value
+     * 
+     * @return string
+     */
     public function validate_api_url_field( $key, $value ) {
         $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
@@ -350,7 +439,15 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
         return $value;
     }
-    
+
+    /**
+     * Validate API key
+     * 
+     * @param string $key
+     * @param string $value
+     * 
+     * @return string
+     */
     public function validate_api_key_field( $key, $value ) {
         $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
@@ -370,6 +467,30 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         }
 
         return $value;
+    }
+
+    /**
+     * Scritp show|hide block settings
+     */
+    function show_blocks() {
+        ?>
+        <script type="text/javascript">
+            jQuery('h2.retailcrm_hidden').hover().css({
+                'cursor':'pointer',
+                'width':'300px'
+            });
+            jQuery('h2.retailcrm_hidden').toggle(
+                function() {
+                    jQuery(this).next('table.form-table').show(100);
+                    jQuery(this).find('span').html('&#11014;');
+                },
+                function() {
+                    jQuery(this).next('table.form-table').hide(100);
+                    jQuery(this).find('span').html('&#11015;');
+                }
+            );
+        </script>
+        <?php
     }
 }
 
