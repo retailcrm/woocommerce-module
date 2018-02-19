@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 2.0.5
+ * Version: 2.0.6
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM

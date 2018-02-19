@@ -304,7 +304,10 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     $haystack[$key] = self::filterRecursive($haystack[$key]);
                 }
 
-                if (is_null($haystack[$key]) || $haystack[$key] === '' || count($haystack[$key]) == 0) {
+                if (is_null($haystack[$key])
+                    || $haystack[$key] === ''
+                    || (is_array($haystack[$key]) && count($haystack[$key]) == 0)
+                ) {
                     unset($haystack[$key]);
                 } elseif (!is_array($value)) {
                     $haystack[$key] = trim($value);
@@ -317,7 +320,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
         /**
          * Get WC products
          *
-         * @return array
+         * @return void
          */
         private function get_wc_products_taxonomies($status_args) {
             if (!$status_args) {
@@ -348,28 +351,19 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
 
                 while ($loop->have_posts()) : $loop->the_post();
                     $theid = get_the_ID();
+                    $post = get_post($theid);
 
-                    if ( version_compare( get_option( 'woocommerce_db_version' ), '3.0', '<' ) ) {
-                        $product = new WC_Product($theid);
-                        $parent = new WC_Product($product->get_parent());
-                    } 
-                    else {
-                        $post = get_post($theid);
-
-                        if (get_post_type($theid) == 'product') {
+                    if (get_post_type($theid) == 'product') {
+                        $product = wc_get_product($theid);
+                        $parent = false;
+                    } elseif (get_post_type($theid) == 'product_variation') {
+                        if (get_post($post->post_parent)) {
                             $product = wc_get_product($theid);
-                            $parent = false;
+                            $parent = wc_get_product($product->get_parent_id());
                         } 
-                        elseif (get_post_type($theid) == 'product_variation') {
-
-                            if (get_post($post->post_parent)) {
-                                $product = wc_get_product($theid);
-                                $parent = wc_get_product($product->get_parent_id());
-                            } 
-                        }
                     }
 
-                    if ($product->get_type() == 'variable') { 
+                    if ($product->get_type() == 'variable') {
                         continue;
                     }
 
@@ -457,7 +451,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                         if (isset($product_data)) {
                             $full_product_list[] = $product_data;
                         }
-                        
+
                         unset($product_data);
                     }
                 endwhile;

@@ -17,10 +17,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected $startDateOrders;
         protected $startDateCustomers;
         protected $startDate;
+        protected $retailcrm_settings;
+        protected $order_methods = array();
 
+        /**
+         * Constructor WC_Retailcrm_History
+         */
         public function __construct()
         {
             $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
+
+            if (isset($this->retailcrm_settings['order_methods'])) {
+                $this->order_methods = $this->retailcrm_settings['order_methods'];
+                unset($this->retailcrm_settings['order_methods']);
+            }
 
             if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
                 include_once( WP_PLUGIN_DIR . '/woo-retailcrm/include/api/class-wc-retailcrm-proxy.php' );
@@ -37,78 +47,103 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $this->startDateCustomers = $this->startDate;
         }
 
+        /**
+         * Get history method
+         * 
+         * @return void
+         */
         public function getHistory()
         {
-            if (isset($this->retailcrm_settings['history_orders'])) {
+            $orders_since_id = get_option('retailcrm_orders_history_since_id');
+            $customers_since_id = get_option('retailcrm_customers_history_since_id');
+
+            if (!$orders_since_id && isset($this->retailcrm_settings['history_orders'])) {
                 $this->startDateOrders = new DateTime($this->retailcrm_settings['history_orders']);
             }
 
-            if (isset($this->retailcrm_settings['history_customers'])) {
+            if (!$customers_since_id && isset($this->retailcrm_settings['history_customers'])) {
                 $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_orders']);
             }
 
-            $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'));
-            
-            $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'));
+            $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
+            $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
         }
 
-        protected function customersHistory($date)
+        /**
+         * History customers
+         * 
+         * @param string $date
+         * @param int $since_id
+         * 
+         * @return null
+         */
+        protected function customersHistory($date, $since_id)
         {
-            $response = $this->retailcrm->customersHistory(array('startDate' => $date));
+            if ($since_id) {
+                $response = $this->retailcrm->customersHistory(array('sinceId' => $since_id)); 
+            } else {
+                $response = $this->retailcrm->customersHistory(array('startDate' => $date)); 
+            }
 
             if ($response->isSuccessful()) {
-                $generatedAt = $response->generatedAt;
+                if (empty($response['history'])) {
+                    return;
+                }
 
-                foreach ($response['history'] as $record) {
+                $history = $response['history'];
+                $end_change = end($history);
+                $new_since_id = $end_change['id'];
+
+                foreach ($history as $record) {
                     if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
                         continue;
                     }
 
                     $this->removeFuncsHook();
 
-                    if ($record['field'] == 'first_name' && $record['customer']['externalId']) {
+                    if ($record['field'] == 'first_name' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'first_name', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'last_name' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'last_name' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'last_name', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'email' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'email' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'billing_email', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'phones' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'phones' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'billing_phone', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'address.region' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'address.region' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'billing_state', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'address.index' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'address.index' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'billing_postcode', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'address.country' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'address.country' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'billing_country', $record['newValue']);
                         }
                     }
 
-                    elseif ($record['field'] == 'address.city' && $record['customer']['externalId']) {
+                    elseif ($record['field'] == 'address.city' && isset($record['customer']['externalId'])) {
                         if ($record['newValue']){
                             update_user_meta($record['customer']['externalId'], 'billing_city', $record['newValue']);
                         }
@@ -122,20 +157,37 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return;
             }
 
-            $this->retailcrm_settings['history_customers'] = $generatedAt;
-            update_option('woocommerce_integration-retailcrm_settings', $this->retailcrm_settings);
+            update_option('retailcrm_customers_history_since_id', $new_since_id);
         }
 
-        protected function ordersHistory($date)
+        /**
+         * History orders
+         * 
+         * @param string $date
+         * @param int $since_id
+         * 
+         * @return null
+         */
+        protected function ordersHistory($date, $since_id)
         {
             $options = array_flip(array_filter($this->retailcrm_settings));
 
-            $response = $this->retailcrm->ordersHistory(array('startDate' => $date));
+            if ($since_id) {
+                $response = $this->retailcrm->ordersHistory(array('sinceId' => $since_id));
+            } else {
+                $response = $this->retailcrm->ordersHistory(array('startDate' => $date));
+            }
 
             if ($response->isSuccessful()) {
-                $generatedAt = $response->generatedAt;
+                if (empty($response['history'])) {
+                    return;
+                }
 
-                foreach ($response['history'] as $record) {
+                $history = $response['history'];
+                $end_change = end($history);
+                $new_since_id = $end_change['id'];
+
+                foreach ($history as $record) {
                     if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
                         continue;
                     }
@@ -159,11 +211,14 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return;
             }
 
-            $this->retailcrm_settings['history_orders'] = $generatedAt;
-            update_option('woocommerce_integration-retailcrm_settings', $this->retailcrm_settings);
-
+            update_option('retailcrm_orders_history_since_id', $new_since_id);
         }
 
+        /**
+         * Remove function hooks before download history changes
+         * 
+         * @return void
+         */
         protected function removeFuncsHook() 
         {      
             if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
@@ -178,6 +233,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
         }
 
+        /**
+         * Add function hooks after downloading history changes
+         * 
+         * @return void
+         */
         protected function addFuncsHook() 
         {   
             if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
@@ -209,6 +269,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
         }
 
+        /**
+         * Edit order in WC
+         * 
+         * @param array $record
+         * @param array $options
+         * @return void
+         */
         protected function orderEdit($record, $options)
         {
             if ($record['field'] == 'status' && !empty($record['newValue']) && !empty($record['oldValue'])) {
@@ -370,20 +437,30 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 }
             }
 
-            elseif (isset($record['created']) && 
-                $record['created'] == 1 && 
-                !isset($record['order']['externalId'])) {
+            elseif (isset($record['created']) 
+                && $record['created'] == 1 
+                && !isset($record['order']['externalId'])
+            ) {
+                if (is_array($this->order_methods)
+                    && $this->order_methods
+                    && isset($record['order']['orderMethod'])
+                    && !in_array($record['order']['orderMethod'], $this->order_methods)
+                ) {
+                    return;
+                }
 
                 $args = array(
-                    'status' => $options[$record['order']['status']],
+                    'status' => isset($options[$record['order']['status']]) ?
+                        isset($options[$record['order']['status']]) :
+                        'processing',
                     'customer_id' => isset($record['order']['customer']['externalId']) ? 
-                    $record['order']['customer']['externalId'] : 
-                    null
+                        $record['order']['customer']['externalId'] : 
+                        null
                 );
 
                 $order_record = $record['order'];
                 $order_data = wc_create_order($args);
-                $order = new WC_Order($order_data->id);
+                $order = new WC_Order($order_data->get_id());
 
                 $address_shipping = array(
                     'first_name' => $order_record['firstName'],
@@ -398,6 +475,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     'postcode'   => isset($order_record['delivery']['address']['postcode']) ? $order_record['delivery']['address']['postcode'] : '',
                     'country'    => $order_record['delivery']['address']['countryIso']
                 );
+
                 $address_billing = array(
                     'first_name' => $order_record['customer']['firstName'],
                     'last_name'  => isset($order_record['customer']['lastName']) ? $order_record['customer']['lastName'] : '',
@@ -418,18 +496,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                         if (count($order_record['payments']) == 1) {
                             $payment_types = $payment->get_available_payment_gateways();
-                            $paymentType = end($order_record['payments']);
+                            $payments = $order_record['payments'];
+                            $paymentType = end($payments);
 
-                            if (isset($payment_types[$options[$paymentType['type']]])) {
+                            if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
                                 $order->set_payment_method($payment_types[$options[$paymentType['type']]]);
                             }
                         }
                     }
                 } else {
-                    if ($order_record['paymentType']) {
+                    if (isset($order_record['paymentType']) && $order_record['paymentType']) {
                         $payment = new WC_Payment_Gateways();
                         $payment_types = $payment->get_available_payment_gateways();
-                        if (isset($payment_types[$options[$order_record['paymentType']]])) {
+
+                        if (isset($options[$order_record['paymentType']]) && isset($payment_types[$options[$order_record['paymentType']]])) {
                             $order->set_payment_method($payment_types[$options[$order_record['paymentType']]]);
                         }
                     }
@@ -456,37 +536,39 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         }
                     }
 
-                    if (isset($instance_id)) {
-                        $wc_shipping = WC_Shipping_Zones::get_shipping_method($instance_id);
-                        $shipping_method_title = $wc_shipping->method_title;
-                        $shipping_method_id = $options[$deliveryCode];
-                        $shipping_total = $order_record['delivery']['cost'];
-                    } else {
-                        $wc_shipping = new WC_Shipping();
-                        $wc_shipping_types = $wc_shipping->get_shipping_methods();
+                    if (isset($options[$deliveryCode])) {
+                        if (isset($instance_id)) {
+                            $wc_shipping = WC_Shipping_Zones::get_shipping_method($instance_id);
+                            $shipping_method_title = $wc_shipping->method_title;
+                            $shipping_method_id = $options[$deliveryCode];
+                            $shipping_total = $order_record['delivery']['cost'];
+                        } else {
+                            $wc_shipping = new WC_Shipping();
+                            $wc_shipping_types = $wc_shipping->get_shipping_methods();
 
-                        foreach ($wc_shipping_types as $shipping_type) {
-                            if ($shipping_type->id == $options[$deliveryCode]) {
-                                $shipping_method_id = $shipping_type->id;
-                                $shipping_method_title = $shipping_type->method_title;
-                                $shipping_total = $order_record['delivery']['cost'];
+                            foreach ($wc_shipping_types as $shipping_type) {
+                                if ($shipping_type->id == $options[$deliveryCode]) {
+                                    $shipping_method_id = $shipping_type->id;
+                                    $shipping_method_title = $shipping_type->method_title;
+                                    $shipping_total = $order_record['delivery']['cost'];
+                                }
                             }
                         }
-                    }
 
-                    if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-                        $shipping_rate = new WC_Shipping_Rate($shipping_method_id, isset($shipping_method_title) ? $shipping_method_title : '', isset($shipping_total) ? floatval($shipping_total) : 0, array(), $shipping_method_id);
-                        $order->add_shipping($shipping_rate);
-                    } else {
-                        $shipping = new WC_Order_Item_Shipping();
-                        $shipping->set_props( array(
-                            'method_title' => $shipping_method_title,
-                            'method_id'    => $shipping_method_id,
-                            'total'        => wc_format_decimal($shipping_total),
-                            'order_id'     => $order->id
-                        ) );
-                        $shipping->save();
-                        $order->add_item( $shipping );
+                        if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
+                            $shipping_rate = new WC_Shipping_Rate($shipping_method_id, isset($shipping_method_title) ? $shipping_method_title : '', isset($shipping_total) ? floatval($shipping_total) : 0, array(), $shipping_method_id);
+                            $order->add_shipping($shipping_rate);
+                        } else {
+                            $shipping = new WC_Order_Item_Shipping();
+                            $shipping->set_props( array(
+                                'method_title' => $shipping_method_title,
+                                'method_id'    => $shipping_method_id,
+                                'total'        => wc_format_decimal($shipping_total),
+                                'order_id'     => $order->get_id()
+                            ) );
+                            $shipping->save();
+                            $order->add_item( $shipping );
+                        }
                     }
                 }
 
@@ -494,13 +576,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                 $ids[] = array(
                     'id' => (int)$order_record['id'],
-                    'externalId' => (int)$order_data->id
+                    'externalId' => (int)$order_data->get_id()
                 );
 
                 $this->retailcrm->ordersFixExternalIds($ids);
             }
         }
 
+        /**
+         * Get shipping
+         * 
+         * @param array $items
+         * 
+         * @return int
+         */
         protected function getShippingItemId($items)
         {
             if ($items) {
@@ -512,7 +601,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             return $item_id[0];
         }
 
-
+        /**
+         * Calculate totals in order
+         * 
+         * @param type $order
+         * 
+         * @return void
+         */
         protected function update_total($order)
         {   
             $order->calculate_totals();
