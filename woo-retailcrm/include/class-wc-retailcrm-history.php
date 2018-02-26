@@ -286,7 +286,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 }
             }
 
-            elseif($record['field'] == 'order_product' && $record['newValue']) {
+            elseif ($record['field'] == 'order_product' && $record['newValue']) {
                 $product = wc_get_product($record['item']['offer']['externalId']);
                 $order = new WC_Order($record['order']['externalId']);
                 $order->add_product($product, $record['item']['quantity']);
@@ -294,7 +294,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $this->update_total($order);
             }
 
-            elseif($record['field'] == 'order_product.quantity' && $record['newValue']) {
+            elseif ($record['field'] == 'order_product.quantity' && $record['newValue']) {
                 $order = new WC_Order($record['order']['externalId']);
                 $product = wc_get_product($record['item']['offer']['externalId']);
                 $items = $order->get_items();
@@ -308,9 +308,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     if ($offer_id == $record['item']['offer']['externalId']) {
                         wc_delete_order_item($order_item_id);  
                         $order->add_product($product, $record['newValue']);
-                        $this->update_total($order);
-                    }   
-                }    
+                    }
+                }
+
+                $newOrder = wc_get_order($record['order']['externalId']);
+                $this->update_total($newOrder);
             }
 
             elseif ($record['field'] == 'order_product' && !$record['newValue']) {
