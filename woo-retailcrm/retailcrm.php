@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 2.1.0
+ * Version: 2.1.1
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
@@ -213,40 +213,6 @@ function retailcrm_update_order_payment($order_id)
 }
 
 /**
- * Update order
- *
- * @param $meta_id, $order_id, $meta_key, $_meta_value
- */
-function retailcrm_update_order($meta_id, $order_id, $meta_key, $_meta_value)
-{   
-    if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) {
-        include_once( check_custom_orders() );
-    }
-    $order_class = new WC_Retailcrm_Orders();
-
-    if ($meta_key == '_payment_method') {
-        $order_class->orderUpdatePaymentType($order_id, $_meta_value);
-    }
-
-    $address = array();
-
-    if ($meta_key == '_shipping_first_name') $address['firstName'] = $_meta_value;
-    if ($meta_key == '_shipping_last_name') $address['lastName'] = $_meta_value;
-    if ($meta_key == '_billing_phone') $address['phone'] = $_meta_value;
-    if ($meta_key == '_billing_email') $address['email'] = $_meta_value;
-    if ($meta_key == '_shipping_city') $address['delivery']['address']['city'] = $_meta_value;
-    if ($meta_key == '_shipping_state') $address['delivery']['address']['region'] = $_meta_value;
-    if ($meta_key == '_shipping_postcode') $address['delivery']['address']['index'] = $_meta_value;
-    if ($meta_key == '_shipping_country') $address['delivery']['address']['countryIso'] = $_meta_value;
-    if ($meta_key == '_shipping_address_1') $address['delivery']['address']['text'] = $_meta_value;
-    if ($meta_key == '_shipping_address_2') $address['delivery']['address']['text'] .= $_meta_value;
-    
-    if (!empty($address)) {
-        $order_class->orderUpdateShippingAddress($order_id, $address);
-    }
-}
-
-/**
  * Update order items
  *
  * @param $order_id, $data
@@ -404,14 +370,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     add_action('retailcrm_history', 'retailcrm_history_get');
     add_action('retailcrm_icml', 'generate_icml');
     add_action('retailcrm_inventories', 'load_stocks');
-    add_action( 'init', 'check_inventories');
-    add_action( 'init', 'register_icml_generation');
-    add_action( 'init', 'register_retailcrm_history');
-    add_action( 'wp_ajax_do_upload', 'upload_to_crm' );
-    add_action( 'wp_ajax_generate_icml', 'generate_icml' );
+    add_action('init', 'check_inventories');
+    add_action('init', 'register_icml_generation');
+    add_action('init', 'register_retailcrm_history');
+    add_action('wp_ajax_do_upload', 'upload_to_crm');
+    add_action('wp_ajax_generate_icml', 'generate_icml');
     add_action('admin_print_footer_scripts', 'ajax_upload', 99);
     add_action('admin_print_footer_scripts', 'ajax_generate_icml', 99);
-    add_action( 'woocommerce_created_customer', 'create_customer', 10, 1 );
-    add_action( 'woocommerce_checkout_update_user_meta', 10, 2 );
+    add_action('woocommerce_created_customer', 'create_customer', 10, 1);
+    add_action('woocommerce_update_customer', 'update_customer', 10, 1);
     add_action('woocommerce_update_order', 'update_order', 11, 1);
 }
