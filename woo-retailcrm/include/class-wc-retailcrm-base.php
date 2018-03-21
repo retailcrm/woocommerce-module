@@ -28,8 +28,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         }
 
         $this->id                 = 'integration-retailcrm';
-        $this->method_title       = __( 'RetailCRM', 'woocommerce-integration-retailcrm' );
-        $this->method_description = __( 'Интеграция с системой управления Retailcrm.', 'woocommerce-integration-retailcrm' );
+        $this->method_title       = __('RetailCRM', 'retailcrm');
+        $this->method_description = __('Integration with eComlogic managament system.', 'retailcrm');
 
         // Load the settings.
 
@@ -46,19 +46,19 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
     public function init_form_fields() {
 
         $this->form_fields = array(
-            array( 'title' => __( 'General Options', 'woocommerce' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
+            array( 'title' => __( 'General Options', 'retailcrm' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
 
             'api_url' => array(
-                'title'             => __( 'API URL', 'woocommerce-integration-retailcrm' ),
+                'title'             => __( 'API URL', 'retailcrm' ),
                 'type'              => 'text',
-                'description'       => __( 'Введите адрес вашей CRM (https://yourdomain.retailcrm.ru).', 'woocommerce-integration-retailcrm' ),
+                'description'       => __( 'Enter with your API URL (https://yourdomain.ecomlogic.com).', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             ),
             'api_key' => array(
-                'title'             => __( 'API Key', 'woocommerce-integration-retailcrm' ),
+                'title'             => __( 'API Key', 'retailcrm' ),
                 'type'              => 'text',
-                'description'       => __( 'Введите ключ API. Вы можете найти его в интерфейсе администратора Retailcrm.', 'woocommerce-integration-retailcrm' ),
+                'description'       => __( 'Enter with your API Key. You can find this in eComlogic admin interface.', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             )
@@ -67,15 +67,15 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         $api_version_list = array('v4' => 'v4','v5' => 'v5');
 
         $this->form_fields[] = array(
-            'title'       => __( 'Настройки API', 'woocommerce' ),
+            'title'       => __( 'API settings', 'retailcrm' ),
             'type'        => 'title',
             'description' => '',
             'id'          => 'api_options'
         );
 
         $this->form_fields['api_version'] = array(
-            'title'       => __( 'API версия', 'textdomain' ),
-            'description' => __( 'Выберите версию API, которую Вы хотите использовать', 'textdomain' ),
+            'title'       => __( 'API version', 'retailcrm' ),
+            'description' => __( 'Select the API version you want to use', 'retailcrm' ),
             'css'         => 'min-width:50px;',
             'class'       => 'select',
             'type'        => 'select',
@@ -84,7 +84,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         );
 
         $this->form_fields[] = array(
-            'title'       => __( 'Настройки каталога', 'woocommerce' ),
+            'title'       => __( 'Catalog settings', 'retailcrm' ),
             'type'        => 'title',
             'description' => '',
             'id'          => 'catalog_options'
@@ -92,8 +92,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
         foreach (get_post_statuses() as $status_key => $status_value) {
             $this->form_fields['p_' . $status_key] = array(
-                'title'       => __( $status_value, 'textdomain' ),
-                'label'       => __( ' ', 'textdomain' ), 
+                'title'       => $status_value,
+                'label'       => ' ',
                 'description' => '',
                 'class'       => 'checkbox',
                 'type'        => 'checkbox',
@@ -127,18 +127,18 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     }
 
                     $this->form_fields[] = array(
-                        'title' => __( 'Способы оформления заказа', 'woocommerce' ),
+                        'title' => __('Order methods', 'retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'order_methods_options'
                     );
 
                     $this->form_fields['order_methods'] = array(
-                        'label'       => __( ' ', 'textdomain' ),
-                        'title'       => 'Способы оформления заказа, доступные для выгрузки из RetailCRM',
+                        'label'       =>  ' ',
+                        'title'       => __('Ordering methods available for downloading from eComlogic', 'retailcrm'),
                         'class'       => '',
                         'type'        => 'multiselect',
-                        'description' => 'Выберите способы оформления для заказов, которые будут выгружаться из RetailCRM на сайт',
+                        'description' => __('Select the order methods that will be uploaded from eComlogic to site', 'retailcrm'),
                         'options'     => $order_methods_option,
                         'select_buttons' => true
                     );
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     $wc_shipping_list = get_wc_shipping_methods();
 
                     $this->form_fields[] = array(
-                        'title' => __( 'Способы доставки', 'woocommerce' ),
+                        'title' => __('Shipping methods', 'retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'shipping_options'
@@ -167,8 +167,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     foreach ( $wc_shipping_list as  $shipping_code => $shipping ) {
                         if ( isset( $shipping['enabled'] ) && $shipping['enabled'] == 'yes' ) {
                             $this->form_fields[$shipping_code] = array(
-                                'title'          => __( $shipping['title'], 'textdomain' ),
-                                'description' => __( $shipping['description'], 'textdomain' ),
+                                'title'          => __($shipping['title'], 'woocommerce'),
+                                'description' => __($shipping['description'], 'woocommerce'),
                                 'css'            => 'min-width:350px;',
                                 'class'          => 'select',
                                 'type'           => 'select',
@@ -193,7 +193,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     $wc_payment = new WC_Payment_Gateways();
 
                     $this->form_fields[] = array(
-                        'title' => __( 'Способы оплаты', 'woocommerce' ),
+                        'title' => __('Payment methods', 'retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'payment_options'
@@ -204,8 +204,8 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                             $key = $payment->id;
                             $name = $key;
                             $this->form_fields[$name] = array(
-                                'title'          => __( $payment->method_title, 'textdomain' ),
-                                'description' => __( $payment->method_description, 'textdomain' ),
+                                'title'          => __($payment->method_title, 'woocommerce'),
+                                'description' => __($payment->method_description, 'woocommerce'),
                                 'css'            => 'min-width:350px;',
                                 'class'          => 'select',
                                 'type'           => 'select',
@@ -230,7 +230,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     $wc_statuses = wc_get_order_statuses();
 
                     $this->form_fields[] = array(
-                        'title'       => __( 'Статусы', 'woocommerce' ),
+                        'title'       => __('Statuses', 'retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
                         'id'          => 'statuses_options'
@@ -239,7 +239,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                     foreach ( $wc_statuses as $idx => $name ) {
                         $uid = str_replace('wc-', '', $idx);
                         $this->form_fields[$uid] = array(
-                            'title'    => __( $name, 'textdomain' ),
+                            'title'    => __($name, 'woocommerce'),
                             'css'      => 'min-width:350px;',
                             'class'    => 'select',
                             'type'     => 'select',
@@ -253,18 +253,48 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                  * Inventories options
                  */
                 $this->form_fields[] = array(
-                    'title'       => __( 'Настройки выгрузки остатков', 'woocommerce' ),
+                    'title'       => __('Inventories settings', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'invent_options'
                 );
 
                 $this->form_fields['sync'] = array(
-                    'label'       => __( 'Выгружать остатки из CRM', 'textdomain' ),
-                    'title'       => 'Остатки',
+                    'label'       => __('Sync inventories', 'retailcrm'),
+                    'title'       => __('Inventories', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => 'Отметьте данный пункт, если хотите выгружать остатки товаров из CRM в магазин.'
+                    'description' => __('Check this checkbox if you want to unload the rest of the products from CRM to site.', 'retailcrm')
+                );
+
+                /**
+                 * UA options
+                 */
+                $this->form_fields[] = array(
+                    'title'       => __('UA settings', 'retailcrm'),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'id'          => 'invent_options'
+                );
+
+                $this->form_fields['ua'] = array(
+                    'label'       => __('Activate UA', 'retailcrm'),
+                    'title'       => __('UA', 'retailcrm'),
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'description' => __('Check this checkbox if you want to unload information to UA.', 'retailcrm')
+                );
+
+                $this->form_fields['ua_code'] = array(
+                    'title'       => __('UA code', 'retailcrm'),
+                    'class'       => 'input',
+                    'type'        => 'input'
+                );
+
+                $this->form_fields['ua_custom'] = array(
+                    'title'       => __('Custom parameter', 'retailcrm'),
+                    'class'       => 'input',
+                    'type'        => 'input'
                 );
 
                 /**
@@ -274,17 +304,17 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
                 if (!isset($options['uploads'])) {
                     $this->form_fields[] = array(
-                        'title'       => __( 'Выгрузка клиентов и заказов', 'woocommerce' ),
+                        'title'       => __('Uploads settings', 'retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
                         'id'          => 'upload_options'
                     );
 
                     $this->form_fields['upload-button'] = array(
-                        'label'             => 'Выгрузить',
-                        'title'             => __( 'Выгрузка клиентов и заказов', 'woocommerce-integration-retailcrm' ),
+                        'label'             => __('Upload', 'retailcrm'),
+                        'title'             => __('Upload all customers and orders', 'retailcrm' ),
                         'type'              => 'button',
-                        'description'       => __( 'Пакетная выгрузка существующих клиентов и заказов.', 'woocommerce-integration-retailcrm' ),
+                        'description'       => __('Batch unloading of existing customers and orders.', 'retailcrm' ),
                         'desc_tip'          => true,
                         'id'                => 'uploads-retailcrm'
                     );
@@ -294,17 +324,17 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
                  * Generate icml file
                  */
                 $this->form_fields[] = array(
-                    'title'       => __( 'Генерация каталога товаров', 'woocommerce' ),
+                    'title'       => __( 'Generate ICML catalog', 'retailcrm' ),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'icml_options'
                 );
                 
                 $this->form_fields[] = array(
-                    'label'             => 'Сгенерировать',
-                    'title'             => __( 'Генерация icml', 'woocommerce-integration-retailcrm' ),
+                    'label'             => __('Generate', 'retailcrm'),
+                    'title'             => __('Generate ICML', 'retailcrm'),
                     'type'              => 'button',
-                    'description'       => __( 'Данный функционал позволяет сгенерировать каталог товаров для выгрузки в CRM.', 'woocommerce-integration-retailcrm' ),
+                    'description'       => __('This functionality allows you to generate a catalog of products for downloading to CRM.', 'retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'icml-retailcrm'
                 );
@@ -407,7 +437,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
 
         if ($response && $response->isSuccessful()) {
             if (!in_array($versionMap[$value], $response['versions'])) {
-                WC_Admin_Settings::add_error( esc_html__( '"Выбранная версия API недоступна"', 'woocommerce-integration-retailcrm' ) );
+                WC_Admin_Settings::add_error( esc_html__( 'The selected version of the API is unavailable', 'retailcrm' ) );
                 $value = '';
             }
 
@@ -433,7 +463,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         $response = $api->apiVersions();
 
         if ($response == NULL) {
-            WC_Admin_Settings::add_error( esc_html__( '"Введите корректный адрес CRM"', 'woocommerce-integration-retailcrm' ) );
+            WC_Admin_Settings::add_error( esc_html__( 'Enter the correct CRM address', 'retailcrm' ) );
             $value = '';
         }
 
@@ -462,7 +492,7 @@ if ( ! class_exists( 'WC_Retailcrm_Base' ) ) :
         }
 
         if (!$response->isSuccessful()) {
-            WC_Admin_Settings::add_error( esc_html__( '"Введитe правильный API ключ"', 'woocommerce-integration-retailcrm' ) );
+            WC_Admin_Settings::add_error( esc_html__( 'Enter the correct API key', 'retailcrm' ) );
             $value = '';
         }
 
