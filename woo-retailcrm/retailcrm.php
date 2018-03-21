@@ -1,11 +1,12 @@
 <?php
 /**
- * Version: 2.1.1
+ * Version: 2.1.2
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.ru/
+ * Text Domain: retailcrm
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -246,7 +247,7 @@ function create_customer($customer_id) {
     $customer_class->createCustomer($customer_id);
 }
 
-function update_customer($customer_id, $data) {
+function update_customer($customer_id) {
     if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) {
         include_once( check_custom_customers() );
     }
@@ -324,7 +325,7 @@ function ajax_upload() {
             type: "POST",
             url: '<?php echo $ajax_url; ?>?action=do_upload',
             success: function (response) {
-                alert('Заказы и клиенты выгружены');
+                alert('<?php echo __('Customers and orders were unloaded', 'retailcrm'); ?>');
                 console.log('AJAX response : ',response);
             }
         });
@@ -342,7 +343,7 @@ function ajax_generate_icml() {
             type: "POST",
             url: '<?php echo $ajax_url; ?>?action=generate_icml',
             success: function (response) {
-                alert('Каталог товаров сформирован');
+                alert('<?php echo __('Catalog were generated', 'retailcrm'); ?>');
                 console.log('AJAX response : ',response);
             }
         });
@@ -360,11 +361,91 @@ function update_order($order_id) {
     $order_class->updateOrder($order_id);
 }
 
+function initialize_analytics() {
+    $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
+
+    if (isset($options['ua']) && $options['ua'] == 'yes') {
+        ?>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', '<?php echo $options['ua_code']; ?>', 'auto');
+
+            function getRetailCrmCookie(name) {
+                var matches = document.cookie.match(new RegExp(
+                    '(?:^|; )' + name + '=([^;]*)'
+                ));
+                return matches ? decodeURIComponent(matches[1]) : '';
+            }
+
+            ga('set', 'dimension<?php echo $options['ua_custom']; ?>', getRetailCrmCookie('_ga'));
+            ga('send', 'pageview');
+        </script>
+        <?php
+    }
+}
+
+function send_analytics() {
+    $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
+
+    if (isset($_GET['key']) && isset($options['ua']) && $options['ua'] == 'yes') {
+        $orderid = wc_get_order_id_by_order_key($_GET['key']);
+        $order = new WC_Order($orderid);
+        foreach ($order->get_items() as $item) {
+            $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
+            $_product = wc_get_product($uid);
+            if ($_product) {
+                $order_item = array(
+                    'id' => $uid,
+                    'name' => $item['name'],
+                    'price' => (float)$_product->get_price(),
+                    'quantity' => $item['qty'],
+                );
+            }
+            $order_items[] = $order_item;
+        }
+
+        $url = parse_url(get_site_url());
+        $domain = $url['host'];
+       ?>
+        <script type="text/javascript">
+            ga('require', 'ecommerce', 'ecommerce.js');
+            ga('ecommerce:addTransaction', {
+                'id': <?php echo $order->get_data()['id']; ?>,
+                'affiliation': '<?php echo $domain; ?>',
+                'revenue': <?php echo $order->get_total(); ?>,
+                'shipping': <?php echo $order->get_total_tax(); ?>,
+                'tax': <?php echo $order->get_shipping_total(); ?>
+            });
+            <?php
+            foreach ($order_items as $item) {?>
+                ga('ecommerce:addItem', {
+                    'id': <?php echo $order->get_data()['id']; ?>,
+                    'sku': <?php echo $item['id']; ?>,
+                    'name': '<?php echo $item['name']; ?>',
+                    'price': <?php echo $item['price']; ?>,
+                    'quantity': <?php echo $item['quantity']; ?>
+                });
+            <?php
+            }?>
+            ga('ecommerce:send');
+        </script>
+    <?php
+    }
+}
+
+function retailcrm_load_plugin_textdomain() {
+    load_plugin_textdomain('retailcrm', FALSE, basename( dirname( __FILE__ ) ) . '/languages/');
+}
+
 register_activation_hook( __FILE__, 'retailcrm_install' );
 register_deactivation_hook( __FILE__, 'retailcrm_deactivation' );
 
 if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option( 'active_plugins')))) {
-    load_plugin_textdomain('wc_retailcrm', false, dirname(plugin_basename( __FILE__ )) . '/');
+    add_action('plugins_loaded', 'retailcrm_load_plugin_textdomain');
     add_filter('cron_schedules', 'filter_cron_schedules', 10, 1);
     add_action('woocommerce_checkout_order_processed', 'retailcrm_process_order', 10, 1);
     add_action('retailcrm_history', 'retailcrm_history_get');
@@ -380,4 +461,6 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
     add_action('woocommerce_created_customer', 'create_customer', 10, 1);
     add_action('woocommerce_update_customer', 'update_customer', 10, 1);
     add_action('woocommerce_update_order', 'update_order', 11, 1);
+    add_action('wp_print_scripts', 'initialize_analytics', 98);
+    add_action('wp_print_footer_scripts', 'send_analytics', 99);
 }
