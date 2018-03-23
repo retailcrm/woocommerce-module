@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 2.1.2
+ * Version: 2.1.3
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
@@ -414,7 +414,7 @@ function send_analytics() {
         <script type="text/javascript">
             ga('require', 'ecommerce', 'ecommerce.js');
             ga('ecommerce:addTransaction', {
-                'id': <?php echo $order->get_data()['id']; ?>,
+                'id': <?php echo $order->get_id(); ?>,
                 'affiliation': '<?php echo $domain; ?>',
                 'revenue': <?php echo $order->get_total(); ?>,
                 'shipping': <?php echo $order->get_total_tax(); ?>,
@@ -423,7 +423,7 @@ function send_analytics() {
             <?php
             foreach ($order_items as $item) {?>
                 ga('ecommerce:addItem', {
-                    'id': <?php echo $order->get_data()['id']; ?>,
+                    'id': <?php echo $order->get_id(); ?>,
                     'sku': <?php echo $item['id']; ?>,
                     'name': '<?php echo $item['name']; ?>',
                     'price': <?php echo $item['price']; ?>,
