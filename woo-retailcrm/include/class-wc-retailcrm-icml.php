@@ -416,16 +416,16 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
          */
         private function setOffer(&$full_product_list, $product_attributes, $product, $parent = false) {
             if ($parent) {
-                $image = wp_get_attachment_image_src($product->get_image_id());
+                $image = wp_get_attachment_image_src($product->get_image_id(), 'full');
 
                 if (!$image) {
-                    $image = wp_get_attachment_image_src($parent->get_image_id());
+                    $image = wp_get_attachment_image_src($parent->get_image_id(), 'full');
                 }
 
                 $term_list = $parent->get_category_ids();
                 $attributes = get_post_meta($parent->get_id(), '_product_attributes');
             } else {
-                $image = wp_get_attachment_image_src($product->get_image_id());
+                $image = wp_get_attachment_image_src($product->get_image_id(), 'full');
                 $term_list = $product->get_category_ids();
                 $attributes = get_post_meta($product->get_id(), '_product_attributes');
             }
