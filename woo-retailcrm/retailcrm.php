@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 2.1.3
+ * Version: 2.1.4
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
@@ -362,66 +362,74 @@ function update_order($order_id) {
 }
 
 function initialize_analytics() {
-    $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
+    $options = get_option('woocommerce_integration-retailcrm_settings');
 
-    if (isset($options['ua']) && $options['ua'] == 'yes') {
-        ?>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    if ($options && is_array($options)) {
+        $options = array_filter($options);
 
-            ga('create', '<?php echo $options['ua_code']; ?>', 'auto');
+        if (isset($options['ua']) && $options['ua'] == 'yes') {
+            ?>
+            <script>
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            function getRetailCrmCookie(name) {
-                var matches = document.cookie.match(new RegExp(
-                    '(?:^|; )' + name + '=([^;]*)'
-                ));
-                return matches ? decodeURIComponent(matches[1]) : '';
-            }
+                ga('create', '<?php echo $options['ua_code']; ?>', 'auto');
 
-            ga('set', 'dimension<?php echo $options['ua_custom']; ?>', getRetailCrmCookie('_ga'));
-            ga('send', 'pageview');
-        </script>
-        <?php
+                function getRetailCrmCookie(name) {
+                    var matches = document.cookie.match(new RegExp(
+                        '(?:^|; )' + name + '=([^;]*)'
+                    ));
+                    return matches ? decodeURIComponent(matches[1]) : '';
+                }
+
+                ga('set', 'dimension<?php echo $options['ua_custom']; ?>', getRetailCrmCookie('_ga'));
+                ga('send', 'pageview');
+            </script>
+            <?php
+        }
     }
 }
 
 function send_analytics() {
-    $options = array_filter(get_option( 'woocommerce_integration-retailcrm_settings' ));
+    $options = get_option('woocommerce_integration-retailcrm_settings');
 
-    if (isset($_GET['key']) && isset($options['ua']) && $options['ua'] == 'yes') {
-        $orderid = wc_get_order_id_by_order_key($_GET['key']);
-        $order = new WC_Order($orderid);
-        foreach ($order->get_items() as $item) {
-            $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
-            $_product = wc_get_product($uid);
-            if ($_product) {
-                $order_item = array(
-                    'id' => $uid,
-                    'name' => $item['name'],
-                    'price' => (float)$_product->get_price(),
-                    'quantity' => $item['qty'],
-                );
+    if ($options && is_array($options)) {
+        $options = array_filter($options);
+
+        if (isset($_GET['key']) && isset($options['ua']) && $options['ua'] == 'yes') {
+            $orderid = wc_get_order_id_by_order_key($_GET['key']);
+            $order = new WC_Order($orderid);
+            foreach ($order->get_items() as $item) {
+                $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
+                $_product = wc_get_product($uid);
+                if ($_product) {
+                    $order_item = array(
+                        'id' => $uid,
+                        'name' => $item['name'],
+                        'price' => (float)$_product->get_price(),
+                        'quantity' => $item['qty'],
+                    );
+
+                    $order_items[] = $order_item;
+                }
             }
-            $order_items[] = $order_item;
-        }
 
-        $url = parse_url(get_site_url());
-        $domain = $url['host'];
-       ?>
-        <script type="text/javascript">
-            ga('require', 'ecommerce', 'ecommerce.js');
-            ga('ecommerce:addTransaction', {
-                'id': <?php echo $order->get_id(); ?>,
-                'affiliation': '<?php echo $domain; ?>',
-                'revenue': <?php echo $order->get_total(); ?>,
-                'shipping': <?php echo $order->get_total_tax(); ?>,
-                'tax': <?php echo $order->get_shipping_total(); ?>
-            });
-            <?php
-            foreach ($order_items as $item) {?>
+            $url = parse_url(get_site_url());
+            $domain = $url['host'];
+            ?>
+            <script type="text/javascript">
+                ga('require', 'ecommerce', 'ecommerce.js');
+                ga('ecommerce:addTransaction', {
+                    'id': <?php echo $order->get_id(); ?>,
+                    'affiliation': '<?php echo $domain; ?>',
+                    'revenue': <?php echo $order->get_total(); ?>,
+                    'shipping': <?php echo $order->get_total_tax(); ?>,
+                    'tax': <?php echo $order->get_shipping_total(); ?>
+                });
+                <?php
+                foreach ($order_items as $item) {?>
                 ga('ecommerce:addItem', {
                     'id': <?php echo $order->get_id(); ?>,
                     'sku': <?php echo $item['id']; ?>,
@@ -429,11 +437,12 @@ function send_analytics() {
                     'price': <?php echo $item['price']; ?>,
                     'quantity': <?php echo $item['quantity']; ?>
                 });
+                <?php
+                }?>
+                ga('ecommerce:send');
+            </script>
             <?php
-            }?>
-            ga('ecommerce:send');
-        </script>
-    <?php
+        }
     }
 }
 

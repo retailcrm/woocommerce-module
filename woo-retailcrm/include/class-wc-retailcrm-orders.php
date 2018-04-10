@@ -432,7 +432,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
-            return $order_data;
+            return apply_filters('retailcrm_process_order', $order_data);
         }
 
         /**
