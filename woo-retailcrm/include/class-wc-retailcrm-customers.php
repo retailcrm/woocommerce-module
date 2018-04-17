@@ -14,33 +14,37 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
      */
     class WC_Retailcrm_Customers
     {
-        public function __construct()
+    	const CUSTOMER_ROLE = 'customer';
+
+        protected $retailcrm;
+        protected $retailcrm_settings;
+
+        /**
+         * WC_Retailcrm_Customers constructor.
+         * @param $retailcrm
+         */
+        public function __construct($retailcrm = false)
         {
-            $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
-
-            if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
-                include_once( WP_PLUGIN_DIR . '/woo-retailcrm/include/api/class-wc-retailcrm-proxy.php' );
-            }
-
-            $this->retailcrm = new WC_Retailcrm_Proxy(
-                $this->retailcrm_settings['api_url'],
-                $this->retailcrm_settings['api_key'],
-                $this->retailcrm_settings['api_version']
-            );
+            $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
+            $this->retailcrm = $retailcrm;
         }
 
         /**
          * Upload customers to CRM
-         * 
+         *
          * @return void
          */
         public function customersUpload()
         {
+        	if (!$this->retailcrm) {
+        		return;
+	        }
+
             $users = get_users();
             $data_customers = array();
 
             foreach ($users as $user) {
-                if (!in_array('customer', $user->roles)) {
+                if (!in_array(self::CUSTOMER_ROLE, $user->roles)) {
                     continue;
                 }
 
@@ -86,9 +90,13 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
          */
         public function createCustomer($customer_id)
         {
+	        if (!$this->retailcrm) {
+		        return;
+	        }
+
             $customer = new WC_Customer($customer_id);
 
-            if ($customer->get_role() == 'customer'){
+            if ($customer->get_role() == self::CUSTOMER_ROLE) {
                 $data_customer = $this->processCustomer($customer);
 
                 $this->retailcrm->customersCreate($data_customer);
@@ -104,9 +112,13 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
          */
         public function updateCustomer($customer_id)
         {
+	        if (!$this->retailcrm) {
+		        return;
+	        }
+
             $customer = new WC_Customer($customer_id);
 
-            if ($customer->get_role() == 'customer'){
+            if ($customer->get_role() == self::CUSTOMER_ROLE){
                 $data_customer = $this->processCustomer($customer);
 
                 $this->retailcrm->customersEdit($data_customer);
@@ -116,7 +128,7 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
         /**
          * Process customer
          * 
-         * @param object $customer
+         * @param WC_Customer $customer
          * 
          * @return array $data_customer
          */
@@ -145,7 +157,7 @@ if ( ! class_exists( 'WC_Retailcrm_Customers' ) ) :
                 );
             }
 
-            return $data_customer;
+            return apply_filters('retailcrm_process_customer', $data_customer);
         }
     }
 endif;

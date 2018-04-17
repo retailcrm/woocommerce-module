@@ -17,19 +17,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         protected $retailcrm_settings;
         protected $retailcrm;
 
-        public function __construct()
+        public function __construct($retailcrm = false)
         {
-            $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
-
-            if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
-                include_once( WP_PLUGIN_DIR . '/woo-retailcrm/include/api/class-wc-retailcrm-proxy.php' );
-            }
-
-            $this->retailcrm = new WC_Retailcrm_Proxy(
-                $this->retailcrm_settings['api_url'],
-                $this->retailcrm_settings['api_key'],
-                $this->retailcrm_settings['api_version']
-            );
+            $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
+            $this->retailcrm = $retailcrm;
         }
 
         /**
@@ -37,6 +28,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public function ordersUpload()
         {
+            if (!$this->retailcrm) {
+                return;
+            }
+
             $orders = get_posts(array(
                 'numberposts' => -1,
                 'post_type' => wc_get_order_types('view-orders'),
@@ -61,7 +56,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $uploadOrders = array_chunk($orders_data, 50);
 
             foreach ($uploadOrders as $uploadOrder) {
-               $this->retailcrm->ordersUpload($uploadOrder);
+                $this->retailcrm->ordersUpload($uploadOrder);
             }
         }
 
@@ -72,6 +67,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public function orderCreate($order_id)
         {
+            if (!$this->retailcrm) {
+                return;
+            }
+
             $order_data = $this->processOrder($order_id);
 
             $order = new WC_Order($order_id);
@@ -98,22 +97,16 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         }
 
         /**
-         * Update shipping address
-         *
-         * @param $order_id, $address
-         */
-        public function orderUpdateShippingAddress($order_id, $address) {
-            $address['externalId'] = $order_id;
-
-            $this->retailcrm->ordersEdit($address);
-        }
-
-        /**
          * Update order status
          *
          * @param $order_id
          */
-        public function orderUpdateStatus($order_id) {
+        public function orderUpdateStatus($order_id)
+        {
+            if (!$this->retailcrm) {
+                return;
+            }
+
             $order = new WC_Order( $order_id );
 
             $order_data = array(
@@ -128,10 +121,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * Update order payment type
          *
          * @param $order_id
-         * 
+         *
          * @return null
          */
-        public function orderUpdatePaymentType($order_id, $payment_method) {
+        protected function orderUpdatePaymentType($order_id, $payment_method) {
 
             if (!isset($this->retailcrm_settings[$payment_method])) {
                 return;
@@ -174,7 +167,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          *
          * @param $order_id
          */
-        public function orderUpdatePayment($order_id) {
+        public function orderUpdatePayment($order_id)
+        {
+            if (!$this->retailcrm) {
+                return;
+            }
 
             if ($this->retailcrm_settings['api_version'] != 'v5') {
                 $order_data = array(
@@ -191,91 +188,26 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
                 $this->retailcrm->ordersPaymentsEdit($payment);
             }
-
         }
 
         /**
-         * Update order items
-         *
-         * @param $order_id, $data
-         */
-        public function orderUpdateItems($order_id, $data) {
-            $order = new WC_Order( $order_id );
-
-            $order_data['externalId'] = $order_id;
-            $shipping_method = end($data['shipping_method']);
-            $shipping_cost = end($data['shipping_cost']);
-            $products = $order->get_items();
-            $items = array();
-
-            foreach ($products as $order_item_id => $product) {
-                if ($product['variation_id'] > 0) {
-                    $offer_id = $product['variation_id'];
-                } else {
-                    $offer_id = $product['product_id'];
-                }
-
-                $_product = wc_get_product($offer_id);
-
-                if ($this->retailcrm_settings['api_version'] != 'v3') {
-                    $items[] = array(
-                        'offer' => array('externalId' => $offer_id),
-                        'productName' => $product['name'],
-                        'initialPrice' => (float)$_product->get_price(),
-                        'quantity' => $product['qty']
-                    );
-                } else {
-                    $items[] = array(
-                        'productId' => $offer_id,
-                        'productName' => $product['name'],
-                        'initialPrice' => (float)$_product->get_price(),
-                        'quantity' => $product['qty']
-                    );
-                }
-            }
-
-            $order_data['items'] = $items;
-
-            if (!empty($shipping_method) && !empty($this->retailcrm_settings[$shipping_method])) {
-                $order_data['delivery']['code'] = $this->retailcrm_settings[$shipping_method];
-            }
-
-            if (!empty($shipping_cost)) {
-                $shipping_cost = str_replace(',', '.', $shipping_cost);
-                $order_data['delivery']['cost'] = $shipping_cost;
-            }
-
-            $this->retailcrm->ordersEdit($order_data);
-        }
-
-        /**
-         * get order data depending on woocommerce version
+         * Get order data
          *
          * @param int $order_id
          *
-         * @return arr
+         * @return array $order_data_arr
          */
-        public function getOrderData($order_id) {
+        protected function getOrderData($order_id) {
             $order = new WC_Order( $order_id );
             $order_data_arr = array();
+            $order_info = $order->get_data();
 
-            if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-                $order_data_arr['id']              = $order->id;
-                $order_data_arr['date']            = $order->order_date;
-                $order_data_arr['payment_method']  = $order->payment_method;
-                $order_data_arr['discount_total']  = $order->data['discount_total'];
-                $order_data_arr['discount_tax']    = $order->data['discount_tax'];
-                $order_data_arr['customer_comment'] = $order->data['customerComment'];
-            } else {
-                $order_info = $order->get_data();
-
-                $order_data_arr['id']              = $order_info['id'];
-                $order_data_arr['payment_method']  = $order->get_payment_method();
-                $order_data_arr['date']            = $order_info['date_created']->date('Y-m-d H:i:s');
-                $order_data_arr['discount_total']  = $order_info['discount_total'];
-                $order_data_arr['discount_tax']    = $order_info['discount_tax'];
-                $order_data_arr['customer_comment'] = $order->get_customer_note();
-            }
+            $order_data_arr['id']              = $order_info['id'];
+            $order_data_arr['payment_method']  = $order->get_payment_method();
+            $order_data_arr['date']            = $order_info['date_created']->date('Y-m-d H:i:s');
+            $order_data_arr['discount_total']  = $order_info['discount_total'];
+            $order_data_arr['discount_tax']    = $order_info['discount_tax'];
+            $order_data_arr['customer_comment'] = $order->get_customer_note();
 
             return $order_data_arr;
         }
@@ -288,7 +220,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * 
          * @return array $order_data
          */
-        public function processOrder($order_id, $update = false)
+        protected function processOrder($order_id, $update = false)
         {
             if ( !$order_id ){
                 return;
@@ -491,6 +423,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public function updateOrder($order_id)
         {
+            if (!$this->retailcrm) {
+                return;
+            }
+
             $order = $this->processOrder($order_id, true);
 
             $response = $this->retailcrm->ordersEdit($order);
