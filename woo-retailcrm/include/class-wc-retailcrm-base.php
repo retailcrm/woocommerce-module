@@ -675,7 +675,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function validate_api_version_field( $key, $value ) {
+        public function validate_api_version_field($key, $value) {
             $post = $this->get_post_data();
 
             $versionMap = array(
@@ -708,7 +708,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function validate_api_url_field( $key, $value ) {
+        public function validate_api_url_field($key, $value) {
             $post = $this->get_post_data();
             $api = new WC_Retailcrm_Proxy(
                 $value,
@@ -717,8 +717,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $response = $api->apiVersions();
 
-            if ($response == NULL) {
-                WC_Admin_Settings::add_error( esc_html__( 'Enter the correct CRM address', 'retailcrm' ) );
+            if ($response == null) {
+                WC_Admin_Settings::add_error(esc_html__( 'Enter the correct CRM address', 'retailcrm'));
                 $value = '';
             }
 
@@ -780,6 +780,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
         * Get retailcrm api client
+        *
         * @return bool|WC_Retailcrm_Proxy
         */
         public function getApiClient() {

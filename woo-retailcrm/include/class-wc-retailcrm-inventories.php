@@ -7,7 +7,7 @@
  * @author   RetailCRM
  */
 
-if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
+if (!class_exists('WC_Retailcrm_Inventories')) :
 
     /**
      * Class WC_Retailcrm_Inventories
@@ -27,8 +27,15 @@ if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
             $this->retailcrm = $retailcrm;
         }
 
+        /**
+         * Load stock from retailCRM
+         *
+         * @return mixed
+         */
         public function load_stocks()
         {
+            $success = array();
+
             if (!$this->retailcrm) {
                 return;
             }
@@ -37,35 +44,46 @@ if ( ! class_exists( 'WC_Retailcrm_Inventories' ) ) :
 
             do {
                 $result = $this->retailcrm->storeInventories(array(), $page, 250);
+
+                if (!$result->isSuccessful()) {
+                    return;
+                }
+
                 $totalPageCount = $result['pagination']['totalPageCount'];
                 $page++;
 
                 foreach ($result['offers'] as $offer) {
                     if (isset($offer['externalId'])) {
                         $product = wc_get_product($offer['externalId']);
-                        
-                        if ($product != false) {
+
+                        if ($product instanceof WC_Product) {
                             if ($product->get_type() == 'variable') {
                                 continue;
                             }
-                            update_post_meta($offer['externalId'], '_manage_stock', 'yes');
+
+                            $product->set_manage_stock(true);
                             $product->set_stock_quantity($offer['quantity']);
-                            $product->save();
+                            $success[] = $product->save();
                         }
                     }
                 }
             } while ($page <= $totalPageCount);
+
+            return $success;
         }
 
+        /**
+         * Update stock quantity in WooCommerce
+         *
+         * @return mixed
+         */
         public function updateQuantity()
         {
-            $options = array_filter(get_option(WC_Retailcrm_Base::$option_key));
-
-            if ($options['sync'] == 'yes') {
-                $this->load_stocks();
-            } else {
-                return false;
+            if ($this->retailcrm_settings['sync'] == 'yes') {
+                return $this->load_stocks();
             }
+
+            return false;
         }
     }
 endif;
