@@ -27,9 +27,9 @@ class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
             ))
             ->getMock();
 
-	    $this->apiMock->expects($this->any())
-		    ->method('ordersEdit')
-		    ->willReturn($this->responseMock);
+        $this->apiMock->expects($this->any())
+            ->method('ordersEdit')
+            ->willReturn($this->responseMock);
 
         $this->order = new WC_Order();
         $this->order->save();
@@ -93,7 +93,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
 
     public function dataProviderUpdateOrder()
     {
-	    $this->setUp();
+        $this->setUp();
 
         return array(
             array(
@@ -117,7 +117,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
 
     public function dataProviderRetailcrm()
     {
-    	$this->setUp();
+        $this->setUp();
 
         return array(
             array(

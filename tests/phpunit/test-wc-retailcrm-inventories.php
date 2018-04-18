@@ -8,8 +8,8 @@ class WC_Retailcrm_Inventories_Test extends  WC_Unit_Test_Case
 
     public function setUp()
     {
-	    $this->offer = new WC_Product_Simple();
-	    $this->offer->save();
+        $this->offer = new WC_Product_Simple();
+        $this->offer->save();
 
         $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response')
             ->disableOriginalConstructor()
@@ -25,11 +25,11 @@ class WC_Retailcrm_Inventories_Test extends  WC_Unit_Test_Case
             ))
             ->getMock();
 
-	    $this->apiMock->expects($this->any())
-		    ->method('storeInventories')
-		    ->willReturn($this->getTestData());
+        $this->apiMock->expects($this->any())
+            ->method('storeInventories')
+            ->willReturn($this->getTestData());
 
-	    parent::setUp();
+        parent::setUp();
     }
 
     /**
@@ -65,7 +65,7 @@ class WC_Retailcrm_Inventories_Test extends  WC_Unit_Test_Case
 
     public function dataProviderLoadStocks()
     {
-    	$this->setUp();
+        $this->setUp();
 
         return array(
             array(

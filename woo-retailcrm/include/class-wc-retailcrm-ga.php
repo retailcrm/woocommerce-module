@@ -6,9 +6,9 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
         private static $instance;
         private $options;
 
-	    /**
-	     * @return WC_Retailcrm_Google_Analytics
-	     */
+        /**
+         * @return WC_Retailcrm_Google_Analytics
+         */
         public static function getInstance($options = array())
         {
             if (self::$instance === null) {
@@ -18,19 +18,19 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
             return self::$instance;
         }
 
-	    /**
-	     * WC_Retailcrm_Google_Analytics constructor.
-	     *
-	     * @param array $options
-	     */
+        /**
+         * WC_Retailcrm_Google_Analytics constructor.
+         *
+         * @param array $options
+         */
         private function __construct($options = array())
         {
             $this->options = $options;
         }
 
-	    /**
-	     * @return string
-	     */
+        /**
+         * @return string
+         */
         public function initialize_analytics() {
             return "
                 <script>
@@ -54,9 +54,9 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
             ";
         }
 
-	    /**
-	     * @return string
-	     */
+        /**
+         * @return string
+         */
         public function send_analytics() {
             $js = '';
             $order_id = wc_get_order_id_by_order_key($_GET['key']);

@@ -64,7 +64,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
          * Check custom file
+         *
          * @param string $file
+         *
          * @return string
          */
         public static function checkCustomFile($file) {

@@ -36,7 +36,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
          * Construct the plugin.
          */
         public function __construct() {
-	        add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
+            add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
 
             if ( class_exists( 'WC_Integration' ) ) {
                 require_once( dirname( __FILE__ ) . '/include/class-wc-retailcrm-base.php' );
@@ -47,9 +47,9 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             }
         }
 
-	    public function load_plugin_textdomain() {
-		    load_plugin_textdomain('retailcrm', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	    }
+        public function load_plugin_textdomain() {
+            load_plugin_textdomain('retailcrm', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+        }
 
         /**
          * Add a new integration to WooCommerce.
@@ -65,12 +65,12 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     }
 
     if (!class_exists('WC_Retailcrm_Plugin')) {
-    	require_once (dirname(__FILE__) . '/include/class-wc-retailcrm-plugin.php');
+    require_once (dirname(__FILE__) . '/include/class-wc-retailcrm-plugin.php');
     }
 
     $plugin = WC_Retailcrm_Plugin::getInstance(__FILE__);
     $plugin->register_activation_hook();
-	$plugin->register_deactivation_hook();
+    $plugin->register_deactivation_hook();
 
     add_action( 'plugins_loaded', array( 'WC_Integration_Retailcrm', 'get_instance' ), 0 );
 endif;
