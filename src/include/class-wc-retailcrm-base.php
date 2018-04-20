@@ -16,14 +16,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public static $option_key;
 
-        public $apiClient;
         protected $api_url;
         protected $api_key;
 
+        private $apiClient;
+
         /**
          * Init and hook in the integration.
+         * @param $retailcrm (default = false)
          */
-        public function __construct() {
+        public function __construct($retailcrm = false) {
             //global $woocommerce;
 
             if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
@@ -34,7 +36,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->method_title       = __('RetailCRM', 'retailcrm');
             $this->method_description = __('Integration with eComlogic managament system.', 'retailcrm');
 
-            $this->apiClient = $this->getApiClient();
+            if ($retailcrm === false) {
+                $this->apiClient = $this->getApiClient();
+            } else {
+                $this->apiClient = $retailcrm;
+            }
+
             self::$option_key = $this->get_option_key();
             // Load the settings.
             $this->init_form_fields();
@@ -419,8 +426,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'id' => 'shipping_options'
                         );
 
-                        foreach ( $wc_shipping_list as  $shipping_code => $shipping ) {
-                            if ( isset( $shipping['enabled'] ) && $shipping['enabled'] == 'yes' ) {
+                        foreach ($wc_shipping_list as  $shipping_code => $shipping) {
+                            if (isset($shipping['enabled']) && $shipping['enabled'] == 'yes') {
                                 $this->form_fields[$shipping_code] = array(
                                     'title'          => __($shipping['title'], 'woocommerce'),
                                     'description' => __($shipping['description'], 'woocommerce'),
@@ -445,7 +452,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             $payment_option_list[$retailcrm_payment_type['code']] = $retailcrm_payment_type['name'];
                         }
 
-                        $wc_payment = new WC_Payment_Gateways();
+                        $wc_payment = WC_Payment_Gateways::instance();
 
                         $this->form_fields[] = array(
                             'title' => __('Payment methods', 'retailcrm'),
@@ -454,11 +461,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'id' => 'payment_options'
                         );
 
-                        foreach ( $wc_payment->payment_gateways as $payment ) {
-                            if ( isset( $payment->enabled ) && $payment->enabled == 'yes' ) {
-                                $key = $payment->id;
-                                $name = $key;
-                                $this->form_fields[$name] = array(
+                        foreach ($wc_payment->get_available_payment_gateways() as $payment) {
+                            if (isset($payment->enabled) && $payment->enabled == 'yes') {
+                                $this->form_fields[$payment->id] = array(
                                     'title'          => __($payment->method_title, 'woocommerce'),
                                     'description' => __($payment->method_description, 'woocommerce'),
                                     'css'            => 'min-width:350px;',
@@ -491,7 +496,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'id'          => 'statuses_options'
                         );
 
-                        foreach ( $wc_statuses as $idx => $name ) {
+                        foreach ($wc_statuses as $idx => $name) {
                             $uid = str_replace('wc-', '', $idx);
                             $this->form_fields[$uid] = array(
                                 'title'    => __($name, 'woocommerce'),

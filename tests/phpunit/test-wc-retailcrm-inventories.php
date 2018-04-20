@@ -1,6 +1,6 @@
 <?php
 
-class WC_Retailcrm_Inventories_Test extends WC_Unit_Test_Case
+class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
 {
     protected $apiMock;
     protected $responseMock;
@@ -8,9 +8,6 @@ class WC_Retailcrm_Inventories_Test extends WC_Unit_Test_Case
 
     public function setUp()
     {
-        $this->offer = new WC_Product_Simple();
-        $this->offer->save();
-
         $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
             ->disableOriginalConstructor()
             ->setMethods(array(
@@ -36,7 +33,11 @@ class WC_Retailcrm_Inventories_Test extends WC_Unit_Test_Case
      */
     public function test_load_stocks($retailcrm, $response)
     {
+        $offer = WC_Helper_Product::create_simple_product();
+        $offer->save();
+
         if ($response['success'] == true) {
+            $response['offers'][0]['externalId'] = $offer->get_id();
             $this->responseMock->expects($this->any())
                 ->method('isSuccessful')
                 ->willReturn(true);
@@ -82,7 +83,6 @@ class WC_Retailcrm_Inventories_Test extends WC_Unit_Test_Case
                 'offers' => array(
                     array(
                         'id' => 1,
-                        'externalId' => $this->offer->get_id(),
                         'xmlId' => 'xmlId',
                         'quantity' => 10
                     )

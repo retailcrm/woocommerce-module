@@ -21,7 +21,6 @@
             <file>uninstall.php</file>
             <exclude>
                 <directory suffix=".php">./include/api</directory>
-                <file>./include/class-wc-retailcrm-base.php</file>
             </exclude>
         </whitelist>
     </filter>

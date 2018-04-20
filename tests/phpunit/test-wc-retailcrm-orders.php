@@ -1,20 +1,14 @@
 <?php
 
-class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
+class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
 {
     protected $apiMock;
     protected $responseMock;
     protected $order;
+    protected $options;
 
     public function setUp()
     {
-        $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response')
-            ->disableOriginalConstructor()
-            ->setMethods(array(
-                'isSuccessful'
-            ))
-            ->getMock();
-
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
             ->disableOriginalConstructor()
             ->setMethods(array(
@@ -23,72 +17,160 @@ class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
                 'ordersCreate',
                 'ordersEdit',
                 'customersGet',
-                'customersCreate'
+                'customersCreate',
+                'ordersPaymentCreate',
+                'ordersPaymentDelete'
             ))
             ->getMock();
 
-        $this->apiMock->expects($this->any())
-            ->method('ordersEdit')
-            ->willReturn($this->responseMock);
-
-        $this->order = new WC_Order();
-        $this->order->save();
         parent::setUp();
     }
 
     /**
      * @param $retailcrm
+     * @param $apiVersion
      * @dataProvider dataProviderRetailcrm
      */
-    public function test_order_upload($retailcrm)
+    public function test_order_upload($retailcrm, $apiVersion)
     {
+        $this->options = $this->setOptions($apiVersion);
         $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
         $retailcrm_orders->ordersUpload();
     }
 
     /**
      * @param $retailcrm
+     * @param $apiVersion
      * @dataProvider dataProviderRetailcrm
      */
-    public function test_order_create($retailcrm)
+    public function test_order_create($retailcrm, $apiVersion)
     {
+        $this->createTestOrder();
+        $this->options = $this->setOptions($apiVersion);
         $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
-        $retailcrm_orders->orderCreate($this->order->get_id());
-    }
+        $order = $retailcrm_orders->orderCreate($this->order->get_id());
+        $order_send = $retailcrm_orders->getOrder();
 
-    /**
-     * @param $retailcrm
-     * @dataProvider dataProviderRetailcrm
-     */
-    public function test_order_update_status($retailcrm)
-    {
-        $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
-        $retailcrm_orders->orderUpdateStatus($this->order->get_id());
-    }
+        if ($retailcrm) {
+            $this->assertInstanceOf('WC_Order', $order);
+            $this->assertInternalType('array', $order_send);
+            $this->assertArrayHasKey('status', $order_send);
+            $this->assertArrayHasKey('externalId', $order_send);
+            $this->assertArrayHasKey('firstName', $order_send);
+            $this->assertArrayHasKey('lastName', $order_send);
+            $this->assertArrayHasKey('email', $order_send);
+            $this->assertArrayHasKey('delivery', $order_send);
+            $this->assertArrayHasKey('code', $order_send['delivery']);
+            $this->assertArrayHasKey('address', $order_send['delivery']);
+            $this->assertArrayHasKey('index', $order_send['delivery']['address']);
+            $this->assertArrayHasKey('city', $order_send['delivery']['address']);
+            $this->assertEquals($this->order->get_id(), $order_send['externalId']);
+            $this->assertEquals('status1', $order_send['status']);
+            $this->assertEquals('testFirstName', $order_send['firstName']);
+            $this->assertEquals('testLastName', $order_send['lastName']);
+            $this->assertEquals('test@mail.com', $order_send['email']);
+            $this->assertEquals('RU', $order_send['countryIso']);
+            $this->assertEquals('111111', $order_send['delivery']['address']['index']);
+            $this->assertEquals('testCity', $order_send['delivery']['address']['city']);
+            $this->assertEquals('delivery', $order_send['delivery']['code']);
 
-    /**
-     * @param $retailcrm
-     * @dataProvider dataProviderRetailcrm
-     */
-    public function test_order_update_payment($retailcrm)
-    {
-        $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
-        $retailcrm_orders->orderUpdatePayment($this->order->get_id());
+            if ($apiVersion == 'v4') {
+                $this->assertArrayHasKey('paymentType', $order_send);
+                $this->assertEquals('payment1', $order_send['paymentType']);
+            } elseif ($apiVersion == 'v5') {
+                $this->assertArrayHasKey('payments', $order_send);
+                $this->assertInternalType('array', $order_send['payments']);
+                $this->assertArrayHasKey('type', $order_send['payments'][0]);
+                $this->assertEquals('payment1', $order_send['payments'][0]['type']);
+            }
+        } else {
+            $this->assertEquals(null, $order);
+        }
     }
 
     /**
      * @param $isSuccessful
      * @param $retailcrm
+     * @param $apiVersion
      * @dataProvider dataProviderUpdateOrder
      */
-    public function test_update_order($isSuccessful, $retailcrm)
+    public function test_update_order($isSuccessful, $retailcrm, $apiVersion)
     {
-        $this->responseMock->expects($this->any())
-            ->method('isSuccessful')
-            ->willReturn($isSuccessful);
+        $this->createTestOrder();
+        $this->options = $this->setOptions($apiVersion);
+
+        if ($retailcrm && $apiVersion == 'v5') {
+            $responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
+                ->disableOriginalConstructor()
+                ->setMethods(array(
+                    'isSuccessful'
+                ))
+                ->getMock();
+
+            $responseMock->expects($this->any())
+                ->method('isSuccessful')
+                ->willReturn($isSuccessful);
+
+            $retailcrm->expects($this->any())
+                ->method('ordersEdit')
+                ->willReturn($responseMock);
+
+            $retailcrm->expects($this->any())
+                ->method('ordersPaymentDelete')
+                ->willReturn($responseMock);
+
+            $response = $this->getResponseData($this->order->get_id());
+            $responseMock->setResponse($response);
+
+            $retailcrm->expects($this->any())
+                ->method('ordersGet')
+                ->willReturn($responseMock);
+        }
 
         $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
-        $retailcrm_orders->updateOrder($this->order->get_id());
+        $order = $retailcrm_orders->updateOrder($this->order->get_id());
+        $order_send = $retailcrm_orders->getOrder();
+
+        if ($retailcrm) {
+            $this->assertInstanceOf('WC_Order', $order);
+            $this->assertInternalType('array', $order_send);
+            $this->assertArrayHasKey('status', $order_send);
+            $this->assertArrayHasKey('externalId', $order_send);
+            $this->assertArrayHasKey('firstName', $order_send);
+            $this->assertArrayHasKey('lastName', $order_send);
+            $this->assertArrayHasKey('email', $order_send);
+            $this->assertArrayHasKey('delivery', $order_send);
+            $this->assertArrayHasKey('code', $order_send['delivery']);
+            $this->assertArrayHasKey('address', $order_send['delivery']);
+            $this->assertArrayHasKey('index', $order_send['delivery']['address']);
+            $this->assertArrayHasKey('city', $order_send['delivery']['address']);
+            $this->assertEquals($this->order->get_id(), $order_send['externalId']);
+            $this->assertEquals('status1', $order_send['status']);
+            $this->assertEquals('testFirstName', $order_send['firstName']);
+            $this->assertEquals('testLastName', $order_send['lastName']);
+            $this->assertEquals('test@mail.com', $order_send['email']);
+            $this->assertEquals('RU', $order_send['countryIso']);
+            $this->assertEquals('111111', $order_send['delivery']['address']['index']);
+            $this->assertEquals('testCity', $order_send['delivery']['address']['city']);
+            $this->assertEquals('delivery', $order_send['delivery']['code']);
+
+            if ($apiVersion == 'v4') {
+                $this->assertArrayHasKey('paymentType', $order_send);
+                $this->assertEquals('payment1', $order_send['paymentType']);
+            } elseif ($apiVersion == 'v5') {
+                $payment = $retailcrm_orders->getPayment();
+                $this->assertInternalType('array', $payment);
+
+                if (!empty($payment)) {
+                    $this->assertArrayHasKey('type', $payment);
+                    $this->assertArrayHasKey('amount', $payment);
+                    $this->assertArrayHasKey('order', $payment);
+                    $this->assertEquals('payment1', $payment['type']);
+                }
+            }
+        } else {
+            $this->assertEquals(null, $order);
+        }
     }
 
     public function dataProviderUpdateOrder()
@@ -98,19 +180,43 @@ class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
         return array(
             array(
                 'is_successful' => true,
-                'retailcrm' => $this->apiMock
-            ),
-            array(
-                'is_successful' => false,
-                'retailcrm' => $this->apiMock
+                'retailcrm' => $this->apiMock,
+                'api_version' => 'v5'
             ),
             array(
                 'is_successful' => true,
-                'retailcrm' => false
+                'retailcrm' => false,
+                'api_version' => 'v5'
             ),
             array(
                 'is_successful' => false,
-                'retailcrm' => false
+                'retailcrm' => false,
+                'api_version' => 'v5'
+            ),
+            array(
+                'is_successful' => false,
+                'retailcrm' => $this->apiMock,
+                'api_version' => 'v5'
+            ),
+            array(
+                'is_successful' => false,
+                'retailcrm' => $this->apiMock,
+                'api_version' => 'v4'
+            ),
+            array(
+                'is_successful' => true,
+                'retailcrm' => $this->apiMock,
+                'api_version' => 'v4'
+            ),
+            array(
+                'is_successful' => false,
+                'retailcrm' => false,
+                'api_version' => 'v4'
+            ),
+            array(
+                'is_successful' => true,
+                'retailcrm' => false,
+                'api_version' => 'v4'
             )
         );
     }
@@ -121,10 +227,50 @@ class WC_Retailcrm_Orders_Test extends  WC_Unit_Test_Case
 
         return array(
             array(
-                'retailcrm' => $this->apiMock
+                'retailcrm' => $this->apiMock,
+                'api_version' => 'v4'
             ),
             array(
-                'retailcrm' => false
+                'retailcrm' => false,
+                'api_version' => 'v4'
+            ),
+            array(
+                'retailcrm' => $this->apiMock,
+                'api_version' => 'v5'
+            ),
+            array(
+                'retailcrm' => false,
+                'api_version' => 'v5'
+            )
+        );
+    }
+
+    private function createTestOrder()
+    {
+        $this->order = new WC_Order();
+        $this->order->set_payment_method('bacs');
+        $this->order->set_billing_first_name('testFirstName');
+        $this->order->set_billing_last_name('testLastName');
+        $this->order->set_billing_country('RU');
+        $this->order->set_billing_address_1('testAddress1');
+        $this->order->set_billing_city('testCity');
+        $this->order->set_billing_postcode('111111');
+        $this->order->set_billing_email('test@mail.com');
+        $this->order->save();
+    }
+
+    private function getResponseData($externalId)
+    {
+        return array(
+            'success' => true,
+            'order' => array(
+                'payments' => array(
+                    array(
+                        'id' => 1,
+                        'externalId' => $externalId,
+                        'type' => 'payment2'
+                    )
+                )
             )
         );
     }

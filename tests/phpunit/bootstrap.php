@@ -10,13 +10,11 @@ require_once $_tests_dir . '/includes/functions.php';
 
 function _manually_load_plugin() {
     $plugin_dir = dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/';
-    // helpers
-    require $plugin_dir . 'woocommerce-retailcrm/tests/helpers/class-wc-retailcrm-response-helper.php';
 
-    require $plugin_dir . 'woocommerce-retailcrm/woo-retailcrm/include/class-wc-retailcrm-orders.php';
-    require $plugin_dir . 'woocommerce-retailcrm/woo-retailcrm/include/class-wc-retailcrm-customers.php';
-    require $plugin_dir . 'woocommerce-retailcrm/woo-retailcrm/include/class-wc-retailcrm-inventories.php';
-    require $plugin_dir . 'woocommerce-retailcrm/woo-retailcrm/retailcrm.php';
+    require $plugin_dir . 'woocommerce-retailcrm/src/include/class-wc-retailcrm-orders.php';
+    require $plugin_dir . 'woocommerce-retailcrm/src/include/class-wc-retailcrm-customers.php';
+    require $plugin_dir . 'woocommerce-retailcrm/src/include/class-wc-retailcrm-inventories.php';
+    require $plugin_dir . 'woocommerce-retailcrm/src/retailcrm.php';
     require '/woocommerce/woocommerce.php';
 }
 
@@ -35,3 +33,8 @@ require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php' )
 require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php' );
 require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php' );
 require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php' );
+
+$plugin_dir = dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) . '/';
+// helpers
+require $plugin_dir . 'woocommerce-retailcrm/tests/helpers/class-wc-retailcrm-response-helper.php';
+require $plugin_dir . 'woocommerce-retailcrm/tests/helpers/class-wc-retailcrm-test-case-helper.php';

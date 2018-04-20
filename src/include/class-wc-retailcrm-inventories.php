@@ -37,7 +37,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
             $success = array();
 
             if (!$this->retailcrm) {
-                return;
+                return null;
             }
 
             $page = 1;
@@ -46,7 +46,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                 $result = $this->retailcrm->storeInventories(array(), $page, 250);
 
                 if (!$result->isSuccessful()) {
-                    return;
+                    return null;
                 }
 
                 $totalPageCount = $result['pagination']['totalPageCount'];
