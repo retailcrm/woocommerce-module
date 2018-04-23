@@ -66,13 +66,13 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('city', $order_send['delivery']['address']);
             $this->assertEquals($this->order->get_id(), $order_send['externalId']);
             $this->assertEquals('status1', $order_send['status']);
-            $this->assertEquals('testFirstName', $order_send['firstName']);
-            $this->assertEquals('testLastName', $order_send['lastName']);
-            $this->assertEquals('test@mail.com', $order_send['email']);
-            $this->assertEquals('RU', $order_send['countryIso']);
-            $this->assertEquals('111111', $order_send['delivery']['address']['index']);
-            $this->assertEquals('testCity', $order_send['delivery']['address']['city']);
-            $this->assertEquals('delivery', $order_send['delivery']['code']);
+            $this->assertEquals('Jeroen', $order_send['firstName']);
+            $this->assertEquals('Sormani', $order_send['lastName']);
+            $this->assertEquals('admin@example.org', $order_send['email']);
+            $this->assertEquals('US', $order_send['countryIso']);
+            $this->assertEquals('123456', $order_send['delivery']['address']['index']);
+            $this->assertEquals('WooCity', $order_send['delivery']['address']['city']);
+            $this->assertEquals('delivery5', $order_send['delivery']['code']);
 
             if ($apiVersion == 'v4') {
                 $this->assertArrayHasKey('paymentType', $order_send);
@@ -146,13 +146,13 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('city', $order_send['delivery']['address']);
             $this->assertEquals($this->order->get_id(), $order_send['externalId']);
             $this->assertEquals('status1', $order_send['status']);
-            $this->assertEquals('testFirstName', $order_send['firstName']);
-            $this->assertEquals('testLastName', $order_send['lastName']);
-            $this->assertEquals('test@mail.com', $order_send['email']);
-            $this->assertEquals('RU', $order_send['countryIso']);
-            $this->assertEquals('111111', $order_send['delivery']['address']['index']);
-            $this->assertEquals('testCity', $order_send['delivery']['address']['city']);
-            $this->assertEquals('delivery', $order_send['delivery']['code']);
+            $this->assertEquals('Jeroen', $order_send['firstName']);
+            $this->assertEquals('Sormani', $order_send['lastName']);
+            $this->assertEquals('admin@example.org', $order_send['email']);
+            $this->assertEquals('US', $order_send['countryIso']);
+            $this->assertEquals('123456', $order_send['delivery']['address']['index']);
+            $this->assertEquals('WooCity', $order_send['delivery']['address']['city']);
+            $this->assertEquals('delivery5', $order_send['delivery']['code']);
 
             if ($apiVersion == 'v4') {
                 $this->assertArrayHasKey('paymentType', $order_send);
@@ -247,16 +247,18 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
 
     private function createTestOrder()
     {
-        $this->order = new WC_Order();
-        $this->order->set_payment_method('bacs');
-        $this->order->set_billing_first_name('testFirstName');
-        $this->order->set_billing_last_name('testLastName');
-        $this->order->set_billing_country('RU');
-        $this->order->set_billing_address_1('testAddress1');
-        $this->order->set_billing_city('testCity');
-        $this->order->set_billing_postcode('111111');
-        $this->order->set_billing_email('test@mail.com');
-        $this->order->save();
+        $this->order = WC_Helper_Order::create_order(0);
+//        var_dump($this->order);
+//        $this->order = new WC_Order();
+//        $this->order->set_payment_method('bacs');
+//        $this->order->set_billing_first_name('testFirstName');
+//        $this->order->set_billing_last_name('testLastName');
+//        $this->order->set_billing_country('RU');
+//        $this->order->set_billing_address_1('testAddress1');
+//        $this->order->set_billing_city('testCity');
+//        $this->order->set_billing_postcode('111111');
+//        $this->order->set_billing_email('test@mail.com');
+//        $this->order->save();
     }
 
     private function getResponseData($externalId)

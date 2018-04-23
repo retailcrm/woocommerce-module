@@ -21,11 +21,11 @@ function _manually_load_plugin() {
 tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
 require $_tests_dir . '/includes/bootstrap.php';
-require '/tmp/woocommerce/tests/bootstrap.php';
 
 $wc_tests_framework_base_dir = '/tmp/woocommerce/tests/framework/';
 
 require_once( $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php' );
+require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-factory.php' );
 require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );
 require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php' );
 require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php' );

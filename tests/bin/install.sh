@@ -72,6 +72,7 @@ install_woocommerce() {
     cd /tmp
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
+    git checkout master
     cd -
 }
 

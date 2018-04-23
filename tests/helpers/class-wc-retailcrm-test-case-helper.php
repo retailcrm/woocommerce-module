@@ -18,6 +18,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'free_shipping:7' => 'delivery2',
             'flat_rate:8' => 'delivery3',
             'local_pickup:9' => 'delivery4',
+            'flat_rate_shipping' => 'delivery5',
             'bacs' => 'payment1',
             'cheque' => 'payment2',
             'cod' => 'payment3',
