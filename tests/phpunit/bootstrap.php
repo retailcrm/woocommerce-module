@@ -1,8 +1,8 @@
 <?php
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+$_tests_dir = getenv('WP_TESTS_DIR');
 
-if ( ! $_tests_dir ) {
+if (!$_tests_dir) {
     $_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
@@ -15,15 +15,15 @@ function _manually_load_plugin() {
     require $plugin_dir . 'woocommerce-retailcrm/src/include/class-wc-retailcrm-customers.php';
     require $plugin_dir . 'woocommerce-retailcrm/src/include/class-wc-retailcrm-inventories.php';
     require $plugin_dir . 'woocommerce-retailcrm/src/retailcrm.php';
-    require '/woocommerce/woocommerce.php';
+    require '/tmp/woocommerce/woocommerce.php';
 }
 
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
 require $_tests_dir . '/includes/bootstrap.php';
-require '/woocommerce/tests/bootstrap.php';
+require '/tmp/woocommerce/tests/bootstrap.php';
 
-$wc_tests_framework_base_dir = '/woocommerce/tests/framework/';
+$wc_tests_framework_base_dir = '/tmp/woocommerce/tests/framework/';
 
 require_once( $wc_tests_framework_base_dir . 'class-wc-mock-session-handler.php' );
 require_once( $wc_tests_framework_base_dir . 'class-wc-unit-test-case.php' );

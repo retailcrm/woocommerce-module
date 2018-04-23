@@ -7,6 +7,8 @@
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
     verbose="true"
+    processIsolation="false"
+    stopOnFailure="false"
     syntaxCheck="true"
     >
     <testsuites>
@@ -16,11 +18,11 @@
     </testsuites>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./include</directory>
-            <file>retailcrm.php</file>
-            <file>uninstall.php</file>
+            <directory suffix=".php">src/include</directory>
             <exclude>
-                <directory suffix=".php">./include/api</directory>
+                <directory suffix=".php">src/include/api</directory>
+                <file>src/retailcrm.php</file>
+                <file>src/uninstall.php</file>
             </exclude>
         </whitelist>
     </filter>

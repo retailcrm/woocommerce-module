@@ -69,11 +69,9 @@ install_wp() {
 }
 
 install_woocommerce() {
-    cd $TRAVIS_BUILD_DIR
-    cd ..
+    cd /tmp
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
-    git checkout $WC_VERSION
     cd -
 }
 
@@ -132,15 +130,7 @@ install_db() {
 	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
 }
 
-#install_wc() {
-#
-#    mkdir -p /tmp/wordpress/wp-content/plugins/woocommerce
-#    svn co --quiet https://plugins.svn.wordpress.org/woocommerce/trunk/ /tmp/wordpress/wp-content/plugins/woocommerce
-#
-#}
-
 install_wp
 install_test_suite
 install_woocommerce
 install_db
-#install_wc

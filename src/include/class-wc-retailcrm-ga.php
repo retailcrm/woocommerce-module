@@ -32,7 +32,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
          * @return string
          */
         public function initialize_analytics() {
-            return "
+            return apply_filters('retailcrm_initialize_analytics' ,"
                 <script>
                     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -51,7 +51,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                     ga('set', 'dimension" . $this->options['ua_custom'] ."', getRetailCrmCookie('_ga'));
                     ga('send', 'pageview');
                 </script>
-            ";
+            ");
         }
 
         /**
@@ -109,7 +109,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                 ";
             }
 
-            return $js;
+            return apply_filters('retailcrm_send_analytics', $js);
         }
     }
 }
