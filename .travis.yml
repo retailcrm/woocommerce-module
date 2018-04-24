@@ -15,12 +15,12 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 5.3
-      dist: precise
-    - php: 7.2
-      env: WP_VERSION=latest WP_MULTISITE=0 RUN_CODE_COVERAGE=1
-    allow_failures:
-    - env: WP_VERSION=latest WP_MULTISITE=0 RUN_CODE_COVERAGE=1
+  - php: 5.3
+    dist: precise
+  - php: 7.2
+    env: WP_VERSION=latest WP_MULTISITE=0 RUN_CODE_COVERAGE=1
+  allow_failures:
+  - env: WP_VERSION=latest WP_MULTISITE=0 RUN_CODE_COVERAGE=1
 
 before_script:
   - bash tests/bin/install.sh wc_stripe_test root '' localhost $WP_VERSION
