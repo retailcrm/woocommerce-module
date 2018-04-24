@@ -35,8 +35,13 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
     {
         $this->options = $this->setOptions($apiVersion);
         $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
-        $retailcrm_orders->ordersUpload();
-        $this->assertInternalType('array', $retailcrm_orders);
+        $upload_orders = $retailcrm_orders->ordersUpload();
+
+        if ($retailcrm) {
+            $this->assertInternalType('array', $upload_orders);
+        } else {
+            $this->assertEquals(null, $upload_orders);
+        }
     }
 
     /**
