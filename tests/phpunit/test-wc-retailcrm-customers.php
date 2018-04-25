@@ -1,6 +1,6 @@
 <?php
 
-class WC_Retailcrm_Customers_Test extends WC_Unit_Test_Case
+class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
 {
     protected $apiMock;
     protected $responseMock;

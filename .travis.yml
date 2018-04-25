@@ -26,10 +26,6 @@ matrix:
 before_script:
   - bash tests/bin/install.sh wc_retailcrm_test root '' localhost $WP_VERSION
 
-cache:
-  directories:
-    - node_modules
-
 script: phpunit -c phpunit.xml.dist
 
 deploy:
