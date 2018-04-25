@@ -1,4 +1,4 @@
-FILE = $(TRAVIS_BUILD_DIR)/version.txt
+FILE = $(TRAVIS_BUILD_DIR)/VERSION
 VERSION = `cat $(FILE)`
 
 all: svn_co prepare deploy remove_dir
