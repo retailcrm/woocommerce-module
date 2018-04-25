@@ -19,6 +19,8 @@ matrix:
     dist: precise
   - php: 7.2
     env: WP_VERSION=latest WP_MULTISITE=0 RUN_CODE_COVERAGE=1
+  - php: 7.1
+    sudo: required
   allow_failures:
   - env: WP_VERSION=latest WP_MULTISITE=0 RUN_CODE_COVERAGE=1
 
@@ -32,7 +34,10 @@ cache:
 script: phpunit -c phpunit.xml.dist
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: make
   on:
+    php: 7.1
     branch: master
+    condition: "$DEPLOY = true"

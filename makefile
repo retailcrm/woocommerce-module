@@ -13,9 +13,7 @@ prepare: /tmp/svn_plugin_dir
 	cp -R $(TRAVIS_BUILD_DIR)/src/* /tmp/svn_plugin_dir/trunk
 
 deploy: /tmp/svn_plugin_dir/tags
-ifeq ($(DEPLOY),true)
 	svn ci /tmp/svn_plugin_dir -m $(VERSION) --username $(USERNAME) --password $(PASSWORD)
-endif
 
 remove_dir:
 	rm -rf /tmp/svn_plugin_dir
