@@ -30,3 +30,9 @@ cache:
     - node_modules
 
 script: phpunit -c phpunit.xml.dist
+
+deploy:
+  provider: script
+  script: make
+  on:
+    branch: master
