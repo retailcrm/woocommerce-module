@@ -1,0 +1,16 @@
+{
+    "name": "retailcrm/woocommerce-retailcrm",
+    "description": "Integration plugin for WooCommerce & RetailCRM",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "RetailDriver LLC",
+            "email": "integration@retailcrm.ru"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "6.*"
+    }
+}
