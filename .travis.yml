@@ -24,7 +24,7 @@ before_script:
   - bash tests/bin/install.sh wc_retailcrm_test root '' localhost $WP_VERSION
 
 script:
-  - bash tests/bin/bash script.sh
+  - bash tests/bin/script.sh
 
 deploy:
   skip_cleanup: true
