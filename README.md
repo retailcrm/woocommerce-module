@@ -1,5 +1,5 @@
 [![Build Status](https://img.shields.io/travis/retailcrm/woocommerce-module/master.svg?style=flat-square)](https://travis-ci.org/retailcrm/woocommerce-module)
-![WordPress plugin](https://img.shields.io/wordpress/plugin/v/woo-retailcrm.svg?style=flat-square)
+[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/woo-retailcrm.svg?style=flat-square)](https://wordpress.org/plugins/woo-retailcrm/)
 [![PHP version](https://img.shields.io/badge/PHP-5.3%2C%205.4%2C%205.5%2C%205.6%2C%207.0%2C%207.1%2C%207.2-blue.svg?style=flat-square)](https://php.net/)
 
 Woocommerce-module
