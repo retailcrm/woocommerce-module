@@ -544,7 +544,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
          * @return array
          */
         private function checkPostStatuses() {
-            $options = get_option( 'woocommerce_integration-retailcrm_settings' );
+            $options = get_option(WC_Retailcrm_Base::$option_key);
             $status_args = array();
 
             foreach (get_post_statuses() as $key => $value) {

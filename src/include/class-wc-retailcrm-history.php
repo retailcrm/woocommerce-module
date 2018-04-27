@@ -18,29 +18,23 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected $startDateCustomers;
         protected $startDate;
         protected $retailcrm_settings;
+        protected $retailcrm;
         protected $order_methods = array();
 
         /**
-         * Constructor WC_Retailcrm_History
+         * WC_Retailcrm_History constructor.
+         * @param bool $retailcrm
          */
-        public function __construct()
+        public function __construct($retailcrm = false)
         {
-            $this->retailcrm_settings = get_option( 'woocommerce_integration-retailcrm_settings' );
+            $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
 
             if (isset($this->retailcrm_settings['order_methods'])) {
                 $this->order_methods = $this->retailcrm_settings['order_methods'];
                 unset($this->retailcrm_settings['order_methods']);
             }
 
-            if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) {
-                include_once( WP_PLUGIN_DIR . '/woo-retailcrm/include/api/class-wc-retailcrm-proxy.php' );
-            }
-
-            $this->retailcrm = new WC_Retailcrm_Proxy(
-                $this->retailcrm_settings['api_url'],
-                $this->retailcrm_settings['api_key'],
-                $this->retailcrm_settings['api_version']
-            );
+            $this->retailcrm = $retailcrm;
 
             $this->startDate = new DateTime(date('Y-m-d H:i:s', strtotime('-1 days', strtotime(date('Y-m-d H:i:s')))));
             $this->startDateOrders = $this->startDate;
