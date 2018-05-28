@@ -35,15 +35,16 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * Upload customers to CRM
          *
-         * @return array $data
+         * @param array $ids
+         * @return array mixed
          */
-        public function customersUpload()
+        public function customersUpload($ids = array())
         {
             if (!$this->retailcrm) {
-                return;
+                return null;
             }
 
-            $users = get_users();
+            $users = get_users(array('include' => $ids));
             $data_customers = array();
 
             foreach ($users as $user) {

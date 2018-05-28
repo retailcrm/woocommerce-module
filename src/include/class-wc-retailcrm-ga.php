@@ -59,8 +59,17 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
          */
         public function send_analytics() {
             $js = '';
+
+            if (!isset($_GET['key'])) {
+                return $js;
+            }
+
             $order_id = wc_get_order_id_by_order_key($_GET['key']);
             $order = wc_get_order($order_id);
+
+            if (!$order) {
+                return $js;
+            }
 
             foreach ($order->get_items() as $item) {
                 $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];

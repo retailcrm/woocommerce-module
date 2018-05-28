@@ -29,9 +29,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         /**
          * Upload orders to CRM
          *
+         * @param bool $withCustomers
+         * @param array $include
          * @return array $uploadOrders | null
          */
-        public function ordersUpload()
+        public function ordersUpload($include = array(), $withCustomers = false)
         {
             if (!$this->retailcrm) {
                 return null;
@@ -40,7 +42,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $orders = get_posts(array(
                 'numberposts' => -1,
                 'post_type' => wc_get_order_types('view-orders'),
-                'post_status' => array_keys(wc_get_order_statuses())
+                'post_status' => array_keys(wc_get_order_statuses()),
+                'include' => $include
             ));
 
             $orders_data = array();
@@ -49,18 +52,33 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $order = wc_get_order($data_order->ID);
                 $this->processOrder($order);
                 $customer = $order->get_user();
+                $customers = array();
 
                 if ($customer != false) {
                     $this->order['customer']['externalId'] = $customer->get('ID');
+
+                    if ($withCustomers === true) {
+                        $customers[] = $customer->get('ID');
+                    }
                 }
 
                 $orders_data[] = $this->order;
+            }
+
+            if ($withCustomers === true && !empty($customers)) {
+                if (!class_exists('WC_Retailcrm_Customers')) {
+                    include_once(WC_Retailcrm_Base::checkCustomFile('customers'));
+                }
+
+                $retailcrmCustomer = new WC_Retailcrm_Customers($this->retailcrm);
+                $retailcrmCustomer->customersUpload($customers);
             }
 
             $uploadOrders = array_chunk($orders_data, 50);
 
             foreach ($uploadOrders as $uploadOrder) {
                 $this->retailcrm->ordersUpload($uploadOrder);
+                time_nanosleep(0, 250000000);
             }
 
             return $uploadOrders;
@@ -71,7 +89,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          *
          * @param $order_id
          *
-         * @return WC_Order $order | null
+         * @return mixed
          */
         public function orderCreate($order_id)
         {
