@@ -1,13 +1,13 @@
 <?php
 /**
- * Version: 3.0.0
+ * Version: 3.1.0
  * WC requires at least: 3.0
  * WC tested up to: 3.3
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
  * Author: RetailDriver LLC
- * Author URI: http://retailcrm.ru/
+ * Author URI: http://retailcrm.pro/
  * Text Domain: retailcrm
  */
 
@@ -72,5 +72,5 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     $plugin->register_activation_hook();
     $plugin->register_deactivation_hook();
 
-    add_action( 'plugins_loaded', array( 'WC_Integration_Retailcrm', 'get_instance' ), 0 );
+    add_action('plugins_loaded', array('WC_Integration_Retailcrm', 'get_instance'), 0);
 endif;

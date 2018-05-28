@@ -254,17 +254,6 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
     private function createTestOrder()
     {
         $this->order = WC_Helper_Order::create_order(0);
-//        var_dump($this->order);
-//        $this->order = new WC_Order();
-//        $this->order->set_payment_method('bacs');
-//        $this->order->set_billing_first_name('testFirstName');
-//        $this->order->set_billing_last_name('testLastName');
-//        $this->order->set_billing_country('RU');
-//        $this->order->set_billing_address_1('testAddress1');
-//        $this->order->set_billing_city('testCity');
-//        $this->order->set_billing_postcode('111111');
-//        $this->order->set_billing_email('test@mail.com');
-//        $this->order->save();
     }
 
     private function getResponseData($externalId)

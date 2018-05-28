@@ -2,12 +2,12 @@
 
 class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
 {
-    protected function setOptions($apiVesrion)
+    protected function setOptions($apiVersion = 'v5')
     {
         $options = array(
             'api_url' => 'https://example.retailcrm.ru',
             'api_key' => 'dhsHJGYdjkHHJKJSGjhasjhgajsgJGHsg',
-            'api_version' => $apiVesrion,
+            'api_version' => $apiVersion,
             'p_draft' => 'no',
             'p_pending' => 'no',
             'p_private' => 'no',
@@ -32,9 +32,9 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'refunded' => 'status6',
             'failed' => 'status7',
             'sync' => 'no',
-            'ua' => 'no',
-            'ua_code' => '',
-            'ua_custom' => '',
+            'ua' => 'yes',
+            'ua_code' => 'UA-XXXXXXX-XX',
+            'ua_custom' => '1',
             'upload-button' => ''
         );
 

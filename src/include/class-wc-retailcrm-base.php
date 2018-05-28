@@ -60,8 +60,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('init', array($this, 'register_retailcrm_history'));
             add_action('wp_ajax_do_upload', array($this, 'upload_to_crm'));
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
+            add_action('wp_ajax_order_upload', array($this, 'order_upload'));
             add_action('admin_print_footer_scripts', array($this, 'ajax_upload'), 99);
             add_action('admin_print_footer_scripts', array($this, 'ajax_generate_icml'), 99);
+            add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
             add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
@@ -173,6 +175,27 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
 
         /**
+         * Upload selected orders
+         */
+        public function order_upload() {
+            if (!class_exists('WC_Retailcrm_Orders')) {
+                include_once(self::checkCustomFile('orders'));
+            }
+
+            $ids = false;
+
+            if (isset($_GET['order_ids_retailcrm'])) {
+                $ids = explode(',', $_GET['order_ids_retailcrm']);
+            }
+
+            $retailcm_order = new WC_Retailcrm_Orders($this->apiClient);
+
+            if ($ids) {
+                $retailcm_order->ordersUpload($ids, true);
+            }
+        }
+
+        /**
          * Upload archive customers and order to retailCRM
          */
         public function upload_to_crm() {
@@ -193,13 +216,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $retailcrm_orders->ordersUpload();
 
             $options['uploads'] = 'yes';
-            update_option('woocommerce_integration-retailcrm_settings', $options);
+            update_option(self::$option_key, $options);
         }
 
         public function ajax_upload() {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
-            <script type="text/javascript" >
+            <script type="text/javascript">
             jQuery('#uploads-retailcrm').bind('click', function() {
                 jQuery.ajax({
                     type: "POST",
@@ -217,7 +240,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function ajax_generate_icml() {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
-            <script type="text/javascript" >
+            <script type="text/javascript">
             jQuery('#icml-retailcrm').bind('click', function() {
                 jQuery.ajax({
                     type: "POST",
@@ -227,6 +250,28 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         console.log('AJAX response : ', response);
                     }
                 });
+            });
+            </script>
+            <?php
+        }
+
+        public function ajax_selected_order() {
+            $ajax_url = admin_url('admin-ajax.php');
+            $ids = $this->plugin_id . $this->id . '_single_order';
+            ?>
+            <script type="text/javascript">
+            jQuery('#single_order_btn').bind('click', function() {
+                if (jQuery('#<?php echo $ids; ?>').val() == '') {
+                    alert('<?php echo __('Enter orders numbers', 'retailcrm'); ?>');
+                } else {
+                    jQuery.ajax({
+                        type: "POST",
+                        url: '<?php echo $ajax_url; ?>?action=order_upload&order_ids_retailcrm=' + jQuery('#<?php echo $ids; ?>').val(),
+                        success: function (response) {
+                            alert('<?php echo __('Orders were unloaded', 'retailcrm'); ?>');
+                        }
+                    });
+                }
             });
             </script>
             <?php
@@ -295,7 +340,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 include_once(self::checkCustomFile('ga'));
             }
 
-            if ($this->get_option('ua') && $this->get_option('ua_code')) {
+            if ($this->get_option('ua') && $this->get_option('ua_code') && is_checkout()) {
                 $retailcrm_analytics = WC_Retailcrm_Google_Analytics::getInstance($this->settings);
                 echo $retailcrm_analytics->send_analytics();
             } else {
@@ -597,6 +642,33 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'description'       => __('This functionality allows you to generate a catalog of products for downloading to CRM.', 'retailcrm'),
                         'desc_tip'          => true,
                         'id'                => 'icml-retailcrm'
+                    );
+
+                    /*
+                     * Upload single order
+                     */
+                    $this->form_field[] = array(
+                        'title'       => __( 'Upload single order by id', 'retailcrm' ),
+                        'type'        => 'title',
+                        'description' => '',
+                        'id'          => 'order_options'
+                    );
+
+                    $this->form_fields['single_order'] = array(
+                        'label'             => __('Order ID', 'retailcrm'),
+                        'title'             => __('Enter id order', 'retailcrm'),
+                        'type'              => 'input',
+                        'description'       => __('Enter comma-separated order numbers.', 'retailcrm'),
+                        'desc_tip'          => true
+                    );
+
+                    $this->form_fields[] = array(
+                        'label'             => __('Upload', 'retailcrm'),
+                        'title'             => __('Upload single order by identificator', 'retailcrm'),
+                        'type'              => 'button',
+                        'description'       => __('This functionality allows you to upload single order to CRM.', 'retailcrm'),
+                        'desc_tip'          => true,
+                        'id'                => 'single_order_btn'
                     );
                 }
             }

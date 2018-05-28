@@ -192,7 +192,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         $this->orderEdit($record, $options);
                     } catch (Exception $exception) {
                         $logger = new WC_Logger();
-                        $logger->add('retailcrm', sprintf("[%s] - %s", $exception->getMessage(), 'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine()));
+                        $logger->add('retailcrm',
+                            sprintf("[%s] - %s", $exception->getMessage(),
+                            'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
+                        );
 
                         continue;
                     }
@@ -214,52 +217,26 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @return void
          */
         protected function removeFuncsHook() 
-        {      
-            if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-                remove_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-                remove_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
-                remove_action('update_post_meta', 'retailcrm_update_order', 11, 4);
-                remove_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
-                remove_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
-            } else {
-                remove_action('woocommerce_update_order', 'update_order', 11, 1);
-                remove_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-            }
+        {
+            remove_action('woocommerce_update_order', 'update_order', 11, 1);
+            remove_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
         }
 
         /**
          * Add function hooks after downloading history changes
-         * 
+         *
          * @return void
          */
         protected function addFuncsHook() 
-        {   
-            if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-                if (!has_action('woocommerce_checkout_update_user_meta', 'update_customer')) {
-                    add_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
-                }
-                if (!has_action('woocommerce_order_status_changed', 'retailcrm_update_order_status')) {
-                    add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-                }
-                if (!has_action('woocommerce_saved_order_items', 'retailcrm_update_order_items')) {
-                    add_action('woocommerce_saved_order_items', 'retailcrm_update_order_items', 10, 2);
-                }
-                if (!has_action('update_post_meta', 'retailcrm_update_order')) {
-                    add_action('update_post_meta', 'retailcrm_update_order', 11, 4);
-                }
-                if (!has_action('woocommerce_payment_complete', 'retailcrm_update_order_payment')) {
-                    add_action('woocommerce_payment_complete', 'retailcrm_update_order_payment', 11, 1);
-                }
-            } else {
-                if (!has_action('woocommerce_update_order', 'update_order')) {
-                    add_action('woocommerce_update_order', 'update_order', 11, 1);
-                }
-                if (!has_action('woocommerce_checkout_update_user_meta', 'update_customer')) {
-                    add_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
-                }
-                if (!has_action('woocommerce_order_status_changed', 'retailcrm_update_order_status')) {
-                    add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
-                }
+        {
+            if (!has_action('woocommerce_update_order', 'update_order')) {
+                add_action('woocommerce_update_order', 'update_order', 11, 1);
+            }
+            if (!has_action('woocommerce_checkout_update_user_meta', 'update_customer')) {
+                add_action('woocommerce_checkout_update_user_meta', 'update_customer', 10, 2);
+            }
+            if (!has_action('woocommerce_order_status_changed', 'retailcrm_update_order_status')) {
+                add_action('woocommerce_order_status_changed', 'retailcrm_update_order_status', 11, 1);
             }
         }
 
@@ -268,7 +245,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * 
          * @param array $record
          * @param array $options
-         * @return void
+         * @return mixed
          */
         protected function orderEdit($record, $options)
         {
@@ -345,7 +322,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $shipping_method = $shipping_methods[$method_id]['shipping_methods'][$options[$newValue]];
                         }
 
-                        if ( is_object($crmOrder)) {
+                        if (is_object($crmOrder)) {
                             if ($crmOrder->isSuccessful()) {
                                 $deliveryCost = isset($crmOrder['order']['delivery']['cost']) ? $crmOrder['order']['delivery']['cost'] : 0;
                             }
@@ -354,10 +331,15 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         $args = array(
                             'method_id' => $options[$newValue],
                             'method_title' => isset($shipping_method) ? $shipping_method['title'] : $shipping_methods[$options[$newValue]]['name'],
-                            'total' => $deliveryCost
+                            'total' => isset($deliveryCost) ? $deliveryCost : 0
                         );
 
                         $item = $order->get_item((int)$item_id);
+
+                        if (!$item) {
+                            return false;
+                        }
+
                         $item->set_order_id((int)$order->get_id());
                         $item->set_props($args);
                         $item->save();
@@ -442,7 +424,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     && isset($record['order']['orderMethod'])
                     && !in_array($record['order']['orderMethod'], $this->order_methods)
                 ) {
-                    return;
+                    return false;
                 }
 
                 $args = array(
@@ -551,20 +533,15 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             }
                         }
 
-                        if (version_compare(get_option('woocommerce_db_version'), '3.0', '<' )) {
-                            $shipping_rate = new WC_Shipping_Rate($shipping_method_id, isset($shipping_method_title) ? $shipping_method_title : '', isset($shipping_total) ? floatval($shipping_total) : 0, array(), $shipping_method_id);
-                            $order->add_shipping($shipping_rate);
-                        } else {
-                            $shipping = new WC_Order_Item_Shipping();
-                            $shipping->set_props( array(
-                                'method_title' => $shipping_method_title,
-                                'method_id'    => $shipping_method_id,
-                                'total'        => wc_format_decimal($shipping_total),
-                                'order_id'     => $order->get_id()
-                            ) );
-                            $shipping->save();
-                            $order->add_item( $shipping );
-                        }
+                        $shipping = new WC_Order_Item_Shipping();
+                        $shipping->set_props( array(
+                            'method_title' => $shipping_method_title,
+                            'method_id'    => $shipping_method_id,
+                            'total'        => wc_format_decimal($shipping_total),
+                            'order_id'     => $order->get_id()
+                        ) );
+                        $shipping->save();
+                        $order->add_item($shipping);
                     }
                 }
 
@@ -599,9 +576,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         /**
          * Calculate totals in order
-         * 
-         * @param type $order
-         * 
+         *
+         * @param WC_Order $order
+         *
          * @return void
          */
         protected function update_total($order)
