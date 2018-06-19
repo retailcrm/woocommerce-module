@@ -95,7 +95,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                     ga('require', 'ecommerce', 'ecommerce.js');
                     ga('ecommerce:addTransaction', {
                         'id':" . $order->get_id() . ",
-                        'affiliation':" . $domain . ",
+                        'affiliation':'" . $domain . "',
                         'revenue':" . $order->get_total() . ",
                         'shipping':" . $order->get_total_tax() . ",
                         'tax':" . $order->get_shipping_total() . "
@@ -111,12 +111,11 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                         'price': " . $item['price'] . ",
                         'quantity': " . $item['quantity'] . "
                     });
-    
-                    }
-                    ga('ecommerce:send');
-                    </script>
                 ";
             }
+
+            $js .= "ga('ecommerce:send');
+                </script>";
 
             return apply_filters('retailcrm_send_analytics', $js);
         }

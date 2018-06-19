@@ -145,7 +145,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 );
             }
 
-            $this->customer = apply_filters('retailcrm_process_customer', $data_customer);
+            $this->customer = apply_filters('retailcrm_process_customer', $data_customer, $customer);
         }
 
         /**

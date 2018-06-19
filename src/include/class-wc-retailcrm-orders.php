@@ -363,7 +363,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
-            $this->order = apply_filters('retailcrm_process_order', $order_data);
+            $this->order = apply_filters('retailcrm_process_order', $order_data, $order);
         }
 
         /**
