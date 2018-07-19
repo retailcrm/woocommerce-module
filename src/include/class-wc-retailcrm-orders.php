@@ -247,14 +247,25 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
                 if (isset($this->retailcrm_settings[$shipping['method_id']])) {
                     $shipping_method = $shipping['method_id'];
-                } else {
+                } elseif (isset($this->retailcrm_settings[$shipping_code[0]])) {
                     $shipping_method = $shipping_code[0];
+                } else {
+                    $shipping_method = $shipping['method_id'] . ':' . $shipping['instance_id'];
                 }
 
-                $shipping_cost = $shipping['cost'];
+                $shipping_cost = $shipping['total'] + $shipping['total_tax'];
 
                 if (!empty($shipping_method) && !empty($this->retailcrm_settings[$shipping_method])) {
                     $order_data['delivery']['code'] = $this->retailcrm_settings[$shipping_method];
+                    $service = retailcrm_get_delivery_service($shipping['method_id'], $shipping['instance_id']);
+
+                    if ($service) {
+                        $order_data['delivery']['service'] = array(
+                            'name' => $service['title'],
+                            'code' => $service['instance_id'],
+                            'active' => true
+                        );
+                    }
                 }
 
                 if (!empty($shipping_cost)) {
@@ -272,7 +283,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $user_data_billing = $order->get_address('billing');
 
             if (!empty($user_data_billing)) {
-
                 if (!empty($user_data_billing['phone'])) $order_data['phone'] = $user_data_billing['phone'];
                 if (!empty($user_data_billing['email'])) $order_data['email'] = $user_data_billing['email'];
                 if (!empty($user_data_billing['first_name'])) $order_data['firstName'] = $user_data_billing['first_name'];
@@ -286,7 +296,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $user_data = $order->get_address('shipping');
 
             if (!empty($user_data)) {
-
                 if (!empty($user_data['phone'])) $order_data['phone'] = $user_data['phone'];
                 if (!empty($user_data['email'])) $order_data['email'] = $user_data['email'];
                 if (!empty($user_data['first_name'])) $order_data['firstName'] = $user_data['first_name'];
@@ -294,7 +303,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!empty($user_data['postcode'])) $order_data['delivery']['address']['index'] = $user_data['postcode'];
                 if (!empty($user_data['city'])) $order_data['delivery']['address']['city'] = $user_data['city'];
                 if (!empty($user_data['state'])) $order_data['delivery']['address']['region'] = $user_data['state'];
-                if (!empty($user_data['country'])) $order_data['countryIso'] = $user_data['country'];
+                if (!empty($user_data['country'])) $order_data['delivery']['address']['countryIso'] = $user_data['country'];
             }
 
             $order_data['delivery']['address']['text'] = sprintf(

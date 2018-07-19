@@ -198,7 +198,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Upload archive customers and order to retailCRM
          */
-        public function upload_to_crm() {
+        public function upload_to_crm()
+        {
             if (!class_exists('WC_Retailcrm_Orders')) {
                 include_once(self::checkCustomFile('orders'));
             }
@@ -219,7 +220,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             update_option(self::$option_key, $options);
         }
 
-        public function ajax_upload() {
+        public function ajax_upload()
+        {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <script type="text/javascript">
@@ -237,7 +239,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             <?php
         }
 
-        public function ajax_generate_icml() {
+        public function ajax_generate_icml()
+        {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <script type="text/javascript">
@@ -255,7 +258,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             <?php
         }
 
-        public function ajax_selected_order() {
+        public function ajax_selected_order()
+        {
             $ajax_url = admin_url('admin-ajax.php');
             $ids = $this->plugin_id . $this->id . '_single_order';
             ?>
@@ -281,7 +285,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * Create customer in retailCRM
          * @param int $customer_id
          */
-        public function create_customer($customer_id) {
+        public function create_customer($customer_id)
+        {
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
             if (!class_exists( 'WC_Retailcrm_Customers')) {
                 include_once(self::checkCustomFile('customers'));
             }
@@ -294,7 +303,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * Edit customer in retailCRM
          * @param int $customer_id
          */
-        public function update_customer($customer_id) {
+        public function update_customer($customer_id)
+        {
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
             if (!class_exists('WC_Retailcrm_Customers')) {
                 include_once(self::checkCustomFile('customers'));
             }
@@ -307,7 +321,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * Edit order in retailCRM
          * @param int $order_id
          */
-        public function update_order($order_id) {
+        public function update_order($order_id)
+        {
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
             if (!class_exists('WC_Retailcrm_Orders')) {
                 include_once(self::checkCustomFile('orders'));
             }
@@ -319,7 +338,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Init google analytics code
          */
-        public function initialize_analytics() {
+        public function initialize_analytics()
+        {
             if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                 include_once(self::checkCustomFile('ga'));
             }
@@ -335,7 +355,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Google analytics send code
          */
-        public function send_analytics() {
+        public function send_analytics()
+        {
             if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                 include_once(self::checkCustomFile('ga'));
             }
@@ -351,8 +372,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Initialize integration settings form fields.
          */
-        public function init_form_fields() {
-
+        public function init_form_fields()
+        {
             $this->form_fields = array(
                 array( 'title' => __( 'General Options', 'retailcrm' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
 
@@ -506,7 +527,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'id' => 'payment_options'
                         );
 
-                        foreach ($wc_payment->get_available_payment_gateways() as $payment) {
+                        foreach ($wc_payment->payment_gateways() as $payment) {
                             if (isset($payment->enabled) && $payment->enabled == 'yes') {
                                 $this->form_fields[$payment->id] = array(
                                     'title'          => __($payment->method_title, 'woocommerce'),
@@ -629,7 +650,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                      * Generate icml file
                      */
                     $this->form_fields[] = array(
-                        'title'       => __( 'Generate ICML catalog', 'retailcrm' ),
+                        'title'       => __('Generate ICML catalog', 'retailcrm'),
                         'type'        => 'title',
                         'description' => '',
                         'id'          => 'icml_options'
@@ -648,7 +669,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                      * Upload single order
                      */
                     $this->form_field[] = array(
-                        'title'       => __( 'Upload single order by id', 'retailcrm' ),
+                        'title'       => __('Upload single order by id', 'retailcrm'),
                         'type'        => 'title',
                         'description' => '',
                         'id'          => 'order_options'
@@ -682,7 +703,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function generate_button_html( $key, $data ) {
+        public function generate_button_html($key, $data)
+        {
             $field    = $this->plugin_id . $this->id . '_' . $key;
             $defaults = array(
                 'class'             => 'button-secondary',
@@ -722,7 +744,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function generate_heading_html($key, $data) {
+        public function generate_heading_html($key, $data)
+        {
             $field_key = $this->get_field_key( $key );
             $defaults  = array(
                 'title' => '',
@@ -752,7 +775,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function validate_api_version_field($key, $value) {
+        public function validate_api_version_field($key, $value)
+        {
             $post = $this->get_post_data();
 
             $versionMap = array(
@@ -785,7 +809,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function validate_api_url_field($key, $value) {
+        public function validate_api_url_field($key, $value)
+        {
             $post = $this->get_post_data();
             $api = new WC_Retailcrm_Proxy(
                 $value,
@@ -810,7 +835,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return string
          */
-        public function validate_api_key_field( $key, $value ) {
+        public function validate_api_key_field($key, $value)
+        {
             $post = $this->get_post_data();
             $api = new WC_Retailcrm_Proxy(
                 $post[$this->plugin_id . $this->id . '_api_url'],
@@ -834,7 +860,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Scritp show|hide block settings
          */
-        function show_blocks() {
+        function show_blocks()
+        {
             ?>
             <script type="text/javascript">
                 jQuery('h2.retailcrm_hidden').hover().css({
@@ -860,7 +887,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         *
         * @return bool|WC_Retailcrm_Proxy
         */
-        public function getApiClient() {
+        public function getApiClient()
+        {
             if ($this->get_option('api_url') && $this->get_option('api_key')) {
                 return new WC_Retailcrm_Proxy(
                     $this->get_option('api_url'),

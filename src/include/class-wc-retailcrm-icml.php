@@ -110,7 +110,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
         {
             $string = sprintf(
                 '<?xml version="1.0" encoding="UTF-8"?><yml_catalog date="%s"><shop><name>%s</name><categories/><offers/></shop></yml_catalog>',
-                date('Y-m-d H:i:s'),
+                current_time('Y-m-d H:i:s'),
                 $this->shop
             );
 

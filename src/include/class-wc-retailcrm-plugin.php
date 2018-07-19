@@ -3,7 +3,7 @@
 class WC_Retailcrm_Plugin {
 
     public $file;
-
+    public static $history_run = false;
     private static $instance = null;
 
     public static function getInstance($file) {
@@ -40,16 +40,21 @@ class WC_Retailcrm_Plugin {
     }
 
     public function deactivate() {
-        if ( wp_next_scheduled ( 'retailcrm_icml' )) {
+        if (wp_next_scheduled('retailcrm_icml')) {
             wp_clear_scheduled_hook('retailcrm_icml');
         }
 
-        if ( wp_next_scheduled ( 'retailcrm_history' )) {
+        if (wp_next_scheduled('retailcrm_history')) {
             wp_clear_scheduled_hook('retailcrm_history');
         }
 
-        if ( wp_next_scheduled ( 'retailcrm_inventories' )) {
+        if (wp_next_scheduled('retailcrm_inventories')) {
             wp_clear_scheduled_hook('retailcrm_inventories');
         }
+    }
+
+    public static function history_running()
+    {
+        return self::$history_run;
     }
 }
