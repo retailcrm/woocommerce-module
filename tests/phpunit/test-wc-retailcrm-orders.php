@@ -3,7 +3,6 @@
 class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
 {
     protected $apiMock;
-    protected $responseMock;
     protected $order;
     protected $options;
 
@@ -78,7 +77,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('US', $order_send['countryIso']);
             $this->assertEquals('123456', $order_send['delivery']['address']['index']);
             $this->assertEquals('WooCity', $order_send['delivery']['address']['city']);
-            $this->assertEquals('delivery5', $order_send['delivery']['code']);
+            $this->assertEquals('delivery', $order_send['delivery']['code']);
 
             if ($apiVersion == 'v4') {
                 $this->assertArrayHasKey('paymentType', $order_send);
@@ -158,7 +157,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('US', $order_send['countryIso']);
             $this->assertEquals('123456', $order_send['delivery']['address']['index']);
             $this->assertEquals('WooCity', $order_send['delivery']['address']['city']);
-            $this->assertEquals('delivery5', $order_send['delivery']['code']);
+            $this->assertEquals('delivery', $order_send['delivery']['code']);
 
             if ($apiVersion == 'v4') {
                 $this->assertArrayHasKey('paymentType', $order_send);

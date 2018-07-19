@@ -4,11 +4,18 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-function get_wc_shipping_methods($enhanced = false) {
+function get_wc_shipping_methods_by_zones($enhanced = false) {
     $result = array();
 
-    $shippingZonesObj = new WC_Shipping_Zones();
-    $shippingZones = $shippingZonesObj->get_zones();
+    $shippingZones = WC_Shipping_Zones::get_zones();
+    $defaultZone = WC_Shipping_Zones::get_zone_by();
+
+    $shippingZones[$defaultZone->get_id()] = array(
+        $defaultZone->get_data(),
+        'zone_id' => $defaultZone->get_id(),
+        'formatted_zone_location' => $defaultZone->get_formatted_location(),
+        'shipping_methods' => $defaultZone->get_shipping_methods(false)
+    );
 
     if ($shippingZones) {
         foreach ($shippingZones as $code => $shippingZone) {
@@ -42,5 +49,36 @@ function get_wc_shipping_methods($enhanced = false) {
         }
     }
 
+    return $result;
+}
+
+function get_wc_shipping_methods() {
+    $wc_shipping = WC_Shipping::instance();
+    $shipping_methods = $wc_shipping->get_shipping_methods();
+
+    $result = array();
+
+    foreach ($shipping_methods as $code => $shipping) {
+        $result[$code] = array(
+            'name' => $shipping->method_title,
+            'enabled' => $shipping->enabled,
+            'description' => $shipping->method_description,
+            'title' => $shipping->title ? $shipping->title : $shipping->method_title
+        );
+    }
+
     return apply_filters('retailcrm_shipping_list', $result);
+}
+
+function retailcrm_get_delivery_service($method_id, $instance_id) {
+    $shippings_by_zone = get_wc_shipping_methods_by_zones(true);
+    $method = explode(':', $method_id);
+    $method_id = $method[0];
+    $shipping = isset($shippings_by_zone[$method_id]) ? $shippings_by_zone[$method_id] : array();
+
+    if ($shipping && isset($shipping['shipping_methods'][$method_id . ':' . $instance_id])) {
+        return $shipping['shipping_methods'][$method_id . ':' . $instance_id];
+    }
+
+    return false;
 }
