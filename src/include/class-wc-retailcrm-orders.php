@@ -271,6 +271,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!empty($shipping_cost)) {
                     $order_data['delivery']['cost'] = $shipping_cost;
                 }
+
+                if ($shipping['total']) {
+                    $order_data['delivery']['netCost'] = $shipping['total'];
+                }
             }
 
             if ($this->retailcrm_settings['api_version'] != 'v5' && $order->is_paid()) {
@@ -379,7 +383,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * Create payment in CRM
          * 
          * @param WC_Order $order
-         * @param int $order_id
          * 
          * @return array $payment
          */
