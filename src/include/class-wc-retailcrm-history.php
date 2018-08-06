@@ -43,7 +43,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         /**
          * Get history method
-         * 
+         *
          * @return void
          */
         public function getHistory()
@@ -65,18 +65,18 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         /**
          * History customers
-         * 
+         *
          * @param string $date
          * @param int $since_id
-         * 
+         *
          * @return null
          */
         protected function customersHistory($date, $since_id)
         {
             if ($since_id) {
-                $response = $this->retailcrm->customersHistory(array('sinceId' => $since_id)); 
+                $response = $this->retailcrm->customersHistory(array('sinceId' => $since_id));
             } else {
-                $response = $this->retailcrm->customersHistory(array('startDate' => $date)); 
+                $response = $this->retailcrm->customersHistory(array('startDate' => $date));
             }
 
             if ($response->isSuccessful()) {
@@ -156,11 +156,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         /**
          * History orders
-         * 
+         *
          * @param string $date
          * @param int $since_id
-         * 
-         * @return null
+         *
+         * @return boolean
          */
         protected function ordersHistory($date, $since_id)
         {
@@ -174,353 +174,108 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if ($response->isSuccessful()) {
                 if (empty($response['history'])) {
-                    return;
+                    return false;
                 }
 
                 $history = $response['history'];
-                $end_change = end($history);
-                $new_since_id = $end_change['id'];
+                $last_change = end($history);
+                $historyAssembly = self::assemblyOrder($response['history']);
 
-                foreach ($history as $record) {
-                    if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
+                WC_Retailcrm_Plugin::$history_run = true;
+
+                foreach ($historyAssembly as $orderHistory) {
+                    $order = apply_filters('retailcrm_history_before_save', $orderHistory);
+
+                    if (isset($order['deleted']) && $order['deleted'] == true) {
                         continue;
                     }
 
-                    WC_Retailcrm_Plugin::$history_run = true;
-
                     try {
-                        $this->orderEdit($record, $options);
+                        if (isset($order['externalId'])) {
+                            $wc_order_id = $this->orderUpdate($order, $options);
+                        } else {
+                            $wc_order_id = $this->orderCreate($order, $options);
+                        }
+
+                        $wc_order = wc_get_order($wc_order_id);
+
+                        if ($wc_order instanceof WC_Order) {
+                            $this->update_total($wc_order);
+                        }
                     } catch (Exception $exception) {
                         $logger = new WC_Logger();
                         $logger->add('retailcrm',
                             sprintf("[%s] - %s", $exception->getMessage(),
-                            'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
+                                'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
                         );
 
                         continue;
                     }
-
-                    WC_Retailcrm_Plugin::$history_run = false;
-                }
-            }
-
-            if (empty($response)) {
-                return;
-            }
-
-            update_option('retailcrm_orders_history_since_id', $new_since_id);
-        }
-
-        /**
-         * Edit order in WC
-         * 
-         * @param array $record
-         * @param array $options
-         * @return mixed
-         */
-        protected function orderEdit($record, $options)
-        {
-            if ($record['field'] == 'status' && !empty($record['newValue']) && !empty($record['oldValue'])) {
-                $newStatus = $record['newValue']['code'];
-                if (!empty($options[$newStatus]) && !empty($record['order']['externalId'])) {
-                    $order = wc_get_order($record['order']['externalId']);
-                    $order->update_status($options[$newStatus]);
-                }
-            }
-
-            elseif ($record['field'] == 'order_product' && $record['newValue']) {
-                $product = wc_get_product($record['item']['offer']['externalId']);
-                $order = wc_get_order($record['order']['externalId']);
-                $order->add_product($product, $record['item']['quantity']);
-            }
-
-            elseif ($record['field'] == 'order_product.quantity' && $record['newValue']) {
-                $order = wc_get_order($record['order']['externalId']);
-                $items = $order->get_items();
-
-                foreach ($items as $order_item_id => $item) {
-                    if ($item['variation_id'] != 0 ) {
-                        $offer_id = $item['variation_id'];
-                    } else {
-                        $offer_id = $item['product_id'];
-                    }
-                    if ($offer_id == $record['item']['offer']['externalId']) {
-                        wc_delete_order_item($order_item_id);
-                        $product = wc_get_product($offer_id);
-                        $order->add_product($product, $record['newValue']);
-                    }
-                }
-            }
-
-            elseif ($record['field'] == 'order_product' && !$record['newValue']) {
-                $order = wc_get_order($record['order']['externalId']);
-                $items = $order->get_items();
-
-                foreach ($items as $order_item_id => $item) {
-                    if ($item['variation_id'] != 0 ) {
-                        $offer_id = $item['variation_id'];
-                    } else {
-                        $offer_id = $item['product_id'];
-                    }
-                    if ($offer_id == $record['item']['offer']['externalId']) {
-                        wc_delete_order_item($order_item_id);
-                    }   
-                }
-            }
-
-            elseif ($record['field'] == 'delivery_type'
-                || $record['field'] == 'delivery_cost'
-                || $record['field'] == 'delivery_net_cost'
-                || $record['field'] == 'delivery_service'
-            ) {
-                $newValue = isset($record['newValue']['code']) ? $record['newValue']['code'] : $record['newValue'];
-                $this->updateShippingItemId($record['field'], $newValue, $record['order']['externalId'], $options);
-            }
-
-            elseif ($record['field'] == 'delivery_address.region') {
-                $order = wc_get_order($record['order']['externalId']);
-                $order->set_shipping_state($record['newValue']);
-            }
-
-            elseif ($record['field'] == 'delivery_address.city') {
-                $order = wc_get_order($record['order']['externalId']);
-                $order->set_shipping_city($record['newValue']);
-            }
-
-            elseif ($record['field'] == 'delivery_address.street') {
-                $order = wc_get_order($record['order']['externalId']);
-                $order->set_shipping_address_1($record['newValue']);
-            }
-
-            elseif ($record['field'] == 'delivery_address.building') {
-                $order = wc_get_order($record['order']['externalId']);
-                $order->set_shipping_address_2($record['newValue']);
-            }
-
-            elseif ($record['field'] == 'payment_type') {
-                $order = wc_get_order($record['order']['externalId']);
-                $newValue = $record['newValue']['code'];
-                if (!empty($options[$newValue]) && !empty($record['order']['externalId'])) {
-                    $payment = WC_Payment_Gateways::instance();
-                    $payment_types = $payment->payment_gateways();
-
-                    if (isset($payment_types[$options[$newValue]])) {
-                        $order->set_payment_method($payment_types[$options[$newValue]]);
-                    }
-                }
-            }
-
-            elseif ($record['field'] == 'payments') {
-                $response = $this->retailcrm->ordersGet($record['order']['externalId']);
-
-                if ($response->isSuccessful()) { 
-                    $order_data = $response['order'];
-                    $order = wc_get_order($record['order']['externalId']);
-                    $payment = WC_Payment_Gateways::instance();
-                    $payment_types = $payment->payment_gateways();
-
-                    if (count($order_data['payments']) == 1) {
-                        $paymentType = end($order_data['payments']);
-                        if (isset($payment_types[$options[$paymentType['type']]])) {
-                            $payment_type = $payment_types[$options[$paymentType['type']]];
-                            $order->set_payment_method($payment_type);
-                        }
-                    } else {
-                        foreach ($order_data['payments'] as $payment_data) {
-                            if (isset($payment_data['externalId'])) {
-                                $paymentType = $payment_data;
-                            }
-                        }
-
-                        if (!isset($paymentType)) {
-                            $paymentType = $order_data['payments'][0];
-                        }
-
-                        if (isset($payment_types[$options[$paymentType['type']]])) {
-                            $order->set_payment_method($payment_types[$options[$paymentType['type']]]);
-                        }
-                    }
-                }
-            }
-
-            elseif (isset($record['created']) 
-                && $record['created'] == 1 
-                && !isset($record['order']['externalId'])
-            ) {
-                if (is_array($this->order_methods)
-                    && $this->order_methods
-                    && isset($record['order']['orderMethod'])
-                    && !in_array($record['order']['orderMethod'], $this->order_methods)
-                ) {
-                    return false;
                 }
 
-                $args = array(
-                    'status' => isset($options[$record['order']['status']]) ?
-                        isset($options[$record['order']['status']]) :
-                        'processing',
-                    'customer_id' => isset($record['order']['customer']['externalId']) ? 
-                        $record['order']['customer']['externalId'] : 
-                        null
-                );
-
-                $order_record = $record['order'];
-                $order = wc_create_order($args);
-
-                $address_shipping = array(
-                    'first_name' => $order_record['firstName'],
-                    'last_name'  => isset($order_record['lastName']) ? $order_record['lastName'] : '',
-                    'company'    => '',
-                    'address_1'  => isset($order_record['delivery']['address']['text']) ? $order_record['delivery']['address']['text'] : '',
-                    'address_2'  => '',
-                    'city'       => isset($order_record['delivery']['address']['city']) ? $order_record['delivery']['address']['city'] : '',
-                    'state'      => isset($order_record['delivery']['address']['region']) ? $order_record['delivery']['address']['region'] : '',
-                    'postcode'   => isset($order_record['delivery']['address']['index']) ? $order_record['delivery']['address']['index'] : '',
-                    'country'    => $order_record['delivery']['address']['countryIso']
-                );
-
-                $address_billing = array(
-                    'first_name' => $order_record['customer']['firstName'],
-                    'last_name'  => isset($order_record['customer']['lastName']) ? $order_record['customer']['lastName'] : '',
-                    'company'    => '',
-                    'email'      => isset($order_record['customer']['email']) ? $order_record['customer']['email'] : '',
-                    'phone'      => isset($order_record['customer']['phones'][0]['number']) ? $order_record['customer']['phones'][0]['number'] : '',
-                    'address_1'  => isset($order_record['customer']['address']['text']) ? $order_record['customer']['address']['text'] : '',
-                    'address_2'  => '',
-                    'city'       => isset($order_record['customer']['address']['city']) ? $order_record['customer']['address']['city'] : '',
-                    'state'      => isset($order_record['customer']['address']['region']) ? $order_record['customer']['address']['region'] : '',
-                    'postcode'   => isset($order_record['customer']['address']['index']) ? $order_record['customer']['address']['index'] : '',
-                    'country'    => $order_record['customer']['address']['countryIso']
-                );
-
-                if ($this->retailcrm_settings['api_version'] == 'v5') {
-                    if (isset($order_record['payments']) && $order_record['payments']) {
-                        $payment = WC_Payment_Gateways::instance();
-
-                        if (count($order_record['payments']) == 1) {
-                            $payment_types = $payment->payment_gateways();
-                            $payments = $order_record['payments'];
-                            $paymentType = end($payments);
-
-                            if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
-                                $order->set_payment_method($payment_types[$options[$paymentType['type']]]);
-                            }
-                        }
-                    }
-                } else {
-                    if (isset($order_record['paymentType']) && $order_record['paymentType']) {
-                        $payment = WC_Payment_Gateways::instance();
-                        $payment_types = $payment->payment_gateways();
-
-                        if (isset($options[$order_record['paymentType']]) && isset($payment_types[$options[$order_record['paymentType']]])) {
-                            $order->set_payment_method($payment_types[$options[$order_record['paymentType']]]);
-                        }
-                    }
-                }
-
-                $order->set_address($address_billing, 'billing');
-                $order->set_address($address_shipping, 'shipping');
-                $product_data = isset($order_record['items']) ? $order_record['items'] : array();
-
-                if ($product_data) {
-                    foreach ($product_data as $product) {
-                        $order->add_product(wc_get_product($product['offer']['externalId']), $product['quantity']);
-                    }
-                }
-
-                if (array_key_exists('delivery', $order_record)) {
-                    $deliveryCode = isset($order_record['delivery']['code']) ? $order_record['delivery']['code'] : false;
-
-                    if ($deliveryCode && isset($options[$deliveryCode])) {
-                        $shipping = new WC_Order_Item_Shipping();
-                        $shipping_methods = get_wc_shipping_methods();
-                        $shipping->set_method_title($shipping_methods[$options[$deliveryCode]]['name']);
-                        $shipping->set_method_id($options[$deliveryCode]);
-
-                        if (isset($order_record['delivery']['service']['code'])) {
-                            $service = retailcrm_get_delivery_service(
-                                $shipping->get_method_id(),
-                                $order_record['delivery']['service']['code']
-                            );
-
-                            if ($service) {
-                                $shipping->set_instance_id($order_record['delivery']['service']['code']);
-                            }
-                        }
-
-                        if (!wc_tax_enabled()) {
-                            $shipping->set_total($order_record['delivery']['cost']);
-                        } else {
-                            $shipping->set_total($order_record['delivery']['netCost']);
-                        }
-
-                        $shipping->set_order_id($order->get_id());
-
-                        $shipping->save();
-                        $order->add_item($shipping);
-                    }
-                }
-
-                $ids[] = array(
-                    'id' => (int)$order_record['id'],
-                    'externalId' => (int)$order->get_id()
-                );
-
-                $this->retailcrm->ordersFixExternalIds($ids);
+                update_option('retailcrm_orders_history_since_id', $last_change['id']);
+                WC_Retailcrm_Plugin::$history_run = false;
             }
 
-            if (isset($record['order']['externalId']) && !empty($record['order']['externalId'])) {
-                $newOrder = wc_get_order($record['order']['externalId']);
-                $this->update_total($newOrder);
-            }
+            return true;
         }
 
         /**
          * Update shipping
          *
-         * @param string $field
-         * @param string $new_value
-         * @param string $order_id
+         * @param array $order
          * @param array $options
+         * @param WC_Order $wc_order
          *
-         * @return mixed
+         * @return boolean
          */
-        protected function updateShippingItemId($field, $new_value, $order_id, $options)
+        protected function updateShippingItemId($order, $options, $wc_order)
         {
-            $order = wc_get_order($order_id);
-            $shippings = $order->get_items('shipping');
-            $shipping = reset($shippings);
+            $create = false;
 
-            if ($field == 'delivery_type') {
-                if (!isset($options[$new_value])) {
+            $shippings = $wc_order->get_items('shipping');
+
+            if (!$shippings) {
+                $shipping = new WC_Order_Item_Shipping();
+                $create = true;
+            } else {
+                $shipping = reset($shippings);
+            }
+
+            $data_store = $shipping->get_data_store();
+
+            if (isset($order['delivery']['code'])) {
+                if (!isset($options[$order['delivery']['code']])) {
                     return false;
                 }
 
                 $shipping_methods = get_wc_shipping_methods();
-                $shipping->set_method_title($shipping_methods[$options[$new_value]]['name']);
-                $shipping->set_method_id($options[$new_value]);
+                $shipping->set_method_title($shipping_methods[$options[$order['delivery']['code']]]['name']);
+                $shipping->set_method_id($options[$order['delivery']['code']]);
             }
 
-            if ($field == 'delivery_cost' && !wc_tax_enabled()) {
-                $shipping->set_total($new_value);
+            if (isset($order['delivery']['cost']) && !wc_tax_enabled()) {
+                $shipping->set_total($order['delivery']['cost']);
             }
 
-            if ($field == 'delivery_net_cost' && wc_tax_enabled()) {
-                $shipping->set_total($new_value);
+            if (isset($order['delivery']['netCost']) && wc_tax_enabled()) {
+                $shipping->set_total($order['delivery']['netCost']);
             }
 
-            if ($field == 'delivery_service') {
-                $service = retailcrm_get_delivery_service($shipping->get_method_id(), $new_value);
+            if (isset($order['delivery']['service']['code'])) {
+                $service = retailcrm_get_delivery_service($shipping->get_method_id(), $order['delivery']['service']['code']);
 
                 if ($service) {
-                    $shipping->set_instance_id($new_value);
+                    $shipping->set_instance_id($order['delivery']['service']['code']);
                 }
             }
 
-            $data_store = WC_Data_Store::load('order-item-shipping');
+            if ($create === true) {
+                $data_store->create($shipping);
+                $shipping->set_order_id($wc_order->get_id());
+            }
+
             $data_store->update($shipping);
-            $updateOrder = wc_get_order((int)$order->get_id());
-            $this->update_total($updateOrder);
 
             return true;
         }
@@ -533,8 +288,404 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @return void
          */
         protected function update_total($order)
-        {   
+        {
             $order->calculate_totals();
+        }
+
+        /**
+         * Update order in WC
+         *
+         * @param array $order
+         * @param array $options
+         *
+         * @return bool
+         */
+        protected function orderUpdate($order, $options)
+        {
+            $wc_order = wc_get_order($order['externalId']);
+
+            if (!$wc_order instanceof WC_Order) {
+                return false;
+            }
+
+            if (isset($options[$order['status']])) {
+                $wc_order->update_status($options[$order['status']]);
+            }
+
+            if (array_key_exists('items', $order)) {
+                foreach ($order['items'] as $item) {
+                    if (!isset($item['offer']['externalId'])) {
+                        continue;
+                    }
+
+                    if (isset($item['create']) && $item['create'] == true) {
+                        $product = wc_get_product($item['offer']['externalId']);
+                        $wc_order->add_product($product, $item['quantity']);
+                    } else {
+                        foreach ($wc_order->get_items() as $order_item_id => $order_item) {
+                            if ($order_item['variation_id'] != 0 ) {
+                                $offer_id = $order_item['variation_id'];
+                            } else {
+                                $offer_id = $order_item['product_id'];
+                            }
+
+                            if ($offer_id == $item['offer']['externalId']) {
+                                if (isset($item['delete']) && $item['delete'] == true) {
+                                    wc_delete_order_item($order_item_id);
+                                } else {
+                                    $order_item->set_quantity($item['quantity']);
+                                    $product = wc_get_product($item['offer']['externalId']);
+                                    $order_item->set_total($product->get_price() * $item['quantity']);
+                                    $data_store = $order_item->get_data_store();
+                                    $data_store->update($order_item);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (array_key_exists('delivery', $order)) {
+                $this->updateShippingItemId($order, $options, $wc_order);
+
+                if (isset($order['delivery']['address'])) {
+                    $shipping_address = $order['delivery']['address'];
+
+                    if (isset($shipping_address['region'])) {
+                        $wc_order->set_shipping_state($shipping_address['region']);
+                    }
+
+                    if (isset($shipping_address['city'])) {
+                        $wc_order->set_shipping_city($shipping_address['city']);
+                    }
+
+                    if (isset($shipping_address['street'])) {
+                        $wc_order->set_shipping_address_1($shipping_address['street']);
+                    }
+
+                    if (isset($shipping_address['building'])) {
+                        $wc_order->set_shipping_address_2($shipping_address['building']);
+                    }
+                }
+            }
+
+            if (isset($order['paymentType'])) {
+                if (!empty($options[$order['paymentType']])) {
+                    $payment = WC_Payment_Gateways::instance();
+                    $payment_types = $payment->payment_gateways();
+
+                    if (isset($payment_types[$options[$order['paymentType']]])) {
+                        $order->set_payment_method($payment_types[$options[$order['paymentType']]]);
+                    }
+                }
+            }
+
+            if (isset($order['payments']) && !empty($order['payments'])) {
+                $payment = WC_Payment_Gateways::instance();
+                $payment_types = $payment->payment_gateways();
+
+                if (count($order['payments']) == 1) {
+                    $paymentType = reset($order['payments']);
+
+                    if (isset($paymentType['type'])
+                        && isset($options[$paymentType['type']])
+                        && isset($payment_types[$options[$paymentType['type']]])
+                    ) {
+                        $payment_type = $payment_types[$options[$paymentType['type']]];
+                        $wc_order->set_payment_method($payment_type);
+                    }
+                } else {
+                    foreach ($order['payments'] as $payment_data) {
+                        if (isset($payment_data['externalId'])) {
+                            $paymentType = $payment_data;
+                        }
+                    }
+
+                    if (!isset($paymentType)) {
+                        $paymentType = $order['payments'][0];
+                    }
+
+                    if (isset($payment_types[$options[$paymentType['type']]])) {
+                        $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
+                    }
+                }
+            }
+
+            return $wc_order->get_id();
+        }
+
+        /**
+         * Create order in WC
+         *
+         * @param array $order
+         * @param array $options
+         *
+         * @return bool
+         */
+        protected function orderCreate($order, $options)
+        {
+            if (!isset($order['create'])) {
+                return false;
+            }
+
+            if (is_array($this->order_methods)
+                && $this->order_methods
+                && isset($order['orderMethod'])
+                && !in_array($order['orderMethod'], $this->order_methods)
+            ) {
+                return false;
+            }
+
+            $args = array(
+                'status' => isset($options[$order['status']])
+                    ? isset($options[$order['status']])
+                    : 'processing',
+                'customer_id' => isset($order['customer']['externalId'])
+                    ? $order['customer']['externalId']
+                    : null
+            );
+
+            $wc_order = wc_create_order($args);
+
+            $address_shipping = array(
+                'first_name' => isset($order['firstName']) ? $order['firstName'] : '',
+                'last_name'  => isset($order['lastName']) ? $order['lastName'] : '',
+                'company'    => '',
+                'address_1'  => isset($order['delivery']['address']['text']) ? $order['delivery']['address']['text'] : '',
+                'address_2'  => '',
+                'city'       => isset($order['delivery']['address']['city']) ? $order['delivery']['address']['city'] : '',
+                'state'      => isset($order['delivery']['address']['region']) ? $order['delivery']['address']['region'] : '',
+                'postcode'   => isset($order['delivery']['address']['index']) ? $order['delivery']['address']['index'] : '',
+                'country'    => isset($order['delivery']['address']['countryIso']) ? $order['delivery']['address']['countryIso'] : ''
+            );
+
+            $address_billing = array(
+                'first_name' => $order['customer']['firstName'],
+                'last_name'  => isset($order['customer']['lastName']) ? $order['customer']['lastName'] : '',
+                'company'    => '',
+                'email'      => isset($order['customer']['email']) ? $order['customer']['email'] : '',
+                'phone'      => isset($order['customer']['phones'][0]['number']) ? $order['customer']['phones'][0]['number'] : '',
+                'address_1'  => isset($order['customer']['address']['text']) ? $order['customer']['address']['text'] : '',
+                'address_2'  => '',
+                'city'       => isset($order['customer']['address']['city']) ? $order['customer']['address']['city'] : '',
+                'state'      => isset($order['customer']['address']['region']) ? $order['customer']['address']['region'] : '',
+                'postcode'   => isset($order['customer']['address']['index']) ? $order['customer']['address']['index'] : '',
+                'country'    => $order['customer']['address']['countryIso']
+            );
+
+            if ($this->retailcrm_settings['api_version'] == 'v5') {
+                if (isset($order['payments']) && $order['payments']) {
+                    $payment = WC_Payment_Gateways::instance();
+
+                    if (count($order['payments']) == 1) {
+                        $payment_types = $payment->payment_gateways();
+                        $payments = $order['payments'];
+                        $paymentType = end($payments);
+
+                        if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
+                            $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
+                        }
+                    }
+                }
+            } else {
+                if (isset($order_record['paymentType']) && $order['paymentType']) {
+                    $payment = WC_Payment_Gateways::instance();
+                    $payment_types = $payment->payment_gateways();
+
+                    if (isset($options[$order_record['paymentType']]) && isset($payment_types[$options[$order_record['paymentType']]])) {
+                        $wc_order->set_payment_method($payment_types[$options[$order['paymentType']]]);
+                    }
+                }
+            }
+
+            $wc_order->set_address($address_billing, 'billing');
+            $wc_order->set_address($address_shipping, 'shipping');
+            $product_data = isset($order['items']) ? $order['items'] : array();
+
+            if ($product_data) {
+                foreach ($product_data as $product) {
+                    $wc_order->add_product(wc_get_product($product['offer']['externalId']), $product['quantity']);
+                }
+            }
+
+            if (array_key_exists('delivery', $order)) {
+                $deliveryCode = isset($order['delivery']['code']) ? $order['delivery']['code'] : false;
+
+                if ($deliveryCode && isset($options[$deliveryCode])) {
+                    $shipping = new WC_Order_Item_Shipping();
+                    $shipping_methods = get_wc_shipping_methods();
+                    $shipping->set_method_title($shipping_methods[$options[$deliveryCode]]['name']);
+                    $shipping->set_method_id($options[$deliveryCode]);
+
+                    if (isset($order['delivery']['service']['code'])) {
+                        $service = retailcrm_get_delivery_service(
+                            $shipping->get_method_id(),
+                            $order['delivery']['service']['code']
+                        );
+
+                        if ($service) {
+                            $shipping->set_instance_id($order['delivery']['service']['code']);
+                        }
+                    }
+
+                    if (!wc_tax_enabled()) {
+                        $shipping->set_total($order['delivery']['cost']);
+                    } else {
+                        $shipping->set_total($order['delivery']['netCost']);
+                    }
+
+                    $shipping->set_order_id($wc_order->get_id());
+
+                    $shipping->save();
+                    $wc_order->add_item($shipping);
+                }
+            }
+
+            $ids[] = array(
+                'id' => (int) $order['id'],
+                'externalId' => (int) $wc_order->get_id()
+            );
+
+            $this->retailcrm->ordersFixExternalIds($ids);
+
+            return $wc_order->get_id();
+        }
+
+        /**
+         * @param array $orderHistory
+         *
+         * @return array
+         */
+        public static function assemblyOrder($orderHistory)
+        {
+            if (file_exists(WP_CONTENT_DIR . '/plugins/woo-retailcrm/config/objects.xml')) {
+                $objects = simplexml_load_file(WP_CONTENT_DIR . '/plugins/woo-retailcrm/config/objects.xml');
+                foreach($objects->fields->field as $object) {
+                    $fields[(string)$object["group"]][(string)$object["id"]] = (string)$object;
+                }
+            }
+
+            $orders = array();
+
+            foreach ($orderHistory as $change) {
+                $change['order'] = self::removeEmpty($change['order']);
+                if(isset($change['order']['items']) && $change['order']['items']) {
+                    $items = array();
+                    foreach($change['order']['items'] as $item) {
+                        if(isset($change['created'])) {
+                            $item['create'] = 1;
+                        }
+                        $items[$item['id']] = $item;
+                    }
+                    $change['order']['items'] = $items;
+                }
+
+                if(isset($change['order']['contragent']['contragentType']) && $change['order']['contragent']['contragentType']) {
+                    $change['order']['contragentType'] = $change['order']['contragent']['contragentType'];
+                    unset($change['order']['contragent']);
+                }
+
+                if (!empty($orders) && isset($orders[$change['order']['id']])) {
+                    $orders[$change['order']['id']] = array_merge($orders[$change['order']['id']], $change['order']);
+                } else {
+                    $orders[$change['order']['id']] = $change['order'];
+                }
+
+                if (isset($change['item']) && $change['item']) {
+                    if(isset($orders[$change['order']['id']]['items'][$change['item']['id']])) {
+                        $orders[$change['order']['id']]['items'][$change['item']['id']] = array_merge($orders[$change['order']['id']]['items'][$change['item']['id']], $change['item']);
+                    } else {
+                        $orders[$change['order']['id']]['items'][$change['item']['id']] = $change['item'];
+                    }
+
+                    if ($change['oldValue'] === null
+                        && $change['field'] == 'order_product'
+                    ) {
+                        $orders[$change['order']['id']]['items'][$change['item']['id']]['create'] = true;
+                    }
+
+                    if ($change['newValue'] === null
+                        && $change['field'] == 'order_product'
+                    ) {
+                        $orders[$change['order']['id']]['items'][$change['item']['id']]['delete'] = true;
+                    }
+
+                    if (!isset($orders[$change['order']['id']]['items'][$change['item']['id']]['create'])
+                        && isset($fields['item'][$change['field']])
+                        && $fields['item'][$change['field']]
+                    ) {
+                        $orders[$change['order']['id']]['items'][$change['item']['id']][$fields['item'][$change['field']]] = $change['newValue'];
+                    }
+                } else {
+                    if(isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service'){
+                        $orders[$change['order']['id']]['delivery']['service']['code'] = self::newValue($change['newValue']);
+                    } elseif(isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']]) {
+                        $orders[$change['order']['id']]['delivery'][$fields['delivery'][$change['field']]] = self::newValue($change['newValue']);
+                    } elseif(isset($fields['orderAddress'][$change['field']]) && $fields['orderAddress'][$change['field']]){
+                        $orders[$change['order']['id']]['delivery']['address'][$fields['orderAddress'][$change['field']]] = $change['newValue'];
+                    } elseif(isset($fields['integrationDelivery'][$change['field']]) && $fields['integrationDelivery'][$change['field']]) {
+                        $orders[$change['order']['id']]['delivery']['service'][$fields['integrationDelivery'][$change['field']]] = self::newValue($change['newValue']);
+                    } elseif(isset($fields['customerContragent'][$change['field']]) && $fields['customerContragent'][$change['field']]) {
+                        $orders[$change['order']['id']][$fields['customerContragent'][$change['field']]] = self::newValue($change['newValue']);
+                    } elseif(strripos($change['field'], 'custom_') !== false) {
+                        $orders[$change['order']['id']]['customFields'][str_replace('custom_', '', $change['field'])] = self::newValue($change['newValue']);
+                    } elseif(isset($fields['order'][$change['field']]) && $fields['order'][$change['field']]) {
+                        $orders[$change['order']['id']][$fields['order'][$change['field']]] = self::newValue($change['newValue']);
+                    }
+
+                    if(isset($change['created'])) {
+                        $orders[$change['order']['id']]['create'] = 1;
+                    }
+
+                    if(isset($change['deleted'])) {
+                        $orders[$change['order']['id']]['deleted'] = 1;
+                    }
+                }
+            }
+
+            return $orders;
+        }
+
+        public static function assemblyCustomer($customerHistory)
+        {
+            $customers = array();
+            foreach ($customerHistory as $change) {
+                $change['order'] = self::removeEmpty($change['customer']);
+
+                if (!empty($customers[$change['customer']['id']]) && $customers[$change['customer']['id']]) {
+                    $customers[$change['customer']['id']] = array_merge($customers[$change['customer']['id']], $change['customer']);
+                } else {
+                    $customers[$change['customer']['id']] = $change['customer'];
+                }
+            }
+
+            return $customers;
+        }
+
+        public static function newValue($value)
+        {
+            if (isset($value['code'])) {
+                return $value['code'];
+            } else {
+                return $value;
+            }
+        }
+
+        public static function removeEmpty($inputArray)
+        {
+            $outputArray = array();
+            if (!empty($inputArray)) {
+                foreach ($inputArray as $key => $element) {
+                    if(!empty($element) || $element === 0 || $element === '0'){
+                        if (is_array($element)) {
+                            $element = self::removeEmpty($element);
+                        }
+                        $outputArray[$key] = $element;
+                    }
+                }
+            }
+
+            return $outputArray;
         }
     }
 endif;
