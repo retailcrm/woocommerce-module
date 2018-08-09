@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 3.3.0
+ * Version: 3.3.1
  * WC requires at least: 3.0
  * WC tested up to: 3.4.3
  * Plugin Name: WooCommerce RetailCRM
