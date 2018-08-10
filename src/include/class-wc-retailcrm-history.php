@@ -568,6 +568,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $orders = array();
 
             foreach ($orderHistory as $change) {
+                if ($change['source'] == 'api'
+                    && isset($change['apiKey']['current'])
+                    && $change['apiKey']['current'] == true
+                ) {
+                    continue;
+                }
+
                 $change['order'] = self::removeEmpty($change['order']);
                 if(isset($change['order']['items']) && $change['order']['items']) {
                     $items = array();
