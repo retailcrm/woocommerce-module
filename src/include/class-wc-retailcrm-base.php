@@ -33,8 +33,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $this->id                 = 'integration-retailcrm';
-            $this->method_title       = __('RetailCRM', 'retailcrm');
-            $this->method_description = __('Integration with eComlogic managament system.', 'retailcrm');
+            $this->method_title       = __('retailCRM', 'retailcrm');
+            $this->method_description = __('Integration with retailCRM management system.', 'retailcrm');
 
             if ($retailcrm === false) {
                 $this->apiClient = $this->getApiClient();
@@ -230,7 +230,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     type: "POST",
                     url: '<?php echo $ajax_url; ?>?action=do_upload',
                     success: function (response) {
-                        alert('<?php echo __('Customers and orders were unloaded', 'retailcrm'); ?>');
+                        alert('<?php echo __('Customers and orders were uploaded', 'retailcrm'); ?>');
                         console.log('AJAX response : ',response);
                     }
                 });
@@ -249,7 +249,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     type: "POST",
                     url: '<?php echo $ajax_url; ?>?action=generate_icml',
                     success: function (response) {
-                        alert('<?php echo __('Catalog were generated', 'retailcrm'); ?>');
+                        alert('<?php echo __('Catalog was generated', 'retailcrm'); ?>');
                         console.log('AJAX response : ', response);
                     }
                 });
@@ -266,13 +266,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             <script type="text/javascript">
             jQuery('#single_order_btn').bind('click', function() {
                 if (jQuery('#<?php echo $ids; ?>').val() == '') {
-                    alert('<?php echo __('Enter orders numbers', 'retailcrm'); ?>');
+                    alert('<?php echo __('The field cannot be empty, enter the order ID', 'retailcrm'); ?>');
                 } else {
                     jQuery.ajax({
                         type: "POST",
                         url: '<?php echo $ajax_url; ?>?action=order_upload&order_ids_retailcrm=' + jQuery('#<?php echo $ids; ?>').val(),
                         success: function (response) {
-                            alert('<?php echo __('Orders were unloaded', 'retailcrm'); ?>');
+                            alert('<?php echo __('Orders were uploaded', 'retailcrm'); ?>');
                         }
                     });
                 }
@@ -375,19 +375,19 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function init_form_fields()
         {
             $this->form_fields = array(
-                array( 'title' => __( 'General Options', 'retailcrm' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
+                array( 'title' => __( 'Main settings', 'retailcrm' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
 
                 'api_url' => array(
-                    'title'             => __( 'API URL', 'retailcrm' ),
+                    'title'             => __( 'API of URL', 'retailcrm' ),
                     'type'              => 'text',
-                    'description'       => __( 'Enter with your API URL (https://yourdomain.ecomlogic.com).', 'retailcrm' ),
+                    'description'       => __( 'Enter API of URL (https://yourdomain.retailcrm.pro).', 'retailcrm' ),
                     'desc_tip'          => true,
                     'default'           => ''
                 ),
                 'api_key' => array(
-                    'title'             => __( 'API Key', 'retailcrm' ),
+                    'title'             => __( 'API key', 'retailcrm' ),
                     'type'              => 'text',
-                    'description'       => __( 'Enter with your API Key. You can find this in eComlogic admin interface.', 'retailcrm' ),
+                    'description'       => __( 'Enter your API key. You can find it in the administration section of retailCRM', 'retailcrm' ),
                     'desc_tip'          => true,
                     'default'           => ''
                 )
@@ -407,7 +407,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $this->form_fields['api_version'] = array(
                 'title'       => __( 'API version', 'retailcrm' ),
-                'description' => __( 'Select the API version you want to use', 'retailcrm' ),
+                'description' => __( 'Select API version', 'retailcrm' ),
                 'css'         => 'min-width:50px;',
                 'class'       => 'select',
                 'type'        => 'select',
@@ -463,10 +463,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                         $this->form_fields['order_methods'] = array(
                             'label'       =>  ' ',
-                            'title'       => __('Ordering methods available for downloading from eComlogic', 'retailcrm'),
+                            'title'       => __('Order methods available for uploading from retailCRM', 'retailcrm'),
                             'class'       => '',
                             'type'        => 'multiselect',
-                            'description' => __('Select the order methods that will be uploaded from eComlogic to site', 'retailcrm'),
+                            'description' => __('Select order methods which will be uploaded from retailCRM to the website', 'retailcrm'),
                             'options'     => $order_methods_option,
                             'select_buttons' => true
                         );
@@ -486,7 +486,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         $wc_shipping_list = get_wc_shipping_methods();
 
                         $this->form_fields[] = array(
-                            'title' => __('Shipping methods', 'retailcrm'),
+                            'title' => __('Delivery types', 'retailcrm'),
                             'type' => 'heading',
                             'description' => '',
                             'id' => 'shipping_options'
@@ -521,7 +521,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         $wc_payment = WC_Payment_Gateways::instance();
 
                         $this->form_fields[] = array(
-                            'title' => __('Payment methods', 'retailcrm'),
+                            'title' => __('Payment types', 'retailcrm'),
                             'type' => 'heading',
                             'description' => '',
                             'id' => 'payment_options'
@@ -579,18 +579,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
                      * Inventories options
                      */
                     $this->form_fields[] = array(
-                        'title'       => __('Inventories settings', 'retailcrm'),
+                        'title'       => __('Setting of the stock balance', 'retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
                         'id'          => 'invent_options'
                     );
 
                     $this->form_fields['sync'] = array(
-                        'label'       => __('Sync inventories', 'retailcrm'),
-                        'title'       => __('Inventories', 'retailcrm'),
+                        'label'       => __('Synchronization of the stock balance', 'retailcrm'),
+                        'title'       => __('Stock balance', 'retailcrm'),
                         'class'       => 'checkbox',
                         'type'        => 'checkbox',
-                        'description' => __('Check this checkbox if you want to unload the rest of the products from CRM to site.', 'retailcrm')
+                        'description' => __('Enable this setting if you would like to get information on leftover stocks from retailCRM to the website.', 'retailcrm')
                     );
 
                     /**
@@ -608,17 +608,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'title'       => __('UA', 'retailcrm'),
                         'class'       => 'checkbox',
                         'type'        => 'checkbox',
-                        'description' => __('Check this checkbox if you want to unload information to UA.', 'retailcrm')
+                        'description' => __('Enable this setting for uploading data to UA', 'retailcrm')
                     );
 
                     $this->form_fields['ua_code'] = array(
-                        'title'       => __('UA code', 'retailcrm'),
+                        'title'       => __('UA tracking code', 'retailcrm'),
                         'class'       => 'input',
                         'type'        => 'input'
                     );
 
                     $this->form_fields['ua_custom'] = array(
-                        'title'       => __('Custom parameter', 'retailcrm'),
+                        'title'       => __('User parameter', 'retailcrm'),
                         'class'       => 'input',
                         'type'        => 'input'
                     );
@@ -630,7 +630,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                     if (!isset($options['uploads'])) {
                         $this->form_fields[] = array(
-                            'title'       => __('Uploads settings', 'retailcrm'),
+                            'title'       => __('Settings of uploading', 'retailcrm'),
                             'type'        => 'heading',
                             'description' => '',
                             'id'          => 'upload_options'
@@ -638,9 +638,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                         $this->form_fields['upload-button'] = array(
                             'label'             => __('Upload', 'retailcrm'),
-                            'title'             => __('Upload all customers and orders', 'retailcrm' ),
+                            'title'             => __('Uploading all customers and orders', 'retailcrm' ),
                             'type'              => 'button',
-                            'description'       => __('Batch unloading of existing customers and orders.', 'retailcrm' ),
+                            'description'       => __('Uploading the existing customers and orders to retailCRM', 'retailcrm' ),
                             'desc_tip'          => true,
                             'id'                => 'uploads-retailcrm'
                         );
@@ -650,17 +650,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                      * Generate icml file
                      */
                     $this->form_fields[] = array(
-                        'title'       => __('Generate ICML catalog', 'retailcrm'),
+                        'title'       => __('Generating ICML catalog', 'retailcrm'),
                         'type'        => 'title',
                         'description' => '',
                         'id'          => 'icml_options'
                     );
 
                     $this->form_fields[] = array(
-                        'label'             => __('Generate', 'retailcrm'),
-                        'title'             => __('Generate ICML', 'retailcrm'),
+                        'label'             => __('Generate now', 'retailcrm'),
+                        'title'             => __('Generating ICML', 'retailcrm'),
                         'type'              => 'button',
-                        'description'       => __('This functionality allows you to generate a catalog of products for downloading to CRM.', 'retailcrm'),
+                        'description'       => __('This functionality allows to generate ICML products catalog for uploading to retailCRM.', 'retailcrm'),
                         'desc_tip'          => true,
                         'id'                => 'icml-retailcrm'
                     );
@@ -669,25 +669,25 @@ if (!class_exists('WC_Retailcrm_Base')) {
                      * Upload single order
                      */
                     $this->form_field[] = array(
-                        'title'       => __('Upload single order by id', 'retailcrm'),
+                        'title'       => __('Upload the order by ID', 'retailcrm'),
                         'type'        => 'title',
                         'description' => '',
                         'id'          => 'order_options'
                     );
 
                     $this->form_fields['single_order'] = array(
-                        'label'             => __('Order ID', 'retailcrm'),
-                        'title'             => __('Enter id order', 'retailcrm'),
+                        'label'             => __('Order identifier', 'retailcrm'),
+                        'title'             => __('Orders identifiers', 'retailcrm'),
                         'type'              => 'input',
-                        'description'       => __('Enter comma-separated order numbers.', 'retailcrm'),
+                        'description'       => __('Enter orders identifiers separated by a comma.', 'retailcrm'),
                         'desc_tip'          => true
                     );
 
                     $this->form_fields[] = array(
                         'label'             => __('Upload', 'retailcrm'),
-                        'title'             => __('Upload single order by identificator', 'retailcrm'),
+                        'title'             => __('UUploading orders by identifiers.', 'retailcrm'),
                         'type'              => 'button',
-                        'description'       => __('This functionality allows you to upload single order to CRM.', 'retailcrm'),
+                        'description'       => __('This functionality allows to upload orders to CRM differentially.', 'retailcrm'),
                         'desc_tip'          => true,
                         'id'                => 'single_order_btn'
                     );
@@ -793,7 +793,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if ($response && $response->isSuccessful()) {
                 if (!in_array($versionMap[$value], $response['versions'])) {
-                    WC_Admin_Settings::add_error( esc_html__( 'The selected version of the API is unavailable', 'retailcrm' ) );
+                    WC_Admin_Settings::add_error( esc_html__( 'The selected API version is unavailable', 'retailcrm' ) );
                     $value = '';
                 }
 
@@ -820,7 +820,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $response = $api->apiVersions();
 
             if ($response == null) {
-                WC_Admin_Settings::add_error(esc_html__( 'Enter the correct CRM address', 'retailcrm'));
+                WC_Admin_Settings::add_error(esc_html__( 'Enter the correct URL of CRM', 'retailcrm'));
                 $value = '';
             }
 
@@ -866,7 +866,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             <script type="text/javascript">
                 jQuery('h2.retailcrm_hidden').hover().css({
                     'cursor':'pointer',
-                    'width':'300px'
+                    'width':'310px'
                 });
                 jQuery('h2.retailcrm_hidden').toggle(
                     function() {
