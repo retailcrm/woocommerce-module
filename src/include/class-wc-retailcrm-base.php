@@ -685,7 +685,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                     $this->form_fields[] = array(
                         'label'             => __('Upload', 'retailcrm'),
-                        'title'             => __('UUploading orders by identifiers.', 'retailcrm'),
+                        'title'             => __('Uploading orders by identifiers.', 'retailcrm'),
                         'type'              => 'button',
                         'description'       => __('This functionality allows to upload orders to CRM differentially.', 'retailcrm'),
                         'desc_tip'          => true,
