@@ -15,28 +15,30 @@
  *
  *
  * @link       https://wordpress.org/plugins/woo-retailcrm/
- * @version    3.3.1
+ * @version    3.3.2
  *
  * @package    RetailCRM
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
 // If uninstall not called from WordPress, then exit.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
 global $wpdb;
 
-wp_clear_scheduled_hook( 'retailcrm_icml' );
-wp_clear_scheduled_hook( 'retailcrm_history' );
-wp_clear_scheduled_hook( 'retailcrm_inventories' );
+wp_clear_scheduled_hook('retailcrm_icml');
+wp_clear_scheduled_hook('retailcrm_history');
+wp_clear_scheduled_hook('retailcrm_inventories');
 
 // Delete options.
-$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name = 'woocommerce_integration-retailcrm_settings';" );
+$wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'woocommerce_integration-retailcrm_settings';");
+$wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_customers_history_since_id';");
+$wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_orders_history_since_id';");
 
 // Clear any cached data that has been removed
 wp_cache_flush();

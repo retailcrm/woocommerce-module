@@ -49,15 +49,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             // Actions.
             add_action('woocommerce_update_options_integration_' .  $this->id, array($this, 'process_admin_options'));
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'api_sanitized'));
 
-            add_filter('cron_schedules', array($this, 'filter_cron_schedules'), 10, 1);
             add_action('woocommerce_checkout_order_processed', array($this, 'retailcrm_process_order'), 10, 1);
             add_action('retailcrm_history', array($this, 'retailcrm_history_get'));
             add_action('retailcrm_icml', array($this, 'generate_icml'));
             add_action('retailcrm_inventories', array($this, 'load_stocks'));
-            add_action('init', array($this, 'register_load_inventories'));
-            add_action('init', array($this, 'register_icml_generation'));
-            add_action('init', array($this, 'register_retailcrm_history'));
             add_action('wp_ajax_do_upload', array($this, 'upload_to_crm'));
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
             add_action('wp_ajax_order_upload', array($this, 'order_upload'));
@@ -69,6 +66,35 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
+        }
+
+        public function api_sanitized($settings)
+        {
+            if (isset($settings['sync']) && $settings['sync'] == 'yes') {
+                if (!wp_next_scheduled('retailcrm_inventories')) {
+                    wp_schedule_event(time(), 'fiveteen_minutes', 'retailcrm_inventories');
+                }
+            } elseif (isset($settings['sync']) && $settings['sync'] == 'no') {
+                wp_clear_scheduled_hook('retailcrm_inventories');
+            }
+
+            if (isset($settings['history']) && $settings['history'] == 'yes') {
+                if (!wp_next_scheduled('retailcrm_history')) {
+                    wp_schedule_event(time(), 'five_minutes', 'retailcrm_history');
+                }
+            } elseif (isset($settings['history']) && $settings['history'] == 'no') {
+                wp_clear_scheduled_hook('retailcrm_history');
+            }
+
+            if (isset($settings['icml']) && $settings['icml'] == 'yes') {
+                if (!wp_next_scheduled('retailcrm_icml')) {
+                    wp_schedule_event(time(), 'three_hours', 'retailcrm_icml');
+                }
+            } elseif (isset($settings['icml']) && $settings['icml'] == 'no') {
+                wp_clear_scheduled_hook('retailcrm_icml');
+            }
+
+            return $settings;
         }
 
         /**
@@ -84,26 +110,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             return 'class-wc-retailcrm-' . $file . '.php';
-        }
-
-        public function filter_cron_schedules($schedules) {
-            return array_merge(
-                    $schedules,
-                    array(
-                        'five_minutes' => array(
-                        'interval' => 300, // seconds
-                        'display'  => __('Every 5 minutes')
-                    ),
-                        'three_hours' => array(
-                        'interval' => 10800, // seconds
-                        'display'  => __('Every 3 hours')
-                    ),
-                        'fiveteen_minutes' => array(
-                        'interval' => 900, // seconds
-                        'display'  => __('Every 15 minutes')
-                    )
-                )
-            );
         }
 
         public function generate_icml() {
@@ -149,29 +155,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $inventories = new WC_Retailcrm_Inventories($this->apiClient);
             $inventories->updateQuantity();
-        }
-
-        public function register_load_inventories() {
-            if ( !wp_next_scheduled( 'retailcrm_inventories' ) ) {
-                // Schedule the event
-                wp_schedule_event( time(), 'fiveteen_minutes', 'retailcrm_inventories' );
-            }
-        }
-
-        public function register_icml_generation() {
-            // Make sure this event hasn't been scheduled
-            if ( !wp_next_scheduled( 'retailcrm_icml' ) ) {
-                // Schedule the event
-                wp_schedule_event( time(), 'three_hours', 'retailcrm_icml' );
-            }
-        }
-
-        public function register_retailcrm_history() {
-            // Make sure this event hasn't been scheduled
-            if ( !wp_next_scheduled( 'retailcrm_history' ) ) {
-                // Schedule the event
-                wp_schedule_event( time(), 'five_minutes', 'retailcrm_history' );
-            }
         }
 
         /**
@@ -468,6 +451,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'type'        => 'multiselect',
                             'description' => __('Select order methods which will be uploaded from retailCRM to the website', 'retailcrm'),
                             'options'     => $order_methods_option,
+                            'css'         => 'min-height:100px;',
                             'select_buttons' => true
                         );
                     }
@@ -665,6 +649,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'id'                => 'icml-retailcrm'
                     );
 
+                    $this->form_fields['icml'] = array(
+                        'label'       => __('Generating ICML', 'retailcrm'),
+                        'title'       => __('Generating ICML catalog by wp-cron', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox'
+                    );
+
                     /*
                      * Upload single order
                      */
@@ -690,6 +681,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'description'       => __('This functionality allows to upload orders to CRM differentially.', 'retailcrm'),
                         'desc_tip'          => true,
                         'id'                => 'single_order_btn'
+                    );
+
+                     $this->form_fields['history'] = array(
+                        'label'       => __('Activate history uploads', 'retailcrm'),
+                        'title'       => __('Upload data from retailCRM', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox'
                     );
                 }
             }
