@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 3.3.1
+ * Version: 3.3.2
  * WC requires at least: 3.0
  * WC tested up to: 3.4.3
  * Plugin Name: WooCommerce RetailCRM
@@ -36,19 +36,23 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
          * Construct the plugin.
          */
         public function __construct() {
-            add_action('plugins_loaded', array($this, 'load_plugin_textdomain'));
+            $this->load_plugin_textdomain();
 
-            if ( class_exists( 'WC_Integration' ) ) {
-                require_once( dirname( __FILE__ ) . '/include/class-wc-retailcrm-base.php' );
-                require_once( dirname( __FILE__ ) . '/include/functions.php' );
+            if (class_exists( 'WC_Integration' ) ) {
+                require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
+                require_once(dirname(__FILE__ ) . '/include/functions.php');
                 add_filter('woocommerce_integrations', array( $this, 'add_integration'));
             } else {
-                // throw an admin error if you like
+                add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
             }
         }
 
+        public function woocommerce_missing_notice() {
+            echo '<div class="error"><p>Woocommerce is not installed</p></div>';
+        }
+
         public function load_plugin_textdomain() {
-            load_plugin_textdomain('retailcrm', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+            load_plugin_textdomain('retailcrm', false, dirname(plugin_basename(__FILE__)) . '/languages/');
         }
 
         /**

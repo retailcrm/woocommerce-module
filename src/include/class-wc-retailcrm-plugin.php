@@ -16,6 +16,28 @@ class WC_Retailcrm_Plugin {
 
     private function __construct($file) {
         $this->file = $file;
+
+        add_filter('cron_schedules', array($this, 'filter_cron_schedules'), 10, 1);
+    }
+
+    public function filter_cron_schedules($schedules) {
+        return array_merge(
+            $schedules,
+            array(
+                'five_minutes' => array(
+                    'interval' => 300, // seconds
+                    'display'  => __('Every 5 minutes')
+                ),
+                'three_hours' => array(
+                    'interval' => 10800, // seconds
+                    'display'  => __('Every 3 hours')
+                ),
+                'fiveteen_minutes' => array(
+                    'interval' => 900, // seconds
+                    'display'  => __('Every 15 minutes')
+                )
+            )
+        );
     }
 
     public function register_activation_hook() {
