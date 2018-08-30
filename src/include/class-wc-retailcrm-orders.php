@@ -177,11 +177,17 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
+            if (isset($payment) && $payment['type'] == $this->retailcrm_settings[$order->get_payment_method()] && $order->is_paid()) {
+                $payment = $this->sendPayment($order, true);
+
+                return $payment;
+            }
+
             if (isset($payment) && $payment['type'] != $this->retailcrm_settings[$order->get_payment_method()]) {
                 $response = $this->retailcrm->ordersPaymentDelete($payment['id']);
 
                 if ($response->isSuccessful()) {
-                    $payment = $this->createPayment($order);
+                    $payment = $this->sendPayment($order);
 
                     return $payment;
                 }
@@ -197,7 +203,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          *
          * @return array $order_data_arr
          */
-        protected function getOrderData($order) {
+        protected function getOrderData($order)
+        {
             $order_data_arr = array();
             $order_info = $order->get_data();
 
@@ -380,13 +387,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         }
 
         /**
-         * Create payment in CRM
+         * Send payment in CRM
          * 
          * @param WC_Order $order
          * 
          * @return array $payment
          */
-        protected function createPayment($order)
+        protected function sendPayment($order, $update = false)
         {
             $payment = array(
                 'amount' => $order->get_total(),
@@ -396,11 +403,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $payment['order'] = array(
                 'externalId' => $order->get_id()
             );
-
-            if (isset($this->retailcrm_settings[$order->get_payment_method()])) {
-                $payment['type'] = $this->retailcrm_settings[$order->get_payment_method()];
-            }
-
+ 
             if ($order->is_paid()) {
                 $payment['status'] = 'paid';
             }
@@ -410,7 +413,16 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $payment['paidAt'] = trim($pay_date->date('Y-m-d H:i:s'));
             }
 
-            $this->retailcrm->ordersPaymentCreate($payment);
+            if ($update === false){
+
+                if (isset($this->retailcrm_settings[$order->get_payment_method()])) {
+                    $payment['type'] = $this->retailcrm_settings[$order->get_payment_method()];
+                }
+
+                $this->retailcrm->ordersPaymentCreate($payment);
+            } else {
+                $this->retailcrm->ordersPaymentEdit($payment);
+            }
 
             return $payment;
         }
