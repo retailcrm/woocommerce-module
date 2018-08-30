@@ -50,7 +50,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             // Actions.
             add_action('woocommerce_update_options_integration_' .  $this->id, array($this, 'process_admin_options'));
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'api_sanitized'));
-
+            add_action('admin_bar_menu', array($this, 'add_retailcrm_button'), 100 );
             add_action('woocommerce_checkout_order_processed', array($this, 'retailcrm_process_order'), 10, 1);
             add_action('retailcrm_history', array($this, 'retailcrm_history_get'));
             add_action('retailcrm_icml', array($this, 'generate_icml'));
@@ -227,7 +227,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $ajax_url = admin_url('admin-ajax.php');
             ?>
             <script type="text/javascript">
-            jQuery('#icml-retailcrm').bind('click', function() {
+            jQuery('#icml-retailcrm, #wp-admin-bar-retailcrm_ajax_generate_icml').bind('click', function() {
                 jQuery.ajax({
                     type: "POST",
                     url: '<?php echo $ajax_url; ?>?action=generate_icml',
@@ -896,6 +896,40 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             return false;
+        }
+        /**
+         * Add button in admin
+         */
+        function add_retailcrm_button() {
+            global $wp_admin_bar;
+            if ( !is_super_admin() || !is_admin_bar_showing() || !is_admin())
+                return;
+
+            $wp_admin_bar->add_menu(
+                array(
+                    'id' => 'retailcrm_top_menu',
+                    'title' => __('retailCRM', 'retailcrm')
+                )
+            );
+            $wp_admin_bar->add_menu(
+                array(
+                    'id' => 'retailcrm_ajax_generate_icml',
+                    'title' => __('Generating ICML catalog', 'retailcrm'),
+                    'href' => '#',
+                    'parent' => 'retailcrm_top_menu',
+                    'class' => 'retailcrm_ajax_generate_icml'
+                )
+            );
+
+            $wp_admin_bar->add_menu(
+                array(
+                    'id' => 'retailcrm_ajax_generate_setings',
+                    'title' => __('Settings', 'retailcrm'),
+                    'href'=> get_site_url().'/wp-admin/admin.php?page=wc-settings&tab=integration&section=integration-retailcrm',
+                    'parent' => 'retailcrm_top_menu',
+                    'class' => 'retailcrm_ajax_settings'
+                )
+            );
         }
     }
 }
