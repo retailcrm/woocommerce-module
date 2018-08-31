@@ -62,6 +62,8 @@ class WC_Retailcrm_Plugin {
     }
 
     public function deactivate() {
+        do_action('retailcrm_deactivate');
+
         if (wp_next_scheduled('retailcrm_icml')) {
             wp_clear_scheduled_hook('retailcrm_icml');
         }
@@ -75,6 +77,48 @@ class WC_Retailcrm_Plugin {
         }
     }
 
+    /**
+     * Edit configuration in CRM
+     *
+     * @param WC_Retailcrm_Proxy $api_client
+     * @param string $cliendId
+     * @param bool $active
+     *
+     * @return boolean
+     */
+    public static function integration_module($api_client, $cliendId, $active = true)
+    {
+        if (!$api_client) {
+            return false;
+        }
+
+        $configuration = array(
+            'clientId' => $cliendId,
+            'code' => 'woocommerce',
+            'integrationCode' => 'woocommerce',
+            'active' => $active,
+            'name' => 'WooCommerce',
+            'logo' => 'https://s3.eu-central-1.amazonaws.com/retailcrm-billing/images/5b69ce4bda663-woocommercesvg2.svg'
+        );
+
+        $response = $api_client->integrationModulesEdit($configuration);
+
+        if (!$response) {
+            return false;
+        }
+
+        if ($response->isSuccessful()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check running history
+     *
+     * @return boolean
+     */
     public static function history_running()
     {
         return self::$history_run;

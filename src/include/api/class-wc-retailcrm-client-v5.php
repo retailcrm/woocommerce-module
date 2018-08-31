@@ -53,7 +53,7 @@ class WC_Retailcrm_Client_V5
 
     /**
      * Returns api versions list
-     * 
+     *
      * @return WC_Retailcrm_Response
      */
     public function apiVersions()
@@ -2289,6 +2289,34 @@ class WC_Retailcrm_Client_V5
             '/telephony/manager',
             WC_Retailcrm_Request::METHOD_GET,
             $parameters
+        );
+    }
+
+    /**
+     * Edit module configuration
+     *
+     * @param array $configuration
+     *
+     * @throws WC_Retailcrm_Exception_Json
+     * @throws WC_Retailcrm_Exception_Curl
+     * @throws \InvalidArgumentException
+     *
+     * @return WC_Retailcrm_Response
+     */
+    public function integrationModulesEdit(array $configuration)
+    {
+        if (!count($configuration) || empty($configuration['code'])) {
+            throw new \InvalidArgumentException(
+                'Parameter `configuration` must contains a data & configuration `code` must be set'
+            );
+        }
+
+        $code = $configuration['code'];
+
+        return $this->client->makeRequest(
+            "/integration-modules/$code/edit",
+            WC_Retailcrm_Request::METHOD_POST,
+            array('integrationModule' => json_encode($configuration))
         );
     }
 

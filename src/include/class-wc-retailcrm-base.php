@@ -66,6 +66,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
+
+            // Deactivate hook
+            add_action('retailcrm_deactivate', array($this, 'deactivate'));
         }
 
         public function api_sanitized($settings)
@@ -92,6 +95,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 }
             } elseif (isset($settings['icml']) && $settings['icml'] == 'no') {
                 wp_clear_scheduled_hook('retailcrm_icml');
+            }
+
+            if (!$this->get_errors() && !get_option('retailcrm_active_in_crm')) {
+                $this->activate_integration($settings);
             }
 
             return $settings;
@@ -794,9 +801,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     WC_Admin_Settings::add_error( esc_html__( 'The selected API version is unavailable', 'retailcrm' ) );
                     $value = '';
                 }
-
-                return $value;
             }
+
+            return $value;
         }
 
         /**
@@ -897,6 +904,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             return false;
         }
+
         /**
          * Add button in admin
          */
@@ -930,6 +938,32 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'class' => 'retailcrm_ajax_settings'
                 )
             );
+        }
+
+        public function deactivate()
+        {
+            $api_client = $this->getApiClient();
+            $clientId = get_option('retailcrm_client_id');
+            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
+        }
+
+        private function activate_integration($settings)
+        {
+            $clientId = get_option('retailcrm_client_id');
+
+            if ($settings['api_url'] && $settings['api_key'] && $settings['api_version']) {
+                $api_client = new WC_Retailcrm_Proxy(
+                    $settings['api_url'],
+                    $settings['api_key'],
+                    $settings['api_version']
+                );
+
+                $result = WC_Retailcrm_Plugin::integration_module($api_client);
+
+                if ($result) {
+                    update_option('retailcrm_active_in_crm', true);
+                }
+            }
         }
     }
 }
