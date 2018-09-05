@@ -940,6 +940,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             );
         }
 
+        /**
+         * Deactivate module in marketplace retailCRM
+         *
+         * @return void
+         */
         public function deactivate()
         {
             $api_client = $this->getApiClient();
@@ -947,9 +952,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
         }
 
+        /**
+         * @param $settings
+         *
+         * @return void
+         */
         private function activate_integration($settings)
         {
-            $clientId = get_option('retailcrm_client_id');
+            $client_id = get_option('retailcrm_client_id');
+
+            if (!$client_id) {
+                $client_id = hash('md5', date('Y-m-d H:i:s'));
+            }
 
             if ($settings['api_url'] && $settings['api_key'] && $settings['api_version']) {
                 $api_client = new WC_Retailcrm_Proxy(
@@ -958,10 +972,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     $settings['api_version']
                 );
 
-                $result = WC_Retailcrm_Plugin::integration_module($api_client);
+                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id);
 
                 if ($result) {
                     update_option('retailcrm_active_in_crm', true);
+                    update_option('retailcrm_client_id', $client_id);
                 }
             }
         }

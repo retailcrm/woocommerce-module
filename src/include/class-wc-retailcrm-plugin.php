@@ -81,19 +81,19 @@ class WC_Retailcrm_Plugin {
      * Edit configuration in CRM
      *
      * @param WC_Retailcrm_Proxy $api_client
-     * @param string $cliendId
+     * @param string $cliend_id
      * @param bool $active
      *
      * @return boolean
      */
-    public static function integration_module($api_client, $cliendId, $active = true)
+    public static function integration_module($api_client, $cliend_id, $active = true)
     {
         if (!$api_client) {
             return false;
         }
 
         $configuration = array(
-            'clientId' => $cliendId,
+            'clientId' => $cliend_id,
             'code' => 'woocommerce',
             'integrationCode' => 'woocommerce',
             'active' => $active,
