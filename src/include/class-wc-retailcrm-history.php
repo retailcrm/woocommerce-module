@@ -330,15 +330,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             }
 
                             if ($offer_id == $item['offer']['externalId']) {
-                                if (isset($item['delete']) && $item['delete'] == true) {
-                                    wc_delete_order_item($order_item_id);
-                                } else {
-                                    $order_item->set_quantity($item['quantity']);
-                                    $product = wc_get_product($item['offer']['externalId']);
-                                    $order_item->set_total($product->get_price() * $item['quantity']);
-                                    $data_store = $order_item->get_data_store();
-                                    $data_store->update($order_item);
-                                }
+                                $this->deleteOrUpdateOrderItem($item, $order_item, $order_item_id);
                             }
                         }
                     }
@@ -412,6 +404,26 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             return $wc_order->get_id();
+        }
+
+        /**
+         * @param $item
+         * @param $order_item
+         * @param $order_item_id
+         */
+        private function deleteOrUpdateOrderItem($item, $order_item, $order_item_id)
+        {
+            if (isset($item['delete']) && $item['delete'] == true) {
+                wc_delete_order_item($order_item_id);
+            } else {
+                if (isset($item['quantity']) && $item['quantity']) {
+                    $order_item->set_quantity($item['quantity']);
+                    $product = wc_get_product($item['offer']['externalId']);
+                    $order_item->set_total($product->get_price() * $item['quantity']);
+                    $data_store = $order_item->get_data_store();
+                    $data_store->update($order_item);
+                }
+            }
         }
 
         /**
