@@ -39,6 +39,8 @@ wp_clear_scheduled_hook('retailcrm_inventories');
 $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'woocommerce_integration-retailcrm_settings';");
 $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_customers_history_since_id';");
 $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_orders_history_since_id';");
+$wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_active_in_crm';");
+$wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_client_id';");
 
 // Clear any cached data that has been removed
 wp_cache_flush();

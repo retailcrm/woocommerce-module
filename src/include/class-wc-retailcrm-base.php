@@ -950,6 +950,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $api_client = $this->getApiClient();
             $clientId = get_option('retailcrm_client_id');
             WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
+            delete_option('retailcrm_active_in_crm');
         }
 
         /**
@@ -962,7 +963,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $client_id = get_option('retailcrm_client_id');
 
             if (!$client_id) {
-                $client_id = hash('md5', date('Y-m-d H:i:s'));
+                $client_id = uniqid();
             }
 
             if ($settings['api_url'] && $settings['api_key'] && $settings['api_version']) {
