@@ -90,21 +90,31 @@ class WC_Retailcrm_Plugin {
      *
      * @return boolean
      */
-    public static function integration_module($api_client, $client_id, $active = true) {
+    public static function integration_module($api_client, $client_id, $api_version, $active = true) {
+
         if (!$api_client) {
             return false;
         }
 
         $configuration = array(
-            'clientId' => $client_id,
-            'code' => self::INTEGRATION_CODE . '-' . $client_id,
-            'integrationCode' => self::INTEGRATION_CODE,
-            'active' => $active,
             'name' => 'WooCommerce',
-            'logo' => self::MARKETPLACE_LOGO
+            'logo' => self::MARKETPLACE_LOGO,
+            'code' => self::INTEGRATION_CODE . '-' . $client_id,
+            'active' => $active,
         );
 
-        $response = $api_client->integrationModulesEdit($configuration);
+        if ($api_version == 'v4') {
+            $configuration['configurationUrl'] = get_site_url();
+
+            $response = $api_client->marketplaceSettingsEdit($configuration);
+        } else {
+            $configuration['integrationCode'] = self::INTEGRATION_CODE;
+            $configuration['baseUrl'] = get_site_url();
+            $configuration['clientId'] = $client_id;
+            $configuration['accountUrl'] = get_site_url();
+
+            $response = $api_client->integrationModulesEdit($configuration);
+        }
 
         if (!$response) {
             return false;
