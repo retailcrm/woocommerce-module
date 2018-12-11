@@ -949,7 +949,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $api_client = $this->getApiClient();
             $clientId = get_option('retailcrm_client_id');
-            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
+            $api_version = $this->get_option('api_version');
+
+            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, $api_version, false);
             delete_option('retailcrm_active_in_crm');
         }
 
@@ -973,7 +975,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     $settings['api_version']
                 );
 
-                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id);
+                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id, $settings['api_version']);
 
                 if ($result) {
                     update_option('retailcrm_active_in_crm', true);
