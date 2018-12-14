@@ -175,12 +175,18 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 /** @var SimpleXMLElement $cat */
 
                 $cat = $this->categories;
-                $e = $cat->addChild('category', $category['name']);
+                $e = $cat->addChild('category');
 
                 $e->addAttribute('id', $category['id']);
 
                 if (array_key_exists('parentId', $category) && $category['parentId'] > 0) {
                     $e->addAttribute('parentId', $category['parentId']);
+                }
+
+                $e->addChild('name', $category['name']);
+
+                if (array_key_exists('picture', $category)) {
+                    $e->addChild('picture', $category['picture']);
                 }
             }
         }
@@ -391,14 +397,23 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 'hide_empty'   => $empty
             );
 
-            $wcatTerms = get_categories( $args );
+            $wcatTerms = get_categories($args);
 
             foreach ($wcatTerms as $term) {
-                $categories[] = array(
+                $category = array(
                     'id' => $term->term_id,
                     'parentId' => $term->parent,
                     'name' => $term->name
                 );
+
+                $thumbnail_id = get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
+                $picture = wp_get_attachment_url($thumbnail_id);
+
+                if ($picture) {
+                    $category['picture'] = $picture;
+                }
+
+                $categories[] = $category;
             }
 
             return $categories;
@@ -406,12 +421,12 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
 
         /**
          * Set offer for icml catalog
-         * 
+         *
          * @param array $full_product_list
          * @param array $product_attributes
          * @param object WC_Product_Simple | WC_Product_Variation $product
-         * @param object WC_Product_Variable $parent default false
-         * 
+         * @param mixed WC_Product_Variable | bool $parent default false
+         *
          * @return void
          */
         private function setOffer(&$full_product_list, $product_attributes, $product, $parent = false) {
@@ -477,13 +492,13 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             }
 
             $product_data = array(
-                'id' => $product->get_id(), 
-                'productId' => ($this->get_parent_product($product) > 0) ? $parent->get_id() : $product->get_id(),
+                'id' => $product->get_id(),
+                'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
                 'name' => $product->get_name(),
-                'productName' => ($this->get_parent_product($product) > 0) ? $parent->get_title() : $product->get_title(),
-                'price' => $this->get_price_with_tax($product),
+                'productName' => ($product->get_parent_id() > 0) ? $parent->get_title() : $product->get_title(),
+                'price' => wc_get_price_including_tax($product),
                 'picture' => $image[0],
-                'url' => ($this->get_parent_product($product) > 0) ? $parent->get_permalink() : $product->get_permalink(),
+                'url' => ($product->get_parent_id() > 0) ? $parent->get_permalink() : $product->get_permalink(),
                 'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
                 'categoryId' => $term_list,
                 'dimension' => $dimension,
@@ -498,49 +513,13 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             if (isset($product_data)) {
                 $full_product_list[] = $product_data;
             }
-            
+
             unset($product_data);
         }
 
         /**
-         * Get product id
-         * 
-         * @global object $woocommerce
-         * 
-         * @param object $product
-         * 
-         * @return int
-         */
-        private function get_parent_product($product) {
-            global $woocommerce;
-            if ( version_compare( $woocommerce->version, '3.0', '<' ) ) {
-                return $product->get_parent();
-            } else {
-                return $product->get_parent_id();
-            }
-        }
-
-        /**
-         * Get product price
-         * 
-         * @global object $woocommerce
-         * 
-         * @param object $product
-         * 
-         * @return float
-         */
-        private function get_price_with_tax($product) {
-            global $woocommerce;
-            if ( version_compare( $woocommerce->version, '3.0', '<' ) ) {
-                return $product->get_price_including_tax();
-            } else {
-                return wc_get_price_including_tax($product);
-            }
-        }
-
-        /**
          * Get product statuses
-         * 
+         *
          * @return array
          */
         private function checkPostStatuses() {
