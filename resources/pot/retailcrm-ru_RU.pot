@@ -1,0 +1,212 @@
+# Translation of Plugins - Woocommerce RetailCRM - Development (trunk) in Russian
+# This file is distributed under the same license as the Plugins - Woocommerce RetailCRM - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-06-06 08:53:26+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: ru\n"
+"Project-Id-Version: Plugins - Woocommerce RetailCRM - Development (trunk)\n"
+
+#. Author URI of the plugin/theme
+msgid "https://retailcrm.pro/"
+msgstr "https://retailcrm.ru/"
+
+#. Author of the plugin/theme
+msgid "RetailDriver LLC"
+msgstr "RetailDriver LLC"
+
+#. Description of the plugin/theme
+msgid "Integration plugin for WooCommerce & retailCRM"
+msgstr "Интеграционный плагин для WooCommerce & retailCRM"
+
+#. Plugin URI of the plugin/theme
+msgid "https://wordpress.org/plugins/woo-retailcrm/"
+msgstr "https://wordpress.org/plugins/woo-retailcrm/"
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce retailCRM"
+msgstr "WooCommerce retailCRM"
+
+msgid "Activate history uploads"
+msgstr "Активировать загрузку истории изменений"
+
+msgid "Upload data from retailCRM"
+msgstr "Загрузка данных из retailCRM"
+
+msgid "Generating ICML catalog by wp-cron"
+msgstr "Генерация ICML каталога товаров с помощью wp-cron"
+
+msgid "This functionality allows to upload orders to CRM differentially."
+msgstr "Эта функция позволяет производить выборочную выгрузку заказов в retailCRM"
+
+msgid "Uploading orders by identifiers."
+msgstr "Выгрузка заказов по идентификаторам"
+
+msgid "Enter orders identifiers separated by a comma."
+msgstr "Введите идентификаторы заказов через запятую"
+
+msgid "Orders identifiers"
+msgstr "Идентификаторы заказов"
+
+msgid "Order identifier"
+msgstr "Идентификатор заказа"
+
+msgid "Upload the order by ID"
+msgstr "Выгрузить заказ по идентификатору"
+
+msgid "Orders were uploaded"
+msgstr "Заказы были выгружены"
+
+msgid "The field cannot be empty, enter the order ID"
+msgstr "Поле не может быть пустым, введите идентификатор заказа"
+
+msgid "Catalog was generated"
+msgstr "Каталог был сгенерирован"
+
+msgid "Customers and orders were uploaded"
+msgstr "Клиенты и заказы были выгружены"
+
+msgid "Enter the correct API key"
+msgstr "Введите корректный API ключ"
+
+msgid "Enter the correct URL of CRM"
+msgstr "Введите корректный адрес retailCRM"
+
+msgid "The selected API version is unavailable"
+msgstr "Выбранная версия API недоступна"
+
+msgid "This functionality allows to generate ICML products catalog for uploading to retailCRM."
+msgstr "Эта функция позволяет сгенерировать ICML каталог товаров для выгрузки в retailCRM"
+
+msgid "Generating ICML"
+msgstr "Генерация ICML"
+
+msgid "Generate now"
+msgstr "Сгенерировать сейчас"
+
+msgid "Generating ICML catalog"
+msgstr "Генерация ICML каталога"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Uploading the existing customers and orders to retailCRM"
+msgstr "Выгрузка существующих клиентов и заказов в retailCRM"
+
+msgid "Uploading all customers and orders"
+msgstr "Выгрузка всех клиентов и заказов"
+
+msgid "Upload"
+msgstr "Выгрузить"
+
+msgid "Settings of uploading"
+msgstr "Настройки выгрузки"
+
+msgid "User parameter"
+msgstr "Пользовательский параметр"
+
+msgid "UA tracking code"
+msgstr "Код отслеживания UA"
+
+msgid "Enable this setting for uploading data to UA"
+msgstr "Активируйте эту настройку для выгрузки данных в UA"
+
+msgid "UA"
+msgstr "UA"
+
+msgid "Activate UA"
+msgstr "Активировать UA"
+
+msgid "UA settings"
+msgstr "Настройки UA"
+
+msgid "Enable this setting if you would like to get information on leftover stocks from retailCRM to the website."
+msgstr "Активируйте данную настройку, если хотите получать остатки по товарам из retailCRM на сайт."
+
+msgid "Stock balance"
+msgstr "Остатки"
+
+msgid "Synchronization of the stock balance"
+msgstr "Синхронизация остатков"
+
+msgid "Setting of the stock balance"
+msgstr "Настройка управления остатками"
+
+msgid "Statuses"
+msgstr "Статусы"
+
+msgid "Payment types"
+msgstr "Способы оплаты"
+
+msgid "Delivery types"
+msgstr "Способы доставки"
+
+msgid "Select order methods which will be uploaded from retailCRM to the website"
+msgstr "Выберите способы оформления заказов, которые будут выгружаться из retailCRM на сайт"
+
+msgid "Order methods available for uploading from retailCRM"
+msgstr "Способы оформления заказа, доступные для выгрузки из retailCRM"
+
+msgid "Order methods"
+msgstr "Способы оформления заказа"
+
+msgid "Catalog settings"
+msgstr "Настройки каталога"
+
+msgid "Select API version"
+msgstr "Выберите версию API"
+
+msgid "API version"
+msgstr "Версия API"
+
+msgid "API settings"
+msgstr "Настройки API"
+
+msgid "Enter your API key. You can find it in the administration section of retailCRM"
+msgstr "Введите API ключ. Вы можете найти его в административном разделе retailCRM."
+
+msgid "Enter API of URL (https://yourdomain.retailcrm.pro)."
+msgstr "Введите API URL (https://yourdomain.retailcrm.ru)."
+
+msgid "Integration with retailCRM management system."
+msgstr "Интеграция с системой управления retailCRM"
+
+msgid "Every 15 minutes"
+msgstr "Каждые 15 минут"
+
+msgid "Every 3 hours"
+msgstr "Каждые 3 часа"
+
+msgid "Every 5 minutes"
+msgstr "Каждые 5 минут"
+
+msgid "API key"
+msgstr "API ключ"
+
+msgid "API of URL"
+msgstr "API URL"
+
+msgid "Main settings"
+msgstr "Главные настройки"
+
+msgid "retailCRM"
+msgstr "retailCRM"
+
+msgid "Daemon Collector settings"
+msgstr "Настройка Daemon Collector"
+
+msgid "Activate Daemon Collector"
+msgstr "Активировать Daemon Collector"
+
+msgid "Daemon Collector"
+msgstr "Daemon Collector"
+
+msgid "Enable this setting for activate Daemon Collector on site"
+msgstr "Активируйте эту настройку для активации Daemon Collector на сайте"
+
+msgid "Site key"
+msgstr "Ключ сайта"

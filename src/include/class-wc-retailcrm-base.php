@@ -65,6 +65,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
             add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
+            add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
 
             // Deactivate hook
@@ -351,9 +352,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 include_once(self::checkCustomFile('ga'));
             }
 
-            if ($this->get_option('ua') && $this->get_option('ua_code') && is_checkout()) {
+            if ($this->get_option('ua') == 'yes' && $this->get_option('ua_code') && is_checkout()) {
                 $retailcrm_analytics = WC_Retailcrm_Google_Analytics::getInstance($this->settings);
                 echo $retailcrm_analytics->send_analytics();
+            } else {
+                echo '';
+            }
+        }
+
+        /**
+         * Daemon collector
+         */
+        public function initialize_daemon_collector()
+        {
+            if (!class_exists('WC_Retailcrm_Daemon_Collector')) {
+                include_once(self::checkCustomFile('daemon-collector'));
+            }
+
+            if ($this->get_option('daemon_collector') == 'yes' && $this->get_option('daemon_collector_key')) {
+                $retailcrm_daemon_collector = WC_Retailcrm_Daemon_Collector::getInstance($this->settings);
+                echo $retailcrm_daemon_collector->initialize_daemon_collector();
             } else {
                 echo '';
             }
@@ -591,7 +609,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'title'       => __('UA settings', 'retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
-                        'id'          => 'invent_options'
+                        'id'          => 'ua_options'
                     );
 
                     $this->form_fields['ua'] = array(
@@ -610,6 +628,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                     $this->form_fields['ua_custom'] = array(
                         'title'       => __('User parameter', 'retailcrm'),
+                        'class'       => 'input',
+                        'type'        => 'input'
+                    );
+
+                    /**
+                     * Daemon collector settings
+                     */
+                    $this->form_fields[] = array(
+                        'title'       => __('Daemon Collector settings', 'retailcrm'),
+                        'type'        => 'heading',
+                        'description' => '',
+                        'id'          => 'invent_options'
+                    );
+
+                    $this->form_fields['daemon_collector'] = array(
+                        'label'       => __('Activate Daemon Collector', 'retailcrm'),
+                        'title'       => __('Daemon Collector', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox',
+                        'description' => __('Enable this setting for activate Daemon Collector on site', 'retailcrm')
+                    );
+
+                    $this->form_fields['daemon_collector_key'] = array(
+                        'title'       => __('Site key', 'retailcrm'),
                         'class'       => 'input',
                         'type'        => 'input'
                     );

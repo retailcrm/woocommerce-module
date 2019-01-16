@@ -15,6 +15,7 @@ function _manually_load_plugin() {
     require $plugin_dir . 'src/include/class-wc-retailcrm-customers.php';
     require $plugin_dir . 'src/include/class-wc-retailcrm-inventories.php';
     require $plugin_dir . 'src/include/class-wc-retailcrm-ga.php';
+    require $plugin_dir . 'src/include/class-wc-retailcrm-daemon-collector.php';
     require $plugin_dir . 'src/include/class-wc-retailcrm-history.php';
     require $plugin_dir . 'src/retailcrm.php';
 }
