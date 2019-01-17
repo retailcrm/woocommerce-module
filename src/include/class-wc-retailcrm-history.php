@@ -93,6 +93,14 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         continue;
                     }
 
+                    if (isset($record['customer']['externalId'])) {
+                        $customer = new WC_Customer($record['customer']['externalId']);
+
+                        if ($customer->get_id() == 0) {
+                            continue;
+                        }
+                    }
+
                     WC_Retailcrm_Plugin::$history_run = true;
 
                     if ($record['field'] == 'first_name' && isset($record['customer']['externalId'])) {
@@ -102,7 +110,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     elseif ($record['field'] == 'last_name' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
+                        if ($record['newValue']) {
                             update_user_meta($record['customer']['externalId'], 'last_name', $record['newValue']);
                         }
                     }
