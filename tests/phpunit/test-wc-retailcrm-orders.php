@@ -18,7 +18,8 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                 'customersGet',
                 'customersCreate',
                 'ordersPaymentCreate',
-                'ordersPaymentDelete'
+                'ordersPaymentDelete',
+                'customersList'
             ))
             ->getMock();
 
@@ -50,6 +51,36 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
      */
     public function test_order_create($retailcrm, $apiVersion)
     {
+        if ($retailcrm) {
+            $responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
+                ->disableOriginalConstructor()
+                ->setMethods(array(
+                    'isSuccessful'
+                ))
+                ->getMock();
+
+            $responseMockCustomers = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
+                ->disableOriginalConstructor()
+                ->setMethods(array(
+                    'isSuccessful'
+                ))
+                ->getMock();
+            $responseMockCustomers->setResponse(
+                array('success' => true,
+                    'customers' => array(
+                        array('externalId' => 1)
+                    )
+                )
+            );
+
+            $retailcrm->expects($this->any())
+                ->method('customersCreate')
+                ->willReturn($responseMock);
+            $retailcrm->expects($this->any())
+                ->method('customersList')
+                ->willReturn($responseMockCustomers);
+        }
+
         $this->createTestOrder();
         $this->options = $this->setOptions($apiVersion);
         $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
@@ -252,7 +283,16 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
 
     private function createTestOrder()
     {
+        /** @var WC_Order order */
         $this->order = WC_Helper_Order::create_order(0);
+
+        foreach ($this->order->get_address('billing') as $prop => $value) {
+            if (method_exists($this->order, 'set_shipping_' . $prop)) {
+                $this->order->{'set_shipping_' . $prop}($value);
+            }
+        }
+
+        $this->order->save();
     }
 
     private function getResponseData($externalId)

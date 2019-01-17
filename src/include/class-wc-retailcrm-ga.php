@@ -7,6 +7,8 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
         private $options;
 
         /**
+         * @param array $options
+         *
          * @return WC_Retailcrm_Google_Analytics
          */
         public static function getInstance($options = array())

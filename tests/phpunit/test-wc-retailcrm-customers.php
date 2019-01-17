@@ -29,10 +29,17 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             ))
             ->getMock();
 
+        $this->responseMock->expects($this->any())
+            ->method('isSuccessful')
+            ->willReturn(true);
+
+        $this->apiMock->expects($this->any())
+            ->method('customersCreate')
+            ->willReturn($this->responseMock);
+
         $this->customer = new WC_Customer();
         $this->customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
         $this->customer->set_password('password');
-        $this->customer->set_role(WC_Retailcrm_Customers::CUSTOMER_ROLE);
         $this->customer->set_billing_phone('89000000000');
         $this->customer->save();
     }
@@ -73,7 +80,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_create_customer($retailcrm)
     {
         $retailcrm_customer = new WC_Retailcrm_Customers($retailcrm);
-        $customer = $retailcrm_customer->createCustomer($this->customer->get_id());
+        $id = $retailcrm_customer->createCustomer($this->customer->get_id());
         $customer_send = $retailcrm_customer->getCustomer();
 
         if ($retailcrm) {
@@ -84,9 +91,8 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer_send['externalId']);
             $this->assertNotEmpty($customer_send['firstName']);
             $this->assertNotEmpty($customer_send['email']);
-            $this->assertInstanceOf('WC_Customer', $customer);
         } else {
-            $this->assertEquals(null, $customer);
+            $this->assertEquals(null, $id);
             $this->assertEquals(array(), $customer_send);
         }
     }

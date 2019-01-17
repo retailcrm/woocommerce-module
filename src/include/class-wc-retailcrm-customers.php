@@ -68,26 +68,67 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Create customer in CRM
+         * @param array $orders
          *
-         * @param int $customer_id
-         *
-         * @return WC_Customer $customer
+         * @throws Exception
          */
-        public function createCustomer($customer_id)
+        public function customersFromOrdersUpload($orders)
         {
-            if (!$this->retailcrm) {
-                return;
+            $data_customers = array();
+
+            foreach ($orders as $order_data) {
+                $order = wc_get_order($order_data->ID);
+
+                if ($order->get_user()) {
+                    continue;
+                }
+
+                $customer = $this->buildCustomerFromOrderData($order);
+                $this->processCustomer($customer);
+                $data_customers[] = $this->customer;
             }
 
-            $customer = $this->wcCustomerGet($customer_id);
+            if ($data_customers) {
+                $data = \array_chunk($data_customers, 50);
+
+                foreach ($data as $array_customers) {
+                    $this->retailcrm->customersUpload($array_customers);
+                    time_nanosleep(0, 250000000);
+                }
+            }
+        }
+
+        /**
+         * Create customer in CRM
+         *
+         * @param int | WC_Customer $customer
+         *
+         * @return mixed
+         */
+        public function createCustomer($customer)
+        {
+            if (!$this->retailcrm) {
+                return null;
+            }
+
+            if (is_int($customer)) {
+                $customer = $this->wcCustomerGet($customer);
+            }
+
+            if (!$customer instanceof WC_Customer) {
+                return null;
+            }
 
             if ($customer->get_role() == self::CUSTOMER_ROLE) {
                 $this->processCustomer($customer);
-                $this->retailcrm->customersCreate($this->customer);
+                $response = $this->retailcrm->customersCreate($this->customer);
+
+                if ($response->isSuccessful() && isset($response['id'])) {
+                    return $response['id'];
+                }
             }
 
-            return $customer;
+            return null;
         }
 
         /**
@@ -126,7 +167,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $firstName = $customer->get_first_name();
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
-                'externalId' => $customer->get_id(),
+                'externalId' => $customer->get_id() > 0 ? $customer->get_id() : uniqid(),
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),
                 'email' => $customer->get_email(),
@@ -146,6 +187,58 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             $this->customer = apply_filters('retailcrm_process_customer', $data_customer, $customer);
+        }
+
+        /**
+         * @param array $filter
+         *
+         * @return bool|array
+         */
+        public function searchCustomer($filter)
+        {
+            if (isset($filter['id'])) {
+                $search = $this->retailcrm->customersGet($filter['id']);
+            } elseif (isset($filter['email'])) {
+                $search = $this->retailcrm->customersList(array('email' => $filter['email']));
+            }
+
+            if ($search->isSuccessful()) {
+                if (isset($search['customers'])) {
+                    if (empty($search['customers'])) {
+                        return false;
+                    }
+
+                    $customer = reset($search['customers']);
+                } else {
+                    $customer = $search['customer'];
+                }
+
+                return $customer;
+            }
+
+            return false;
+        }
+
+        /**
+         * @param WC_Order $order
+         *
+         * @return WC_Customer
+         * @throws Exception
+         */
+        public function buildCustomerFromOrderData($order)
+        {
+            $new_customer = new WC_Customer;
+
+            foreach ($order->get_address('billing') as $prop => $value) {
+                $new_customer->{'set_billing_' . $prop}($value);
+            }
+
+            $new_customer->set_first_name($order->get_billing_first_name());
+            $new_customer->set_last_name($order->get_billing_last_name());
+            $new_customer->set_email($order->get_billing_email());
+            $new_customer->set_date_created($order->get_date_created());
+
+            return $new_customer;
         }
 
         /**
