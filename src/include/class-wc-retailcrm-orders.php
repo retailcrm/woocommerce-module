@@ -65,17 +65,12 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $orders_data[] = $this->order;
             }
 
-            if (!class_exists('WC_Retailcrm_Customers')) {
-                include_once(WC_Retailcrm_Base::checkCustomFile('customers'));
-            }
-
-            $retailcrmCustomer = new WC_Retailcrm_Customers($this->retailcrm);
-
-            if (!$include) {
-                $retailcrmCustomer->customersFromOrdersUpload($orders);
-            }
-
             if ($withCustomers === true && !empty($customers)) {
+                if (!class_exists('WC_Retailcrm_Customers')) {
+                    include_once(WC_Retailcrm_Base::checkCustomFile('customers'));
+                }
+
+                $retailcrmCustomer = new WC_Retailcrm_Customers($this->retailcrm);
                 $retailcrmCustomer->customersUpload($customers);
             }
 

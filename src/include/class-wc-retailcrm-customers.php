@@ -68,37 +68,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * @param array $orders
-         *
-         * @throws Exception
-         */
-        public function customersFromOrdersUpload($orders)
-        {
-            $data_customers = array();
-
-            foreach ($orders as $order_data) {
-                $order = wc_get_order($order_data->ID);
-
-                if ($order->get_user()) {
-                    continue;
-                }
-
-                $customer = $this->buildCustomerFromOrderData($order);
-                $this->processCustomer($customer);
-                $data_customers[] = $this->customer;
-            }
-
-            if ($data_customers) {
-                $data = \array_chunk($data_customers, 50);
-
-                foreach ($data as $array_customers) {
-                    $this->retailcrm->customersUpload($array_customers);
-                    time_nanosleep(0, 250000000);
-                }
-            }
-        }
-
-        /**
          * Create customer in CRM
          *
          * @param int | WC_Customer $customer
