@@ -537,17 +537,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         );
 
                         foreach ($wc_payment->payment_gateways() as $payment) {
-                            if (isset($payment->enabled) && $payment->enabled == 'yes') {
-                                $this->form_fields[$payment->id] = array(
-                                    'title'          => __($payment->method_title, 'woocommerce'),
-                                    'description' => __($payment->method_description, 'woocommerce'),
-                                    'css'            => 'min-width:350px;',
-                                    'class'          => 'select',
-                                    'type'           => 'select',
-                                    'options'        => $payment_option_list,
-                                    'desc_tip'    =>  true,
-                                );
-                            }
+                            $this->form_fields[$payment->id] = array(
+                                'title'          => __($payment->method_title, 'woocommerce'),
+                                'description' => __($payment->method_description, 'woocommerce'),
+                                'css'            => 'min-width:350px;',
+                                'class'          => 'select',
+                                'type'           => 'select',
+                                'options'        => $payment_option_list,
+                                'desc_tip'    =>  true,
+                            );
                         }
                     }
 
