@@ -84,7 +84,6 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         $customer_send = $retailcrm_customer->getCustomer();
 
         if ($retailcrm) {
-            $this->assertArrayHasKey('externalId', $customer_send);
             $this->assertArrayHasKey('firstName', $customer_send);
             $this->assertArrayHasKey('createdAt', $customer_send);
             $this->assertArrayHasKey('email', $customer_send);

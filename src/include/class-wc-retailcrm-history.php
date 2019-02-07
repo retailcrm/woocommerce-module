@@ -411,6 +411,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 }
             }
 
+            $wc_order->save();
+
             return $wc_order->get_id();
         }
 
@@ -643,28 +645,32 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     ) {
                         $orders[$change['order']['id']]['items'][$change['item']['id']][$fields['item'][$change['field']]] = $change['newValue'];
                     }
-                } else {
-                    if(isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service'){
+                } elseif ($change['field'] == 'payments' && isset($change['payment'])) {
+                    if ($change['newValue'] !== null) {
+                        $orders[$change['order']['id']]['payments'][] = self::newValue($change['payment']);
+                    }
+                }  else {
+                    if (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service') {
                         $orders[$change['order']['id']]['delivery']['service']['code'] = self::newValue($change['newValue']);
-                    } elseif(isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']]) {
+                    } elseif (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']]) {
                         $orders[$change['order']['id']]['delivery'][$fields['delivery'][$change['field']]] = self::newValue($change['newValue']);
-                    } elseif(isset($fields['orderAddress'][$change['field']]) && $fields['orderAddress'][$change['field']]){
+                    } elseif (isset($fields['orderAddress'][$change['field']]) && $fields['orderAddress'][$change['field']]) {
                         $orders[$change['order']['id']]['delivery']['address'][$fields['orderAddress'][$change['field']]] = $change['newValue'];
-                    } elseif(isset($fields['integrationDelivery'][$change['field']]) && $fields['integrationDelivery'][$change['field']]) {
+                    } elseif (isset($fields['integrationDelivery'][$change['field']]) && $fields['integrationDelivery'][$change['field']]) {
                         $orders[$change['order']['id']]['delivery']['service'][$fields['integrationDelivery'][$change['field']]] = self::newValue($change['newValue']);
-                    } elseif(isset($fields['customerContragent'][$change['field']]) && $fields['customerContragent'][$change['field']]) {
+                    } elseif (isset($fields['customerContragent'][$change['field']]) && $fields['customerContragent'][$change['field']]) {
                         $orders[$change['order']['id']][$fields['customerContragent'][$change['field']]] = self::newValue($change['newValue']);
-                    } elseif(strripos($change['field'], 'custom_') !== false) {
+                    } elseif (strripos($change['field'], 'custom_') !== false) {
                         $orders[$change['order']['id']]['customFields'][str_replace('custom_', '', $change['field'])] = self::newValue($change['newValue']);
-                    } elseif(isset($fields['order'][$change['field']]) && $fields['order'][$change['field']]) {
+                    } elseif (isset($fields['order'][$change['field']]) && $fields['order'][$change['field']]) {
                         $orders[$change['order']['id']][$fields['order'][$change['field']]] = self::newValue($change['newValue']);
                     }
 
-                    if(isset($change['created'])) {
+                    if (isset($change['created'])) {
                         $orders[$change['order']['id']]['create'] = 1;
                     }
 
-                    if(isset($change['deleted'])) {
+                    if (isset($change['deleted'])) {
                         $orders[$change['order']['id']]['deleted'] = 1;
                     }
                 }
