@@ -66,12 +66,13 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $orders = wc_get_orders(array('numberposts' => 10));
+        $orders = wc_get_orders(array('numberposts' => -1));
         $order_added = end($orders);
         $order_added_items = $order_added->get_items();
         $order_added_item = reset($order_added_items);
         $shipping_address = $order_added->get_address('shipping');
         $billing_address = $order_added->get_address('billing');
+
         $options = get_option(\WC_Retailcrm_Base::$option_key);
 
         $this->assertEquals(self::STATUS_1, $options[$order_added->get_status()]);
@@ -90,6 +91,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertNotEmpty($billing_address['city']);
         $this->assertNotEmpty($billing_address['country']);
         $this->assertNotEmpty($billing_address['state']);
+        $this->assertEquals('payment4', $options[$order_added->get_payment_method()]);
     }
 
     /**
@@ -136,7 +138,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
      * @dataProvider dataProvider
      * @param $api_version
      */
-    public function test_history_order_update_status($api_version)
+    public function test_history_order_update($api_version)
     {
         $this->setOptions($api_version);
 
@@ -153,7 +155,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $order = WC_Helper_Order::create_order(0);
 
         $this->ordersHistoryResponse->setResponse(
-            $this->get_history_data_status_update($order->get_id())
+            $this->get_history_data_update($order->get_id(), $api_version)
         );
 
         $this->apiMock->expects($this->any())->method('customersHistory')->willReturn($this->customersHistoryResponse);
@@ -166,6 +168,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $options = get_option(\WC_Retailcrm_Base::$option_key);
 
         $this->assertEquals(self::STATUS_2, $options[$order_updated->get_status()]);
+        $this->assertEquals('payment2', $options[$order_updated->get_payment_method()]);
     }
 
     public function dataProvider()
@@ -289,6 +292,14 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                                 'purchasePrice' => 50
                             )
                         ),
+                        'paymentType' => 'payment4',
+                        'payments' => array(
+                            array(
+                                'id'=> 1,
+                                'type'=> 'payment4',
+                                'amount'=> 100,
+                            )
+                        ),
                         'fromApi' => false,
                         'length' => 0,
                         'width' => 0,
@@ -351,9 +362,9 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         );
     }
 
-    private function get_history_data_status_update($order_id)
+    private function get_history_data_update($order_id, $api_version)
     {
-        return array(
+        $history =  array(
             'success' => true,
             'history'  => array(
                 array(
@@ -380,5 +391,62 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                 )
             )
         );
+
+        $payment_v5 = array(
+            'id' => 4,
+            'createdAt' => '2018-01-01 00:03:00',
+            'source' => 'user',
+            'user' => array(
+                'id' => 1
+            ),
+            'field' => 'payments',
+            'oldValue' => null,
+            'newValue' => array(
+                'code' => 'payment2'
+            ),
+            'order' => array(
+                'id' => 2,
+                'externalId' => $order_id,
+                'managerId' => 6,
+                'site' => 'test-com',
+                    'status' => self::STATUS_2
+                ),
+                'payment' => array(
+                    'id' => 1,
+                    'type' => 'payment2',
+                    "amount" => 100
+                )
+            );
+
+        $payment_v4 = array(
+            'id' => 4,
+            'createdAt' => '2018-01-01 00:03:00',
+            'source' => 'user',
+            'user' => array(
+                'id' => 1
+            ),
+            'field' => 'payment_type',
+            'oldValue' => null,
+            'newValue' => array(
+                'code' => 'payment2'
+            ),
+            'order' => array(
+                'id' => 2,
+                'externalId' => $order_id,
+                'managerId' => 6,
+                'site' => 'test-com',
+                'status' => self::STATUS_2
+            ),
+        );
+
+        if ($api_version == 'v4') {
+            array_push($history['history'], $payment_v4);
+        }
+
+        if ($api_version == 'v5') {
+            array_push($history['history'], $payment_v5);
+        }
+
+        return $history;
     }
 }

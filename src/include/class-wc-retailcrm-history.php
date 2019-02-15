@@ -375,7 +375,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     $payment_types = $payment->payment_gateways();
 
                     if (isset($payment_types[$options[$order['paymentType']]])) {
-                        $order->set_payment_method($payment_types[$options[$order['paymentType']]]);
+                        $wc_order->set_payment_method($payment_types[$options[$order['paymentType']]]);
                     }
                 }
             }
@@ -503,18 +503,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         $payment_types = $payment->payment_gateways();
                         $payments = $order['payments'];
                         $paymentType = end($payments);
-
                         if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
                             $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
                         }
                     }
                 }
             } else {
-                if (isset($order_record['paymentType']) && $order['paymentType']) {
+                if (isset($order['paymentType']) && $order['paymentType']) {
                     $payment = WC_Payment_Gateways::instance();
                     $payment_types = $payment->payment_gateways();
 
-                    if (isset($options[$order_record['paymentType']]) && isset($payment_types[$options[$order_record['paymentType']]])) {
+                    if (isset($options[$order['paymentType']]) && isset($payment_types[$options[$order['paymentType']]])) {
                         $wc_order->set_payment_method($payment_types[$options[$order['paymentType']]]);
                     }
                 }
@@ -568,6 +567,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 'externalId' => (int) $wc_order->get_id()
             );
 
+            $wc_order->save();
+
             $this->retailcrm->ordersFixExternalIds($ids);
 
             return $wc_order->get_id();
@@ -580,8 +581,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         public static function assemblyOrder($orderHistory)
         {
-            if (file_exists(WP_CONTENT_DIR . '/plugins/woo-retailcrm/config/objects.xml')) {
-                $objects = simplexml_load_file(WP_CONTENT_DIR . '/plugins/woo-retailcrm/config/objects.xml');
+            if (file_exists(__DIR__ . '/../config/objects.xml')) {
+                $objects = simplexml_load_file(__DIR__ . '/../config/objects.xml');
                 foreach($objects->fields->field as $object) {
                     $fields[(string)$object["group"]][(string)$object["id"]] = (string)$object;
                 }
