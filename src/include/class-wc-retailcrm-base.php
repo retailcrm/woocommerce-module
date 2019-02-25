@@ -117,7 +117,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-' . $file . '.php';
             }
 
-            return 'class-wc-retailcrm-' . $file . '.php';
+            return WP_PLUGIN_DIR . '/woo-retailcrm/include/class-wc-retailcrm-' . $file . '.php';
         }
 
         public function generate_icml() {
