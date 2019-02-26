@@ -117,6 +117,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                 $this->assertArrayHasKey('payments', $order_send);
                 $this->assertInternalType('array', $order_send['payments']);
                 $this->assertArrayHasKey('type', $order_send['payments'][0]);
+                $this->assertArrayHasKey('externalId', $order_send['payments'][0]);
                 $this->assertEquals('payment1', $order_send['payments'][0]['type']);
             }
         } else {
@@ -201,6 +202,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                     $this->assertArrayHasKey('type', $payment);
                     $this->assertArrayHasKey('amount', $payment);
                     $this->assertArrayHasKey('order', $payment);
+                    $this->assertArrayHasKey('externalId', $payment);
                     $this->assertEquals('payment1', $payment['type']);
                 }
             }

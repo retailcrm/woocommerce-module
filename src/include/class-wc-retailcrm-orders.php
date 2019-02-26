@@ -185,7 +185,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $retailcrmOrder = $response['order'];
 
                 foreach ($retailcrmOrder['payments'] as $payment_data) {
-                    if ($payment_data['externalId'] == $order->get_id()) {
+                    $payment_external_id = explode('-', $payment_data['externalId']);
+
+                    if ($payment_external_id[0] == $order->get_id()) {
                         $payment = $payment_data;
                     }
                 }
@@ -364,7 +366,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if ($this->retailcrm_settings['api_version'] == 'v5') {
                 $payment = array(
                     'amount' => $order->get_total(),
-                    'externalId' => $order->get_id()
+                    'externalId' => $order->get_id() . uniqid('-')
                 );
 
                 $payment['order'] = array(
@@ -394,17 +396,17 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
         /**
          * Send payment in CRM
-         * 
+         *
          * @param WC_Order $order
          * @param boolean $update
-         * 
+         *
          * @return array $payment
          */
         protected function sendPayment($order, $update = false)
         {
             $payment = array(
                 'amount' => $order->get_total(),
-                'externalId' => $order->get_id()
+                'externalId' => $order->get_id() . uniqid('-')
             );
 
             $payment['order'] = array(
