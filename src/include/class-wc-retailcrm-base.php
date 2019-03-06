@@ -40,6 +40,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $this->apiClient = $this->getApiClient();
             } else {
                 $this->apiClient = $retailcrm;
+                $this->init_settings_fields();
             }
 
             self::$option_key = $this->get_option_key();
