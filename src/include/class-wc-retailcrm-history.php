@@ -430,6 +430,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     $order_item->set_quantity($item['quantity']);
                     $product = wc_get_product($item['offer']['externalId']);
                     $order_item->set_total($product->get_price() * $item['quantity']);
+                    $order_item->set_subtotal($product->get_price());
                     $data_store = $order_item->get_data_store();
                     $data_store->update($order_item);
                 }

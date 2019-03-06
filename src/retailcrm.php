@@ -1,8 +1,8 @@
 <?php
 /**
- * Version: 3.4.4
+ * Version: 3.4.5
  * WC requires at least: 3.0
- * WC tested up to: 3.4.3
+ * WC tested up to: 3.5.5
  * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & RetailCRM
