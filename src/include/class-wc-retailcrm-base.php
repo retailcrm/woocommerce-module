@@ -40,12 +40,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $this->apiClient = $this->getApiClient();
             } else {
                 $this->apiClient = $retailcrm;
+                $this->init_settings_fields();
             }
 
             self::$option_key = $this->get_option_key();
-            // Load the settings.
-            $this->init_form_fields();
-            $this->init_settings();
 
             // Actions.
             add_action('woocommerce_update_options_integration_' .  $this->id, array($this, 'process_admin_options'));
@@ -68,10 +66,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
 
+            if (isset($_GET['page']) && $_GET['page'] == 'wc-settings'
+                && isset($_GET['tab']) && $_GET['tab'] == 'integration'
+            ) {
+                add_action('init', array($this, 'init_settings_fields'), 99);
+            }
+
             // Deactivate hook
             add_action('retailcrm_deactivate', array($this, 'deactivate'));
         }
 
+        /**
+         * Init settings fields
+         */
+        public function init_settings_fields()
+        {
+            $this->init_form_fields();
+            $this->init_settings();
+        }
+
+        /**
+         * @param $settings
+         *
+         * @return array
+         */
         public function api_sanitized($settings)
         {
             if (isset($settings['sync']) && $settings['sync'] == 'yes') {
