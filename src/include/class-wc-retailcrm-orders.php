@@ -194,7 +194,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if (isset($payment) && $payment['type'] == $this->retailcrm_settings[$order->get_payment_method()] && $order->is_paid()) {
-                $payment = $this->sendPayment($order, true);
+                $payment = $this->sendPayment($order, true, $payment['externalId']);
 
                 return $payment;
             }
@@ -402,12 +402,20 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          *
          * @return array $payment
          */
-        protected function sendPayment($order, $update = false)
+        protected function sendPayment($order, $update = false, $externalId = false)
         {
             $payment = array(
-                'amount' => $order->get_total(),
-                'externalId' => $order->get_id() . uniqid('-')
+                'amount' => $order->get_total()
             );
+
+            if ($update)
+            {
+                $payment['externalId'] = $externalId;
+            }
+            else
+            {
+                $payment['externalId'] = $order->get_id() . uniqid('-');
+            }
 
             $payment['order'] = array(
                 'externalId' => $order->get_id()
