@@ -408,12 +408,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 'amount' => $order->get_total()
             );
 
-            if ($update)
-            {
+            if ($update) {
                 $payment['externalId'] = $externalId;
             }
-            else
-            {
+            else {
                 $payment['externalId'] = $order->get_id() . uniqid('-');
             }
 
