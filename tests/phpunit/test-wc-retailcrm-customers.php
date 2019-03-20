@@ -51,7 +51,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_wc_customer_get($retailcrm)
     {
         $wc_customer = new WC_Customer($this->customer->get_id());
-        $retailcrm_customer = new WC_Retailcrm_Customers($retailcrm);
+        $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
         $this->assertEquals($wc_customer, $retailcrm_customer->wcCustomerGet($this->customer->get_id()));
     }
 
@@ -61,7 +61,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_customers_upload($retailcrm)
     {
-        $retailcrm_customer = new WC_Retailcrm_Customers($retailcrm);
+        $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
         $data = $retailcrm_customer->customersUpload();
 
         if ($retailcrm) {
@@ -79,7 +79,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_create_customer($retailcrm)
     {
-        $retailcrm_customer = new WC_Retailcrm_Customers($retailcrm);
+        $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
         $id = $retailcrm_customer->createCustomer($this->customer->get_id());
         $customer_send = $retailcrm_customer->getCustomer();
 
@@ -102,7 +102,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_update_customer($retailcrm)
     {
-        $retailcrm_customer = new WC_Retailcrm_Customers($retailcrm);
+        $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
         $customer = $retailcrm_customer->updateCustomer($this->customer->get_id());
         $customer_send = $retailcrm_customer->getCustomer();
 
@@ -132,6 +132,20 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             array(
                 'retailcrm' => false
             )
+        );
+    }
+
+    /**
+     * @param $retailcrm
+     *
+     * @return WC_Retailcrm_Customers
+     */
+    private function getRetailcrmCustomer($retailcrm)
+    {
+        return new WC_Retailcrm_Customers(
+            $retailcrm,
+            $this->getOptions(),
+            new WC_Retailcrm_Customer_Address()
         );
     }
 }

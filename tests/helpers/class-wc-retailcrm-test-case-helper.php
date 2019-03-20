@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * Class WC_Retailcrm_Test_Case_Helper
+ */
 class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
 {
+    /**
+     * @param string $apiVersion
+     *
+     * @return array
+     */
     protected function setOptions($apiVersion = 'v5')
     {
         $options = array(
@@ -38,5 +46,13 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         update_option(WC_Retailcrm_Base::$option_key, $options);
 
         return $options;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return get_option(WC_Retailcrm_Base::$option_key);
     }
 }
