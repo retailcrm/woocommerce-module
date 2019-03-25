@@ -459,22 +459,22 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 );
 
                 $this->form_fields['deactivate_update_order'] = array(
-                     'label'       => __('Активировать редактирование данных в retailCRM', 'retailcrm'),
-                     'title'       => __('Обновление данных в retailCRM', 'retailcrm'),
+                     'label'       => __('Enable data editing in retailCRM', 'retailcrm'),
+                     'title'       => __('Data updating in retailCRM', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'
                 );
 
                 $this->form_fields['bind_by_sku'] = array(
-                     'label'       => __('Активировать связь по sku(xmlId)', 'retailcrm'),
-                     'title'       => __('Синхронизация остатков и связь товаров', 'retailcrm'),
+                     'label'       => __('Activate the binding via sku (xml)', 'retailcrm'),
+                     'title'       => __('Stock synchronization and link between products', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'
                 );
 
                 $this->form_fields['update_number'] = array(
-                     'label'       => __('Активировать передачу номера в retailCRM', 'retailcrm'),
-                     'title'       => __('Передача номера заказа', 'retailcrm'),
+                     'label'       => __('Enable transferring the number to retailCRM', 'retailcrm'),
+                     'title'       => __('Transferring the order number', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'
                 );
