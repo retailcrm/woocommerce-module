@@ -20,6 +20,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected $retailcrm_settings;
         protected $retailcrm;
         protected $order_methods = array();
+        protected $bind_field = 'externalId';
 
         /**
          * WC_Retailcrm_History constructor.
@@ -28,6 +29,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         public function __construct($retailcrm = false)
         {
             $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
+
+            if (isset($this->retailcrm_settings['bind_by_sku'])
+                && $this->retailcrm_settings['bind_by_sku'] == WC_Retailcrm_Base::YES
+            ) {
+                $this->bind_field = 'xmlId';
+            }
 
             if (isset($this->retailcrm_settings['order_methods'])) {
                 $this->order_methods = $this->retailcrm_settings['order_methods'];
@@ -322,12 +329,16 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if (array_key_exists('items', $order)) {
                 foreach ($order['items'] as $item) {
-                    if (!isset($item['offer']['externalId'])) {
+                    if (!isset($item['offer'][$this->bind_field])) {
                         continue;
                     }
 
                     if (isset($item['create']) && $item['create'] == true) {
-                        $product = wc_get_product($item['offer']['externalId']);
+                        $product = retailcrm_get_wc_product(
+                            $item['offer'][$this->bind_field],
+                            $this->retailcrm_settings
+                        );
+
                         $wc_order->add_product($product, $item['quantity']);
                     } else {
                         foreach ($wc_order->get_items() as $order_item_id => $order_item) {
@@ -337,7 +348,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                                 $offer_id = $order_item['product_id'];
                             }
 
-                            if ($offer_id == $item['offer']['externalId']) {
+                            if ($offer_id == $item['offer'][$this->bind_field]) {
                                 $this->deleteOrUpdateOrderItem($item, $order_item, $order_item_id);
                             }
                         }
@@ -428,7 +439,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             } else {
                 if (isset($item['quantity']) && $item['quantity']) {
                     $order_item->set_quantity($item['quantity']);
-                    $product = wc_get_product($item['offer']['externalId']);
+                    $product = retailcrm_get_wc_product($item['offer'][$this->bind_field], $this->retailcrm_settings);
                     $order_item->set_total($product->get_price() * $item['quantity']);
                     $order_item->set_subtotal($product->get_price());
                     $data_store = $order_item->get_data_store();
@@ -526,7 +537,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if ($product_data) {
                 foreach ($product_data as $product) {
-                    $wc_order->add_product(wc_get_product($product['offer']['externalId']), $product['quantity']);
+                    $wc_order->add_product(
+                        retailcrm_get_wc_product($product['offer'][$this->bind_field], $this->retailcrm_settings),
+                        $product['quantity']
+                    );
                 }
             }
 

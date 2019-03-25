@@ -16,20 +16,30 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
         const CUSTOMER_ROLE = 'customer';
 
+        /** @var bool | WC_Retailcrm_Proxy */
         protected $retailcrm;
-        protected $retailcrm_settings;
 
+        /** @var array */
+        protected $retailcrm_settings = array();
+
+        /** @var WC_Retailcrm_Customer_Address */
+        protected $customer_address;
+
+        /** @var array */
         private $customer = array();
 
         /**
          * WC_Retailcrm_Customers constructor.
          *
-         * @param $retailcrm
+         * @param bool | WC_Retailcrm_Proxy $retailcrm
+         * @param array $retailcrm_settings
+         * @param WC_Retailcrm_Customer_Address $customer_address
          */
-        public function __construct($retailcrm = false)
+        public function __construct($retailcrm = false, $retailcrm_settings, $customer_address)
         {
-            $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
             $this->retailcrm = $retailcrm;
+            $this->retailcrm_settings = $retailcrm_settings;
+            $this->customer_address = $customer_address;
         }
 
         /**
@@ -139,13 +149,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),
                 'email' => $customer->get_email(),
-                'address' => array(
-                    'index' => $customer->get_billing_postcode(),
-                    'countryIso' => $customer->get_billing_country(),
-                    'region' => $customer->get_billing_state(),
-                    'city' => $customer->get_billing_city(),
-                    'text' => $customer->get_billing_address_1() . ',' . $customer->get_billing_address_2()
-                )
+                'address' => $this->customer_address->build($customer)->get_data()
             );
 
             if ($customer->get_id() > 0) {
