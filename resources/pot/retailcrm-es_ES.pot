@@ -201,3 +201,21 @@ msgstr "Active esta configuración para activar Daemon Collector en la página w
 
 msgid "Site key"
 msgstr "Clave de la página web"
+
+msgid "Enable data editing in retailCRM"
+msgstr "Activar edición de datos en retailCRM"
+
+msgid "Data updating in retailCRM"
+msgstr "Actualización de datos en retailCRM"
+
+msgid "Activate the binding via sku (xml)"
+msgstr "Activar conexión por sku (xmlId)"
+
+msgid "Stock synchronization and link between products"
+msgstr "Sincronización de stock y conexión de productos"
+
+msgid "Enable transferring the number to retailCRM"
+msgstr "Activar la transferencia de números en retailCRM"
+
+msgid "Transferring the order number"
+msgstr "Transferencia de un número de pedido"

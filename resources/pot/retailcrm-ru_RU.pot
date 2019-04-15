@@ -210,3 +210,21 @@ msgstr "Активируйте эту настройку для активаци
 
 msgid "Site key"
 msgstr "Ключ сайта"
+
+msgid "Enable data editing in retailCRM"
+msgstr "Активировать редактирование данных в retailCRM"
+
+msgid "Data updating in retailCRM"
+msgstr "Обновление данных в retailCRM"
+
+msgid "Activate the binding via sku (xml)"
+msgstr "Активировать связь по sku(xmlId)"
+
+msgid "Stock synchronization and link between products"
+msgstr "Синхронизация остатков и связь товаров"
+
+msgid "Enable transferring the number to retailCRM"
+msgstr "Активировать передачу номера в retailCRM"
+
+msgid "Transferring the order number"
+msgstr "Передача номера заказа"
