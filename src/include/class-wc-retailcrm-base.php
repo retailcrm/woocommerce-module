@@ -8,6 +8,9 @@
  */
 
 if (!class_exists('WC_Retailcrm_Base')) {
+    if (!class_exists('WC_Retailcrm_Abstracts_Settings')) {
+        include_once 'abstracts/class-wc-retailcrm-abstracts-settings.php';
+    }
 
     /**
      * Class WC_Retailcrm_Base
