@@ -34,7 +34,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
     public function test_order_upload($retailcrm, $apiVersion)
     {
         $this->options = $this->setOptions($apiVersion);
-        $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
+        $retailcrm_orders = $this->getRetailcrmOrders($retailcrm);
         $upload_orders = $retailcrm_orders->ordersUpload();
 
         if ($retailcrm) {
@@ -83,7 +83,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
 
         $this->createTestOrder();
         $this->options = $this->setOptions($apiVersion);
-        $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
+        $retailcrm_orders = $this->getRetailcrmOrders($retailcrm);
         $order = $retailcrm_orders->orderCreate($this->order->get_id());
         $order_send = $retailcrm_orders->getOrder();
 
@@ -164,7 +164,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                 ->willReturn($responseMock);
         }
 
-        $retailcrm_orders = new WC_Retailcrm_Orders($retailcrm);
+        $retailcrm_orders = $this->getRetailcrmOrders($retailcrm);
         $order = $retailcrm_orders->updateOrder($this->order->get_id());
         $order_send = $retailcrm_orders->getOrder();
 
@@ -310,6 +310,26 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                     )
                 )
             )
+        );
+    }
+
+    /**
+     * @param $retailcrm
+     *
+     * @return WC_Retailcrm_Orders
+     */
+    private function getRetailcrmOrders($retailcrm)
+    {
+        return new WC_Retailcrm_Orders(
+            $retailcrm,
+            $this->getOptions(),
+            new WC_Retailcrm_Order_Item($this->getOptions()),
+            new WC_Retailcrm_Order_Address,
+            new WC_Retailcrm_Customers(
+                $retailcrm, $this->getOptions(), new WC_Retailcrm_Customer_Address
+            ),
+            new WC_Retailcrm_Order($this->getOptions()),
+            new WC_Retailcrm_Order_Payment($this->getOptions())
         );
     }
 }

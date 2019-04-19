@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 3.4.5
+ * Version: 3.5.1
  * WC requires at least: 3.0
  * WC tested up to: 3.5.5
  * Plugin Name: WooCommerce RetailCRM
@@ -39,6 +39,14 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             $this->load_plugin_textdomain();
 
             if (class_exists( 'WC_Integration' ) ) {
+                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
+                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
+                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
+                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
+                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
+                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
+                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
+                require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
                 require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
                 require_once(dirname(__FILE__ ) . '/include/functions.php');
                 add_filter('woocommerce_integrations', array( $this, 'add_integration'));

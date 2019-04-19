@@ -82,3 +82,19 @@ function retailcrm_get_delivery_service($method_id, $instance_id) {
 
     return false;
 }
+
+/**
+ * @param $id
+ * @param $settings
+ *
+ * @return false|WC_Product|null
+ */
+function retailcrm_get_wc_product($id, $settings) {
+    if (isset($settings['bind_by_sky'])
+        && $settings['bind_by_sky'] == WC_Retailcrm_Base::YES
+    ) {
+        $id = wc_get_product_id_by_sku($id);
+    }
+
+    return wc_get_product($id);
+}

@@ -41,12 +41,16 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
         protected $chunk = 500;
         protected $fileLifeTime = 3600;
 
+        /** @var array */
+        protected $settings;
+
         /**
          * WC_Retailcrm_Icml constructor.
          *
          */
         public function __construct()
         {
+            $this->settings = get_option(WC_Retailcrm_Base::$option_key);
             $this->shop = get_bloginfo( 'name' );
             $this->file = ABSPATH . 'retailcrm.xml';
             $this->tmpFile = sprintf('%s.tmp', $this->file);
@@ -355,7 +359,6 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             );
 
             foreach ($products as $offer) {
-
                 if ($offer->get_type() == 'simple') {
                     $this->setOffer($full_product_list, $product_attributes, $offer);
                 } elseif ($offer->get_type() == 'variable') {
@@ -424,8 +427,8 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
          *
          * @param array $full_product_list
          * @param array $product_attributes
-         * @param object WC_Product_Simple | WC_Product_Variation $product
-         * @param mixed WC_Product_Variable | bool $parent default false
+         * @param WC_Product $product
+         * @param bool | WC_Product_Variable $parent
          *
          * @return void
          */
@@ -460,10 +463,6 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                         );
                     }
                 }
-            }
-
-            if ($product->get_sku() != '') {
-                $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
             }
 
             $dimension = '';
@@ -506,6 +505,14 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 'tax' => isset($tax) ? $tax['rate'] : 'none'
             );
 
+            if ($product->get_sku() != '') {
+                $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
+
+                if (isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES) {
+                    $product_data['xmlId'] = $product->get_sku();
+                }
+            }
+
             if (!empty($params)) {
                 $product_data['params'] = $params;
             }
@@ -523,11 +530,10 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
          * @return array
          */
         private function checkPostStatuses() {
-            $options = get_option(WC_Retailcrm_Base::$option_key);
             $status_args = array();
 
             foreach (get_post_statuses() as $key => $value) {
-                if (isset($options['p_' . $key]) && $options['p_' . $key] == 'yes') {
+                if (isset($this->settings['p_' . $key]) && $this->settings['p_' . $key] == WC_Retailcrm_Base::YES) {
                     $status_args[] = $key;
                 }
             }

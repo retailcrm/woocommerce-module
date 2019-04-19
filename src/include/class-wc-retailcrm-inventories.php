@@ -14,8 +14,14 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
      */
     class WC_Retailcrm_Inventories
     {
+        /** @var WC_Retailcrm_Client_V5 */
         protected $retailcrm;
+
+        /** @var array  */
         protected $retailcrm_settings;
+
+        /** @var string */
+        protected $bind_field = 'externalId';
 
         /**
          * WC_Retailcrm_Inventories constructor.
@@ -25,6 +31,12 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
         {
             $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
             $this->retailcrm = $retailcrm;
+
+            if (isset($this->retailcrm_settings['bind_by_sky'])
+                && $this->retailcrm_settings['bind_by_sky'] == WC_Retailcrm_Base::YES
+            ) {
+                $this->bind_field = 'xmlId';
+            }
         }
 
         /**
@@ -43,6 +55,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
             $page = 1;
 
             do {
+                /** @var WC_Retailcrm_Response $result */
                 $result = $this->retailcrm->storeInventories(array(), $page, 250);
 
                 if (!$result->isSuccessful()) {
@@ -53,8 +66,8 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                 $page++;
 
                 foreach ($result['offers'] as $offer) {
-                    if (isset($offer['externalId'])) {
-                        $product = wc_get_product($offer['externalId']);
+                    if (isset($offer[$this->bind_field])) {
+                        $product = retailcrm_get_wc_product($offer[$this->bind_field], $this->retailcrm_settings);
 
                         if ($product instanceof WC_Product) {
                             if ($product->get_type() == 'variable') {
@@ -79,7 +92,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
          */
         public function updateQuantity()
         {
-            if ($this->retailcrm_settings['sync'] == 'yes') {
+            if ($this->retailcrm_settings['sync'] == WC_Retailcrm_Base::YES) {
                 return $this->load_stocks();
             }
 
