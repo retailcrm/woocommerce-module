@@ -459,7 +459,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 );
 
                 $this->form_fields['deactivate_update_order'] = array(
-                     'label'       => __('Enable data editing in retailCRM', 'retailcrm'),
+                     'label'       => __('Disable data editing in retailCRM', 'retailcrm'),
                      'title'       => __('Data updating in retailCRM', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'

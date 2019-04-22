@@ -211,8 +211,8 @@ msgstr "Активируйте эту настройку для активаци
 msgid "Site key"
 msgstr "Ключ сайта"
 
-msgid "Enable data editing in retailCRM"
-msgstr "Активировать редактирование данных в retailCRM"
+msgid "Disable data editing in retailCRM"
+msgstr "Деактивировать редактирование данных в retailCRM"
 
 msgid "Data updating in retailCRM"
 msgstr "Обновление данных в retailCRM"
