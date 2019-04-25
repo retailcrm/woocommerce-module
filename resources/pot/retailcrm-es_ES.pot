@@ -1,0 +1,203 @@
+# Translation of Plugins - Woocommerce RetailCRM - Development (trunk) in Spanish
+# This file is distributed under the same license as the Plugins - Woocommerce RetailCRM - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-06-06 08:53:26+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: es\n"
+"Project-Id-Version: Plugins - Woocommerce RetailCRM - Development (trunk)\n"
+
+#. Author URI of the plugin/theme
+msgid "https://retailcrm.pro/"
+msgstr "https://retailcrm.pro/"
+
+#. Author of the plugin/theme
+msgid "RetailDriver LLC"
+msgstr "RetailDriver LLC"
+
+#. Description of the plugin/theme
+msgid "Integration plugin for WooCommerce & retailCRM"
+msgstr "El plugin de integración para WooCommerce & retailCRM"
+
+#. Plugin URI of the plugin/theme
+msgid "https://wordpress.org/plugins/woo-retailcrm/"
+msgstr "https://wordpress.org/plugins/woo-retailcrm/"
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce retailCRM"
+msgstr "WooCommerce retailCRM"
+
+msgid "This functionality allows to upload orders to CRM differentially."
+msgstr "Esta función permite la subida selectiva de los pedidos al retailCRM."
+
+msgid "Uploading orders by identifiers."
+msgstr "Subida de los pedidos por identificadores."
+
+msgid "Enter orders identifiers separated by a comma."
+msgstr "Introduce los identificadores de pedidos separados por coma."
+
+msgid "Orders identifiers"
+msgstr "Los identificadores de pedidos"
+
+msgid "Order identifier"
+msgstr "Los identif de pedido"
+
+msgid "Upload the order by ID"
+msgstr "Subir el pedido por ID"
+
+msgid "Orders were uploaded"
+msgstr "Los pedidos están subidos"
+
+msgid "The field cannot be empty, enter the order ID"
+msgstr "El campo no puede estar vacío, introduce el identificador de pedido"
+
+msgid "Catalog was generated"
+msgstr "El catálogo está generado"
+
+msgid "Customers and orders were uploaded"
+msgstr "Los clientes y pedidos están subidos"
+
+msgid "Enter the correct API key"
+msgstr "Introduce la llave API correcta"
+
+msgid "Enter the correct URL of CRM"
+msgstr "Introduce el enlace del retailCRM correcto"
+
+msgid "The selected API version is unavailable"
+msgstr "La versión de API elegida no está disponible"
+
+msgid "This functionality allows to generate ICML products catalog for uploading to retailCRM."
+msgstr "Esta función permite generar los catálogos de pedidos ICML para subida al retailCRM."
+
+msgid "Generating ICML"
+msgstr "Generando ICML"
+
+msgid "Generate now"
+msgstr "Generar ahora"
+
+msgid "Generating ICML catalog"
+msgstr "Generar catálogo ICML"
+
+msgid "Settings"
+msgstr "Ajustes"
+
+msgid "Uploading the existing customers and orders to retailCRM"
+msgstr "Subida de los clientes existentes y pedidos al retailCRM."
+
+msgid "Uploading all customers and orders"
+msgstr "Subir todos los clientes y pedidos"
+
+msgid "Upload"
+msgstr "Subir"
+
+msgid "Settings of uploading"
+msgstr "Ajustes de subida"
+
+msgid "User parameter"
+msgstr "El parámetro personalizado"
+
+msgid "UA tracking code"
+msgstr "El código de seguimiento UA"
+
+msgid "Enable this setting for uploading data to UA"
+msgstr "Activa esta opción para subir los datos al UA."
+
+msgid "UA"
+msgstr "UA"
+
+msgid "Activate UA"
+msgstr "Activar UA"
+
+msgid "UA settings"
+msgstr "Ajustes de UA"
+
+msgid "Enable this setting if you would like to get information on leftover stocks from retailCRM to the website."
+msgstr "Active esta opción si quiere recibir la información del stock de los productos desde retailCRM a la página web."
+
+msgid "Stock balance"
+msgstr "El stock"
+
+msgid "Synchronization of the stock balance"
+msgstr "Sincronizar el stock"
+
+msgid "Setting of the stock balance"
+msgstr "Ajustes del stock"
+
+msgid "Statuses"
+msgstr "Los estados"
+
+msgid "Payment types"
+msgstr "Métodos de pago"
+
+msgid "Delivery types"
+msgstr "Métodos de envío"
+
+msgid "Select order methods which will be uploaded from retailCRM to the website"
+msgstr "Elige el método de formalización de los pedidos que se van a subir desde retailCRM a la página web"
+
+msgid "Order methods available for uploading from retailCRM"
+msgstr "Los métodos de la formalización de los pedidos disponibles para subida desde retailCRM"
+
+msgid "Order methods"
+msgstr "Los métodos de la formalización del pedido"
+
+msgid "Catalog settings"
+msgstr "Ajustes del catálogo"
+
+msgid "Select API version"
+msgstr "Selecciona la versión de API"
+
+msgid "API version"
+msgstr "Versión de API"
+
+msgid "API settings"
+msgstr "Ajustes de API"
+
+msgid "Enter your API key. You can find it in the administration section of retailCRM"
+msgstr "Introduce la llave API. Puede encontrarla en apartado administrativo del retailCRM"
+
+msgid "Enter with your API URL (https://yourdomain.retailcrm.pro)."
+msgstr "Introduce enlace de API (https://yourdomain.retailcrm.pro)."
+
+msgid "Integration with retailCRM management system."
+msgstr "La integración con el sistema de gestión del retailCRM ."
+
+msgid "Every 15 minutes"
+msgstr "Cada 15 minutos"
+
+msgid "Every 3 hours"
+msgstr "Cada 3 horas"
+
+msgid "Every 5 minutes"
+msgstr "Cada 5 minutos"
+
+msgid "API Key"
+msgstr "La llave API"
+
+msgid "API of URL"
+msgstr "El enlace API"
+
+msgid "Main settings"
+msgstr "Los ajustes generales"
+
+msgid "retailCRM"
+msgstr "retailCRM"
+
+msgid "Daemon Collector settings"
+msgstr "Ajustes de Daemon Collector"
+
+msgid "Activate Daemon Collector"
+msgstr "Activar Daemon Collector"
+
+msgid "Daemon Collector"
+msgstr "Daemon Collector"
+
+msgid "Enable this setting for activate Daemon Collector on site"
+msgstr "Active esta configuración para activar Daemon Collector en la página web"
+
+msgid "Site key"
+msgstr "Clave de la página web"

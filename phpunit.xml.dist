@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    bootstrap="tests/phpunit/bootstrap.php"
+    backupGlobals="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    verbose="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    syntaxCheck="true"
+    >
+    <testsuites>
+        <testsuite name="Retailcrm WooCommerce Test Suite">
+            <directory suffix=".php">tests/phpunit</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/include</directory>
+            <exclude>
+                <directory suffix=".php">src/include/api</directory>
+                <file>src/retailcrm.php</file>
+                <file>src/uninstall.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
