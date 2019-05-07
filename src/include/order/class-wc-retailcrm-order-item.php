@@ -104,7 +104,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     private function calculate_discount(WC_Order_Item_Product $item, $price)
     {
-        $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+        $product_price = max(0, round($item->get_total() ? $item->get_total() / $item->get_quantity() : 0));
         $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
         $price_item = $product_price + $product_tax;
         $discount_price = $price - $price_item;
