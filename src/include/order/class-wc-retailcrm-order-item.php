@@ -107,7 +107,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $product_price = max(0, round($item->get_total() ? $item->get_total() / $item->get_quantity() : 0));
         $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
         $price_item = $product_price + $product_tax;
-        $discount_price = $price - $price_item;
+        $discount_price = max(0, round($price)) - $price_item;
 
         return $discount_price;
     }
