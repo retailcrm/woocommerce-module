@@ -345,7 +345,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             $product_attributes = array();
 
             foreach ($attribute_taxonomies as $product_attribute) {
-                $attribute_id = wc_attribute_taxonomy_name_by_id($product_attribute->attribute_id);
+                $attribute_id = wc_attribute_taxonomy_name_by_id(intval($product_attribute->attribute_id));
                 $product_attributes[$attribute_id] = $product_attribute->attribute_label;
             }
 
