@@ -32,8 +32,8 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
             $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
             $this->retailcrm = $retailcrm;
 
-            if (isset($this->retailcrm_settings['bind_by_sky'])
-                && $this->retailcrm_settings['bind_by_sky'] == WC_Retailcrm_Base::YES
+            if (isset($this->retailcrm_settings['bind_by_sku'])
+                && $this->retailcrm_settings['bind_by_sku'] == WC_Retailcrm_Base::YES
             ) {
                 $this->bind_field = 'xmlId';
             }
