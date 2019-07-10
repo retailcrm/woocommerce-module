@@ -202,8 +202,8 @@ msgstr "Active esta configuración para activar Daemon Collector en la página w
 msgid "Site key"
 msgstr "Clave de la página web"
 
-msgid "Enable data editing in retailCRM"
-msgstr "Activar edición de datos en retailCRM"
+msgid "Disable data editing in retailCRM"
+msgstr "Desactivar edición de datos en retailCRM"
 
 msgid "Data updating in retailCRM"
 msgstr "Actualización de datos en retailCRM"

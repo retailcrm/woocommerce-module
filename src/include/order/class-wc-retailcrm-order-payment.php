@@ -52,7 +52,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
     public function build($order, $externalId = false)
     {
         $data = array(
-            'amount' => $order->get_total()
+            'amount' => (double) $order->get_total()
         );
 
         if (!$this->is_new) {

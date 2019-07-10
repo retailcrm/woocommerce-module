@@ -109,7 +109,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $price_item = $product_price + $product_tax;
         $discount_price = $price - $price_item;
 
-        return $discount_price;
+        return round($discount_price, 2);
     }
 
     /**
