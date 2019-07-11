@@ -128,7 +128,15 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $order = wc_get_order($order_id);
             $this->processOrder($order);
             $customer = $order->get_user();
+            $logger = new WC_Logger();
 
+            $logger->add('retailcrm', \sprintf(
+                'Order: %s\nCustomer: %s\nBilling E-Mail: %s\n',
+                print_r($order, true),
+                print_r($customer, true),
+                print_r($order->get_billing_email(), true)
+            ));
+            
             if ($customer != false) {
                 $search = $this->customers->searchCustomer(array('id' => $customer->get('ID')));
 
