@@ -77,8 +77,13 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
         $offer = array('externalId' => $uid);
 
-        if (isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES) {
-            $offer['xmlId'] = $item->get_product()->get_sku();
+        $product = $item->get_product();
+
+        if (!empty($product) &&
+            isset($this->settings['bind_by_sku']) &&
+            $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES
+        ) {
+            $offer['xmlId'] = $product->get_sku();
         }
 
         $this->set_data_field('offer', $offer);
