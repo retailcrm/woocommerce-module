@@ -125,38 +125,45 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
-            $order = wc_get_order($order_id);
-            $this->processOrder($order);
-            $customer = $order->get_user();
+            $wcOrder = wc_get_order($order_id);
+            $this->processOrder($wcOrder);
+            $wpUser = $wcOrder->get_user();
 
-            if ($customer != false) {
-                $search = $this->customers->searchCustomer(array('id' => $customer->get('ID')));
+            if ($wpUser instanceof WP_User) {
+                $wpUserId = (int)$wpUser->get('ID');
+                $foundCustomer = $this->customers->searchCustomer(array(
+                    'externalId' => $wpUserId
+                ));
 
-                if (!$search) {
-                    $this->customers->createCustomer($customer);
-                } else {
-                    $this->order['customer']['externalId'] = $search['externalId'];
-                }
-            } else {
-                $search = $this->customers->searchCustomer(array('email' => $order->get_billing_email()));
+                if (empty($foundCustomer)) {
+                    $customerId = $this->customers->createCustomer($wpUserId);
 
-                if (!$search) {
-                    $new_customer = $this->customers->buildCustomerFromOrderData($order);
-                    $id = $this->customers->createCustomer($new_customer);
-
-                    if ($id !== null) {
-                        $this->order['customer']['id'] = $id;
+                    if (!empty($customerId)) {
+                        $this->order['customer']['id'] = $customerId;
                     }
                 } else {
-                    $this->order['customer']['externalId'] = $search['externalId'];
+                    $this->order['customer']['externalId'] = $foundCustomer['externalId'];
                 }
+            } else {
+                $foundCustomer = $this->customers->searchCustomer(array(
+                    'email' => $wcOrder->get_billing_email()
+                ));
 
-                unset($new_customer);
+                if (empty($foundCustomer)) {
+                    $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
+                    $customerId = $this->customers->createCustomer($wcCustomer);
+
+                    if (!empty($customerId)) {
+                        $this->order['customer']['id'] = $customerId;
+                    }
+                } else {
+                    $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+                }
             }
 
             $this->retailcrm->ordersCreate($this->order);
 
-            return $order;
+            return $wcOrder;
         }
 
         /**
