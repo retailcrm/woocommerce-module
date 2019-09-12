@@ -21,7 +21,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected $retailcrm;
         protected $order_methods = array();
         protected $bind_field = 'externalId';
-
+        /** @var WC_Retailcrm_Order_Item */
+        protected $order_item;
         /**
          * WC_Retailcrm_History constructor.
          * @param $retailcrm (default = false)
@@ -328,6 +329,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             if (array_key_exists('items', $order)) {
+
                 foreach ($order['items'] as $item) {
                     if (!isset($item['offer'][$this->bind_field])) {
                         continue;
@@ -348,8 +350,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                                 $offer_id = $order_item['product_id'];
                             }
 
-                            if ($offer_id == $item['offer'][$this->bind_field]) {
-                                $this->deleteOrUpdateOrderItem($item, $order_item, $order_item_id);
+                            $itemExternalId = explode('_', $item['externalId']);
+
+                            if ($offer_id == $item['offer'][$this->bind_field]
+                                && $itemExternalId[1] == $order_item->get_id()
+                            ) {
+                                $this->deleteOrUpdateOrderItem($item, $order_item, $itemExternalId[1]);
                             }
                         }
                     }
@@ -423,6 +429,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             $wc_order->save();
+
+            $checkNewItem = false;
+
+            foreach ($order['items'] as $item) {
+                if (!empty($item['externalId'])) {
+                    continue;
+                } else {
+                    $checkNewItem = true;
+                }
+            }
+
+            if ($checkNewItem == true) {
+                $this->editOrder($this->retailcrm_settings, $wc_order, $order);
+            }
 
             return $wc_order->get_id();
         }
@@ -584,9 +604,46 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $wc_order->save();
 
+            $this->editOrder($this->retailcrm_settings, $wc_order, $order);
             $this->retailcrm->ordersFixExternalIds($ids);
 
             return $wc_order->get_id();
+        }
+
+        /**
+         * @param $settings
+         * @param $wc_order
+         * @param $order
+         */
+        protected function editOrder($settings, $wc_order, $order, $event = 'create')
+        {
+            $order_items = [];
+            $retailcrmOrderItem = new WC_Retailcrm_Order_Item($settings);
+
+            foreach ($wc_order->get_items() as $key => $item) {
+                $order_items[$key] = $retailcrmOrderItem->build($item)->get_data();
+                $retailcrmOrderItem->reset_data();
+
+                if ($event == 'update') {
+                    foreach ($order['items'] as $itemCrm) {
+                        if (isset($itemCrm['externalId']) && !empty($itemCrm['externalId'])) {
+                            $test = explode('_' , $itemCrm['externalId']);
+                            if ($order_items[$test[1]]) {
+                                unset($order_items[$test[1]]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($order_items)) {
+                $orderEdit = [
+                    'id' => $order['id'],
+                    'items' => $order_items,
+                ];
+
+                $this->retailcrm->ordersEdit($orderEdit, 'id');
+            }
         }
 
         /**

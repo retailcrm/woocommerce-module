@@ -51,6 +51,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $price = $this->calculate_price($item);
         $discount_price = $this->calculate_discount($item, $price);
 
+        $itemId = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];
+
+        $data['externalId'] = $itemId . '_' . $item->get_id();
         $data['productName'] = $item['name'];
         $data['initialPrice'] = (float)$price;
         $data['quantity'] = $item['qty'];
@@ -74,7 +77,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     private function set_offer(WC_Order_Item_Product $item)
     {
-        $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'] ;
+        $uid = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];
         $offer = array('externalId' => $uid);
 
         $product = $item->get_product();
