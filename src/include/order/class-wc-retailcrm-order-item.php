@@ -23,7 +23,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         'offer' => array(),
         'productName' => '',
         'initialPrice' => 0.00,
-        'quantity' => 0.0
+        'quantity' => 0.00
     );
 
     /**
@@ -126,7 +126,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             'offer' => array(),
             'productName' => '',
             'initialPrice' => 0.00,
-            'quantity' => 0.0
+            'quantity' => 0.00
         );
     }
 }
