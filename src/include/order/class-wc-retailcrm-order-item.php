@@ -23,7 +23,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         'offer' => array(),
         'productName' => '',
         'initialPrice' => 0.00,
-        'quantity' => 0
+        'quantity' => 0.00
     );
 
     /**
@@ -53,7 +53,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
         $data['productName'] = $item['name'];
         $data['initialPrice'] = (float)$price;
-        $data['quantity'] = $item['qty'];
+        $data['quantity'] = (double)$item['qty'];
 
         $this->set_data_fields($data);
         $this->set_offer($item);
@@ -126,7 +126,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             'offer' => array(),
             'productName' => '',
             'initialPrice' => 0.00,
-            'quantity' => 0
+            'quantity' => 0.00
         );
     }
 }
