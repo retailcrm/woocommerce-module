@@ -22,6 +22,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected $order_methods = array();
         protected $bind_field = 'externalId';
 
+        /** @var WC_Retailcrm_Order_Item */
+        protected $order_item;
+
         /**
          * WC_Retailcrm_History constructor.
          * @param $retailcrm (default = false)
@@ -328,7 +331,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             if (array_key_exists('items', $order)) {
-                foreach ($order['items'] as $item) {
+                foreach ($order['items'] as $key => $item) {
+
                     if (!isset($item['offer'][$this->bind_field])) {
                         continue;
                     }
@@ -339,18 +343,45 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $this->retailcrm_settings
                         );
 
+                        foreach ($wc_order->get_items() as $order_item_id => $order_item) {
+                            $arItemsOld[$order_item_id] = $order_item_id;
+                        }
+
                         $wc_order->add_product($product, $item['quantity']);
+
+                        foreach ($wc_order->get_items() as $order_item_id => $order_item) {
+                            $arItemsNew[$order_item_id] = $order_item_id;
+                        }
+
+                        $result = end(array_diff($arItemsNew, $arItemsOld));
+                        $order['items'][$key]['woocomerceId'] = $result;
                     } else {
                         foreach ($wc_order->get_items() as $order_item_id => $order_item) {
+
+
+
                             if ($order_item['variation_id'] != 0 ) {
                                 $offer_id = $order_item['variation_id'];
                             } else {
                                 $offer_id = $order_item['product_id'];
                             }
 
-                            if ($offer_id == $item['offer'][$this->bind_field]) {
-                                $this->deleteOrUpdateOrderItem($item, $order_item, $order_item_id);
+                            if (isset($item['externalIds'])) {
+                                foreach ($item['externalIds'] as $externalId) {
+                                    if ($externalId['code'] == 'woocomerce') {
+                                        $itemExternalId = explode('_', $externalId['value']);
+                                    }
+                                }
+                            } else {
+                                $itemExternalId = explode('_', $item['externalId']);
                             }
+
+                            if ($offer_id == $item['offer'][$this->bind_field]
+                                && $itemExternalId[1] == $order_item->get_id()
+                            ) {
+                                $this->deleteOrUpdateOrderItem($item, $order_item, $itemExternalId[1]);
+                            }
+
                         }
                     }
                 }
@@ -424,6 +455,19 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $wc_order->save();
 
+            $checkNewItem = false;
+            foreach ($order['items'] as $item) {
+                if (!empty($item['externalIds'])) {
+                    continue;
+                } else {
+                    $checkNewItem = true;
+                }
+            }
+
+            if ($checkNewItem == true) {
+                $this->editOrder($this->retailcrm_settings, $wc_order, $order,'update');
+            }
+
             return $wc_order->get_id();
         }
 
@@ -440,8 +484,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 if (isset($item['quantity']) && $item['quantity']) {
                     $order_item->set_quantity($item['quantity']);
                     $product = retailcrm_get_wc_product($item['offer'][$this->bind_field], $this->retailcrm_settings);
-                    $order_item->set_total($product->get_price() * $item['quantity']);
                     $order_item->set_subtotal($product->get_price());
+                    $data_store = $order_item->get_data_store();
+                    $data_store->update($order_item);
+                }
+
+                if (isset($item['summ']) && $item['summ']) {
+                    $order_item->set_total($item['summ']);
                     $data_store = $order_item->get_data_store();
                     $data_store->update($order_item);
                 }
@@ -536,11 +585,33 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $product_data = isset($order['items']) ? $order['items'] : array();
 
             if ($product_data) {
-                foreach ($product_data as $product) {
+                foreach ($product_data as $key => $product) {
+                    $item = retailcrm_get_wc_product($product['offer'][$this->bind_field], $this->retailcrm_settings);
+                    if ($product['discountTotal'] > 0) {
+                        $item->set_price($product['initialPrice'] - $product['discountTotal']);
+                    }
+
+                    foreach ($wc_order->get_items() as $order_item_id => $order_item) {
+                        $arItemsOld[$order_item_id] = $order_item_id;
+                    }
+
                     $wc_order->add_product(
-                        retailcrm_get_wc_product($product['offer'][$this->bind_field], $this->retailcrm_settings),
+                        $item,
                         $product['quantity']
                     );
+
+                    foreach ($wc_order->get_items() as $order_item_id => $order_item) {
+                        $arItemsNew[$order_item_id] = $order_item_id;
+                    }
+
+                    if (!empty($arItemsOld)) {
+                        $result = end(array_diff($arItemsNew, $arItemsOld));
+                    } else {
+                        $result = end($arItemsNew);
+                    }
+
+                    $order['items'][$key]['woocomerceId'] = $result;
+
                 }
             }
 
@@ -586,7 +657,58 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $this->retailcrm->ordersFixExternalIds($ids);
 
+            $this->editOrder($this->retailcrm_settings, $wc_order, $order);
+
             return $wc_order->get_id();
+        }
+
+        /**
+         * @param        $settings
+         * @param        $wc_order
+         * @param        $order
+         * @param string $event
+         */
+        protected function editOrder($settings, $wc_order, $order, $event = 'create')
+        {
+            $order_items = [];
+            if ($event == 'update') {
+                $result = $this->retailcrm->ordersGet($order['externalId']);
+                if ($result->isSuccessful()) {
+                    $orderCrm = $result['order'];
+                }
+                $data = $orderCrm;
+            }
+
+            if ($event == 'create') {
+                $data = $order;
+            }
+
+            foreach ($data['items'] as $id => $item) {
+                $order_items[$id]['id'] = $item['id'];
+                $order_items[$id]['offer'] = array('id' => $item['offer']['id']);
+                $externalIds = array(
+                    array(
+                        'code' => 'woocomerce',
+                        'value' => $item['offer']['externalId'] . '_' . $order['items'][$item['id']]['woocomerceId'],
+                    )
+                );
+
+                if ($item['externalIds']) {
+                    $order_items[$id]['externalIds'] = $item['externalIds'];
+                    $order_items[$id]['externalIds'][] = $externalIds;
+                } else {
+                    $order_items[$id]['externalIds'] = $externalIds;
+                }
+            }
+
+            if (!empty($order_items)) {
+                $orderEdit = [
+                    'id' => $order['id'],
+                    'items' => $order_items,
+                ];
+
+                $this->retailcrm->ordersEdit($orderEdit, 'id');
+            }
         }
 
         /**

@@ -55,6 +55,14 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $data['initialPrice'] = (float)$price;
         $data['quantity'] = (double)$item['qty'];
 
+        $itemId = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];
+        $data['externalIds'] = array(
+            array(
+                'code' =>'woocomerce',
+                'value' => $itemId . '_' . $item->get_id(),
+            )
+        );
+
         $this->set_data_fields($data);
         $this->set_offer($item);
 

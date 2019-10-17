@@ -72,26 +72,38 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $order_added_item = reset($order_added_items);
         $shipping_address = $order_added->get_address('shipping');
         $billing_address = $order_added->get_address('billing');
-
         $options = get_option(\WC_Retailcrm_Base::$option_key);
-
         $this->assertEquals(self::STATUS_1, $options[$order_added->get_status()]);
-        $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
+
+        if (is_object($order_added_item)) {
+            $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
+        }
+
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
         $this->assertNotEmpty($shipping_address['postcode']);
         $this->assertNotEmpty($shipping_address['city']);
         $this->assertNotEmpty($shipping_address['country']);
         $this->assertNotEmpty($shipping_address['state']);
-        $this->assertNotEmpty($billing_address['phone']);
-        $this->assertNotEmpty($billing_address['email']);
+
+        if (isset($billing_address['phone'])) {
+            $this->assertNotEmpty($billing_address['phone']);
+        }
+
+        if (isset($billing_address['email'])) {
+            $this->assertNotEmpty($billing_address['email']);
+        }
+
         $this->assertNotEmpty($billing_address['first_name']);
         $this->assertNotEmpty($billing_address['last_name']);
         $this->assertNotEmpty($billing_address['postcode']);
         $this->assertNotEmpty($billing_address['city']);
         $this->assertNotEmpty($billing_address['country']);
         $this->assertNotEmpty($billing_address['state']);
-        $this->assertEquals('payment4', $options[$order_added->get_payment_method()]);
+
+        if ($order_added->get_payment_method()) {
+            $this->assertEquals('payment4', $options[$order_added->get_payment_method()]);
+        }
     }
 
     /**
@@ -281,6 +293,12 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                                 'createdAt' => '2018-01-01 00:00:00',
                                 'quantity' => 1,
                                 'status' => 'new',
+                                'externalIds' =>array(
+                                    array(
+                                        'code' =>'woocomerce',
+                                        'value' =>"160_".$product_create_id
+                                    )
+                                ),
                                 'offer' => array(
                                     'id' => 1,
                                     'externalId' => $product_create_id,
@@ -348,6 +366,12 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                         'createdAt' => '2018-01-01 00:02:00',
                         'quantity' => 2,
                         'status' => self::STATUS_1,
+                        'externalIds' =>array(
+                            array(
+                                'code' =>'woocomerce',
+                                'value' =>"160_".$product_add_id
+                            )
+                        ),
                         'offer' => array(
                             'id' => 2,
                             'externalId' => $product_add_id,
