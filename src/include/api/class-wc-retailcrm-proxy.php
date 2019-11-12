@@ -47,6 +47,10 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
             try {
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
 
+                if (is_string($response)) {
+                    return $response;
+                }
+
                 if ($response->isSuccessful()) {
                     $result = ' Ok';
                 } else {
@@ -57,8 +61,8 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                     );
 
                     if (isset($response['errors'])) {
-                            foreach ($response['errors'] as $error) {
-                            $result .= " $error";
+                            foreach ($response['errors'] as $key => $error) {
+                            $result .= " [$key] => $error";
                         }
                     }
                 }

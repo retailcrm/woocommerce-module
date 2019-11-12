@@ -80,7 +80,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_create_customer($retailcrm)
     {
         $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
-        $id = $retailcrm_customer->createCustomer($this->customer->get_id());
+        $id = $retailcrm_customer->createRegularCustomer($this->customer->get_id());
         $customer_send = $retailcrm_customer->getCustomer();
 
         if ($retailcrm) {
@@ -103,7 +103,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_update_customer($retailcrm)
     {
         $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
-        $customer = $retailcrm_customer->updateCustomer($this->customer->get_id());
+        $customer = $retailcrm_customer->updateRegularCustomer($this->customer->get_id());
         $customer_send = $retailcrm_customer->getCustomer();
 
         if ($retailcrm) {

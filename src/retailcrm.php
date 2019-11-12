@@ -47,6 +47,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
                 require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
+                require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-corporate-response.php');
                 require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
                 require_once(dirname(__FILE__ ) . '/include/functions.php');
                 add_filter('woocommerce_integrations', array( $this, 'add_integration'));
