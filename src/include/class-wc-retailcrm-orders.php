@@ -115,64 +115,134 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         /**
          * Create order
          *
-         * @param $order_id
+         * @param      $order_id
+         *
+         * @param bool $forceRegularCustomer
          *
          * @return mixed
-         * @throws Exception
+         * @throws \Exception
          */
-        public function orderCreate($order_id)
+        public function orderCreate($order_id, $forceRegularCustomer = false)
         {
             if (!$this->retailcrm) {
                 return null;
             }
 
+            $isCorporateEnabled = $forceRegularCustomer ? false : WC_Retailcrm_Customers::isCorporateEnabledInApi($this->retailcrm);
             $wcOrder = wc_get_order($order_id);
             $this->processOrder($wcOrder);
             $wpUser = $wcOrder->get_user();
 
             if ($wpUser instanceof WP_User) {
                 $wpUserId = (int)$wpUser->get('ID');
-                $foundCustomer = $this->customers->searchCustomer(array(
-                    'externalId' => $wpUserId
-                ));
+                $wooCustomer = new WC_Customer($wpUserId);
 
-                if (empty($foundCustomer)) {
-                	$foundCustomer = $this->customers->searchCustomer(array(
-                		'email' => $wcOrder->get_billing_email()
-	                ));
-                }
+                if ($isCorporateEnabled && WC_Retailcrm_Customers::customerPossiblyCorporate($wooCustomer)) {
+                    $foundRegularCustomer = $this->customers->searchCustomer(array(
+                        'externalId' => $wpUserId
+                    ));
 
-                if (empty($foundCustomer)) {
-                    $customerId = $this->customers->createCustomer($wpUserId);
+                    // If regular customer was found - create order with it.
+                    if (!empty($foundRegularCustomer)) {
+                        return $this->orderCreate($order_id, true);
+                    }
 
-                    if (!empty($customerId)) {
-                        $this->order['customer']['id'] = $customerId;
+                    $foundCustomer = $this->customers->searchCorporateCustomer(array(
+                        'externalId' => $wpUserId
+                    ));
+
+                    if (empty($foundCustomer)) {
+                        $customerData = $this->customers->createCorporateCustomer($wpUserId);
+
+                        if ($customerData instanceof WC_Retailcrm_Customer_Corporate_Response) {
+                            if (!empty($customerData->getId())) {
+                                $this->order['customer']['id'] = $customerData->getId();
+                            }
+
+                            if (!empty($customerData->getContactId())) {
+                                $this->order['contact']['id'] = $customerData->getContactId();
+                            }
+
+                            if (!empty($customerData->getContactExternalId())) {
+                                $this->order['contact']['externalId'] = $customerData->getContactExternalId();
+                            }
+                        }
+                    } else {
+                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+
+                        if (isset($foundCustomer['mainCustomerContact']['customer']['id'])) {
+                            $this->order['contact']['id'] = $foundCustomer['mainCustomerContact']['customer']['id'];
+                        }
                     }
                 } else {
-	                if (!empty($foundCustomer['externalId'])) {
-		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-	                } else {
-		                $this->order['customer']['id'] = $foundCustomer['id'];
-	                }
+                    $foundCustomer = $this->customers->searchCustomer(array(
+                        'externalId' => $wpUserId
+                    ));
+
+                    if (empty($foundCustomer)) {
+                        $customerId = $this->customers->createRegularCustomer($wpUserId);
+
+                        if (!empty($customerId)) {
+                            $this->order['customer']['id'] = $customerId;
+                        }
+                    } else {
+                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+                    }
                 }
             } else {
-                $foundCustomer = $this->customers->searchCustomer(array(
-                    'email' => $wcOrder->get_billing_email()
-                ));
+                $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
 
-                if (empty($foundCustomer)) {
-                    $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
-                    $customerId = $this->customers->createCustomer($wcCustomer);
+                if ($isCorporateEnabled && WC_Retailcrm_Customers::customerPossiblyCorporate($wcCustomer)) {
+                    $foundRegularCustomer = $this->customers->searchCustomer(array(
+                        'email' => $wcOrder->get_billing_email()
+                    ));
 
-                    if (!empty($customerId)) {
-                        $this->order['customer']['id'] = $customerId;
+                    // If regular customer was found - create order with it.
+                    if (!empty($foundRegularCustomer)) {
+                        return $this->orderCreate($order_id, true);
+                    }
+
+                    $foundCustomer = $this->customers->searchCorporateCustomer(array(
+                        'email' => $wcOrder->get_billing_email()
+                    ));
+
+                    if (empty($foundCustomer)) {
+                        $customerData = $this->customers->createCorporateCustomer($wcCustomer);
+
+                        if ($customerData instanceof WC_Retailcrm_Customer_Corporate_Response) {
+                            if (!empty($customerData->getId())) {
+                                $this->order['customer']['id'] = $customerData->getId();
+                            }
+
+                            if (!empty($customerData->getContactId())) {
+                                $this->order['contact']['id'] = $customerData->getContactId();
+                            }
+
+                            if (!empty($customerData->getContactExternalId())) {
+                                $this->order['contact']['externalId'] = $customerData->getContactExternalId();
+                            }
+                        }
+                    } else {
+                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+
+                        if (isset($foundCustomer['mainCustomerContact']['customer']['id'])) {
+                            $this->order['contact']['id'] = $foundCustomer['mainCustomerContact']['customer']['id'];
+                        }
                     }
                 } else {
-                	if (!empty($foundCustomer['externalId'])) {
-		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-	                } else {
-                		$this->order['customer']['id'] = $foundCustomer['id'];
-	                }
+                    $foundCustomer = $this->customers->searchCustomer(array(
+                        'email' => $wcOrder->get_billing_email()
+                    ));
+
+                    if (empty($foundCustomer)) {
+                        $customerId = $this->customers->createRegularCustomer($wcCustomer);
+
+                        if (!empty($customerId)) {
+                            $this->order['customer']['id'] = $customerId;
+                        }
+                    } else {
+                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+                    }
                 }
             }
 
