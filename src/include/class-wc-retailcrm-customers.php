@@ -693,6 +693,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             return 'wpcontact_' . $wpCustomerId;
         }
 
+        public static function isContactPersonExternalId($wpCustomerId)
+        {
+            return strpos($wpCustomerId, 'wpcontact_') !== false;
+        }
+
         public static function getCustomerIdFromContact($contactExternalId)
         {
             return str_ireplace('wpcontact_', '', $contactExternalId);
