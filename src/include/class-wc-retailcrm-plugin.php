@@ -128,6 +128,38 @@ class WC_Retailcrm_Plugin {
     }
 
     /**
+     * Unset empty fields
+     *
+     * @param array $arr input array
+     *
+     * @return array
+     */
+    public static function clearArray(array $arr)
+    {
+        if (!is_array($arr)) {
+            return $arr;
+        }
+
+        $result = [];
+
+        foreach ($arr as $index => $node) {
+            $result[$index] = (is_array($node))
+                ? self::clearArray($node)
+                : $node;
+
+            if ($result[$index] == ''
+                || $result[$index] === null
+                || (is_array($result[$index]) && count($result[$index]) < 1)
+            ) {
+                unset($result[$index]);
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Check running history
      *
      * @return boolean

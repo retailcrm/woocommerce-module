@@ -14,7 +14,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
      */
     class WC_Retailcrm_Orders
     {
-        /** @var bool|WC_Retailcrm_Proxy */
+        /** @var bool|WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V5|\WC_Retailcrm_Client_V4 */
         protected $retailcrm;
 
         /** @var array */
@@ -72,6 +72,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
+            $isCorporateEnabled = WC_Retailcrm_Customers::isCorporateEnabledInApi($this->retailcrm);
+            $uploader = new WC_Retailcrm_Customers(
+                $this->retailcrm,
+                $this->retailcrm_settings,
+                new WC_Retailcrm_Customer_Address()
+            );
+
             $orders = get_posts(array(
                 'numberposts' => -1,
                 'post_type' => wc_get_order_types('view-orders'),
@@ -80,6 +87,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             ));
 
             $orders_data = array();
+            $orders_data_corps = array();
 
             foreach ($orders as $data_order) {
                 $order = wc_get_order($data_order->ID);
@@ -95,17 +103,93 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     }
                 }
 
-                $orders_data[] = $this->order;
+                if ($isCorporateEnabled
+                    && WC_Retailcrm_Customers::customerPossiblyCorporate(new WC_Customer($customer->get('ID')))
+                ) {
+                    $corporate = $this->retailcrm->customersCorporateGet($customer->get('ID'));
+                    time_nanosleep(0, 100000000);
+
+                    if ($corporate instanceof WC_Retailcrm_Response
+                        && $corporate->isSuccessful()
+                        && $corporate->offsetExists('customerCorporate')
+                        && isset($corporate['customerCorporate']['mainCustomerContact'])
+                        && isset($corporate['customerCorporate']['mainCustomerContact']['customer'])
+                        && isset($corporate['customerCorporate']['mainCustomerContact']['customer']['id'])
+                        && isset($corporate['customerCorporate']['mainCustomerContact']['customer']['externalId'])
+                    ) {
+                        $this->order['contact'] = array(
+                            'id' =>
+                                $corporate['customerCorporate']['mainCustomerContact']['customer']['id']
+                        );
+
+                        $orders_data_corps[] = $this->order;
+                    } else {
+                        $orders_data[] = $this->order;
+                    }
+                } else {
+                    $orders_data[] = $this->order;
+                }
             }
+
+            $corporateCustomers = array();
 
             if ($withCustomers === true && !empty($customers)) {
-                $this->customers->customersUpload($customers);
+                if ($isCorporateEnabled) {
+                    foreach ($customers as $key => $customer) {
+                        if (WC_Retailcrm_Customers::customerPossiblyCorporate(new WC_Customer($customer))) {
+                            $corporateCustomers[] = $customer;
+                            unset($customers[$key]);
+                        }
+                    }
+
+                    $uploadCustomers = array_chunk($customers, 50);
+
+                    foreach ($uploadCustomers as $uploadCustomer) {
+                        $this->customers->customersUpload($uploadCustomer);
+                        time_nanosleep(0, 250000000);
+                    }
+
+                    foreach ($corporateCustomers as $corporateCustomer) {
+                        $response = $uploader->createCorporateCustomer(new WC_Customer($corporateCustomer));
+
+                        if ($response instanceof WC_Retailcrm_Customer_Corporate_Response) {
+                            if ($response->getContactId() != 0) {
+                                foreach ($orders_data as $key => $order) {
+                                    if (isset($order['customer']['externalId'])
+                                        && $order['customer']['externalId'] == $response->getExternalId()
+                                    ) {
+                                        $order['contact'] = array(
+                                            'id' => $response->getContactId()
+                                        );
+                                        $orders_data_corps[] = $order;
+                                        unset($orders_data[$key]);
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $uploadCustomers = array_chunk($customers, 50);
+
+                    foreach ($uploadCustomers as $uploadCustomer) {
+                        $this->customers->customersUpload($uploadCustomer);
+                        time_nanosleep(0, 250000000);
+                    }
+                }
             }
 
-            $uploadOrders = array_chunk($orders_data, 50);
+            $uploadOrders = array_chunk(WC_Retailcrm_Plugin::clearArray($orders_data), 50);
+            $uploadOrdersCorps = array_chunk(WC_Retailcrm_Plugin::clearArray($orders_data_corps), 50);
 
             foreach ($uploadOrders as $uploadOrder) {
                 $this->retailcrm->ordersUpload($uploadOrder);
+                time_nanosleep(0, 250000000);
+            }
+
+            foreach ($uploadOrdersCorps as $uploadOrdersCorp) {
+                $this->retailcrm->ordersUpload($uploadOrdersCorp);
                 time_nanosleep(0, 250000000);
             }
 

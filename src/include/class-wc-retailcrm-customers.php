@@ -55,6 +55,22 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
+         * setCustomerAddress
+         *
+         * @param $address
+         *
+         * @return $this
+         */
+        public function setCustomerAddress($address)
+        {
+            if ($address instanceof WC_Retailcrm_Customer_Address) {
+                $this->customer_address = $address;
+            }
+
+            return $this;
+        }
+
+        /**
          * Returns true if corporate customers are enabled and accessible
          *
          * @param WC_Retailcrm_Client_V5|\WC_Retailcrm_Proxy $apiClient
