@@ -174,6 +174,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $history = $response['history'];
                 $end_change = end($history);
                 $new_since_id = $end_change['id'];
+                
+                $mapping = array(
+                    'first_name' => 'first_name',
+                    'last_name' => 'last_name',
+                    'email' => 'billing_email',
+                    'phones' => 'billing_phone',
+                    'address.region' => 'billing_state',
+                    'address.index' => 'billing_postcode',
+                    'address.country' => 'billing_country',
+                    'address.city' => 'billing_city'
+                );
 
                 foreach ($history as $record) {
                     if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
@@ -196,51 +207,15 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                     WC_Retailcrm_Plugin::$history_run = true;
 
-                    if ($record['field'] == 'first_name' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'first_name', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'last_name' && isset($record['customer']['externalId'])) {
+                    if (isset($mapping[$record['field']]) && isset($record['customer']['externalId'])) {
                         if ($record['newValue']) {
-                            update_user_meta($record['customer']['externalId'], 'last_name', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'email' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_email', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'phones' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_phone', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.region' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_state', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.index' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_postcode', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.country' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_country', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.city' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_city', $record['newValue']);
+                            if (is_array($mapping[$record['field']])) {
+                                foreach ($mapping[$record['field']] as $mappingField) {
+                                    update_user_meta($record['customer']['externalId'], $mappingField, $record['newValue']);
+                                }
+                            } else {
+                                update_user_meta($record['customer']['externalId'], $mapping[$record['field']], $record['newValue']);
+                            }
                         }
                     }
 
