@@ -260,7 +260,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 WC_Retailcrm_Plugin::$history_run = true;
 
                 foreach ($historyAssembly as $orderHistory) {
-                    $order = apply_filters('retailcrm_history_before_save', $orderHistory);
+                    $order = WC_Retailcrm_Plugin::clearArray(apply_filters('retailcrm_history_before_save', $orderHistory));
 
                     if (isset($order['deleted']) && $order['deleted'] == true) {
                         continue;
