@@ -67,7 +67,7 @@ function get_wc_shipping_methods() {
         );
     }
 
-    return apply_filters('retailcrm_shipping_list', $result);
+    return apply_filters('retailcrm_shipping_list', WC_Retailcrm_Plugin::clearArray($result));
 }
 
 function retailcrm_get_delivery_service($method_id, $instance_id) {

@@ -534,7 +534,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 );
             }
 
-            $this->customer = apply_filters('retailcrm_process_customer', $data_customer, $customer);
+            $this->customer = apply_filters('retailcrm_process_customer', WC_Retailcrm_Plugin::clearArray($data_customer), $customer);
         }
 
         /**
@@ -576,25 +576,25 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $this->customerCorporate = apply_filters(
                 'retailcrm_process_customer_corporate',
-                $data_customer,
+                WC_Retailcrm_Plugin::clearArray($data_customer),
                 $customer
             );
             $this->customerCorporateContact = apply_filters(
                 'retailcrm_process_customer_corporate_contact',
-                $data_contact,
+                WC_Retailcrm_Plugin::clearArray($data_contact),
                 $customer
             );
             $this->customerCorporateAddress = apply_filters(
                 'retailcrm_process_customer_corporate_address',
-                array_merge(
+                WC_Retailcrm_Plugin::clearArray(array_merge(
                     $data_contact['address'],
                     array('isMain' => true)
-                ),
+                )),
                 $customer
             );
             $this->customerCorporateCompany = apply_filters(
                 'retailcrm_process_customer_corporate_company',
-                $data_company,
+                WC_Retailcrm_Plugin::clearArray($data_company),
                 $customer
             );
         }
