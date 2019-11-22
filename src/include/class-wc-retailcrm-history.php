@@ -75,7 +75,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             if (!$customers_corporate_since_id && isset($this->retailcrm_settings['history_customers_corporate'])) {
-                $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_orders']);
+                $this->startDateCustomersCorporate = new DateTime($this->retailcrm_settings['history_orders']);
             }
 
             $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
@@ -758,12 +758,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         }
                     }
 
-                    if (isset($order['delivery']['cost']) || isset($order['delivery']['netCost'])) {
-                        if (!wc_tax_enabled()) {
-                            $shipping->set_total($order['delivery']['cost']);
-                        } else {
-                            $shipping->set_total($order['delivery']['netCost']);
-                        }
+                    if (isset($order['delivery']['cost']) && !wc_tax_enabled()) {
+                        $shipping->set_total($order['delivery']['cost']);
+                    } elseif (isset($order['delivery']['netCost'])) {
+                        $shipping->set_total($order['delivery']['netCost']);
                     }
 
                     $shipping->set_order_id($wc_order->get_id());
