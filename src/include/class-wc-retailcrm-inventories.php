@@ -74,7 +74,10 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                                 continue;
                             }
 
-                            $product->set_manage_stock(true);
+                            if (empty($product->get_manage_stock()) {
+                                continue;
+                            }
+
                             $product->set_stock_quantity($offer['quantity']);
                             $success[] = $product->save();
                         }
