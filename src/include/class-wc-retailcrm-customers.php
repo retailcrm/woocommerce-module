@@ -167,13 +167,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
                 $customer = $this->wcCustomerGet($user->ID);
                 if ($corporateEnabled && static::customerPossiblyCorporate($customer)) {
-                    $this->processCorporateCustomer($customer);
-                    $data_corporate[] = array(
-                        'customer' => $this->customerCorporate,
-                        'address' => $this->customerCorporateAddress,
-                        'company' => $this->customerCorporateCompany,
-                        'contact' => $this->customerCorporateContact
-                    );
+                    $data_corporate[] = $customer;
                 } else {
                     $this->processCustomer($customer);
                     $data_customers[] = $this->customer;
@@ -187,6 +181,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             foreach ($data as $array_customers) {
                 $this->retailcrm->customersUpload($array_customers);
                 time_nanosleep(0, 250000000);
+            }
+
+            foreach ($data_corporate as $corporateCustomer) {
+                $this->createCorporateCustomer($corporateCustomer);
+                time_nanosleep(0, 50000000);
             }
 
             return $data;
