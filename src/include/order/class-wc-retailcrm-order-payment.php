@@ -76,6 +76,8 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         if ($this->is_new) {
             if (isset($this->settings[$order->get_payment_method()])) {
                 $data['type'] = $this->settings[$order->get_payment_method()];
+            } else {
+                $data = array();
             }
         }
 
