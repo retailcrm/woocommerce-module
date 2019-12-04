@@ -15,11 +15,13 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
     class WC_Retailcrm_Proxy
     {
         protected $retailcrm;
+        protected $corporateEnabled;
         protected $logger;
 
-        public function __construct($api_url, $api_key, $api_vers = null)
+        public function __construct($api_url, $api_key, $api_vers = null, $corporateEnabled = false)
         {   
             $this->logger = new WC_Logger();
+            $this->corporateEnabled = $corporateEnabled;
 
             if ( ! class_exists( 'WC_Retailcrm_Client_V4' ) ) {
                 include_once( __DIR__ . '/class-wc-retailcrm-client-v4.php' );
@@ -40,6 +42,16 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                     $this->retailcrm = new WC_Retailcrm_Client_V4($api_url, $api_key, $api_vers);
                     break;
             }
+        }
+
+        /**
+         * getCorporateEnabled
+         *
+         * @return bool
+         */
+        public function getCorporateEnabled()
+        {
+            return $this->corporateEnabled;
         }
 
         public function __call($method, $arguments)

@@ -359,7 +359,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return new WC_Retailcrm_Proxy(
                     $this->get_option('api_url'),
                     $this->get_option('api_key'),
-                    $this->get_option('api_version')
+                    $this->get_option('api_version'),
+                    $this->get_option('corporate_enabled', 'no') === 'yes'
                 );
             }
 
@@ -398,7 +399,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $api_client = new WC_Retailcrm_Proxy(
                     $settings['api_url'],
                     $settings['api_key'],
-                    $settings['api_version']
+                    $settings['api_version'],
+                    $settings['corporate_enabled'] === 'yes'
                 );
 
                 $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id, $settings['api_version']);

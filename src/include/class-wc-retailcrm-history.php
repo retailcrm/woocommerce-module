@@ -79,7 +79,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
-            $this->customersCorporateHistory($this->startDateCustomersCorporate->format('Y-m-d H:i:s'), $customers_corporate_since_id);
+
+            if ($this->retailcrm->getCorporateEnabled()) {
+                $this->customersCorporateHistory($this->startDateCustomersCorporate->format('Y-m-d H:i:s'), $customers_corporate_since_id);
+            }
+
             $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
         }
 

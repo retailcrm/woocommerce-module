@@ -71,46 +71,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Returns true if corporate customers are enabled and accessible
-         *
-         * @param WC_Retailcrm_Client_V5|\WC_Retailcrm_Proxy $apiClient
-         *
-         * @return bool
-         */
-        public static function isCorporateEnabledInApi($apiClient)
-        {
-            if (is_object($apiClient)) {
-                $requiredMethods = array(
-                    "/api/customers-corporate",
-                    "/api/customers-corporate/create",
-                    "/api/customers-corporate/fix-external-ids",
-                    "/api/customers-corporate/notes",
-                    "/api/customers-corporate/notes/create",
-                    "/api/customers-corporate/notes/{id}/delete",
-                    "/api/customers-corporate/history",
-                    "/api/customers-corporate/upload",
-                    "/api/customers-corporate/{externalId}",
-                    "/api/customers-corporate/{externalId}/edit"
-                );
-
-                $credentials = $apiClient->credentials();
-
-                if ($credentials && isset($credentials['credentials'])) {
-                    $existingMethods = array_filter(
-                        $credentials['credentials'],
-                        function ($val) use ($requiredMethods) {
-                            return in_array($val, $requiredMethods);
-                        }
-                    );
-
-                    return count($requiredMethods) == count($existingMethods);
-                }
-            }
-
-            return false;
-        }
-
-        /**
          * Is corporate customers enabled in provided API
          *
          * @return bool
@@ -121,7 +81,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 return false;
             }
 
-            return static::isCorporateEnabledInApi($this->retailcrm);
+            return $this->retailcrm->getCorporateEnabled();
         }
 
         /**

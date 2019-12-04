@@ -231,3 +231,9 @@ msgstr "Передача номера заказа"
 
 msgid "Transferring the payment amount"
 msgstr "Передача суммы оплаты"
+
+msgid "Corporate customers support"
+msgstr "Поддержка корпоративных клиентов"
+
+msgid "Enabled"
+msgstr "Включено"
