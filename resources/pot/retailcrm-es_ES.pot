@@ -219,3 +219,9 @@ msgstr "Activar la transferencia de números en retailCRM"
 
 msgid "Transferring the order number"
 msgstr "Transferencia de un número de pedido"
+
+msgid "Corporate customers support"
+msgstr "Soporte a clientes corporativos"
+
+msgid "Enabled"
+msgstr "Habilitado"

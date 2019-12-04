@@ -228,3 +228,9 @@ msgstr "Активировать передачу номера в retailCRM"
 
 msgid "Transferring the order number"
 msgstr "Передача номера заказа"
+
+msgid "Corporate customers support"
+msgstr "Поддержка корпоративных клиентов"
+
+msgid "Enabled"
+msgstr "Включено"

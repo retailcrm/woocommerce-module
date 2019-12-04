@@ -144,6 +144,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'desc_tip'    =>  true,
         );
 
+        $this->form_fields['corporate_enabled'] = array(
+            'title'       => __('Corporate customers support', 'retailcrm'),
+            'label'       => __('Enabled'),
+            'description' => '',
+            'class'       => 'checkbox',
+            'type'        => 'checkbox',
+            'desc_tip'    =>  true
+        );
+
         $this->form_fields[] = array(
             'title'       => __( 'Catalog settings', 'retailcrm' ),
             'type'        => 'title',
@@ -573,7 +582,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         $api = new WC_Retailcrm_Proxy(
             $post[$this->plugin_id . $this->id . '_api_url'],
-            $post[$this->plugin_id . $this->id . '_api_key']
+            $post[$this->plugin_id . $this->id . '_api_key'],
+            null,
+            $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 
         $response = $api->apiVersions();
@@ -601,7 +612,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
             $value,
-            $post[$this->plugin_id . $this->id . '_api_key']
+            $post[$this->plugin_id . $this->id . '_api_key'],
+            null,
+            $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 
         $response = $api->apiVersions();
@@ -627,7 +640,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
             $post[$this->plugin_id . $this->id . '_api_url'],
-            $value
+            $value,
+            null,
+            $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 
         $response = $api->apiVersions();

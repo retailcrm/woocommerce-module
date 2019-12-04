@@ -72,7 +72,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
-            $isCorporateEnabled = WC_Retailcrm_Customers::isCorporateEnabledInApi($this->retailcrm);
+            $isCorporateEnabled = $this->retailcrm->getCorporateEnabled();
             $uploader = new WC_Retailcrm_Customers(
                 $this->retailcrm,
                 $this->retailcrm_settings,
@@ -212,7 +212,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
-            $isCorporateEnabled = $forceRegularCustomer ? false : WC_Retailcrm_Customers::isCorporateEnabledInApi($this->retailcrm);
+            $isCorporateEnabled = $forceRegularCustomer ? false : $this->retailcrm->getCorporateEnabled();
             $wcOrder = wc_get_order($order_id);
             $this->processOrder($wcOrder);
             $wpUser = $wcOrder->get_user();
