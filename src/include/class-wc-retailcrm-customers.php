@@ -12,8 +12,16 @@ if (!class_exists('WC_Retailcrm_Customers')) :
     /**
      * Class WC_Retailcrm_Customers
      */
-    class WC_Retailcrm_Customers {
+    class WC_Retailcrm_Customers
+    {
+        /**
+         * Administrator role
+         */
+        const ADMIN_ROLE = 'administrator';
 
+        /**
+         * Every customer has this role
+         */
         const CUSTOMER_ROLE = 'customer';
 
         /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
@@ -32,9 +40,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         private $customerCorporate = array();
 
         /** @var array */
-        private $customerCorporateContact = array();
-
-        /** @var array */
         private $customerCorporateCompany = array();
 
         /** @var array */
@@ -43,8 +48,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * WC_Retailcrm_Customers constructor.
          *
-         * @param bool | WC_Retailcrm_Proxy $retailcrm
-         * @param array $retailcrm_settings
+         * @param bool | WC_Retailcrm_Proxy     $retailcrm
+         * @param array                         $retailcrm_settings
          * @param WC_Retailcrm_Customer_Address $customer_address
          */
         public function __construct($retailcrm = false, $retailcrm_settings, $customer_address)
@@ -107,6 +112,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * Upload customers to CRM
          *
          * @param array $ids
+         *
          * @return array mixed
          */
         public function customersUpload($ids = array())
@@ -116,9 +122,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             $users = get_users(array('include' => $ids));
-            $corporateEnabled = $this->isCorporateEnabled();
             $data_customers = array();
-            $data_corporate = array();
 
             foreach ($users as $user) {
                 if (!\in_array(self::CUSTOMER_ROLE, $user->roles)) {
@@ -126,13 +130,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 }
 
                 $customer = $this->wcCustomerGet($user->ID);
-                if ($corporateEnabled && static::customerPossiblyCorporate($customer)) {
-                    $data_corporate[] = $customer;
-                } else {
-                    $this->processCustomer($customer);
-                    $data_customers[] = $this->customer;
-                }
-
+                $this->processCustomer($customer);
                 $data_customers[] = $this->customer;
             }
 
@@ -141,11 +139,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             foreach ($data as $array_customers) {
                 $this->retailcrm->customersUpload($array_customers);
                 time_nanosleep(0, 250000000);
-            }
-
-            foreach ($data_corporate as $corporateCustomer) {
-                $this->createCorporateCustomer($corporateCustomer);
-                time_nanosleep(0, 50000000);
             }
 
             return $data;
@@ -159,38 +152,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * @return mixed
          */
         public function createCustomer($customer)
-        {
-            if ($this->isCorporateEnabled() && static::customerPossiblyCorporate($customer)) {
-                return $this->createCorporateCustomer($customer);
-            } else {
-                return $this->createRegularCustomer($customer);
-            }
-        }
-
-        /**
-         * Update customer in CRM
-         *
-         * @param $customer
-         *
-         * @return void|\WC_Customer
-         */
-        public function updateCustomer($customer)
-        {
-            if ($this->isCorporateEnabled() && static::customerPossiblyCorporate($customer)) {
-                return $this->updateCorporateCustomer($customer);
-            } else {
-                return $this->updateRegularCustomer($customer);
-            }
-        }
-
-        /**
-         * Create regular customer in CRM
-         *
-         * @param int | WC_Customer $customer
-         *
-         * @return mixed
-         */
-        public function createRegularCustomer($customer)
         {
             if (!$this->retailcrm) {
                 return null;
@@ -217,13 +178,13 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Edit regular customer in CRM
+         * Update customer in CRM
          *
-         * @param int $customer_id
+         * @param $customer_id
          *
-         * @return WC_Customer $customer
+         * @return void|\WC_Customer
          */
-        public function updateRegularCustomer($customer_id)
+        public function updateCustomer($customer_id)
         {
             if (!$this->retailcrm) {
                 return;
@@ -231,7 +192,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $customer = $this->wcCustomerGet($customer_id);
 
-            if ($customer->get_role() == self::CUSTOMER_ROLE){
+            if ($customer->get_role() == self::CUSTOMER_ROLE) {
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
             }
@@ -242,11 +203,14 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * Create corporate customer in CRM
          *
+         * @param int               $crmCustomerId
          * @param int | WC_Customer $customer
+         * @param \WC_Order         $order
          *
          * @return mixed
+         * @throws \Exception
          */
-        public function createCorporateCustomer($customer)
+        public function createCorporateCustomerForOrder($crmCustomerId, $customer, $order)
         {
             if (!$this->retailcrm) {
                 return null;
@@ -261,7 +225,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             if ($customer->get_role() == self::CUSTOMER_ROLE) {
-                $this->processCorporateCustomer($customer);
+                $this->processCorporateCustomer($crmCustomerId, $customer, $order);
                 $response = $this->retailcrm->customersCorporateCreate($this->customerCorporate);
 
                 return $this->fillCorporateCustomer($response);
@@ -271,197 +235,40 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Edit customer in CRM
-         *
-         * @param int $customer_id
-         *
-         * @return WC_Customer|void $customer
-         */
-        public function updateCorporateCustomer($customer_id)
-        {
-            if (!$this->retailcrm) {
-                return;
-            }
-
-            $customer = $this->wcCustomerGet($customer_id);
-
-            if ($customer->get_role() == self::CUSTOMER_ROLE){
-                $this->processCorporateCustomer($customer);
-                $response = $this->retailcrm->customersCorporateGet($this->customerCorporate['externalId']);
-
-                $this->fillCorporateCustomer($response);
-            }
-
-            return $customer;
-        }
-
-        /**
          * Fills corporate customer with required data after customer was created or updated.
          * Create or update response after sending customer must be passed.
          *
          * @param \WC_Retailcrm_Response $response
          *
-         * @return \WC_Retailcrm_Customer_Corporate_Response|null
+         * @return string|int|null
          */
         protected function fillCorporateCustomer($response)
         {
-            $customerData = array();
-            $addressId = 0;
-            $companyId = 0;
-            $contactId = 0;
-            $contactExternalId = '';
-
-            if (!$response->isSuccessful()) {
+            if (!$response->isSuccessful() || $response->isSuccessful() && !$response->offsetExists('id')) {
                 return null;
             }
 
-            if ($response->offsetExists('customerCorporate') && isset($response['customerCorporate']['id'])) {
-                $customerData = $response['customerCorporate'];
-            } else {
-                $customerData = $response;
-            }
+            $customerId = $response['id'];
+            $response = $this->retailcrm->customersCorporateAddressesCreate(
+                $customerId,
+                $this->customerCorporateAddress,
+                'id',
+                $this->retailcrm->getSingleSiteForKey()
+            );
 
-            if (!empty($customerData['id'])) {
-                $customerData = $this->retailcrm->customersCorporateGet($customerData['id'], 'id');
-
-                if ($customerData->isSuccessful() && isset($customerData['customerCorporate'])) {
-                    $this->customerCorporate = $customerData['customerCorporate'];
-                    $customerData = $customerData['customerCorporate'];
-
-                    // Create main address or obtain existing address
-                    if (empty($customerData['mainAddress'])) {
-                        $addressCreateResponse = $this->retailcrm->customersCorporateAddressesCreate(
-                            $customerData['id'],
-                            $this->customerCorporateAddress,
-                            'id'
-                        );
-
-                        if ($addressCreateResponse->isSuccessful() && isset($addressCreateResponse['id'])) {
-                            $this->customerCorporateAddress['id'] = $addressCreateResponse['id'];
-                            $addressId = (int) $addressCreateResponse['id'];
-                        }
-                    } else {
-                        $addressEditResponse = $this->retailcrm->customersCorporateAddressesEdit(
-                            $customerData['id'],
-                            $customerData['mainAddress']['id'],
-                            $this->customerCorporateAddress,
-                            'id',
-                            'id'
-                        );
-
-                        if ($addressEditResponse->isSuccessful() && isset($addressEditResponse['id'])) {
-                            $this->customerCorporateAddress['id'] = $addressEditResponse['id'];
-                            $addressId = (int) $addressEditResponse['id'];
-                        }
-                    }
-
-                    // Update address in company if address was obtained / created
-                    if (!empty($this->customerCorporateCompany)
-                        && isset($this->customerCorporateAddress['id'])
-                    ) {
-                        $this->customerCorporateCompany['address'] = array(
-                            'id' => $this->customerCorporateAddress['id']
-                        );
-                    }
-
-                    // Create main company or obtain existing
-                    if (empty($customerData['mainCompany'])) {
-                        $companyCreateResponse = $this->retailcrm->customersCorporateCompaniesCreate(
-                            $customerData['id'],
-                            $this->customerCorporateCompany,
-                            'id'
-                        );
-
-                        if ($companyCreateResponse->isSuccessful() && isset($companyCreateResponse['id'])) {
-                            $this->customerCorporateCompany['id'] = $companyCreateResponse['id'];
-                            $companyId = (int) $companyCreateResponse['id'];
-                        }
-                    } else {
-                        $companyEditResponse = $this->retailcrm->customersCorporateCompaniesEdit(
-                            $customerData['id'],
-                            $customerData['mainCompany']['id'],
-                            $this->customerCorporateCompany,
-                            'id',
-                            'id'
-                        );
-
-                        if ($companyEditResponse->isSuccessful() && isset($companyEditResponse['id'])) {
-                            $this->customerCorporateCompany['id'] = $companyEditResponse['id'];
-                            $companyId = (int) $companyEditResponse['id'];
-                        }
-                    }
-
-                    // Create main customer or obtain existing
-                    if (empty($customerData['mainCustomerContact'])) {
-                        $contactCustomerCreated = false;
-                        $contactCustomerGetResponse =
-                            $this->retailcrm->customersGet($this->customerCorporateContact['externalId']);
-
-                        if ($contactCustomerGetResponse->isSuccessful() && isset($contactCustomerGetResponse['customer'])) {
-                            $this->customerCorporateContact['id'] = $contactCustomerGetResponse['customer']['id'];
-                            $this->retailcrm->customersEdit($this->customerCorporateContact, 'id');
-                            $contactId = (int) $contactCustomerGetResponse['customer']['id'];
-                            $contactExternalId = $this->customerCorporateContact['externalId'];
-
-                            $contactCustomerCreated = true;
-                        } else {
-                            $contactCustomerCreateResponse = $this->retailcrm->customersCreate($this->customerCorporateContact);
-
-                            if ($contactCustomerCreateResponse->isSuccessful() && isset($contactCustomerCreateResponse['id'])) {
-                                $contactId = (int) $contactCustomerCreateResponse['id'];
-                                $contactExternalId = $this->customerCorporateContact['externalId'];
-                                $contactCustomerCreated = true;
-                            }
-                        }
-
-                        if ($contactCustomerCreated) {
-                            $contactPair = array(
-                                'isMain' => true,
-                                'customer' => array(
-                                    'id' => $contactId,
-                                    'externalId' => $contactExternalId,
-                                    'site' => $this->retailcrm->getSingleSiteForKey()
-                                )
-                            );
-
-                            // Update company in contact in company was obtained / created
-                            if (!empty($this->customerCorporateContact)
-                                && isset($this->customerCorporateCompany['id'])
-                            ) {
-                                $contactPair['companies'] = array(
-                                    array(
-                                        'company' => array(
-                                            'id' => $this->customerCorporateCompany['id']
-                                        )
-                                    )
-                                );
-                            }
-
-                            $this->retailcrm->customersCorporateContactsCreate(
-                                $customerData['id'],
-                                $contactPair,
-                                'id'
-                            );
-                        }
-                    } else {
-                        $this->customerCorporateContact['id'] = $customerData['mainCustomerContact']['customer']['id'];
-                        $this->retailcrm->customersEdit($this->customerCorporateContact, 'id');
-                        $contactId = (int) $this->customerCorporateContact['id'];
-                        $contactExternalId = $this->customerCorporateContact['externalId'];
-                    }
-                }
-
-                return new WC_Retailcrm_Customer_Corporate_Response(
-                    isset($this->customerCorporate['id']) ? $this->customerCorporate['id'] : 0,
-                    $this->customerCorporate['externalId'],
-                    $addressId,
-                    $companyId,
-                    $contactId,
-                    $contactExternalId
+            if ($response->isSuccessful() && $response->offsetExists('id')) {
+                $this->customerCorporateCompany['address'] = array(
+                    'id' => $response['id'],
+                );
+                $this->retailcrm->customersCorporateCompaniesCreate(
+                    $customerId,
+                    $this->customerCorporateCompany,
+                    'id',
+                    $this->retailcrm->getSingleSiteForKey()
                 );
             }
 
-            return null;
+            return $customerId;
         }
 
         /**
@@ -489,64 +296,53 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             if ($customer->get_billing_phone()) {
                 $data_customer['phones'][] = array(
-                   'number' => $customer->get_billing_phone()
+                    'number' => $customer->get_billing_phone()
                 );
             }
 
-            $this->customer = apply_filters('retailcrm_process_customer', WC_Retailcrm_Plugin::clearArray($data_customer), $customer);
+            $this->customer = apply_filters(
+                'retailcrm_process_customer',
+                WC_Retailcrm_Plugin::clearArray($data_customer),
+                $customer
+            );
         }
 
         /**
          * Process corporate customer
          *
+         * @param int         $crmCustomerId
          * @param WC_Customer $customer
+         * @param \WC_Order   $order
          *
          * @return void
          */
-        protected function processCorporateCustomer($customer)
+        protected function processCorporateCustomer($crmCustomerId, $customer, $order)
         {
-            $createdAt = $customer->get_date_created();
-            $firstName = $customer->get_first_name();
-            $data_contact = array(
-                'createdAt' => $createdAt->date('Y-m-d H:i:s'),
-                'firstName' => $firstName ? $firstName : $customer->get_username(),
-                'lastName' => $customer->get_last_name(),
-                'email' => $customer->get_email(),
-                'address' => $this->customer_address->build($customer)->get_data()
-            );
             $data_company = array(
                 'isMain' => true,
-                'name' => $customer->get_billing_company()
+                'name' => $order->get_billing_company()
             );
+
             $data_customer = array(
-                'externalId' => $customer->get_id(),
-                'nickName' => $data_contact['firstName']
+                'nickName' => $customer->get_billing_company(),
+                'contact' => array(
+                    'id' => $crmCustomerId,
+                    'isMain' => true
+                )
             );
 
-            if ($customer->get_id() > 0) {
-                $data_contact['externalId'] = static::getContactPersonExternalId($customer->get_id());
-            }
-
-            if ($customer->get_billing_phone()) {
-                $data_contact['phones'][] = array(
-                   'number' => $customer->get_billing_phone()
-                );
-            }
+            $orderAddress = new WC_Retailcrm_Order_Address();
+            $address = $orderAddress->setAddressType('billing')->build($order)->get_data();
 
             $this->customerCorporate = apply_filters(
                 'retailcrm_process_customer_corporate',
                 WC_Retailcrm_Plugin::clearArray($data_customer),
                 $customer
             );
-            $this->customerCorporateContact = apply_filters(
-                'retailcrm_process_customer_corporate_contact',
-                WC_Retailcrm_Plugin::clearArray($data_contact),
-                $customer
-            );
             $this->customerCorporateAddress = apply_filters(
                 'retailcrm_process_customer_corporate_address',
                 WC_Retailcrm_Plugin::clearArray(array_merge(
-                    $data_contact['address'],
+                    $address,
                     array('isMain' => true)
                 )),
                 $customer
@@ -579,7 +375,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
                     $customer = reset($search['customers']);
                 } else {
-                    $customer = $search['customer'];
+                    $customer = !empty($search['customer']) ? $search['customer'] : false;
                 }
 
                 return $customer;
@@ -589,6 +385,27 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
+         * Returns customer data by externalId or by email, returns false in case of failure
+         *
+         * @param $customerExternalId
+         * @param $customerEmailOrPhone
+         *
+         * @return array|bool
+         */
+        public function findCustomerEmailOrId($customerExternalId, $customerEmailOrPhone)
+        {
+            $customer = $this->searchCustomer(array('externalId' => $customerExternalId));
+
+            if (!$customer) {
+                $customer = $this->searchCustomer(array('email' => $customerEmailOrPhone));
+            }
+
+            return $customer;
+        }
+
+        /**
+         * Search by provided filter, returns first found customer
+         *
          * @param array $filter
          *
          * @return bool|array
@@ -599,17 +416,21 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $search = $this->retailcrm->customersCorporateGet($filter['externalId']);
             } elseif (isset($filter['email'])) {
                 $search = $this->retailcrm->customersCorporateList(array('email' => $filter['email']));
+            } elseif (!empty($filter)) {
+                $search = $this->retailcrm->customersCorporateList($filter);
             }
 
-            if ($search->isSuccessful()) {
+            if (isset($search) && $search->isSuccessful()) {
                 if (isset($search['customersCorporate'])) {
                     if (empty($search['customersCorporate'])) {
                         return false;
                     }
 
                     $customer = reset($search['customersCorporate']);
-                } else {
+                } elseif (isset($search['customerCorporate'])) {
                     $customer = $search['customerCorporate'];
+                } else {
+                    $customer = false;
                 }
 
                 return $customer;
@@ -626,7 +447,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function buildCustomerFromOrderData($order)
         {
-            $new_customer = new WC_Customer;
+            $new_customer = new WC_Customer();
 
             foreach ($order->get_address('billing') as $prop => $value) {
                 $new_customer->{'set_billing_' . $prop}($value);
@@ -644,6 +465,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * @param int $customer_id
          *
          * @return WC_Customer
+         * @throws \Exception
          */
         public function wcCustomerGet($customer_id)
         {
@@ -656,21 +478,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         public function getCustomer()
         {
             return $this->customer;
-        }
-
-        public static function getContactPersonExternalId($wpCustomerId)
-        {
-            return 'wpcontact_' . $wpCustomerId;
-        }
-
-        public static function isContactPersonExternalId($wpCustomerId)
-        {
-            return strpos($wpCustomerId, 'wpcontact_') !== false;
-        }
-
-        public static function getCustomerIdFromContact($contactExternalId)
-        {
-            return str_ireplace('wpcontact_', '', $contactExternalId);
         }
     }
 endif;
