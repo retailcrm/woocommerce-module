@@ -12,6 +12,21 @@
 class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
 {
     protected $filter_name = 'order_address';
+    protected $address_type = 'shipping';
+
+    /**
+     * Sets address type to work with
+     *
+     * @param string $addressType
+     *
+     * @return \WC_Retailcrm_Order_Address
+     */
+    public function setAddressType($addressType = 'shipping')
+    {
+        $this->address_type = $addressType;
+
+        return $this;
+    }
 
     /**
      * @param WC_Order $order
@@ -20,7 +35,7 @@ class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
      */
     public function build($order)
     {
-        $address = $order->get_address('shipping');
+        $address = $order->get_address($this->address_type);
 
         if (!empty($address)) {
             $data = array(

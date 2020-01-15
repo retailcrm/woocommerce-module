@@ -11,12 +11,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
     /**
      * Class WC_Retailcrm_History
+     * @todo Make changes for correct history with corporate clients!
      */
     class WC_Retailcrm_History
     {
         protected $startDateOrders;
         protected $startDateCustomers;
-        protected $startDateCustomersCorporate;
         protected $startDate;
         protected $retailcrm_settings;
 
@@ -52,7 +52,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $this->startDate = new DateTime(date('Y-m-d H:i:s', strtotime('-1 days', strtotime(date('Y-m-d H:i:s')))));
             $this->startDateOrders = $this->startDate;
             $this->startDateCustomers = $this->startDate;
-            $this->startDateCustomersCorporate = $this->startDate;
         }
 
         /**
@@ -64,7 +63,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         {
             $orders_since_id = get_option('retailcrm_orders_history_since_id');
             $customers_since_id = get_option('retailcrm_customers_history_since_id');
-            $customers_corporate_since_id = get_option('retailcrm_customers_corporate_history_since_id');
 
             if (!$orders_since_id && isset($this->retailcrm_settings['history_orders'])) {
                 $this->startDateOrders = new DateTime($this->retailcrm_settings['history_orders']);
@@ -74,84 +72,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_orders']);
             }
 
-            if (!$customers_corporate_since_id && isset($this->retailcrm_settings['history_customers_corporate'])) {
-                $this->startDateCustomersCorporate = new DateTime($this->retailcrm_settings['history_orders']);
-            }
-
             $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
-
-            if ($this->retailcrm->getCorporateEnabled()) {
-                $this->customersCorporateHistory($this->startDateCustomersCorporate->format('Y-m-d H:i:s'), $customers_corporate_since_id);
-            }
-
             $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
-        }
-
-        protected function customersCorporateHistory($date, $since_id)
-        {
-            if ($since_id) {
-                $response = $this->retailcrm->customersCorporateHistory(array('sinceId' => $since_id));
-            } else {
-                $response = $this->retailcrm->customersCorporateHistory(array('startDate' => $date));
-            }
-
-            if ($response->isSuccessful()) {
-                if (empty($response['history'])) {
-                    return;
-                }
-
-                $history = $response['history'];
-                $end_change = end($history);
-                $new_since_id = $end_change['id'];
-
-                // Mapped history fields to WP_User metadata fields
-                $mapping = array(
-                    'company.name' => array(
-                        'billing_company',
-                        'shipping_company',
-                    ),
-                    'address.region' => 'billing_state',
-                    'address.index' => 'billing_postcode',
-                    'address.country' => 'billing_country',
-                    'address.city' => 'billing_city'
-                );
-
-                foreach ($history as $record) {
-                    if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
-                        continue;
-                    }
-
-                    if (isset($record['customer']['externalId'])) {
-                        $customer = new WC_Customer($record['customer']['externalId']);
-
-                        if ($customer->get_id() == 0) {
-                            continue;
-                        }
-
-                        WC_Retailcrm_Plugin::$history_run = true;
-
-                        if (isset($mapping[$record['field']]) && isset($record['customer']['externalId'])) {
-                            if ($record['newValue']) {
-                                if (is_array($mapping[$record['field']])) {
-                                    foreach ($mapping[$record['field']] as $mappingField) {
-                                        update_user_meta($record['customer']['externalId'], $mappingField, $record['newValue']);
-                                    }
-                                } else {
-                                    update_user_meta($record['customer']['externalId'], $mapping[$record['field']], $record['newValue']);
-                                }
-                            }
-                        }
-
-                        WC_Retailcrm_Plugin::$history_run = false;
-                    }
-                }
-            }
-
-            if (empty($response)) {
-                return;
-            }
-
-            update_option('retailcrm_customers_corporate_history_since_id', $new_since_id);
         }
 
         /**
@@ -196,13 +118,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     if (isset($record['customer']['externalId'])) {
-                        if (WC_Retailcrm_Customers::isContactPersonExternalId($record['customer']['externalId'])) {
-                            $customer = new WC_Customer(
-                                WC_Retailcrm_Customers::getCustomerIdFromContact($record['customer']['externalId'])
-                            );
-                        } else {
-                            $customer = new WC_Customer($record['customer']['externalId']);
-                        }
+                        $customer = new WC_Customer($record['customer']['externalId']);
 
                         if ($customer->get_id() == 0) {
                             continue;
