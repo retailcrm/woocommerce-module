@@ -206,11 +206,33 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $ids = false;
 
             if (isset($_GET['order_ids_retailcrm'])) {
+                $appendix = array();
                 $ids = explode(',', $_GET['order_ids_retailcrm']);
+
+                foreach ($ids as $key => $id) {
+                    if (stripos($id, '-') !== false) {
+                        $idSplit = explode('-', $id);
+
+                        if (count($idSplit) == 2) {
+                            $expanded = array();
+                            $first = (int) $idSplit[0];
+                            $last = (int) $idSplit[1];
+
+                            for ($i = $first; $i <= $last; $i++) {
+                                $expanded[] = $i;
+                            }
+
+                            $appendix = array_merge($appendix, $expanded);
+                            unset($ids[$key]);
+                        }
+                    }
+                }
+
+                $ids = array_merge($ids, $appendix);
             }
 
             if ($ids) {
-                $this->orders->ordersUpload($ids, true);
+                $this->orders->ordersUpload(array_unique($ids), true);
             }
         }
 

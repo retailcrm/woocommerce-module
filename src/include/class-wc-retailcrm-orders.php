@@ -62,10 +62,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         /**
          * Upload orders to CRM
          *
-         * @param bool $withCustomers
+         * @param bool  $withCustomers
          * @param array $include
+         *
          * @return array $uploadOrders | null
-         * @todo Implement correct logic for corporate customers
+         * @throws \Exception
          */
         public function ordersUpload($include = array(), $withCustomers = false)
         {
@@ -86,12 +87,24 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 'include' => $include
             ));
 
-            $orders_data = array();
+            $ordersData = array();
+            $corporateUploadErrors = array();
 
             foreach ($orders as $data_order) {
                 $order = wc_get_order($data_order->ID);
-                $this->processOrder($order);
+
+                if ($this->retailcrm->getCorporateEnabled() && self::isCorporateOrder($order)) {
+                    $errorMessage = $this->orderCreate($data_order->ID);
+
+                    if (is_string($errorMessage)) {
+                        $corporateUploadErrors[$data_order->ID] = $errorMessage;
+                    }
+
+                    continue;
+                }
+
                 $customer = $order->get_user();
+                $this->processOrder($order);
                 $customers = array();
 
                 if ($customer != false) {
@@ -102,7 +115,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     }
                 }
 
-                $orders_data[] = $this->order;
+                $ordersData[] = $this->order;
             }
 
             if ($withCustomers === true && !empty($customers)) {
@@ -114,7 +127,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
-            $uploadOrders = array_chunk(WC_Retailcrm_Plugin::clearArray($orders_data), 50);
+            $uploadOrders = array_chunk(WC_Retailcrm_Plugin::clearArray($ordersData), 50);
 
             foreach ($uploadOrders as $uploadOrder) {
                 $this->retailcrm->ordersUpload($uploadOrder);
@@ -125,11 +138,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         }
 
         /**
-         * Create order
+         * Create order. Returns wc_get_order data or error string.
          *
          * @param      $order_id
          *
-         * @return mixed
+         * @return bool|WC_Order|WC_Order_Refund|string
          * @throws \Exception
          */
         public function orderCreate($order_id)
@@ -143,6 +156,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $wpUser = $wcOrder->get_user();
 
             if ($wpUser instanceof WP_User) {
+                if (!WC_Retailcrm_Customers::isCustomer($wpUser)) {
+                    return $wcOrder;
+                }
+
                 $wpUserId = (int) $wpUser->get('ID');
                 $this->fillOrderCreate($wpUserId, $wpUser->get('email'), $wcOrder);
             } else {
@@ -150,7 +167,33 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $this->fillOrderCreate(0, $wcCustomer->get_email(), $wcOrder);
             }
 
-            $this->retailcrm->ordersCreate($this->order);
+            try {
+                $response = $this->retailcrm->ordersCreate($this->order);
+
+                if ($response instanceof WC_Retailcrm_Response) {
+                    if ($response->isSuccessful()) {
+                        return $wcOrder;
+                    } else {
+                        if ($response->offsetExists('error')) {
+                            return $response['error'];
+                        } elseif ($response->offsetExists('errors') && is_array($response['errors'])) {
+                            $errorMessage = '';
+
+                            foreach ($response['errors'] as $error) {
+                                $errorMessage .= $error . ' >';
+                            }
+
+                            if (strlen($errorMessage) > 2) {
+                                return substr($errorMessage, 0, strlen($errorMessage) - 2);
+                            }
+
+                            return $errorMessage;
+                        }
+                    }
+                }
+            } catch (InvalidArgumentException $exception) {
+                return $exception->getMessage();
+            }
 
             return $wcOrder;
         }
@@ -181,14 +224,24 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if ($this->retailcrm->getCorporateEnabled() && static::isCorporateOrder($wcOrder)) {
-                $crmCorporate = $this->customers->searchCorporateCustomer(array(
+                $crmCorporate = array();
+                $crmCorporateList = $this->customers->searchCorporateCustomer(array(
                     'contactIds' => array($foundCustomerId)
-                ));
+                ), true);
 
-                // TODO Incorrect logic here: it makes duplicates of corporate clients. Fix that.
-                if (empty($crmCorporate) || (!empty($crmCorporate)
-                    && isset($crmCorporate['mainCompany'])
-                    && isset($crmCorporate['mainCompany']['name'])
+                foreach ($crmCorporateList as $corporate) {
+                    if (!empty($corporate)
+                        && !empty($corporate['mainCompany'])
+                        && isset($corporate['mainCompany']['name'])
+                        && $corporate['mainCompany']['name'] == $wcOrder->get_billing_company()
+                    ) {
+                        $crmCorporate = $corporate;
+
+                        break;
+                    }
+                }
+
+                if (empty($crmCorporate) || (!empty($crmCorporate['mainCompany'])
                     && $crmCorporate['mainCompany']['name'] != $wcOrder->get_billing_company())
                 ) {
                     $corporateId = $this->customers->createCorporateCustomerForOrder(
