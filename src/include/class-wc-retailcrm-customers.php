@@ -90,25 +90,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Returns true if provided customer has company name in billing address.
-         * Note: customer can have company name in address which was added after synchronization.
-         * In that case customer will not be corporate, but this method will return true.
-         *
-         * @param \WC_Customer $customer
-         *
-         * @return bool
-         */
-        public static function customerPossiblyCorporate($customer)
-        {
-            if (!($customer instanceof WC_Customer)) {
-                return false;
-            }
-
-            return !empty($customer->get_billing_company());
-        }
-
-
-        /**
          * Upload customers to CRM
          *
          * @param array $ids
@@ -125,7 +106,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $data_customers = array();
 
             foreach ($users as $user) {
-                if (!\in_array(self::CUSTOMER_ROLE, $user->roles)) {
+                if (!static::isCustomer($user)) {
                     continue;
                 }
 
@@ -165,7 +146,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 return null;
             }
 
-            if ($customer->get_role() == self::CUSTOMER_ROLE) {
+            if (self::isCustomer($customer)) {
                 $this->processCustomer($customer);
                 $response = $this->retailcrm->customersCreate($this->customer);
 
@@ -192,7 +173,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $customer = $this->wcCustomerGet($customer_id);
 
-            if ($customer->get_role() == self::CUSTOMER_ROLE) {
+            if (self::isCustomer($customer)) {
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
             }
@@ -224,7 +205,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 return null;
             }
 
-            if ($customer->get_role() == self::CUSTOMER_ROLE) {
+            if (self::isCustomer($customer)) {
                 $this->processCorporateCustomer($crmCustomerId, $customer, $order);
                 $response = $this->retailcrm->customersCorporateCreate($this->customerCorporate);
 
@@ -324,7 +305,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             );
 
             $data_customer = array(
-                'nickName' => $customer->get_billing_company(),
+                'nickName' => $order->get_billing_company(),
                 'contact' => array(
                     'id' => $crmCustomerId,
                     'isMain' => true
@@ -412,10 +393,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * Search by provided filter, returns first found customer
          *
          * @param array $filter
+         * @param bool  $returnGroup Return all customers for group filter instead of first
          *
          * @return bool|array
          */
-        public function searchCorporateCustomer($filter)
+        public function searchCorporateCustomer($filter, $returnGroup = false)
         {
             if (isset($filter['externalId'])) {
                 $search = $this->retailcrm->customersCorporateGet($filter['externalId']);
@@ -431,7 +413,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                         return false;
                     }
 
-                    $customer = reset($search['customersCorporate']);
+                    if ($returnGroup) {
+                        return $search['customersCorporate'];
+                    } else {
+                        $customer = reset($search['customersCorporate']);
+                    }
                 } elseif (isset($search['customerCorporate'])) {
                     $customer = $search['customerCorporate'];
                 } else {
@@ -483,6 +469,25 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         public function getCustomer()
         {
             return $this->customer;
+        }
+
+        /**
+         * Returns true if provided WP_User or WC_Customer should be uploaded to CRM
+         *
+         * @param \WC_Customer|\WP_User $user
+         *
+         * @return bool
+         */
+        public static function isCustomer($user)
+        {
+            if ($user instanceof WC_Customer) {
+                return $user->get_role() == self::CUSTOMER_ROLE || $user->get_role() == self::ADMIN_ROLE;
+            } elseif ($user instanceof WP_User) {
+                return in_array(self::CUSTOMER_ROLE, $user->roles)
+                    || in_array(self::ADMIN_ROLE, $user->roles);
+            }
+
+            return false;
         }
     }
 endif;

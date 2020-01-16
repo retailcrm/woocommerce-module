@@ -522,13 +522,15 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return false;
             }
 
+            if (empty($order['customer']['externalId']))
+
             $args = array(
                 'status' => isset($options[$order['status']])
                     ? $options[$order['status']]
                     : 'processing',
                 'customer_id' => isset($order['customer']['externalId'])
                     ? $order['customer']['externalId']
-                    : null
+                    : (isset($order['contact']['externalId']) ? $order['contact']['externalId'] : null)
             );
 
             $wc_order = wc_create_order($args);
@@ -536,65 +538,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $address = isset($order['customer']['address']) ? $order['customer']['address'] : array();
             $companyName = '';
 
-            if (isset($order['customer']['type']) && $order['customer']['type'] == 'customer_corporate') {
-                if (isset($order['customer']['mainCustomerContact'])
-                    && isset($order['customer']['mainCustomerContact']['customer']['id'])
-                ) {
-                    $customerResponse = $this->retailcrm->customersGet(
-                        $order['customer']['mainCustomerContact']['customer']['id'],
-                        'id'
-                    );
-
-                    if ($customerResponse instanceof WC_Retailcrm_Response && $customerResponse->offsetExists('customer')) {
-                        $customer = $customerResponse['customer'];
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-
-                if (isset($order['customer']['mainAddress']) && isset($order['customer']['mainAddress']['id'])) {
-                    $response = $this->retailcrm->customersCorporateAddresses(
-                        $order['customer']['id'],
-                        array('ids' => array($order['customer']['mainAddress']['id'])),
-                        null,
-                        null,
-                        'id'
-                    );
-
-                    if ($response instanceof WC_Retailcrm_Response && $response->offsetExists('addresses')) {
-                        $addresses = $response['addresses'];
-                        $address = reset($addresses);
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-
-                if (isset($order['customer']['mainCompany']) && isset($order['customer']['mainCompany']['id'])) {
-                    $response = $this->retailcrm->customersCorporateCompanies(
-                        $order['customer']['id'],
-                        array('ids' => array($order['customer']['mainCompany']['id'])),
-                        null,
-                        null,
-                        'id'
-                    );
-
-                    if ($response instanceof WC_Retailcrm_Response && $response->offsetExists('companies')) {
-                        $companies = $response['companies'];
-                        $company = reset($companies);
-
-                        if (isset($company['name']) && !empty($company['name'])) {
-                            $companyName = $company['name'];
-                        }
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+            if (isset($order['customer']['type'])
+                && $order['customer']['type'] == 'customer_corporate'
+                && !empty($order['customer']['mainCompany'])
+                && isset($order['customer']['mainCompany']['name'])
+            ) {
+                $companyName = $order['customer']['mainCompany']['name'];
             }
 
             $address_shipping = array(
