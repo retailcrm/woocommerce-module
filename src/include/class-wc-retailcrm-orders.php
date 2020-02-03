@@ -311,15 +311,17 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     'contactIds' => array($foundCustomerId)
                 ), true);
 
-                foreach ($crmCorporateList as $corporate) {
-                    if (!empty($corporate)
-                        && !empty($corporate['mainCompany'])
-                        && isset($corporate['mainCompany']['name'])
-                        && $corporate['mainCompany']['name'] == $wcOrder->get_billing_company()
-                    ) {
-                        $crmCorporate = $corporate;
+                if (!empty($crmCorporateList)) {
+                    foreach ($crmCorporateList as $corporate) {
+                        if (!empty($corporate)
+                            && !empty($corporate['mainCompany'])
+                            && isset($corporate['mainCompany']['name'])
+                            && $corporate['mainCompany']['name'] == $wcOrder->get_billing_company()
+                        ) {
+                            $crmCorporate = $corporate;
 
-                        break;
+                            break;
+                        }
                     }
                 }
 
