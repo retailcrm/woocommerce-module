@@ -258,11 +258,17 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * @param WC_Customer $customer
          *
          * @return void
+         * @throws \Exception
          */
         protected function processCustomer($customer)
         {
             $createdAt = $customer->get_date_created();
             $firstName = $customer->get_first_name();
+
+            if (empty($createdAt)) {
+                $createdAt = new WC_DateTime();
+            }
+
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
