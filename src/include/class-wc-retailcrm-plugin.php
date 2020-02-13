@@ -53,6 +53,12 @@ class WC_Retailcrm_Plugin {
     }
 
     public function activate() {
+        if (!class_exists( 'WC_Integration' ) ) {
+            add_action('admin_notices', array(new WC_Integration_Retailcrm(), 'woocommerce_missing_notice'));
+
+            return;
+        }
+
         if (!class_exists('WC_Retailcrm_Icml')) {
             require_once (dirname(__FILE__) . '/class-wc-retailcrm-icml.php');
         }
