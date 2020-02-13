@@ -130,9 +130,12 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          *
          * @param int | WC_Customer $customer
          *
+         * @param \WC_Order|null    $order
+         *
          * @return mixed
+         * @throws \Exception
          */
-        public function createCustomer($customer)
+        public function createCustomer($customer, $order = null)
         {
             if (!$this->retailcrm) {
                 return null;
@@ -147,7 +150,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             if (self::isCustomer($customer)) {
-                $this->processCustomer($customer);
+                $this->processCustomer($customer, $order);
                 $response = $this->retailcrm->customersCreate($this->customer);
 
                 if ((!empty($response) && $response->isSuccessful()) && isset($response['id'])) {
@@ -255,15 +258,31 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * Process customer
          *
-         * @param WC_Customer $customer
+         * @param WC_Customer   $customer
+         * @param WC_Order|null $order
          *
          * @return void
          * @throws \Exception
          */
-        protected function processCustomer($customer)
+        protected function processCustomer($customer, $order = null)
         {
             $createdAt = $customer->get_date_created();
             $firstName = $customer->get_first_name();
+            $lastName = $customer->get_last_name();
+
+            if (empty($firstName) && empty($lastName) && $order instanceof WC_Order) {
+                $firstName = $order->get_billing_first_name();
+                $lastName = $order->get_billing_last_name();
+
+                if (empty($firstName) && empty($lastName)) {
+                    $firstName = $order->get_shipping_first_name();
+                    $lastName = $order->get_shipping_last_name();
+                }
+
+                if (empty($firstName)) {
+                    $firstName = $customer->get_username();
+                }
+            }
 
             if (empty($createdAt)) {
                 $createdAt = new WC_DateTime();
@@ -271,10 +290,17 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
+<<<<<<< HEAD
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),
                 'email' => $customer->get_billing_email(),
                 'address' => $this->customer_address->build($customer)->get_data()
+=======
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'email' => $customer->get_email(),
+                'address' => $this->customer_address->build($customer, $order)->get_data()
+>>>>>>> extract customer data from order for guests
             );
 
             if ($customer->get_id() > 0) {
