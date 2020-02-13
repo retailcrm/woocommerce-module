@@ -241,6 +241,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                             break;
                         }
                     }
+                } else {
+                    $crmCorporate = $this
+                        ->customers
+                        ->findCorporateCustomerByMainCompany($wcOrder->get_billing_company());
                 }
 
                 if (empty($crmCorporate) || (!empty($crmCorporate['mainCompany'])
