@@ -213,7 +213,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $foundCustomer = $this->customers->findCustomerEmailOrId($wcCustomerId, $wcCustomerEmail);
 
             if (empty($foundCustomer)) {
-                $foundCustomerId = $this->customers->createCustomer($wcCustomerId);
+                $foundCustomerId = $this->customers->createCustomer($wcCustomerId, $wcOrder);
 
                 if (!empty($foundCustomerId)) {
                     $this->order['customer']['id'] = $foundCustomerId;

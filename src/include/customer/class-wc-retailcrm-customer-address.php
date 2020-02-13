@@ -17,19 +17,30 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
     protected $filter_name = 'customer_address';
 
     /**
-     * @param WC_Customer $customer
+     * @param WC_Customer    $customer
+     * @param \WC_Order|null $order
      *
      * @return self
      */
-    public function build($customer)
+    public function build($customer, $order = null)
     {
-        $data = array(
-            'index' => $customer->get_billing_postcode(),
-            'countryIso' => $customer->get_billing_country(),
-            'region' => $customer->get_billing_state(),
-            'city' => $customer->get_billing_city(),
-            'text' => $customer->get_billing_address_1() . ', ' . $customer->get_billing_address_2()
-        );
+        if ($order instanceof WC_Order && empty($customer->get_billing_address())) {
+            $data = array(
+                'index' => $order->get_billing_postcode(),
+                'countryIso' => $order->get_billing_country(),
+                'region' => $order->get_billing_state(),
+                'city' => $order->get_billing_city(),
+                'text' => $order->get_billing_address_1() . ', ' . $order->get_billing_address_2()
+            );
+        } else {
+            $data = array(
+                'index' => $customer->get_billing_postcode(),
+                'countryIso' => $customer->get_billing_country(),
+                'region' => $customer->get_billing_state(),
+                'city' => $customer->get_billing_city(),
+                'text' => $customer->get_billing_address_1() . ', ' . $customer->get_billing_address_2()
+            );
+        }
 
         $this->set_data_fields($data);
 
