@@ -21,6 +21,8 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
      * Class WC_Integration_Retailcrm
      */
     class WC_Integration_Retailcrm {
+        const WOOCOMMERCE_SLUG = 'woocommerce';
+        const WOOCOMMERCE_PLUGIN_PATH = 'woocommerce/woocommerce.php';
 
         private static $instance;
 
@@ -56,7 +58,30 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         }
 
         public function woocommerce_missing_notice() {
-            echo '<div class="error"><p>Woocommerce is not installed</p></div>';
+            if (static::isWooCommerceInstalled()) {
+                if (!is_plugin_active(static::WOOCOMMERCE_PLUGIN_PATH)) {
+                    echo '
+                    <div class="error">
+                        <p>
+                            Activate WooCommerce in order to enable retailCRM integration!
+                            <a href="' . wp_nonce_url(admin_url('plugins.php')) . '" aria-label="Activate WooCommerce">
+                                Click here to open plugins manager
+                            </a>
+                        </p>
+                    </div>
+                    ';
+                }
+            } else {
+                echo '
+                <div class="error">
+                    <p>
+                        <a href="'
+                    . static::generatePluginInstallationUrl(static::WOOCOMMERCE_SLUG)
+                    . '" aria-label="Install WooCommerce">Install WooCommerce</a> in order to enable retailCRM integration!
+                    </p>
+                </div>
+                ';
+            }
         }
 
         public function load_plugin_textdomain() {
@@ -73,6 +98,51 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function add_integration( $integrations ) {
             $integrations[] = 'WC_Retailcrm_Base';
             return $integrations;
+        }
+
+        /**
+         * Returns true if WooCommerce was found in plugin cache
+         *
+         * @return bool
+         */
+        private function isWooCommerceInstalled()
+        {
+            $plugins = wp_cache_get( 'plugins', 'plugins' );
+
+            if (!$plugins) {
+                $plugins = get_plugins();
+            } elseif (isset($plugins[''])) {
+                $plugins = $plugins[''];
+            }
+
+            if (!isset($plugins[static::WOOCOMMERCE_PLUGIN_PATH])) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Generate plugin installation url
+         *
+         * @param $pluginSlug
+         *
+         * @return string
+         */
+        private function generatePluginInstallationUrl($pluginSlug)
+        {
+            $action = 'install-plugin';
+
+            return wp_nonce_url(
+                add_query_arg(
+                    array(
+                        'action' => $action,
+                        'plugin' => $pluginSlug
+                    ),
+                    admin_url( 'update.php' )
+                ),
+                $action.'_'.$pluginSlug
+            );
         }
     }
 
