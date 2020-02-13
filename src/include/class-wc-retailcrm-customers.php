@@ -300,17 +300,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
-<<<<<<< HEAD
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
-                'lastName' => $customer->get_last_name(),
-                'email' => $customer->get_billing_email(),
-                'address' => $this->customer_address->build($customer)->get_data()
-=======
-                'firstName' => $firstName,
                 'lastName' => $lastName,
-                'email' => $email,
+                'email' => $customer->get_billing_email(),
                 'address' => $this->customer_address->build($customer, $order)->get_data()
->>>>>>> extract customer data from order for guests
             );
 
             if ($customer->get_id() > 0) {
@@ -394,14 +387,27 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $search = $this->retailcrm->customersList(array('email' => $filter['email']));
             }
 
+<<<<<<< HEAD
             if (!empty($search) && $search->isSuccessful()) {
+=======
+            if (isset($search) && $search->isSuccessful()) {
+                $customer = false;
+
+>>>>>>> fix customer squashing
                 if (isset($search['customers'])) {
                     if (empty($search['customers'])) {
                         return false;
                     }
-
-                    $arrayCustumers = $search['customers'];
-                    $customer = reset($arrayCustumers);
+                    
+                    if (isset($filter['email']) && count($filter) == 1) {
+                        foreach ($search['customers'] as $finding) {
+                            if (isset($finding['email']) && $finding['email'] == $filter['email']) {
+                                $customer = $finding;
+                            }
+                        }
+                    } else {
+                        $customer = reset($search['customers']);
+                    }
                 } else {
                     $customer = !empty($search['customer']) ? $search['customer'] : false;
                 }
@@ -422,7 +428,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function findCustomerEmailOrId($customerExternalId, $customerEmailOrPhone)
         {
-            $customer = $this->searchCustomer(array('externalId' => $customerExternalId));
+            $customer = false;
+
+            if (!empty($customerExternalId)) {
+                $customer = $this->searchCustomer(array('externalId' => $customerExternalId));
+            }
 
             if (!$customer) {
                 $customer = $this->searchCustomer(array('email' => $customerEmailOrPhone));
@@ -470,6 +480,51 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             return false;
+        }
+
+        /**
+         * Find corporate customer by main company name
+         *
+         * @param $companyName
+         *
+         * @return array
+         *TODO
+         * Replace with filter[nickName][] (search by nickname, company name and VAT).
+         * Logic below is slow and only can search by main company.
+         */
+        public function findCorporateCustomerByMainCompany($companyName)
+        {
+            $response = true;
+            $page = null;
+
+            do {
+                $response = $this->retailcrm->customersCorporateList(array(), $page, 100);
+
+                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                    if (is_null($page) && isset($response['pagination']['totalPageCount'])) {
+                        $page = $response['pagination']['totalPageCount'];
+                    }
+
+                    if ($response->offsetExists('customersCorporate')) {
+                        foreach ($response['customersCorporate'] as $crmCorporate) {
+                            if (isset($crmCorporate['mainCompany'])
+                                && $crmCorporate['mainCompany']['name'] == $companyName
+                            ) {
+                                return $crmCorporate;
+                            }
+                        }
+                    }
+
+                    $page--;
+                }
+
+                time_nanosleep(0, 300000000);
+            } while ($response instanceof WC_Retailcrm_Response &&
+                $response->isSuccessful() &&
+                (isset($response['pagination']) && $page > 0)
+            );
+
+            return array();
         }
 
         /**
