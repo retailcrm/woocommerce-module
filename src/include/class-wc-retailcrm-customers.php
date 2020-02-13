@@ -269,6 +269,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $createdAt = $customer->get_date_created();
             $firstName = $customer->get_first_name();
             $lastName = $customer->get_last_name();
+            $billingPhone = $customer->get_billing_phone();
+            $email = $customer->get_email();
 
             if (empty($firstName) && empty($lastName) && $order instanceof WC_Order) {
                 $firstName = $order->get_billing_first_name();
@@ -281,6 +283,14 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
                 if (empty($firstName)) {
                     $firstName = $customer->get_username();
+                }
+
+                if (empty($email)) {
+                    $email = $order->get_billing_email();
+                }
+
+                if (empty($billingPhone)) {
+                    $order->get_billing_phone();
                 }
             }
 
@@ -298,7 +308,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 =======
                 'firstName' => $firstName,
                 'lastName' => $lastName,
-                'email' => $customer->get_email(),
+                'email' => $email,
                 'address' => $this->customer_address->build($customer, $order)->get_data()
 >>>>>>> extract customer data from order for guests
             );
@@ -307,7 +317,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $data_customer['externalId'] = $customer->get_id();
             }
 
-            if ($customer->get_billing_phone()) {
+            if (!empty($billingPhone)) {
                 $data_customer['phones'][] = array(
                     'number' => $customer->get_billing_phone()
                 );
