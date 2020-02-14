@@ -104,6 +104,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
             ) {
+                add_action('woocommerce_new_order', array($this, 'create_order'), 11, 1);
                 add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
             }
 

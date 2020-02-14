@@ -483,7 +483,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $this->order_payment->is_new = true;
                 $order_data['payments'][] = $this->order_payment->build($order)->get_data();
             }
-            
+
             $this->order = apply_filters('retailcrm_process_order', WC_Retailcrm_Plugin::clearArray($order_data), $order);
         }
 
