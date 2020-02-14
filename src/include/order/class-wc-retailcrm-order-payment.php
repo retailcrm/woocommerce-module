@@ -84,7 +84,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
             }
         }
 
-        $this->set_data_fields($data);
+        $this->set_data_fields(WC_Retailcrm_Plugin::clearArray($data));
 
         return $this;
     }

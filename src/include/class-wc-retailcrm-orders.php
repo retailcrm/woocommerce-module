@@ -62,13 +62,12 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         /**
          * Upload orders to CRM
          *
-         * @param bool  $withCustomers
          * @param array $include
          *
          * @return array $uploadOrders | null
          * @throws \Exception
          */
-        public function ordersUpload($include = array(), $withCustomers = false)
+        public function ordersUpload($include = array())
         {
             if (!$this->retailcrm) {
                 return null;
@@ -87,54 +86,27 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 'include' => $include
             ));
 
-            $ordersData = array();
+            $regularUploadErrors = array();
             $corporateUploadErrors = array();
 
             foreach ($orders as $data_order) {
                 $order = wc_get_order($data_order->ID);
 
-                if ($this->retailcrm->getCorporateEnabled() && self::isCorporateOrder($order)) {
-                    $errorMessage = $this->orderCreate($data_order->ID);
+                $errorMessage = $this->orderCreate($data_order->ID);
 
-                    if (is_string($errorMessage)) {
+                if (is_string($errorMessage)) {
+                    if ($this->retailcrm->getCorporateEnabled() && self::isCorporateOrder($order)) {
                         $corporateUploadErrors[$data_order->ID] = $errorMessage;
-                    }
-
-                    continue;
-                }
-
-                $customer = $order->get_user();
-                $this->processOrder($order);
-                $customers = array();
-
-                if ($customer != false) {
-                    $this->order['customer']['externalId'] = $customer->get('ID');
-
-                    if ($withCustomers === true) {
-                        $customers[] = $customer->get('ID');
+                    } else {
+                        $regularUploadErrors[$data_order->ID] = $errorMessage;
                     }
                 }
-
-                $ordersData[] = $this->order;
             }
 
-            if ($withCustomers === true && !empty($customers)) {
-                $uploadCustomers = array_chunk($customers, 50);
+            static::logOrdersUploadErrors($regularUploadErrors, 'Error while uploading these regular orders');
+            static::logOrdersUploadErrors($corporateUploadErrors, 'Error while uploading these corporate orders');
 
-                foreach ($uploadCustomers as $uploadCustomer) {
-                    $this->customers->customersUpload($uploadCustomer);
-                    time_nanosleep(0, 250000000);
-                }
-            }
-
-            $uploadOrders = array_chunk(WC_Retailcrm_Plugin::clearArray($ordersData), 50);
-
-            foreach ($uploadOrders as $uploadOrder) {
-                $this->retailcrm->ordersUpload($uploadOrder);
-                time_nanosleep(0, 250000000);
-            }
-
-            return $uploadOrders;
+            return array();
         }
 
         /**
@@ -150,6 +122,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if (!$this->retailcrm) {
                 return null;
             }
+
+            $this->order_payment->reset_data();
 
             $wcOrder = wc_get_order($order_id);
             $this->processOrder($wcOrder);
@@ -323,7 +297,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                             break;
                         }
                     }
-                } else {
+                }
+
+                if (empty($crmCorporate)) {
                     $crmCorporate = $this
                         ->customers
                         ->findCorporateCustomerByMainCompany($wcOrder->get_billing_company());
@@ -560,6 +536,30 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         public static function isCorporateOrder($order)
         {
             return !empty($order->get_billing_company());
+        }
+
+        /**
+         * Logs orders upload errors with prefix log message.
+         * Array keys must be orders ID's in WooCommerce, values must be strings (error messages).
+         *
+         * @param array  $errors
+         * @param string $prefix
+         */
+        public static function logOrdersUploadErrors($errors, $prefix = 'Errors while uploading these orders')
+        {
+            if (empty($errors)) {
+                return;
+            }
+
+            $handle = 'retailcrm';
+            $logger = new WC_Logger();
+            $logger->add($handle, $prefix);
+
+            foreach ($errors as $orderId => $error) {
+                $logger->add($handle, sprintf("[%d] => %s", $orderId, $error));
+            }
+
+            $logger->add($handle, '==================================');
         }
     }
 endif;
