@@ -51,6 +51,8 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
      */
     public function build($order, $externalId = false)
     {
+        $this->reset_data();
+
         $data = array(
             'amount' => (double) $order->get_total()
         );
@@ -81,9 +83,25 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
             }
         }
 
-        $this->set_data_fields(WC_Retailcrm_Plugin::clearArray($data));
+        $this->set_data_fields($data);
 
         return $this;
+    }
+
+    /**
+     * Returns false if payment doesn't have method
+     *
+     * @return array
+     */
+    public function get_data()
+    {
+        $data = parent::get_data();
+
+        if (empty($data['type'])) {
+            return array();
+        }
+
+        return $data;
     }
 
     public function reset_data()

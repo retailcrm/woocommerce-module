@@ -103,6 +103,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
             ) {
+                add_action('woocommerce_new_order', array($this, 'create_order'), 11, 1);
                 add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
             }
 
@@ -287,6 +288,19 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $this->customers->updateCustomer($customer_id);
+        }
+
+        /**
+         * Create order in retailCRM
+         * @param int $order_id
+         */
+        public function create_order($order_id)
+        {
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
+            $this->orders->orderCreate($order_id);
         }
 
         /**
