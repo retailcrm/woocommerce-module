@@ -17,17 +17,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
      */
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
+        /** @var string */
         protected $api_url;
+
+        /** @var string */
         protected $api_key;
+
+        /** @var \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool */
         protected $apiClient;
+
+        /** @var mixed */
         protected $order_item;
+
+        /** @var mixed */
         protected $order_address;
+
+        /** @var \WC_Retailcrm_Customers */
         protected $customers;
+
+        /** @var \WC_Retailcrm_Orders */
         protected $orders;
 
         /**
          * Init and hook in the integration.
-         * @param $retailcrm (default = false)
+         * @param \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
          */
         public function __construct($retailcrm = false) {
             parent::__construct();
@@ -228,11 +241,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     }
                 }
 
-                $ids = array_merge($ids, $appendix);
+                $ids = array_unique(array_merge($ids, $appendix));
             }
 
             if ($ids) {
-                $this->orders->ordersUpload(array_unique($ids), true);
+                $this->orders->ordersUpload($ids);
             }
         }
 
