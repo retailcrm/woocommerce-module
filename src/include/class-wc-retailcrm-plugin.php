@@ -153,7 +153,7 @@ class WC_Retailcrm_Plugin {
                 ? self::clearArray($node)
                 : $node;
 
-            if ($result[$index] == ''
+            if ($result[$index] === ''
                 || $result[$index] === null
                 || (is_array($result[$index]) && count($result[$index]) < 1)
             ) {
