@@ -504,9 +504,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         /**
-         * @param $item
-         * @param $order_item
-         * @param $order_item_id
+         * @param array $item
+         * @param \WC_Order_Item $order_item
+         * @param string $order_item_id
          *
          * @throws \Exception
          */
@@ -648,6 +648,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if ($product_data) {
                 foreach ($product_data as $key => $product) {
+                    $arItemsNew = array();
+                    $arItemsOld = array();
                     $item = retailcrm_get_wc_product($product['offer'][$this->bind_field], $this->retailcrm_settings);
 
                     if (!$item) {
@@ -818,8 +820,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         public static function assemblyOrder($orderHistory)
         {
+            $fields = array();
+
             if (file_exists(__DIR__ . '/../config/objects.xml')) {
                 $objects = simplexml_load_file(__DIR__ . '/../config/objects.xml');
+
                 foreach($objects->fields->field as $object) {
                     $fields[(string)$object["group"]][(string)$object["id"]] = (string)$object;
                 }

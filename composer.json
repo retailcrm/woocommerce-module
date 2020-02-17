@@ -9,7 +9,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+      "ext-simplexml": "*"
+    },
     "require-dev": {
         "ext-json": "*",
         "ext-mbstring": "*",
