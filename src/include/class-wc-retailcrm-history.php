@@ -11,18 +11,28 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
     /**
      * Class WC_Retailcrm_History
-     * @todo Make changes for correct history with corporate clients!
      */
     class WC_Retailcrm_History
     {
+        /** @var \DateTime */
         protected $startDateOrders;
+
+        /** @var \DateTime */
         protected $startDateCustomers;
+
+        /** @var \DateTime */
         protected $startDate;
+
+        /** @var array|mixed|void */
         protected $retailcrm_settings;
 
         /** @var bool|\WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5 */
         protected $retailcrm;
+
+        /** @var array|mixed */
         protected $order_methods = array();
+
+        /** @var string */
         protected $bind_field = 'externalId';
 
         /** @var WC_Retailcrm_Order_Item */
@@ -30,7 +40,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         /**
          * WC_Retailcrm_History constructor.
-         * @param $retailcrm (default = false)
+         *
+         * @param \WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
+         *
+         * @throws \Exception
          */
         public function __construct($retailcrm = false)
         {
@@ -55,9 +68,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         /**
-         * Get history method
+         * Get history method.
          *
          * @return void
+         * @throws \Exception
          */
         public function getHistory()
         {
@@ -72,17 +86,26 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_orders']);
             }
 
-            $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
-            $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
+            try {
+                $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
+                $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
+            } catch (\Exception $exception) {
+                $logger = new WC_Logger();
+                $logger->add('retailcrm',
+                    sprintf("[%s] - %s", $exception->getMessage(),
+                        'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
+                );
+            }
         }
 
         /**
          * History customers
          *
          * @param string $date
-         * @param int $since_id
+         * @param int    $since_id
          *
          * @return null
+         * @throws \Exception
          */
         protected function customersHistory($date, $since_id)
         {
@@ -143,11 +166,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 }
             }
 
-            if (empty($response)) {
-                return;
+            if (isset($new_since_id)) {
+                update_option('retailcrm_customers_history_since_id', $new_since_id);
             }
 
-            update_option('retailcrm_customers_history_since_id', $new_since_id);
+            return;
         }
 
         /**
@@ -219,11 +242,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         /**
          * Update shipping
          *
-         * @param array $order
-         * @param array $options
+         * @param array    $order
+         * @param array    $options
          * @param WC_Order $wc_order
          *
          * @return boolean
+         * @throws \WC_Data_Exception
          */
         protected function updateShippingItemId($order, $options, $wc_order)
         {
@@ -295,6 +319,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param array $options
          *
          * @return bool
+<<<<<<< HEAD
+=======
+         * @throws \Exception
+>>>>>>> fixes for possible crashes
          * @throws \WC_Data_Exception
          */
         protected function orderUpdate($order, $options)
@@ -342,6 +370,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     if (isset($item['create']) && $item['create'] == true) {
+                        $arItemsNew = array();
+                        $arItemsOld = array();
                         $product = retailcrm_get_wc_product(
                             $item['offer'][$this->bind_field],
                             $this->retailcrm_settings
@@ -380,11 +410,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             }
 
                             if ($offer_id == $item['offer'][$this->bind_field]
-                                && $itemExternalId[1] == $order_item->get_id()
+                                && (isset($itemExternalId) && $itemExternalId[1] == $order_item->get_id())
                             ) {
                                 $this->deleteOrUpdateOrderItem($item, $order_item, $itemExternalId[1]);
                             }
-
                         }
                     }
                 }
@@ -478,6 +507,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param $item
          * @param $order_item
          * @param $order_item_id
+         *
+         * @throws \Exception
          */
         private function deleteOrUpdateOrderItem($item, $order_item, $order_item_id)
         {
@@ -507,6 +538,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param array $options
          *
          * @return bool
+         * @throws \WC_Data_Exception
          */
         protected function orderCreate($order, $options)
         {
