@@ -522,21 +522,35 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return false;
             }
 
-            if (empty($order['customer']['externalId']))
+            $customerId = isset($order['customer']['externalId']) ? $order['customer']['externalId'] : null;
+
+            if ($order['customer']['type'] == 'customer_corporate') {
+                $customerId = isset($order['contact']['externalId']) ? $order['contact']['externalId'] : null;
+            }
 
             $args = array(
                 'status' => isset($options[$order['status']])
                     ? $options[$order['status']]
                     : 'processing',
-                'customer_id' => isset($order['customer']['externalId'])
-                    ? $order['customer']['externalId']
-                    : (isset($order['contact']['externalId']) ? $order['contact']['externalId'] : null)
+                'customer_id' => $customerId
             );
 
+            /** @var WC_Order|WP_Error $wc_order */
             $wc_order = wc_create_order($args);
             $customer = $order['customer'];
             $address = isset($order['customer']['address']) ? $order['customer']['address'] : array();
             $companyName = '';
+
+            if ($wc_order instanceof WP_Error) {
+                $logger = new WC_Logger();
+                $logger->add('retailcrm', sprintf(
+                    '[%d] error while creating order: %s',
+                    $order['id'],
+                    print_r($wc_order->get_error_messages(), true)
+                ));
+
+                return false;
+            }
 
             if (isset($order['customer']['type'])
                 && $order['customer']['type'] == 'customer_corporate'

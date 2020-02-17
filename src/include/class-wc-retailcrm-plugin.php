@@ -90,7 +90,7 @@ class WC_Retailcrm_Plugin {
     /**
      * Edit configuration in CRM
      *
-     * @param WC_Retailcrm_Proxy $api_client
+     * @param WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5 $api_client
      * @param string $client_id
      * @param bool $active
      *
