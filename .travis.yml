@@ -1,34 +1,26 @@
-language: php
-
+os: linux
 dist: trusty
 
-sudo: false
+language: php
 
-php:
-  - 5.6
-  - 7.0
-  - 7.1
+if: tag IS blank
 
-env:
-  - WP_VERSION=latest WP_MULTISITE=0
-
-matrix:
-  fast_finish: true
-  include:
-  - php: 7.2
-    env: WP_VERSION=latest WP_MULTISITE=0 RUN_PHPCS=1
+stages:
+  - test
+  - deploy
 
 before_script:
   - bash tests/bin/install.sh wc_retailcrm_test root '' localhost $WP_VERSION
 
-script:
-  - bash tests/bin/script.sh
+script: make tests
 
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: make
-  on:
-    php: 7.2
-    branch: master
-    condition: "$DEPLOY = true"
+jobs:
+  include:
+    - php: 5.6
+      env: WP_VERSION=latest WP_MULTISITE=0
+    - stage: deploy
+      deploy:
+        cleanup: false
+        provider: script
+        script: make
+      if: branch = master AND type = push AND fork = false

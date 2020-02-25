@@ -20,3 +20,18 @@ svn_push: /tmp/svn_plugin_dir
 
 remove_dir:
 	rm -rf /tmp/svn_plugin_dir
+
+compile_pot:
+	msgfmt resources/pot/retailcrm-ru_RU.pot -o src/languages/retailcrm-ru_RU.mo
+	msgfmt resources/pot/retailcrm-es_ES.pot -o src/languages/retailcrm-es_ES.mo
+
+install:
+	bash tests/bin/install.sh
+	composer install
+
+tests: install
+ifeq ($(USE_COMPOSER),1)
+	vendor/phpunit/phpunit/phpunit -c phpunit.xml.dist
+else
+	phpunit -c phpunit.xml.dist
+endif
