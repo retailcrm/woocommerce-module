@@ -26,7 +26,7 @@ compile_pot:
 	msgfmt resources/pot/retailcrm-es_ES.pot -o src/languages/retailcrm-es_ES.mo
 
 install:
-	bash tests/bin/install.sh
+	bash tests/bin/install.sh wc_retailcrm_test root '' localhost $(WP_VERSION)
 	composer install
 
 tests: install
