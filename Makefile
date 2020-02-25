@@ -27,7 +27,9 @@ compile_pot:
 
 install:
 	bash tests/bin/install.sh wc_retailcrm_test root '' localhost $(WP_VERSION)
+ifeq ($(USE_COMPOSER),1)
 	composer install
+endif
 
 tests: install
 ifeq ($(USE_COMPOSER),1)
