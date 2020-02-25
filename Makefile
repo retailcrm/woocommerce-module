@@ -31,7 +31,7 @@ ifeq ($(USE_COMPOSER),1)
 	composer install
 endif
 
-tests: install
+tests:
 ifeq ($(USE_COMPOSER),1)
 	vendor/phpunit/phpunit/phpunit -c phpunit.xml.dist
 else
