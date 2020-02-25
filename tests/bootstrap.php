@@ -9,7 +9,7 @@ if (!$_tests_dir) {
 require_once $_tests_dir . '/includes/functions.php';
 
 function _manually_load_plugin() {
-    $plugin_dir =  dirname(dirname(dirname(__FILE__))) . '/';
+    $plugin_dir =  dirname(dirname(__FILE__)) . '/';
 
     require $plugin_dir . 'src/include/class-wc-retailcrm-orders.php';
     require $plugin_dir . 'src/include/class-wc-retailcrm-customers.php';
