@@ -1,6 +1,8 @@
 FILE = $(TRAVIS_BUILD_DIR)/VERSION
 VERSION = `cat $(FILE)`
 
+.PHONY: tests
+
 all: svn_clone svn_push remove_dir
 
 svn_clone:
