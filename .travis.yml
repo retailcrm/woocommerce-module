@@ -11,7 +11,7 @@ stages:
 
 before_script:
   - nvm install 10
-  - bash tests/bin/install.sh wc_retailcrm_test root '' localhost $WP_VERSION
+  - make install
 
 script: make tests
 
