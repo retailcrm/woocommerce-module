@@ -24,7 +24,7 @@ tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
 require '/tmp/woocommerce/tests/bootstrap.php';
 
-$plugin_dir = dirname(dirname(dirname(__FILE__))) . '/';
+$plugin_dir = dirname(dirname(__FILE__)) . '/';
 // helpers
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-response-helper.php';
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-test-case-helper.php';
