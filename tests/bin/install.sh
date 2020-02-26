@@ -12,6 +12,7 @@ DB_PASS=$3
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 SKIP_DB_CREATE=${6-false}
+WC_VERSION=${7-3.9.0}
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
@@ -72,7 +73,7 @@ install_woocommerce() {
     cd /tmp
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
-    git checkout master
+    git checkout $WC_VERSION
     composer install
     npm install
     cd -

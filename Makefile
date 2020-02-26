@@ -28,7 +28,7 @@ compile_pot:
 	msgfmt resources/pot/retailcrm-es_ES.pot -o src/languages/retailcrm-es_ES.mo
 
 install:
-	bash tests/bin/install.sh wc_retailcrm_test root '' localhost $(WP_VERSION)
+	bash tests/bin/install.sh wc_retailcrm_test root '' localhost $(WP_VERSION) $(WC_VERSION)
 ifeq ($(USE_COMPOSER),1)
 	composer install
 endif
