@@ -13,10 +13,41 @@ before_script:
   - nvm install 10
   - make install
 
-script: make tests
+env:
+  global:
+  - DB_NAME=wc_retailcrm_test
+  - DB_USER=root
+  - DB_PASS=''
+  - DB_HOST=localhost
+
+script: make test
 
 jobs:
   include:
+    - php: 5.6
+      env: WP_VERSION=latest WC_VERSION=3.8.0 WP_MULTISITE=0
+    - php: 7.0
+      env: WP_VERSION=latest WC_VERSION=3.8.0 WP_MULTISITE=0
+    - php: 7.1
+      env: WP_VERSION=latest WC_VERSION=3.8.0 WP_MULTISITE=0
+    - php: 7.2
+      env: WP_VERSION=latest WC_VERSION=3.8.0 WP_MULTISITE=0 USE_COMPOSER=1
+    - php: 5.6
+      env: WP_VERSION=latest WC_VERSION=3.9.0 WP_MULTISITE=0
+    - php: 7.0
+      env: WP_VERSION=latest WC_VERSION=3.9.0 WP_MULTISITE=0
+    - php: 7.1
+      env: WP_VERSION=latest WC_VERSION=3.9.0 WP_MULTISITE=0
+    - php: 7.2
+      env: WP_VERSION=latest WC_VERSION=3.9.0 WP_MULTISITE=0 USE_COMPOSER=1
+    - php: 5.6
+      env: WP_VERSION=4.4 WC_VERSION=3.2.0 WP_MULTISITE=0
+    - php: 7.0
+      env: WP_VERSION=4.4 WC_VERSION=3.2.0 WP_MULTISITE=0
+    - php: 7.1
+      env: WP_VERSION=4.4 WC_VERSION=3.2.0 WP_MULTISITE=0
+    - php: 7.2
+      env: WP_VERSION=4.4 WC_VERSION=3.2.0 WP_MULTISITE=0 USE_COMPOSER=1
     - php: 5.6
       env: WP_VERSION=4.4 WC_VERSION=3.0.0 WP_MULTISITE=0
     - php: 7.0

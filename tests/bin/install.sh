@@ -11,8 +11,8 @@ DB_USER=$2
 DB_PASS=$3
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
-SKIP_DB_CREATE=${6-false}
-WC_VERSION=${7-3.9.0}
+WC_VERSION=${6-3.9.0}
+SKIP_DB_CREATE=${7-false}
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
@@ -70,6 +70,8 @@ install_wp() {
 }
 
 install_woocommerce() {
+  if [[ ! -d "/tmp/woocommerce" ]]
+  then
     cd /tmp
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
@@ -77,6 +79,7 @@ install_woocommerce() {
     composer install
     npm install
     cd -
+  fi
 }
 
 install_test_suite() {
@@ -130,8 +133,10 @@ install_db() {
 		fi
 	fi
 
-	# create database
-	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
+  if [ ${DB_HOST} == "localhost" ]; then
+    # create database
+    mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA --host=$DB_HOST
+  fi
 }
 
 install_wp
