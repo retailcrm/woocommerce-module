@@ -8,10 +8,10 @@ fi
 
 DB_NAME=$1
 DB_USER=$2
-DB_PASS=$3
-DB_HOST=${4-localhost}
-WP_VERSION=${5-latest}
-WC_VERSION=${6-3.9.0}
+DB_HOST=${3-localhost}
+WP_VERSION=${4-latest}
+WC_VERSION=${5-3.9.0}
+DB_PASS=${6-''}
 SKIP_DB_CREATE=${7-false}
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
