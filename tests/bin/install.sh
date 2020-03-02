@@ -86,7 +86,7 @@ install_woocommerce() {
       fi
     fi
 
-    if [[ ! $WC_VERSION == 'latest' ]]; then
+    if [[ $WC_VERSION == 'latest' ]]; then
       composer install
       npm install
     fi
