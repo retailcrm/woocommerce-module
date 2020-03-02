@@ -76,7 +76,7 @@ install_woocommerce() {
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
 
-    if [[ $WC_VERSION -ne 'latest' ]]; then
+    if [[ ! $WC_VERSION == 'latest' ]]; then
       git checkout $WC_VERSION
 
       version=($(echo $WC_VERSION | tr "." "\n"))
@@ -86,7 +86,7 @@ install_woocommerce() {
       fi
     fi
 
-    if [[ $WC_VERSION -eq 'latest' ]]; then
+    if [[ ! $WC_VERSION == 'latest' ]]; then
       composer install
       npm install
     fi
