@@ -79,7 +79,7 @@ install_woocommerce() {
     if [[ $WC_VERSION -ne 'latest' ]]; then
       git checkout $WC_VERSION
 
-      version=$(echo $WC_VERSION | tr ".")
+      version=($(echo $WC_VERSION | tr "." "\n"))
       if [[ ${version[0]} -ge 3 && ${version[1]} -ge 7 ]]; then
         composer install
         npm install
