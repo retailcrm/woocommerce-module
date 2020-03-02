@@ -18,12 +18,16 @@
     </testsuites>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/include</directory>
+            <directory suffix=".php">src</directory>
             <exclude>
                 <directory suffix=".php">src/include/api</directory>
-                <file>src/retailcrm.php</file>
-                <file>src/uninstall.php</file>
+                <directory>src/config</directory>
+                <directory>src/languages</directory>
+                <file>src/readme.txt</file>
             </exclude>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-clover" target="coverage.xml"/>
+    </logging>
 </phpunit>

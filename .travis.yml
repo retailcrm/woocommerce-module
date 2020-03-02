@@ -191,6 +191,7 @@ jobs:
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0
     - php: 7.2
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0 USE_COMPOSER=1
+      after_success: bash <(curl -s https://codecov.io/bash)
 
     - stage: deploy
       deploy:

@@ -353,7 +353,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $arItemsNew[$order_item_id] = $order_item_id;
                         }
 
-                        $result = end(array_diff($arItemsNew, $arItemsOld));
+                        $diff = array_diff($arItemsNew, $arItemsOld);
+                        $result = end($diff);
                         $order['items'][$key]['woocomerceId'] = $result;
                     } else {
                         foreach ($wc_order->get_items() as $order_item_id => $order_item) {
