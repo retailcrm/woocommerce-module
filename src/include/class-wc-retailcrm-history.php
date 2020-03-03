@@ -358,9 +358,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         $order['items'][$key]['woocomerceId'] = $result;
                     } else {
                         foreach ($wc_order->get_items() as $order_item_id => $order_item) {
-
-
-
                             if ($order_item['variation_id'] != 0 ) {
                                 $offer_id = $order_item['variation_id'];
                             } else {
@@ -671,7 +668,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         protected function editOrder($settings, $wc_order, $order, $event = 'create')
         {
-            $order_items = [];
+            $order_items = array();
             if ($event == 'update') {
                 $result = $this->retailcrm->ordersGet($order['externalId']);
                 if ($result->isSuccessful()) {
@@ -703,10 +700,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             if (!empty($order_items)) {
-                $orderEdit = [
+                $orderEdit = array(
                     'id' => $order['id'],
                     'items' => $order_items,
-                ];
+                );
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
             }
