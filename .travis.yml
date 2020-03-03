@@ -24,6 +24,9 @@ script: make test
 
 jobs:
   include:
+    - php: 7.3
+      env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0 USE_COMPOSER=1
+      after_success: bash <(curl -s https://codecov.io/bash)
     - php: 5.3
       dist: precise
       env: WP_VERSION=4.4 WC_VERSION=3.0.0 WP_MULTISITE=0
@@ -233,9 +236,6 @@ jobs:
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0
     - php: 7.2
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0 USE_COMPOSER=1
-    - php: 7.3
-      env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0
-      after_success: bash <(curl -s https://codecov.io/bash)
 
     - stage: deploy
       deploy:
