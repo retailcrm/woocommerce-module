@@ -24,6 +24,9 @@ script: make test
 
 jobs:
   include:
+    - php: 5.3
+      dist: precise
+      env: WP_VERSION=4.4 WC_VERSION=3.0.0 WP_MULTISITE=0
     - php: 5.4
       env: WP_VERSION=4.4 WC_VERSION=3.0.0 WP_MULTISITE=0
     - php: 5.6
