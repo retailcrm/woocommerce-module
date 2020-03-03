@@ -7,7 +7,7 @@ services:
       - ./:/code
     links:
       - "mysql"
-    #user: ${UID:-1000}:${GID:-1000}
+    user: ${UID:-1000}:${GID:-1000}
     depends_on:
       - mysql
     entrypoint: make local_test

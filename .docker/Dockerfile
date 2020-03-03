@@ -20,7 +20,7 @@ RUN apt-get install -y zlib1g-dev libpq-dev git libicu-dev libxml2-dev libpng-de
 RUN apt-get install -y subversion
 RUN apt-get install -y wget
 
-RUN wget -O /usr/bin/phpunit https://phar.phpunit.de/phpunit-5.phar && chmod +x /usr/bin/phpunit
+RUN wget -O /usr/bin/phpunit https://phar.phpunit.de/phpunit-7.phar && chmod +x /usr/bin/phpunit
 RUN curl --insecure https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
 
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
