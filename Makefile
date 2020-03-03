@@ -1,6 +1,8 @@
 FILE = $(TRAVIS_BUILD_DIR)/VERSION
 VERSION = `cat $(FILE)`
 
+.PHONY: test
+
 all: svn_clone svn_push remove_dir
 
 svn_clone:
@@ -20,3 +22,23 @@ svn_push: /tmp/svn_plugin_dir
 
 remove_dir:
 	rm -rf /tmp/svn_plugin_dir
+
+compile_pot:
+	msgfmt resources/pot/retailcrm-ru_RU.pot -o src/languages/retailcrm-ru_RU.mo
+	msgfmt resources/pot/retailcrm-es_ES.pot -o src/languages/retailcrm-es_ES.mo
+
+install:
+	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(WP_VERSION) $(WC_VERSION) $(DB_PASS) $(SKIP_DB_CREATE)
+ifeq ($(USE_COMPOSER),1)
+	composer install
+endif
+
+test:
+ifeq ($(USE_COMPOSER),1)
+	vendor/phpunit/phpunit/phpunit -c phpunit.xml.dist
+else
+	phpunit -c phpunit.xml.dist
+endif
+
+local_test: install
+	phpunit -c phpunit.xml.dist

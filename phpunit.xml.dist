@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-    bootstrap="tests/phpunit/bootstrap.php"
+    bootstrap="tests/bootstrap.php"
     backupGlobals="false"
     colors="true"
     convertErrorsToExceptions="true"
@@ -13,17 +13,21 @@
     >
     <testsuites>
         <testsuite name="Retailcrm WooCommerce Test Suite">
-            <directory suffix=".php">tests/phpunit</directory>
+            <directory suffix=".php">tests</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/include</directory>
+            <directory suffix=".php">src</directory>
             <exclude>
                 <directory suffix=".php">src/include/api</directory>
-                <file>src/retailcrm.php</file>
-                <file>src/uninstall.php</file>
+                <directory>src/config</directory>
+                <directory>src/languages</directory>
+                <file>src/readme.txt</file>
             </exclude>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-clover" target="coverage.xml"/>
+    </logging>
 </phpunit>
