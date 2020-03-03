@@ -241,6 +241,8 @@ jobs:
       after_success: bash <(curl -s https://codecov.io/bash)
 
     - stage: github releases
+      before_script: skip
+      script: skip
       before_deploy:
         - export VERSION=`cat VERSION`
         - git config --local user.name "retailCRM"
@@ -253,7 +255,7 @@ jobs:
         cleanup: false
         on:
           condition: "$LAST_TAG != $CURRENT_VERSION"
-      if: branch = master AND type = push
+      if: branch = master AND type = push AND fork = false
     - stage: deploy
       deploy:
         cleanup: false
