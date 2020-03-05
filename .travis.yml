@@ -10,6 +10,10 @@ stages:
   - github releases
   - deploy
 
+before_install:
+  - export LAST_TAG=`git describe --abbrev=0 --tags`
+  - export CURRENT_VERSION=v`cat VERSION`
+
 before_script:
   - nvm install 10
   - make install
@@ -257,8 +261,12 @@ jobs:
           condition: "$LAST_TAG != $CURRENT_VERSION"
       if: branch = master AND type = push AND fork = false
     - stage: deploy
+      before_install: skip
+      before_script: skip
+      script: make svn_clone
       deploy:
         cleanup: false
         provider: script
-        script: make
+        script: make svn_push
       if: branch = master AND type = push AND fork = false
+      after_success: make remove_dir

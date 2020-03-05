@@ -3,8 +3,6 @@ VERSION = `cat $(FILE)`
 
 .PHONY: test
 
-all: svn_clone svn_push remove_dir
-
 svn_clone:
 	mkdir /tmp/svn_plugin_dir
 	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --username $(USERNAME) --password $(PASSWORD) --no-auth-cache
