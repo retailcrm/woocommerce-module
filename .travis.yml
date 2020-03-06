@@ -269,4 +269,4 @@ jobs:
         provider: script
         script: make svn_push
       if: branch = master AND type = push AND fork = false
-      after_success: make remove_dir
+      after_deploy: make remove_dir
