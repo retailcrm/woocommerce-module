@@ -268,5 +268,5 @@ jobs:
         cleanup: false
         provider: script
         script: make svn_push
-      if: branch = master AND type = push
+      if: branch = master AND type = push AND fork = false
       after_deploy: make remove_dir
