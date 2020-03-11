@@ -40,7 +40,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function __construct() {
             $this->load_plugin_textdomain();
 
-            if (class_exists( 'WC_Integration' ) ) {
+            if (class_exists( 'WC_Integration' )) {
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
@@ -49,6 +49,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
                 require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
+                require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-corporate-address.php');
                 require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
                 require_once(dirname(__FILE__ ) . '/include/functions.php');
                 add_filter('woocommerce_integrations', array( $this, 'add_integration'));

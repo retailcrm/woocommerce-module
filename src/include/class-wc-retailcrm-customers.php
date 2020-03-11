@@ -167,6 +167,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * @param $customer_id
          *
          * @return void|\WC_Customer
+         * @throws \Exception
          */
         public function updateCustomer($customer_id)
         {
@@ -216,6 +217,58 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             return null;
+        }
+
+        /**
+         * Create new address in corporate customer (if needed)
+         *
+         * @param int $corporateId
+         * @param \WC_Customer $customer
+         * @param \WC_Order|null $order
+         */
+        public function fillCorporateAddress($corporateId, $customer, $order = null)
+        {
+            $found = false;
+            $builder = new WC_Retailcrm_Customer_Corporate_Address();
+            $newAddress = $builder
+                ->setFallbackToBilling(true)
+                ->setIsMain(false)
+                ->setExplicitIsMain(false)
+                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
+                ->build($customer, $order)
+                ->get_data();
+            $addresses = $this->retailcrm->customersCorporateAddresses(
+                $corporateId,
+                array(),
+                null,
+                100,
+                'id'
+            );
+
+            if ($addresses && $addresses->isSuccessful() && $addresses->offsetExists('addresses')) {
+                foreach ($addresses['addresses'] as $address) {
+                    foreach ($newAddress as $field => $value) {
+                        if (isset($address[$field]) && $address[$field] != $value) {
+                            continue 2;
+                        }
+                    }
+
+                    $found = true;
+
+                    break;
+                }
+            } else {
+                $found = true;
+            }
+
+            if (!$found) {
+                $this->retailcrm->customersCorporateAddressesCreate(
+                    $corporateId,
+                    $newAddress,
+                    'id',
+                    $this->retailcrm->getSingleSiteForKey()
+                );
+            }
         }
 
         /**
@@ -341,14 +394,35 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $data_customer = array(
                 'nickName' => $order->get_billing_company(),
-                'contact' => array(
-                    'id' => $crmCustomerId,
-                    'isMain' => true
+                'customerContacts' => array(
+                    array(
+                        'isMain' => true,
+                        'customer' => array(
+                            'id' => $crmCustomerId
+                        )
+                    )
                 )
             );
 
             $orderAddress = new WC_Retailcrm_Order_Address();
-            $address = $orderAddress->setAddressType('billing')->build($order)->get_data();
+            $corpAddress = new WC_Retailcrm_Customer_Corporate_Address();
+
+            $address = $orderAddress
+                ->setFallbackToBilling(true)
+                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
+                ->build($order)
+                ->get_data();
+
+            $shippingAddress = $corpAddress
+                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
+                ->setFallbackToBilling(true)
+                ->setIsMain(true)
+                ->build($customer, $order)
+                ->get_data();
+
+            if (isset($address['text'])) {
+                $data_company['contragent']['legalAddress'] = $address['text'];
+            }
 
             $this->customerCorporate = apply_filters(
                 'retailcrm_process_customer_corporate',
@@ -358,7 +432,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $this->customerCorporateAddress = apply_filters(
                 'retailcrm_process_customer_corporate_address',
                 WC_Retailcrm_Plugin::clearArray(array_merge(
-                    $address,
+                    $shippingAddress,
                     array('isMain' => true)
                 )),
                 $customer

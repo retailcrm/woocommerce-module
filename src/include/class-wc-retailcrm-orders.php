@@ -315,6 +315,18 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     );
                     $this->order['customer']['id'] = $corporateId;
                 } else {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+                	if (!empty($foundCustomer['externalId'])) {
+		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+	                } else {
+                		$this->order['customer']['id'] = $foundCustomer['id'];
+	                }
+=======
+>>>>>>> new address logic & fixes
                     $foundCustomer = $this->customers->searchCustomer(array(
                         'email' => $wcOrder->get_billing_email()
                     ));
@@ -328,6 +340,18 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     } else {
                         $this->order['customer']['externalId'] = $foundCustomer['externalId'];
                     }
+<<<<<<< HEAD
+=======
+>>>>>>> WIP: corporate customers support
+=======
+=======
+                    $this->customers->fillCorporateAddress(
+                        $crmCorporate['id'],
+                        new WC_Customer($wcCustomerId),
+                        $wcOrder
+                    );
+>>>>>>> new address logic & fixes
+>>>>>>> new address logic & fixes
                     $this->order['customer']['id'] = $crmCorporate['id'];
 
                 }
@@ -468,7 +492,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
-            $order_data['delivery']['address'] = $this->order_address->build($order)->get_data();
+            $order_data['delivery']['address'] = $this->order_address
+                ->setFallbackToBilling(true)
+                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
+                ->build($order)
+                ->get_data();
             $order_items = array();
 
             /** @var WC_Order_Item_Product $item */
