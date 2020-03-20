@@ -86,6 +86,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
+            add_action('wp_print_footer_scripts', array($this, 'add_online_consultant'));
 
             if (!$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
@@ -245,7 +246,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $client = $this->getApiClient();
 
             if (empty($client)) {
-            	return;
+                return;
             }
 
             $wcCustomer = new WC_Customer($customer_id);
@@ -394,6 +395,23 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     update_option('retailcrm_active_in_crm', true);
                     update_option('retailcrm_client_id', $client_id);
                 }
+            }
+        }
+
+        /**
+         * Add online consultant
+         */
+        public function add_online_consultant()
+        {
+            if (!class_exists('WC_Retailcrm_Online_Consultant')) {
+                include_once(static::checkCustomFile('online-consultant'));
+            }
+
+            if ($this->get_option('consultant_checkbox') == static::YES && $this->get_option('consultant_textarea')) {
+                $retailcrm_consultant = WC_Retailcrm_Online_Consultant::getInstance($this->settings);
+                echo $retailcrm_consultant->initialize_consultant();
+            } else {
+                echo '';
             }
         }
     }

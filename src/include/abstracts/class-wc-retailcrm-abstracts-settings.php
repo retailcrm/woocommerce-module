@@ -385,6 +385,28 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 );
 
                 /**
+                 * Online Consultant options
+                 */
+                $this->form_fields[] = array(
+                    'title' => __('Online Consultant', 'retailcrm'),
+                    'type' => 'heading',
+                    'description' => ''
+                );
+
+                $this->form_fields["consultant_textarea"] = array(
+                    'title' => __('Enter consultant code', 'retailcrm'),
+                    'type' => 'textarea',
+                    'description' => ''
+                );
+
+                $this->form_fields["consultant_checkbox"] = array(
+                    'title' => __('Online Consultant', 'retailcrm'),
+                    'label' => __('Activate Consultant', 'retailcrm'),
+                    'type' => 'checkbox',
+                    'description' => __('Enable this setting to activate online consultant', 'retailcrm')
+                );
+                
+                /**
                  * Uploads options
                  */
                 $options = array_filter(get_option(static::$option_key));
