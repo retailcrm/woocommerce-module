@@ -34,6 +34,25 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->assertArrayHasKey('externalId', $data);
         $this->assertArrayHasKey('type', $data);
+        $this->assertArrayNotHasKey('amount', $data);
+        $this->assertArrayHasKey('order', $data);
+    }
+
+    /**
+     * @param mixed $externalId
+     *
+     * @dataProvider dataProvider
+     */
+    public function test_build_with_amount($externalId)
+    {
+        $settings = $this->getOptions();
+        $settings['send_payment_amount'] = 'yes';
+        $order_payment = new WC_Retailcrm_Order_Payment($settings);
+
+        $data = $order_payment->build($this->order, $externalId)->get_data();
+
+        $this->assertArrayHasKey('externalId', $data);
+        $this->assertArrayHasKey('type', $data);
         $this->assertArrayHasKey('amount', $data);
         $this->assertArrayHasKey('order', $data);
     }

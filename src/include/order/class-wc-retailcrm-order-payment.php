@@ -20,7 +20,6 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
     /** @var array  */
     protected $data = array(
         'externalId' => '',
-        'amount' => 0.00,
         'type' => '',
         'order' => array()
     );
@@ -51,9 +50,13 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
      */
     public function build($order, $externalId = false)
     {
-        $data = array(
-            'amount' => (double) $order->get_total()
-        );
+        $data = array();
+
+        if (!empty($this->settings['send_payment_amount'])
+            && $this->settings['send_payment_amount'] === WC_Retailcrm_Base::YES
+        ) {
+            $data['amount'] = (double) $order->get_total();
+        }
 
         if (!$this->is_new) {
             $data['externalId'] = $externalId;

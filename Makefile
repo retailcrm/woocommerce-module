@@ -40,3 +40,8 @@ endif
 
 local_test: install
 	phpunit -c phpunit.xml.dist
+
+run_tests:
+	docker-compose --no-ansi up -d --build mysql
+	docker-compose --no-ansi run --rm --no-deps app make local_test
+	docker-compose stop

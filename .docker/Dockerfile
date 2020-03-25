@@ -17,6 +17,7 @@ RUN apt-get install -y zlib1g-dev libpq-dev git libicu-dev libxml2-dev libpng-de
     && docker-php-ext-install xsl \
     && docker-php-ext-install mbstring
 
+RUN apt-get install -y gettext
 RUN apt-get install -y subversion
 RUN apt-get install -y wget
 
