@@ -10,7 +10,6 @@ services:
     user: ${UID:-1000}:${GID:-1000}
     depends_on:
       - mysql
-    entrypoint: make local_test
     env_file:
       - ./.env
     environment:

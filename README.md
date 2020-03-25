@@ -12,4 +12,4 @@ Integration plugin for WooCommerce and [retailCRM](http://retailcrm.ru)
 
 #### Local testing
 
-To local testing run `docker-compose up`
+To local testing run `make run_tests`

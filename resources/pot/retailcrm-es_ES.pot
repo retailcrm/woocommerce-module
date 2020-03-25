@@ -219,3 +219,6 @@ msgstr "Activar la transferencia de números en retailCRM"
 
 msgid "Transferring the order number"
 msgstr "Transferencia de un número de pedido"
+
+msgid "Transferring the payment amount"
+msgstr "Transferencia de un monto de pago"
