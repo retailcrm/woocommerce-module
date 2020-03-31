@@ -364,6 +364,10 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 } elseif ($offer->get_type() == 'variable') {
                     foreach ($offer->get_children() as $child_id) {
                         $child_product = wc_get_product($child_id);
+                        if (!$child_product) {
+                            continue;
+                        }
+
                         $this->setOffer($full_product_list, $product_attributes, $child_product, $offer);
                     }
                 }

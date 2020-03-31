@@ -1,11 +1,11 @@
 <?php
 /**
- * Version: 3.6.0
+ * Version: 3.6.1
  * WC requires at least: 3.0
  * WC tested up to: 3.9.3
- * Plugin Name: WooCommerce RetailCRM
+ * Plugin Name: WooCommerce retailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
- * Description: Integration plugin for WooCommerce & RetailCRM
+ * Description: Integration plugin for WooCommerce & retailCRM
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
  * Text Domain: retailcrm
