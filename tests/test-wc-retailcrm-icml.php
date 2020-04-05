@@ -8,7 +8,14 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
             WC_Helper_Product::create_simple_product();
         }
 
-        WC_Helper_Product::create_variation_product();
+        wp_insert_term(
+            'Test', // the term
+            'product_cat', // the taxonomy
+            array(
+                'description'=> 'Test',
+                'slug' => 'test'
+            )
+        );
     }
 
     public function testGenerate()
