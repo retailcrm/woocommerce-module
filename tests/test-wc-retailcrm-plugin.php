@@ -42,6 +42,19 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
         }    
     }
 
+    public function test_filter_cron_schedules()
+    {
+        $plugin = WC_Retailcrm_Plugin::getInstance(dirname(__DIR__ . '/../src/retailcrm.php'));
+        $schedules = $plugin->filter_cron_schedules(array());
+
+        $this->assertNotEmpty($schedules['five_minutes']);
+        $this->assertEquals(300, $schedules['five_minutes']['interval']);
+        $this->assertNotEmpty($schedules['three_hours']);
+        $this->assertEquals(10800, $schedules['three_hours']['interval']);
+        $this->assertNotEmpty($schedules['fiveteen_minutes']);
+        $this->assertEquals(900, $schedules['fiveteen_minutes']['interval']);
+    }
+
     private function getResponseData()
     {
         return array(
