@@ -87,9 +87,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateList(array $filter = [], $page = null, $limit = null)
+    public function customersCorporateList(array $filter= array(), $page = null, $limit = null)
     {
-        $parameters = [];
+        $parameters= array();
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -130,7 +130,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers-corporate/create',
             "POST",
-            $this->fillSite($site, ['customerCorporate' => json_encode($customerCorporate)])
+            $this->fillSite($site, array('customerCorporate' => json_encode($customerCorporate)))
         );
     }
 
@@ -156,7 +156,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers-corporate/fix-external-ids',
             "POST",
-            ['customersCorporate' => json_encode($ids)]
+            array('customersCorporate' => json_encode($ids))
         );
     }
 
@@ -168,9 +168,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateHistory(array $filter = [], $page = null, $limit = null)
+    public function customersCorporateHistory(array $filter= array(), $page = null, $limit = null)
     {
-        $parameters = [];
+        $parameters= array();
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -201,9 +201,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateNotesList(array $filter = [], $page = null, $limit = null)
+    public function customersCorporateNotesList(array $filter= array(), $page = null, $limit = null)
     {
-        $parameters = [];
+        $parameters= array();
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -244,7 +244,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers-corporate/notes/create',
             "POST",
-            $this->fillSite($site, ['note' => json_encode($note)])
+            $this->fillSite($site, array('note' => json_encode($note)))
         );
     }
 
@@ -296,7 +296,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers-corporate/upload',
             "POST",
-            $this->fillSite($site, ['customersCorporate' => json_encode($customersCorporate)])
+            $this->fillSite($site, array('customersCorporate' => json_encode($customersCorporate)))
         );
     }
 
@@ -320,7 +320,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/customers-corporate/$id",
             "GET",
-            $this->fillSite($site, ['by' => $by])
+            $this->fillSite($site, array('by' => $by))
         );
     }
 
@@ -342,14 +342,14 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateAddresses(
         $id,
-        array $filter = [],
+        array $filter= array(),
         $page = null,
         $limit = null,
         $by = 'externalId',
         $site = null
     ) {
         $this->checkIdParameter($by);
-        $parameters = ['by' => $by];
+        $parameters = array('by' => $by);
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -381,13 +381,13 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateAddressesCreate($id, array $address = [], $by = 'externalId', $site = null)
+    public function customersCorporateAddressesCreate($id, array $address= array(), $by = 'externalId', $site = null)
     {
         /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$id/addresses/create",
             "POST",
-            $this->fillSite($site, ['address' => json_encode($address), 'by' => $by])
+            $this->fillSite($site, array('address' => json_encode($address), 'by' => $by))
         );
     }
 
@@ -410,7 +410,7 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateAddressesEdit(
         $customerId,
         $addressId,
-        array $address = [],
+        array $address= array(),
         $customerBy = 'externalId',
         $addressBy = 'externalId',
         $site = null
@@ -429,11 +429,11 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/addresses/$addressId/edit",
             "POST",
-            $this->fillSite($site, [
+            $this->fillSite($site, array(
                 'address' => json_encode($address),
                 'by' => $customerBy,
                 'entityBy' => $addressBy
-            ])
+            ))
         );
     }
 
@@ -455,14 +455,14 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateCompanies(
         $id,
-        array $filter = [],
+        array $filter= array(),
         $page = null,
         $limit = null,
         $by = 'externalId',
         $site = null
     ) {
         $this->checkIdParameter($by);
-        $parameters = ['by' => $by];
+        $parameters = array('by' => $by);
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -494,13 +494,13 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateCompaniesCreate($id, array $company = [], $by = 'externalId', $site = null)
+    public function customersCorporateCompaniesCreate($id, array $company= array(), $by = 'externalId', $site = null)
     {
         /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$id/companies/create",
             "POST",
-            $this->fillSite($site, ['company' => json_encode($company), 'by' => $by])
+            $this->fillSite($site, array('company' => json_encode($company), 'by' => $by))
         );
     }
 
@@ -523,7 +523,7 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateCompaniesEdit(
         $customerId,
         $companyId,
-        array $company = [],
+        array $company= array(),
         $customerBy = 'externalId',
         $companyBy = 'externalId',
         $site = null
@@ -532,11 +532,11 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/companies/$companyId/edit",
             "POST",
-            $this->fillSite($site, [
+            $this->fillSite($site, array(
                 'company' => json_encode($company),
                 'by' => $customerBy,
                 'entityBy' => $companyBy
-            ])
+            ))
         );
     }
 
@@ -558,14 +558,14 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateContacts(
         $id,
-        array $filter = [],
+        array $filter= array(),
         $page = null,
         $limit = null,
         $by = 'externalId',
         $site = null
     ) {
         $this->checkIdParameter($by);
-        $parameters = ['by' => $by];
+        $parameters = array('by' => $by);
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -597,13 +597,13 @@ class WC_Retailcrm_Client_V5
      *
      * @throws InvalidArgumentException
      */
-    public function customersCorporateContactsCreate($id, array $contact = [], $by = 'externalId', $site = null)
+    public function customersCorporateContactsCreate($id, array $contact= array(), $by = 'externalId', $site = null)
     {
         /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$id/contacts/create",
             "POST",
-            $this->fillSite($site, ['contact' => json_encode($contact), 'by' => $by])
+            $this->fillSite($site, array('contact' => json_encode($contact), 'by' => $by))
         );
     }
 
@@ -626,7 +626,7 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateContactsEdit(
         $customerId,
         $contactId,
-        array $contact = [],
+        array $contact= array(),
         $customerBy = 'externalId',
         $contactBy = 'externalId',
         $site = null
@@ -635,11 +635,11 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/contacts/$contactId/edit",
             "POST",
-            $this->fillSite($site, [
+            $this->fillSite($site, array(
                 'contact' => json_encode($contact),
                 'by' => $customerBy,
                 'entityBy' => $contactBy
-            ])
+            ))
         );
     }
 
@@ -675,7 +675,7 @@ class WC_Retailcrm_Client_V5
             "POST",
             $this->fillSite(
                 $site,
-                ['customerCorporate' => json_encode($customerCorporate), 'by' => $by]
+                array('customerCorporate' => json_encode($customerCorporate), 'by' => $by)
             )
         );
     }
@@ -2976,7 +2976,9 @@ class WC_Retailcrm_Client_V5
      */
     public function getSingleSiteForKey()
     {
-        if (!empty($this->getSite())) {
+        $site = $this->getSite();
+
+        if (!empty($site)) {
             return $this->getSite();
         }
 

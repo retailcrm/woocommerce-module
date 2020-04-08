@@ -146,7 +146,7 @@ class WC_Retailcrm_Plugin {
             return $arr;
         }
 
-        $result = [];
+        $result = array();
 
         foreach ($arr as $index => $node) {
             $result[$index] = (is_array($node))

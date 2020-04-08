@@ -327,7 +327,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         protected function orderUpdate($order, $options)
         {
-            $crmOrder = [];
+            $crmOrder = array();
             $wc_order = wc_get_order($order['externalId']);
 
             if (!$wc_order instanceof WC_Order) {
@@ -742,9 +742,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         protected function editOrder($settings, $wc_order, $order, $event = 'create')
         {
-            $data = [];
-            $crmOrder = [];
-            $order_items = [];
+            $data= array();
+            $crmOrder= array();
+            $order_items= array();
 
             if ($event == 'update') {
                 $result = $this->retailcrm->ordersGet($order['externalId']);

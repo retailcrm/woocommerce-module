@@ -24,7 +24,9 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
      */
     public function build($customer, $order = null)
     {
-        if ($order instanceof WC_Order && empty($customer->get_billing_address())) {
+        $customerBillingAddress = $customer->get_billing_address();
+
+        if ($order instanceof WC_Order && empty($customerBillingAddress)) {
             $data = array(
                 'index' => $order->get_billing_postcode(),
                 'countryIso' => $order->get_billing_country(),
