@@ -563,7 +563,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public static function isCorporateOrder($order)
         {
-            return !empty($order->get_billing_company());
+            $billingCompany = $order->get_billing_company();
+
+            return !empty($billingCompany);
         }
 
         /**
