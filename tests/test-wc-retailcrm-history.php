@@ -68,6 +68,11 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         $orders = wc_get_orders(array('numberposts' => -1));
         $order_added = end($orders);
+
+        if (!$order_added) {
+	        $this->fail('$order_added is null');
+        }
+
         $order_added_items = $order_added->get_items();
         $order_added_item = reset($order_added_items);
         $shipping_address = $order_added->get_address('shipping');
