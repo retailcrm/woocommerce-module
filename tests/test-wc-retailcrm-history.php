@@ -2,8 +2,13 @@
 
 class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 {
+	/** @var WC_Retailcrm_Proxy */
     protected $apiMock;
+
+    /** @var WC_Retailcrm_Response_Helper */
     protected $customersHistoryResponse;
+
+    /** @var WC_Retailcrm_Response_Helper */
     protected $ordersHistoryResponse;
 
     const STATUS_1 = 'status1';
@@ -44,6 +49,14 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $this->setOptions($api_version);
 
+        if (!add_option('retailcrm_orders_history_since_id', 0)) {
+        	update_option('retailcrm_orders_history_since_id', 0);
+        }
+
+        if (!add_option('retailcrm_customers_history_since_id', 0)) {
+        	update_option('retailcrm_customers_history_since_id', 0);
+        }
+
         $this->customersHistoryResponse->expects($this->any())
             ->method('isSuccessful')
             ->willReturn(true);
@@ -70,7 +83,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $order_added = end($orders);
 
         if (!$order_added) {
-	        $this->fail('$order_added is null');
+	        $this->fail('$order_added is null - no orders were added after receiving history');
         }
 
         $order_added_items = $order_added->get_items();
