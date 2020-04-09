@@ -29,7 +29,9 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_build($externalId)
     {
-        $order_payment = new WC_Retailcrm_Order_Payment($this->getOptions());
+	    $settings = $this->getOptions();
+	    $settings['send_payment_amount'] = 'no';
+	    $order_payment = new WC_Retailcrm_Order_Payment($settings);
 
         $data = $order_payment->build($this->order, $externalId)->get_data();
 

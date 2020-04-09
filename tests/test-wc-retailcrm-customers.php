@@ -38,6 +38,8 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             ->willReturn($this->responseMock);
 
         $this->customer = new WC_Customer();
+        $this->customer->set_first_name('Tester');
+        $this->customer->set_last_name('Tester');
         $this->customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
         $this->customer->set_billing_email($this->customer->get_email());
         $this->customer->set_password('password');
