@@ -19,6 +19,7 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
         parent::setUp();
 
         $this->order = WC_Helper_Order::create_order();
+        $this->setOptions();
     }
 
     /**
@@ -32,7 +33,12 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
 
         $data = $order_payment->build($this->order, $externalId)->get_data();
 
-        $this->assertArrayHasKey('externalId', $data);
+        $this->assertNotEmpty($data);
+
+        if (!empty($externalId)) {
+	        $this->assertArrayHasKey('externalId', $data);
+        }
+
         $this->assertArrayHasKey('type', $data);
         $this->assertArrayNotHasKey('amount', $data);
         $this->assertArrayHasKey('order', $data);
@@ -51,8 +57,13 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
 
         $data = $order_payment->build($this->order, $externalId)->get_data();
 
-        $this->assertArrayHasKey('externalId', $data);
-        $this->assertArrayHasKey('type', $data);
+	    $this->assertNotEmpty($data);
+
+	    if (!empty($externalId)) {
+		    $this->assertArrayHasKey('externalId', $data);
+	    }
+
+	    $this->assertArrayHasKey('type', $data);
         $this->assertArrayHasKey('amount', $data);
         $this->assertArrayHasKey('order', $data);
     }
