@@ -22,7 +22,7 @@ RUN apt-get install -y subversion
 RUN apt-get install -y wget
 
 RUN wget -O /usr/bin/phpunit https://phar.phpunit.de/phpunit-7.phar && chmod +x /usr/bin/phpunit
-RUN curl --insecure https://getcomposer.org/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
+RUN curl --insecure https://getcomposer.org/download/1.9.3/composer.phar -o /usr/bin/composer && chmod +x /usr/bin/composer
 
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs

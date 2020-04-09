@@ -20,6 +20,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'p_pending' => 'no',
             'p_private' => 'no',
             'p_publish' => 'no',
+            'send_payment_amount' => 'yes',
             'order_methods' => '',
             'flat_rate_shipping' => 'delivery',
             'free_shipping' => 'delivery2',

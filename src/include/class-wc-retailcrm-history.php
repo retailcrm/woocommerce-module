@@ -173,14 +173,14 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             return;
         }
 
-        /**
-         * History orders
-         *
-         * @param string $date
-         * @param int $since_id
-         *
-         * @return boolean
-         */
+	    /**
+	     * History orders
+	     *
+	     * @param string $date
+	     * @param int    $since_id
+	     *
+	     * @return boolean
+	     */
         protected function ordersHistory($date, $since_id)
         {
             $options = array_flip(array_filter($this->retailcrm_settings));

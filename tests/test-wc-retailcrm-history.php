@@ -251,6 +251,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                         'call' => false,
                         'expired' => false,
                         'customer' => array(
+                        	'type' => 'customer',
                             'segments' => array(),
                             'id' => 1,
                             'firstName' => 'Test',
