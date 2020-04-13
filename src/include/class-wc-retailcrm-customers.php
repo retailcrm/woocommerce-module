@@ -16,7 +16,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
         const CUSTOMER_ROLE = 'customer';
 
-        /** @var bool | WC_Retailcrm_Proxy */
+        /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
         /** @var array */
@@ -148,7 +148,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $customer->get_last_name(),
-                'email' => $customer->get_email(),
+                'email' => $customer->get_billing_email(),
                 'address' => $this->customer_address->build($customer)->get_data()
             );
 

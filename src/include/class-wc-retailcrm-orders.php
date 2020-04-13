@@ -136,13 +136,23 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 ));
 
                 if (empty($foundCustomer)) {
+                	$foundCustomer = $this->customers->searchCustomer(array(
+                		'email' => $wcOrder->get_billing_email()
+	                ));
+                }
+
+                if (empty($foundCustomer)) {
                     $customerId = $this->customers->createCustomer($wpUserId);
 
                     if (!empty($customerId)) {
                         $this->order['customer']['id'] = $customerId;
                     }
                 } else {
-                    $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+	                if (!empty($foundCustomer['externalId'])) {
+		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+	                } else {
+		                $this->order['customer']['id'] = $foundCustomer['id'];
+	                }
                 }
             } else {
                 $foundCustomer = $this->customers->searchCustomer(array(
@@ -157,7 +167,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                         $this->order['customer']['id'] = $customerId;
                     }
                 } else {
-                    $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+                	if (!empty($foundCustomer['externalId'])) {
+		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
+	                } else {
+                		$this->order['customer']['id'] = $foundCustomer['id'];
+	                }
                 }
             }
 
