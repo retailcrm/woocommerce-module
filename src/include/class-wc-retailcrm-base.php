@@ -249,11 +249,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $wcCustomer = new WC_Customer($customer_id);
-	        $resp = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
+            $resp = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
 
-	        if ($resp && $resp->isSuccessful() && isset($resp['customers']) && count($resp['customers']) > 0) {
-		        return;
-	        }
+            if ($resp && $resp->isSuccessful() && isset($resp['customers']) && count($resp['customers']) > 0) {
+                return;
+            }
 
             $this->customers->createCustomer($customer_id);
         }
