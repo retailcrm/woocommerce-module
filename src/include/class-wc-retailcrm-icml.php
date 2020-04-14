@@ -413,7 +413,9 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     'name' => $term->name
                 );
 
-                $thumbnail_id = get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
+                $thumbnail_id = function_exists('get_term_meta')
+                    ? get_term_meta($term->term_id, 'thumbnail_id', true)
+                    : get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
                 $picture = wp_get_attachment_url($thumbnail_id);
 
                 if ($picture) {
