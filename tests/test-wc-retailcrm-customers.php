@@ -39,6 +39,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->customer = new WC_Customer();
         $this->customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
+        $this->customer->set_billing_email($this->customer->get_email());
         $this->customer->set_password('password');
         $this->customer->set_billing_phone('89000000000');
         $this->customer->save();

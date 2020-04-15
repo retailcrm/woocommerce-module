@@ -228,13 +228,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
             update_option(static::$option_key, $options);
         }
 
-        /**
-         * Create customer in retailCRM
-         * @param int $customer_id
-         */
+	    /**
+	     * Create customer in retailCRM
+	     *
+	     * @param int $customer_id
+	     *
+	     * @return void
+	     * @throws \Exception
+	     */
         public function create_customer($customer_id)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
+            $client = $this->getApiClient();
+
+            if (empty($client)) {
+            	return;
+            }
+
+            $wcCustomer = new WC_Customer($customer_id);
+            $resp = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
+
+            if ($resp && $resp->isSuccessful() && isset($resp['customers']) && count($resp['customers']) > 0) {
                 return;
             }
 
@@ -321,7 +338,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
         * Get retailcrm api client
         *
-        * @return bool|WC_Retailcrm_Proxy
+        * @return bool|WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5
         */
         public function getApiClient()
         {
