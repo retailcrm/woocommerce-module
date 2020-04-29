@@ -217,10 +217,18 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 >>>>>>> corporate customers alternative logic
 >>>>>>> corporate customers alternative logic
                 $wpUserId = (int) $wpUser->get('ID');
+<<<<<<< HEAD
                 $this->fillOrderCreate($wpUserId, $wpUser->get('email'), $wcOrder);
+<<<<<<< HEAD
+=======
+>>>>>>> WIP: different (better) logic for corporate clients, fix for possible problem with identifiers
+=======
+                $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
+>>>>>>> merge changes
+>>>>>>> merge changes
             } else {
                 $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
-                $this->fillOrderCreate(0, $wcCustomer->get_email(), $wcOrder);
+                $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
             }
 
             try {
@@ -230,21 +238,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     if ($response->isSuccessful()) {
                         return $wcOrder;
                     } else {
-                        if ($response->offsetExists('error')) {
-                            return $response['error'];
-                        } elseif ($response->offsetExists('errors') && is_array($response['errors'])) {
-                            $errorMessage = '';
-
-                            foreach ($response['errors'] as $error) {
-                                $errorMessage .= $error . ' >';
-                            }
-
-                            if (strlen($errorMessage) > 2) {
-                                return substr($errorMessage, 0, strlen($errorMessage) - 2);
-                            }
-
-                            return $errorMessage;
-                        }
+                        return $response->getErrorString();
                     }
                 }
             } catch (InvalidArgumentException $exception) {
@@ -282,32 +276,17 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if ($this->retailcrm->getCorporateEnabled() && static::isCorporateOrder($wcOrder)) {
                 $crmCorporate = array();
                 $crmCorporateList = $this->customers->searchCorporateCustomer(array(
-                    'contactIds' => array($foundCustomerId)
+                    'contactIds' => array($foundCustomerId),
+                    'companyName' => $wcOrder->get_billing_company()
                 ), true);
 
-                if (!empty($crmCorporateList)) {
-                    foreach ($crmCorporateList as $corporate) {
-                        if (!empty($corporate)
-                            && !empty($corporate['mainCompany'])
-                            && isset($corporate['mainCompany']['name'])
-                            && $corporate['mainCompany']['name'] == $wcOrder->get_billing_company()
-                        ) {
-                            $crmCorporate = $corporate;
-
-                            break;
-                        }
-                    }
+                if (empty($crmCorporateList)) {
+	                $crmCorporateList = $this->customers->searchCorporateCustomer(array(
+		                'companyName' => $wcOrder->get_billing_company()
+	                ), true);
                 }
 
                 if (empty($crmCorporate)) {
-                    $crmCorporate = $this
-                        ->customers
-                        ->findCorporateCustomerByMainCompany($wcOrder->get_billing_company());
-                }
-
-                if (empty($crmCorporate) || (!empty($crmCorporate['mainCompany'])
-                    && $crmCorporate['mainCompany']['name'] != $wcOrder->get_billing_company())
-                ) {
                     $corporateId = $this->customers->createCorporateCustomerForOrder(
                         $foundCustomerId,
                         $wcCustomerId,

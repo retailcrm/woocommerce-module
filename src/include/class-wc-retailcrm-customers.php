@@ -24,7 +24,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         const CUSTOMER_ROLE = 'customer';
 
-        /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
+	    /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
         /** @var array */
@@ -323,7 +323,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $firstName = $customer->get_first_name();
             $lastName = $customer->get_last_name();
             $billingPhone = $customer->get_billing_phone();
-            $email = $customer->get_email();
+            $email = $customer->get_billing_email();
 
             if (empty($firstName) && empty($lastName) && $order instanceof WC_Order) {
                 $firstName = $order->get_billing_first_name();
@@ -525,13 +525,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function searchCorporateCustomer($filter, $returnGroup = false)
         {
-            if (isset($filter['externalId'])) {
-                $search = $this->retailcrm->customersCorporateGet($filter['externalId']);
-            } elseif (isset($filter['email'])) {
-                $search = $this->retailcrm->customersCorporateList(array('email' => $filter['email']));
-            } elseif (!empty($filter)) {
-                $search = $this->retailcrm->customersCorporateList($filter);
-            }
+	        $search = $this->retailcrm->customersCorporateList($filter);
 
             if (isset($search) && $search->isSuccessful()) {
                 if (isset($search['customersCorporate'])) {
@@ -554,51 +548,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             return false;
-        }
-
-        /**
-         * Find corporate customer by main company name
-         *
-         * @param $companyName
-         *
-         * @return array
-         *TODO
-         * Replace with filter[nickName][] (search by nickname, company name and VAT).
-         * Logic below is slow and only can search by main company.
-         */
-        public function findCorporateCustomerByMainCompany($companyName)
-        {
-            $response = true;
-            $page = null;
-
-            do {
-                $response = $this->retailcrm->customersCorporateList(array(), $page, 100);
-
-                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
-                    if (is_null($page) && isset($response['pagination']['totalPageCount'])) {
-                        $page = $response['pagination']['totalPageCount'];
-                    }
-
-                    if ($response->offsetExists('customersCorporate')) {
-                        foreach ($response['customersCorporate'] as $crmCorporate) {
-                            if (isset($crmCorporate['mainCompany'])
-                                && $crmCorporate['mainCompany']['name'] == $companyName
-                            ) {
-                                return $crmCorporate;
-                            }
-                        }
-                    }
-
-                    $page--;
-                }
-
-                time_nanosleep(0, 300000000);
-            } while ($response instanceof WC_Retailcrm_Response &&
-                $response->isSuccessful() &&
-                (isset($response['pagination']) && $page > 0)
-            );
-
-            return array();
         }
 
         /**
