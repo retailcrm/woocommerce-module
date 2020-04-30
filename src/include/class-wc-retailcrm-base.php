@@ -264,16 +264,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             update_option(static::$option_key, $options);
         }
 
-<<<<<<< HEAD
-	    /**
-	     * Create customer in retailCRM
-	     *
-	     * @param int $customer_id
-	     *
-	     * @return void
-	     * @throws \Exception
-	     */
-=======
         /**
          * Create customer in retailCRM
          *
@@ -282,13 +272,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * @return void
          * @throws \Exception
          */
->>>>>>> merge changes
         public function create_customer($customer_id)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
                 return;
             }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
             $client = $this->getApiClient();
 
@@ -303,6 +293,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return;
             }
 =======
+=======
+>>>>>>> restore correct merge state
 	        $client = $this->getApiClient();
 
 	        if (empty($client)) {
@@ -315,7 +307,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 	        if ($resp && $resp->isSuccessful() && isset($resp['customers']) && count($resp['customers']) > 0) {
 		        return;
 	        }
->>>>>>> merge changes
 
             $this->customers->createCustomer($customer_id);
         }

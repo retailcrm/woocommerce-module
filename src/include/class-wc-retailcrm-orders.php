@@ -131,6 +131,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             if ($wpUser instanceof WP_User) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -210,10 +211,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
 =======
 =======
+=======
+>>>>>>> restore correct merge state
                 if (!WC_Retailcrm_Customers::isCustomer($wpUser)) {
                     return $wcOrder;
                 }
 
+<<<<<<< HEAD
 >>>>>>> corporate customers alternative logic
 >>>>>>> corporate customers alternative logic
                 $wpUserId = (int) $wpUser->get('ID');
@@ -226,6 +230,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
 >>>>>>> merge changes
 >>>>>>> merge changes
+=======
+                $wpUserId = (int) $wpUser->get('ID');
+                $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
+>>>>>>> restore correct merge state
             } else {
                 $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
                 $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
@@ -295,6 +303,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     $this->order['customer']['id'] = $corporateId;
                 } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -324,15 +333,21 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 >>>>>>> WIP: corporate customers support
 =======
 =======
+=======
+>>>>>>> restore correct merge state
                     $this->customers->fillCorporateAddress(
                         $crmCorporate['id'],
                         new WC_Customer($wcCustomerId),
                         $wcOrder
                     );
+<<<<<<< HEAD
 >>>>>>> new address logic & fixes
 >>>>>>> new address logic & fixes
                     $this->order['customer']['id'] = $crmCorporate['id'];
 
+=======
+                    $this->order['customer']['id'] = $crmCorporate['id'];
+>>>>>>> restore correct merge state
                 }
 
                 $this->order['contact']['id'] = $foundCustomerId;
