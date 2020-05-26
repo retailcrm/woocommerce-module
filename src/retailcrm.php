@@ -41,6 +41,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             $this->load_plugin_textdomain();
 
             if (class_exists( 'WC_Integration' )) {
+                require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-logger.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');

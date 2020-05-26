@@ -449,7 +449,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          *
          * @return bool|array
          */
-        public function searchCustomer($filter)
+        private function searchCustomer($filter)
         {
             if (isset($filter['externalId'])) {
                 $search = $this->retailcrm->customersGet($filter['externalId']);
@@ -508,7 +508,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $customer = $this->searchCustomer(array('externalId' => $customerExternalId));
             }
 
-            if (!$customer) {
+            if (!$customer && !empty($customerEmailOrPhone)) {
                 $customer = $this->searchCustomer(array('email' => $customerEmailOrPhone));
             }
 

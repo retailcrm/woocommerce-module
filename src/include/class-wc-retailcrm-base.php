@@ -96,6 +96,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
+            add_action('profile_update', array($this, 'update_customer'), 10, 2);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
@@ -318,6 +319,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function update_customer($customer_id)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
+            if (empty($customer_id)) {
                 return;
             }
 

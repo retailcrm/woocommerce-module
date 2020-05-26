@@ -90,8 +90,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
                 $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
             } catch (\Exception $exception) {
-                $logger = new WC_Logger();
-                $logger->add('retailcrm',
+                WC_Retailcrm_Logger::add(
                     sprintf("[%s] - %s", $exception->getMessage(),
                         'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
                 );
@@ -222,8 +221,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $this->update_total($wc_order);
                         }
                     } catch (Exception $exception) {
-                        $logger = new WC_Logger();
-                        $logger->add('retailcrm',
+                        WC_Retailcrm_Logger::add(
                             sprintf("[%s] - %s", $exception->getMessage(),
                                 'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
                         );
@@ -574,8 +572,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $companyName = '';
 
             if ($wc_order instanceof WP_Error) {
-                $logger = new WC_Logger();
-                $logger->add('retailcrm', sprintf(
+                WC_Retailcrm_Logger::add(sprintf(
                     '[%d] error while creating order: %s',
                     $order['id'],
                     print_r($wc_order->get_error_messages(), true)
@@ -775,8 +772,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     if (!empty($crmOrder) && isset($crmOrder['items'][$item['id']])) {
                         $woocommerceId = $crmOrder['items'][$item['id']]['woocomerceId'];
                     } else {
-                        $logger = new WC_Logger();
-                        $logger->add('retailcrm',
+                        WC_Retailcrm_Logger::add(
                             sprintf(
                                 "Order externalId=`%s`: item doesn't have woocomerceId, skipping... (item id=`%s`)",
                                 $order['externalId'],

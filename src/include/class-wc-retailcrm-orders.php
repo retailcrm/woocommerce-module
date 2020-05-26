@@ -282,16 +282,15 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if ($this->retailcrm->getCorporateEnabled() && static::isCorporateOrder($wcOrder)) {
-                $crmCorporate = array();
-                $crmCorporateList = $this->customers->searchCorporateCustomer(array(
+                $crmCorporate = $this->customers->searchCorporateCustomer(array(
                     'contactIds' => array($foundCustomerId),
                     'companyName' => $wcOrder->get_billing_company()
-                ), true);
+                ));
 
-                if (empty($crmCorporateList)) {
-	                $crmCorporateList = $this->customers->searchCorporateCustomer(array(
+                if (empty($crmCorporate)) {
+	                $crmCorporate = $this->customers->searchCorporateCustomer(array(
 		                'companyName' => $wcOrder->get_billing_company()
-	                ), true);
+	                ));
                 }
 
                 if (empty($crmCorporate)) {
@@ -575,15 +574,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return;
             }
 
-            $handle = 'retailcrm';
-            $logger = new WC_Logger();
-            $logger->add($handle, $prefix);
+            WC_Retailcrm_Logger::add($prefix);
 
             foreach ($errors as $orderId => $error) {
-                $logger->add($handle, sprintf("[%d] => %s", $orderId, $error));
+                WC_Retailcrm_Logger::add(sprintf("[%d] => %s", $orderId, $error));
             }
 
-            $logger->add($handle, '==================================');
+            WC_Retailcrm_Logger::add('==================================');
         }
     }
 endif;

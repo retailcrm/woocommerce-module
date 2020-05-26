@@ -24,6 +24,9 @@ class WC_Retailcrm_Response implements \ArrayAccess
     // response assoc array
     protected $response;
 
+    // response raw data
+    protected $rawResponse;
+
     /**
      * ApiResponse constructor.
      *
@@ -35,6 +38,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
     public function __construct($statusCode, $responseBody = null)
     {
         $this->statusCode = (int) $statusCode;
+        $this->rawResponse = $responseBody;
 
         if (!empty($responseBody)) {
             $response = json_decode($responseBody, true);
@@ -191,5 +195,13 @@ class WC_Retailcrm_Response implements \ArrayAccess
 		}
 
 		return '';
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getRawResponse()
+    {
+        return $this->rawResponse;
     }
 }
