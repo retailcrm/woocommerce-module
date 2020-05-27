@@ -175,6 +175,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if (isset($filter['externalId'])) {
                 $search = $this->retailcrm->customersGet($filter['externalId']);
             } elseif (isset($filter['email'])) {
+                if (empty($filter['email']) && count($filter) == 1) {
+                    return false;
+                }
+
                 $search = $this->retailcrm->customersList(array('email' => $filter['email']));
             }
 
