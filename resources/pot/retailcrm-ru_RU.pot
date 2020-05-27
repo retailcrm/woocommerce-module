@@ -226,8 +226,21 @@ msgstr "Синхронизация остатков и связь товаров
 msgid "Enable transferring the number to retailCRM"
 msgstr "Активировать передачу номера в retailCRM"
 
+msgid "Online Consultant"
+msgstr "Онлайн консультант"
+
+msgid "Enter consultant code"
+msgstr "Введите код консультанта"
+
+msgid "Enable this setting to activate online consultant"
+msgstr "Активируйте эту настройку для активации Онлайн консультанта"
+
+msgid "Activate Consultant"
+msgstr "Активировать консультанта"
+
 msgid "Transferring the order number"
 msgstr "Передача номера заказа"
 
 msgid "Transferring the payment amount"
 msgstr "Передача суммы оплаты"
+
