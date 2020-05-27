@@ -1,6 +1,8 @@
 <?php
 
 $_tests_dir = getenv('WP_TESTS_DIR');
+$_wcOldBootstrap = '/tmp/woocommerce/tests/bootstrap.php';
+$_wcNewBootstrap = '/tmp/woocommerce/tests/legacy/bootstrap.php';
 
 if (!$_tests_dir) {
     $_tests_dir = '/tmp/wordpress-tests-lib';
@@ -23,9 +25,11 @@ function _manually_load_plugin() {
 
 tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
-$wcBootstrap = '/tmp/woocommerce/tests/bootstrap.php';
-$wcBootstrap = file_exists($wcBootstrap) ?: '/tmp/woocommerce/tests/legacy/bootstrap.php';
-require $wcBootstrap;
+if (file_exists($_wcOldBootstrap)) {
+    require $_wcOldBootstrap;
+} elseif (file_exists($_wcNewBootstrap)) {
+    require $_wcNewBootstrap;
+}
 
 $plugin_dir = dirname(dirname(__FILE__)) . '/';
 // helpers
