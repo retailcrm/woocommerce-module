@@ -142,7 +142,7 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                 WC_Retailcrm_Logger::add(sprintf("[%s] %s - %s", $called, $exception->getMessage(), $result));
             }
 
-            return !empty($response) ?: new WC_Retailcrm_Response(900, '{}');
+            return !empty($response) ? $response : new WC_Retailcrm_Response(900, '{}');
         }
     }
 endif;
