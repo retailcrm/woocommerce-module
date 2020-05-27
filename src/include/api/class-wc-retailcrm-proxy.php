@@ -44,6 +44,8 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
 
         public function __call($method, $arguments)
         {
+            $response = null;
+
             try {
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
 
@@ -72,7 +74,7 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                 $this->logger->add('retailcrm', sprintf("[%s] %s - %s", $method, $exception->getMessage(), $result));
             }
 
-            return $response;    
+            return !empty($response) ? $response : new WC_Retailcrm_Response(900, '{}');
         }
     }
 endif;
