@@ -23,7 +23,9 @@ function _manually_load_plugin() {
 
 tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
-require '/tmp/woocommerce/tests/bootstrap.php';
+$wcBootstrap = '/tmp/woocommerce/tests/bootstrap.php';
+$wcBootstrap = file_exists($wcBootstrap) ?: '/tmp/woocommerce/tests/legacy/bootstrap.php';
+require $wcBootstrap;
 
 $plugin_dir = dirname(dirname(__FILE__)) . '/';
 // helpers
