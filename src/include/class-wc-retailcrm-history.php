@@ -770,7 +770,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     if (!empty($crmOrder) && isset($crmOrder['items'][$item['id']])) {
-                        $woocommerceId = $crmOrder['items'][$item['id']]['woocomerceId'];
+                        $woocommerceId = self::getItemWoocommerceId($crmOrder['items'][$item['id']]);
                     } else {
                         WC_Retailcrm_Logger::add(
                             sprintf(
@@ -782,7 +782,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         continue;
                     }
                 } else {
-                    $woocommerceId = $order['items'][$item['id']]['woocomerceId'];
+                    $woocommerceId = self::getItemWoocommerceId($order['items'][$item['id']]);
+                }
+
+                if (empty($woocommerceId)) {
+                    WC_Retailcrm_Logger::add(
+                        sprintf(
+                            "Order externalId=`%s`: item doesn't have woocomerceId after all assertions, which" .
+                            " is unexpected, skipping... (item id=`%s`)",
+                            $order['externalId'],
+                            $item['id']
+                        )
+                    );
+
+                    continue;
                 }
 
                 $externalIds = array(
@@ -793,7 +806,20 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 );
 
                 if (!empty($item['externalIds'])) {
-                    $order_items[$id]['externalIds'] = array_merge($item['externalIds'], $externalIds);
+                    $found = false;
+
+                    foreach ($item['externalIds'] as $key => $extIdArr) {
+                        if (isset($extIdArr['code']) && $extIdArr['code'] == 'woocomerce') {
+                            $item['externalIds'][$key] = $externalIds;
+                            $found = true;
+
+                            break;
+                        }
+                    }
+
+                    if (!$found) {
+                        $order_items[$id]['externalIds'] = array_merge($item['externalIds'], $externalIds);
+                    }
                 } else {
                     $order_items[$id]['externalIds'] = $externalIds;
                 }
@@ -807,6 +833,33 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
             }
+        }
+
+        /**
+         * @param array $itemData
+         *
+         * @return int|string|null
+         */
+        protected static function getItemWoocommerceId($itemData)
+        {
+            $woocommerceId = null;
+
+            if (isset($itemData['woocomerceId'])) {
+                $woocommerceId = $itemData['woocomerceId'];
+            } elseif (isset($itemData['externalIds'])) {
+                foreach ($itemData['externalIds'] as $extIdArr) {
+                    if (isset($extIdArr['code']) && $extIdArr['code'] == 'woocomerce') {
+                        $woocommerceId = $extIdArr['value'];
+                    }
+                }
+            }
+
+            if (!empty($woocommerceId) && strpos($woocommerceId, '_') !== false) {
+                $wcIdArr = explode('_', $woocommerceId);
+                $woocommerceId = $wcIdArr[1];
+            }
+
+            return $woocommerceId;
         }
 
         /**
