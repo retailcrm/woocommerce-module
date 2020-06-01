@@ -352,6 +352,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $wc_order->set_shipping_last_name($order['lastName']);
             }
 
+<<<<<<< HEAD
             if (isset($order['phone'])) {
                 $wc_order->set_billing_phone($order['phone']);
             }
@@ -360,6 +361,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $wc_order->set_billing_email($order['email']);
             }
 
+=======
+>>>>>>> fixes & more fields for sync
             if (array_key_exists('items', $order)) {
                 foreach ($order['items'] as $key => $item) {
 
@@ -485,17 +488,19 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $wc_order->save();
 
-            $checkNewItem = false;
-            foreach ($order['items'] as $item) {
-                if (!empty($item['externalIds'])) {
-                    continue;
-                } else {
-                    $checkNewItem = true;
+            if (isset($order['items'])) {
+                $checkNewItem = false;
+                foreach ($order['items'] as $item) {
+                    if (!empty($item['externalIds'])) {
+                        continue;
+                    } else {
+                        $checkNewItem = true;
+                    }
                 }
-            }
 
-            if ($checkNewItem == true) {
-                $this->editOrder($this->retailcrm_settings, $wc_order, $order,'update');
+                if ($checkNewItem == true) {
+                    $this->editOrder($this->retailcrm_settings, $wc_order, $order,'update');
+                }
             }
 
             return $wc_order->get_id();
@@ -579,6 +584,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 ));
 
                 return false;
+            }
+
+            if (isset($order['managerComment']) && !empty($order['managerComment'])) {
+                $wc_order->add_order_note($order['managerComment'], 0, false);
             }
 
             if (isset($order['customer']['type'])
