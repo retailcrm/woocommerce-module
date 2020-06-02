@@ -15,11 +15,8 @@ class WC_Retailcrm_Customer_Switcher_State
    /** @var array */
    private $newContact;
 
-   /** @var array */
-   private $newCorporateCustomer;
-
-   /** @var array $newCompany */
-    private $newCompany;
+   /** @var string $newCompanyName */
+    private $newCompanyName;
 
     /**
      * @return \WC_Order
@@ -79,30 +76,22 @@ class WC_Retailcrm_Customer_Switcher_State
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getNewCorporateCustomer()
+    public function getNewCompanyName()
     {
-        return $this->newCorporateCustomer;
+        return $this->newCompanyName;
     }
 
     /**
-     * @param array $newCorporateCustomer
+     * @param string $newCompanyName
      *
      * @return WC_Retailcrm_Customer_Switcher_State
      */
-    public function setNewCorporateCustomer($newCorporateCustomer)
+    public function setNewCompanyName($newCompanyName)
     {
-        $this->newCorporateCustomer = $newCorporateCustomer;
+        $this->newCompanyName = $newCompanyName;
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getNewCompany()
-    {
-        return $this->newCompany;
     }
 
     /**
@@ -112,7 +101,10 @@ class WC_Retailcrm_Customer_Switcher_State
      */
     public function setNewCompany($newCompany)
     {
-        $this->newCompany = $newCompany;
+        if (isset($newCompany['name'])) {
+            $this->setNewCompany($newCompany['name']);
+        }
+
         return $this;
     }
 

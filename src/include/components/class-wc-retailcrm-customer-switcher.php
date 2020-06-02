@@ -27,7 +27,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
 
     /**
      * In fact, this will execute customer change in provided order.
-     * This will not build anything.
+     * This will not produce any new entities.
      *
      * @return $this|\WC_Retailcrm_Builder_Interface
      * @throws \WC_Data_Exception
@@ -38,9 +38,8 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
 
         $wcOrder = $this->data->getWcOrder();
         $newCustomer = $this->data->getNewCustomer();
-        $newCorporateCustomer = $this->data->getNewCorporateCustomer();
         $newContact = $this->data->getNewContact();
-        $newCompany = $this->data->getNewCompany();
+        $newCompany = $this->data->getNewCompanyName();
 
         if (!empty($newCustomer)) {
             $this->processChangeToRegular($wcOrder, $newCustomer);
@@ -52,7 +51,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         }
 
         if (!empty($newCompany)) {
-            $this->updateCompany($wcOrder, $newCorporateCustomer, $newCompany);
+            $this->updateCompany($wcOrder, $newCompany);
         }
 
         return $this;
@@ -76,6 +75,21 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
             if (!empty($wcCustomer)) {
                 $wcOrder->set_customer_id($wcCustomer->get_id());
             }
+        } else {
+            //TODO:
+            // 1. Too risky! Consider using default WooCommerce object.
+            // 2. Will it work as expected with such property name? Check that.
+            // 3. It will remove user from order directly, WC_Order logic is completely skipped here.
+            //    It can cause these problems:
+            //    1) Order is changed and it's state in WC_Order is inconsistent, which can lead to problems
+            //       and data inconsistency while saving. For example, order saving can overwrite `_customer_user`
+            //       meta, which will revert this operation and we'll end up with a broken data (order is still
+            //       attached to an old customer). Whichever, this last statement should be checked.
+            //    2) The second problem is a lifecycle in general. We're using builder interface, and code inside
+            //       doesn't do anything which is not expected from builder. For example, besides this line, there's no
+            //       CRUD operations. Such operation will not be expected here, so, it's better to remove it from here.
+            //       The best solution would be to use WC_Order, and not modify it's data directly.
+            delete_post_meta($wcOrder->get_id(), '_customer_user');
         }
 
         $fields = array(
@@ -96,12 +110,13 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
      * Update company in the order
      *
      * @param WC_Order $wcOrder
-     * @param array $corporateCustomer
-     * @param array $company
+     * @param string   $company
+     *
+     * @throws \WC_Data_Exception
      */
-    public function updateCompany($wcOrder, $corporateCustomer, $company)
+    public function updateCompany($wcOrder, $company)
     {
-        // TODO: Implement
+        $wcOrder->set_billing_company($company);
     }
 
     /**

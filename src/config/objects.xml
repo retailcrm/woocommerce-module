@@ -77,6 +77,7 @@
         <field id="shipment_date" group="order">shipmentDate</field>
         <field id="shipped" group="order">shipped</field>
         <field id="contact" group="order">contact</field>
+        <field id="company" group="order">company</field>
         <!--<field id="order_product" group="order">item</field>-->
         <field id="payment" group="order">payment</field>
         <field id="payments.amount" group="order">amount</field>
