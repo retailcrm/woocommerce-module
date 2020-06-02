@@ -41,10 +41,19 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             $this->load_plugin_textdomain();
 
             if (class_exists( 'WC_Integration' )) {
-                require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-logger.php');
+                require_once(dirname(__FILE__) . '/include/interfaces/class-wc-retailcrm-builder-interface.php');
+                require_once(dirname(__FILE__ ) . '/include/models/class-wc-retailcrm-customer-data-replacer-state.php');
+                require_once(dirname(__FILE__ ) . '/include/models/class-wc-retailcrm-customer-data-replacer-result.php');
+                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-logger.php');
+                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-history-assembler.php');
+                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-paginated-request.php');
+                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-customer-data-replacer.php');
+                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-customer-data-replacer.php');
+                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstract-builder.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
+                require_once(dirname(__FILE__ ) . '/include/customer/woocommerce/class-wc-retailcrm-wc-customer-builder.php');
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
                 require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');

@@ -480,7 +480,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                             }
                         }
                     } else {
-                        $customer = reset($search['customers']);
+                        $dataCustomers = $search['customers'];
+                        $customer = reset($dataCustomers);
                     }
                 } else {
                     $customer = !empty($search['customer']) ? $search['customer'] : false;
@@ -536,7 +537,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     if ($returnGroup) {
                         return $search['customersCorporate'];
                     } else {
-                        $customer = reset($search['customersCorporate']);
+                        $dataCorporateCustomers = $search['customersCorporate'];
+                        $customer = reset($dataCorporateCustomers);
                     }
                 } elseif (isset($search['customerCorporate'])) {
                     $customer = $search['customerCorporate'];

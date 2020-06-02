@@ -164,7 +164,6 @@ class WC_Retailcrm_Plugin {
         return $result;
     }
 
-
     /**
      * Check running history
      *
