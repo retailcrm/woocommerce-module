@@ -42,13 +42,12 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
 
             if (class_exists( 'WC_Integration' )) {
                 require_once(dirname(__FILE__) . '/include/interfaces/class-wc-retailcrm-builder-interface.php');
-                require_once(dirname(__FILE__ ) . '/include/models/class-wc-retailcrm-customer-data-replacer-state.php');
-                require_once(dirname(__FILE__ ) . '/include/models/class-wc-retailcrm-customer-data-replacer-result.php');
+                require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-state.php');
+                require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-result.php');
                 require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-logger.php');
                 require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-history-assembler.php');
                 require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-paginated-request.php');
-                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-customer-data-replacer.php');
-                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-customer-data-replacer.php');
+                require_once(dirname(__FILE__) . '/include/components/class-wc-retailcrm-customer-switcher.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstract-builder.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
                 require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');

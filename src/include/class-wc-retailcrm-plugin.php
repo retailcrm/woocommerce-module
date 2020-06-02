@@ -165,6 +165,22 @@ class WC_Retailcrm_Plugin {
     }
 
     /**
+     * Returns WC_Customer by id. Returns null if there's no such customer.
+     *
+     * @param int $id
+     *
+     * @return \WC_Customer|null
+     */
+    public static function getWcCustomerById($id)
+    {
+        try {
+            return new WC_Customer($id);
+        } catch (\Exception $exception) {
+            return null;
+        }
+    }
+
+    /**
      * Check running history
      *
      * @return boolean

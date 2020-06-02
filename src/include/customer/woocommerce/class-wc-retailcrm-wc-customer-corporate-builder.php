@@ -180,6 +180,7 @@ class WC_Retailcrm_WC_Customer_Corporate_Builder extends WC_Retailcrm_Abstract_B
      * If field is not present in retailCRM customer - it will remain unchanged.
      *
      * @return $this|\WC_Retailcrm_Builder_Interface
+     * @throws \Exception
      */
     public function build()
     {
