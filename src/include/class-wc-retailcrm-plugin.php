@@ -181,6 +181,18 @@ class WC_Retailcrm_Plugin {
     }
 
     /**
+     * Generates placeholder email
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function createPlaceholderEmail($name)
+    {
+        return substr(md5($name), 0, 15) . '@example.com';
+    }
+
+    /**
      * Check running history
      *
      * @return boolean

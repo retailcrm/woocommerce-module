@@ -59,6 +59,7 @@
         <field id="order_method" group="order">orderMethod</field>
         <field id="site" group="order">site</field>
         <field id="status" group="order">status</field>
+        <field id="customer" group="order">customer</field>
         <field id="manager" group="order">manager</field>
         <field id="first_name" group="order">firstName</field>
         <field id="last_name" group="order">lastName</field>

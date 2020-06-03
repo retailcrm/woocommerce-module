@@ -371,7 +371,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         protected function orderUpdate($order, $options)
         {
-            $crmOrder = array();
             $wc_order = wc_get_order($order['externalId']);
 
             if (!$wc_order instanceof WC_Order) {
@@ -400,6 +399,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (isset($order['phone'])) {
                 $wc_order->set_billing_phone($order['phone']);
             }
@@ -412,11 +412,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 >>>>>>> fixes & more fields for sync
 =======
 
+=======
+            $this->handleCustomerDataChange($wc_order, $order);
+>>>>>>> Fixes, customer change logic for legal entities & individual persons (contact person will be used in the second case)
 
 >>>>>>> WIP: Logic for company replacement via component (which was surprisingly easy to implement)
             if (array_key_exists('items', $order)) {
                 foreach ($order['items'] as $key => $item) {
-
                     if (!isset($item['offer'][$this->bind_field])) {
                         continue;
                     }
@@ -905,6 +907,154 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         /**
+         * Handle customer data change (from individual to corporate, company change, etc)
+         *
+         * @param \WC_Order $wc_order
+         * @param array $order
+         */
+        protected function handleCustomerDataChange($wc_order, $order)
+        {
+            $crmOrder = array();
+            $newCustomerId = null;
+            $switcher = new WC_Retailcrm_Customer_Switcher();
+            $data = new WC_Retailcrm_Customer_Switcher_State();
+            $data->setWcOrder($wc_order);
+
+            WC_Retailcrm_Logger::debug(
+                __METHOD__,
+                'processing order',
+                $order
+            );
+
+            if (isset($order['customer'])) {
+                $crmOrder = $this->getCRMOrder($order['id'], 'id');
+
+                if (empty($crmOrder)) {
+                    WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
+                        'Cannot get order data from retailCRM. Skipping customer change. History data: %s',
+                        print_r($order, true)
+                    ));
+
+                    return;
+                }
+
+                $newCustomerId = $order['customer']['id'];
+                $isChangedToRegular = self::isCustomerChangedToRegular($order);
+                $isChangedToCorporate = self::isCustomerChangedToLegal($order);
+
+                if (!$isChangedToRegular && !$isChangedToCorporate) {
+                    $isChangedToCorporate = self::isOrderCorporate($crmOrder);
+                    $isChangedToRegular = !$isChangedToCorporate;
+                }
+
+                if ($isChangedToRegular) {
+                    $this->prepareChangeToIndividual(
+                        self::arrayValue($crmOrder, 'customer', array()),
+                        $data
+                    );
+                }
+            }
+
+            if (isset($order['contact'])) {
+                $newCustomerId = $order['contact']['id'];
+
+                if (empty($crmOrder)) {
+                    $crmOrder = $this->getCRMOrder($order['id'], 'id');
+                }
+
+                if (empty($crmOrder)) {
+                    WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
+                        'Cannot get order data from retailCRM. Skipping customer change. History data: %s',
+                        print_r($order, true)
+                    ));
+
+                    return;
+                }
+
+                $this->prepareChangeToIndividual(
+                    self::arrayValue($crmOrder, 'contact', array()),
+                    $data,
+                    true
+                );
+
+                if (isset($order['customer']) && $order['customer']['id'] == $order['contact']['id']) {
+                    $data->setNewCustomer(array());
+                }
+            }
+
+            if (isset($order['company'])) {
+                $data->setNewCompany($order['company']);
+            }
+
+            try {
+                $result = $switcher->setData($data)
+                    ->build()
+                    ->getResult();
+
+                $result->save();
+            } catch (\Exception $exception) {
+                WC_Retailcrm_Logger::addCaller(
+                    __METHOD__,
+                    sprintf(
+                        'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s',
+                        $order['externalId'],
+                        $newCustomerId,
+                        isset($order['company']) ? $order['company']['id'] : '',
+                        isset($order['company']) ? $order['company']['name'] : '',
+                        $exception->getMessage()
+                    )
+                );
+            }
+        }
+
+        /**
+         * Returns retailCRM order by id or by externalId.
+         * It returns only order data, not ApiResponse or something.
+         *
+         * @param string $id Order identifier
+         * @param string $by Search field (default: 'externalId')
+         *
+         * @return array
+         */
+        protected function getCRMOrder($id, $by = 'externalId')
+        {
+            $crmOrderResponse = $this->retailcrm->ordersGet($id, $by);
+
+            if (!empty($crmOrderResponse)
+                && $crmOrderResponse->isSuccessful()
+                && $crmOrderResponse->offsetExists('order')
+            ) {
+                return (array) $crmOrderResponse['order'];
+            }
+
+            return array();
+        }
+
+        /**
+         * Sets all needed data for customer switch to switcher state
+         *
+         * @param array                                 $crmCustomer
+         * @param \WC_Retailcrm_Customer_Switcher_State $data
+         * @param bool                                  $isContact
+         */
+        protected function prepareChangeToIndividual($crmCustomer, $data, $isContact = false)
+        {
+            WC_Retailcrm_Logger::debug(
+                __METHOD__,
+                'Using this individual person data in order to set it into order,',
+                $data->getWcOrder()->get_id(),
+                ': ',
+                $crmCustomer
+            );
+
+            if ($isContact) {
+                $data->setNewContact($crmCustomer);
+            } else {
+                $data->setNewCustomer($crmCustomer);
+            }
+        }
+
+        /**
          * @param array $itemData
          *
          * @return int|string|null
@@ -941,6 +1091,52 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         private static function isOrderCorporate($order)
         {
             return isset($order['customer']['type']) && $order['customer']['type'] == 'customer_corporate';
+        }
+
+        /**
+         * This assertion returns true if customer was changed from legal entity to individual person.
+         * It doesn't return true if customer was changed from one individual person to another.
+         *
+         * @param array $assembledOrder Order data, assembled from history
+         *
+         * @return bool True if customer in order was changed from corporate to regular
+         */
+        private static function isCustomerChangedToRegular($assembledOrder)
+        {
+            return isset($assembledOrder['contragentType']) && $assembledOrder['contragentType'] == 'individual';
+        }
+
+        /**
+         * This assertion returns true if customer was changed from individual person to a legal entity.
+         * It doesn't return true if customer was changed from one legal entity to another.
+         *
+         * @param array $assembledOrder Order data, assembled from history
+         *
+         * @return bool True if customer in order was changed from corporate to regular
+         */
+        private static function isCustomerChangedToLegal($assembledOrder)
+        {
+            return isset($assembledOrder['contragentType']) && $assembledOrder['contragentType'] == 'legal-entity';
+        }
+
+        /**
+         * @param array|\ArrayObject|\ArrayAccess $arr
+         * @param string $key
+         * @param string $def
+         *
+         * @return mixed|string
+         */
+        private static function arrayValue($arr, $key, $def = '')
+        {
+            if (!is_array($arr) && !($arr instanceof ArrayObject) && !($arr instanceof ArrayAccess)) {
+                return $def;
+            }
+
+            if (!array_key_exists($key, $arr) && !empty($arr[$key])) {
+                return $def;
+            }
+
+            return $arr[$key];
         }
     }
 

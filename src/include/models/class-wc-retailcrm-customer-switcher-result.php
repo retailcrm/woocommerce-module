@@ -47,4 +47,27 @@ class WC_Retailcrm_Customer_Switcher_Result
     {
         return $this->wcOrder;
     }
+
+    /**
+     * Save customer (if exists) and order.
+     *
+     * @return $this
+     */
+    public function save()
+    {
+        WC_Retailcrm_Logger::debug(
+            __METHOD__,
+            'Saving customer and order:',
+            $this->wcCustomer,
+            $this->wcOrder
+        );
+
+        if (!empty($this->wcCustomer)) {
+            $this->wcCustomer->save();
+        }
+
+        $this->wcOrder->save();
+
+        return $this;
+    }
 }
