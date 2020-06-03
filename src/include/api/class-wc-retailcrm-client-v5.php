@@ -893,7 +893,7 @@ class WC_Retailcrm_Client_V5
             );
         }
             
-        if (empty($entity) || !in_array($entity, ['customer', 'order', 'customer_corporate', 'company'])) {
+        if (empty($entity) || !in_array($entity, array('customer', 'order', 'customer_corporate', 'company'))) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Parameter `entity` must contain a data & value must be %s',

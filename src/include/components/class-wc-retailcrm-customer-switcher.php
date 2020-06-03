@@ -36,34 +36,42 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
     {
         $this->data->validate();
 
-        WC_Retailcrm_Logger::debug(__METHOD__, 'state', $this->data);
+        WC_Retailcrm_Logger::debug(__METHOD__, array('state', $this->data));
 
-        if (!empty($this->data->getNewCustomer())) {
+        $newCustomer = $this->data->getNewCustomer();
+        $newContact = $this->data->getNewContact();
+        $newCompany = $this->data->getNewCompanyName();
+
+        if (!empty($newCustomer)) {
             WC_Retailcrm_Logger::debug(
                 __METHOD__,
-                'Changing to individual customer for order',
-                $this->data->getWcOrder()->get_id()
+                array(
+                    'Changing to individual customer for order',
+                    $this->data->getWcOrder()->get_id()
+                )
             );
-            $this->processChangeToRegular($this->data->getWcOrder(), $this->data->getNewCustomer());
+            $this->processChangeToRegular($this->data->getWcOrder(), $newCustomer);
         } else {
-            if (!empty($this->data->getNewContact())) {
+            if (!empty($newContact)) {
                 WC_Retailcrm_Logger::debug(
                     __METHOD__,
-                    'Changing to contact person customer for order',
-                    $this->data->getWcOrder()->get_id()
+                    array(
+                        'Changing to contact person customer for order',
+                        $this->data->getWcOrder()->get_id()
+                    )
                 );
-                $this->processChangeToRegular($this->data->getWcOrder(), $this->data->getNewContact());
+                $this->processChangeToRegular($this->data->getWcOrder(), $newContact);
             }
 
-            if (!empty($this->data->getNewCompanyName())) {
+            if (!empty($newCompany)) {
                 WC_Retailcrm_Logger::debug(
                     __METHOD__,
-                    sprintf(
+                    array(sprintf(
                         'Replacing old order id=`%d` company `%s` with new company `%s`',
                         $this->data->getWcOrder()->get_id(),
                         $this->data->getWcOrder()->get_billing_company(),
-                        $this->data->getNewCompanyName()
-                    )
+                        $newCompany
+                    ))
                 );
                 $this->processCompanyChange();
             }
@@ -86,10 +94,12 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
 
         WC_Retailcrm_Logger::debug(
             __METHOD__,
-            'Switching in order',
-            $wcOrder->get_id(),
-            'to',
-            $newCustomer
+            array(
+                'Switching in order',
+                $wcOrder->get_id(),
+                'to',
+                $newCustomer
+            )
         );
 
         if (isset($newCustomer['externalId'])) {
@@ -99,18 +109,22 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
                 $wcOrder->set_customer_id($wcCustomer->get_id());
                 WC_Retailcrm_Logger::debug(
                     __METHOD__,
-                    'Set customer to',
-                    $wcCustomer->get_id(),
-                    'in order',
-                    $wcOrder->get_id()
+                    array(
+                        'Set customer to',
+                        $wcCustomer->get_id(),
+                        'in order',
+                        $wcOrder->get_id()
+                    )
                 );
             }
         } else {
             $wcOrder->set_customer_id(0);
             WC_Retailcrm_Logger::debug(
                 __METHOD__,
-                'Set customer to 0 (guest) in order',
-                $wcOrder->get_id()
+                array(
+                    'Set customer to 0 (guest) in order',
+                    $wcOrder->get_id()
+                )
             );
         }
 
@@ -148,8 +162,10 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
             }
         }
 
-        if (!empty(self::singleCustomerPhone($newCustomer))) {
-            $wcOrder->set_billing_phone(self::singleCustomerPhone($newCustomer));
+        $customerPhone = self::singleCustomerPhone($newCustomer);
+
+        if (!empty($customerPhone)) {
+            $wcOrder->set_billing_phone($customerPhone);
         }
 
         $wcOrder->set_billing_company('');

@@ -145,7 +145,7 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
     public function build()
     {
         $this->checkBuilderValidity();
-        WC_Retailcrm_Logger::debug(__METHOD__, 'Building WC_Customer from data:', $this->data);
+        WC_Retailcrm_Logger::debug(__METHOD__, array('Building WC_Customer from data:', $this->data));
         $this->customer->set_first_name($this->dataValue('firstName', $this->customer->get_first_name()));
         $this->customer->set_last_name($this->dataValue('lastName', $this->customer->get_last_name()));
         $this->customer->set_billing_email($this->dataValue('email', $this->customer->get_billing_email()));
@@ -159,9 +159,9 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
             }
         }
 
-        if (!empty($this->dataValue('address'))) {
-            $address = $this->dataValue('address');
+        $address = $this->dataValue('address');
 
+        if (!empty($address)) {
             $this->customer->set_billing_state(self::arrayValue(
                 $address,
                 'region',

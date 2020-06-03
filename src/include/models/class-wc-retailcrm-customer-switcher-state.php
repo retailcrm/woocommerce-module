@@ -116,20 +116,22 @@ class WC_Retailcrm_Customer_Switcher_State
      */
     public function validate()
     {
-        if (empty($this->getWcOrder())) {
+        if (empty($this->wcOrder)) {
             throw new \InvalidArgumentException('Empty WC_Order.');
         }
 
-        if (empty($this->getNewCustomer()) && empty($this->getNewContact()) && empty($this->getNewCompanyName())) {
+        if (empty($this->newCustomer) && empty($this->newContact) && empty($this->newCompanyName)) {
             throw new \InvalidArgumentException('New customer, new contact and new company is empty.');
         }
 
-        if (!empty($this->getNewCustomer()) && !empty($this->getNewContact())) {
+        if (!empty($this->newCustomer) && !empty($this->newContact)) {
             WC_Retailcrm_Logger::debug(
                 __METHOD__,
-                'State data (customer and contact):' . PHP_EOL,
-                $this->getNewCustomer(),
-                $this->getNewContact()
+                array(
+                    'State data (customer and contact):' . PHP_EOL,
+                    $this->getNewCustomer(),
+                    $this->getNewContact()
+                )
             );
             throw new \InvalidArgumentException(
                 'Too much data in state - cannot determine which customer should be used.'

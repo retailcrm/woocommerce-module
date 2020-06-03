@@ -81,7 +81,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
          * @param string $method
          * @param array  $messages
          */
-        public static function debug($method, ...$messages)
+        public static function debug($method, $messages)
         {
             if (retailcrm_is_debug()) {
                 if (!empty($method) && !empty($messages)) {

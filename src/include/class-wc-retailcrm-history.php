@@ -157,10 +157,14 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $customers = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
                 WC_Retailcrm_Plugin::$history_run = true;
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> WIP: Change client in the order (not ready at this point; also tests should fail)
 =======
                 WC_Retailcrm_Logger::debug(__METHOD__, 'Assembled customers history:', $customers);
 >>>>>>> WIP: Logic for company replacement via component (which was surprisingly easy to implement)
+=======
+                WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
+>>>>>>> Compatibility fixes for php 5.3
 
                 foreach ($customers as $crmCustomer) {
                     if (!isset($crmCustomer['externalId'])) {
@@ -187,7 +191,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $wcCustomer->save();
                         }
 
-                        WC_Retailcrm_Logger::debug(__METHOD__, 'Updated WC_Customer:', $wcCustomer);
+                        WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
                     } catch (\Exception $exception) {
                         WC_Retailcrm_Logger::error(sprintf(
                             'Error while trying to process history: %s',
@@ -244,7 +248,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             if (!empty($history)) {
                 $last_change = end($history);
                 $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
-                WC_Retailcrm_Logger::debug(__METHOD__, 'Assembled orders history:', $historyAssembly);
+                WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled orders history:', $historyAssembly));
                 WC_Retailcrm_Plugin::$history_run = true;
 
                 foreach ($historyAssembly as $orderHistory) {
@@ -922,8 +926,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             WC_Retailcrm_Logger::debug(
                 __METHOD__,
-                'processing order',
-                $order
+                array(
+                    'processing order',
+                    $order
+                )
             );
 
             if (isset($order['customer'])) {

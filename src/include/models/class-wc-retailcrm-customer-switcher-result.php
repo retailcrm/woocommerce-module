@@ -57,9 +57,11 @@ class WC_Retailcrm_Customer_Switcher_Result
     {
         WC_Retailcrm_Logger::debug(
             __METHOD__,
-            'Saving customer and order:',
-            $this->wcCustomer,
-            $this->wcOrder
+            array(
+                'Saving customer and order:',
+                $this->wcCustomer,
+                $this->wcOrder
+            )
         );
 
         if (!empty($this->wcCustomer)) {
