@@ -114,16 +114,11 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('WooCity', $order_send['delivery']['address']['city']);
             $this->assertEquals('delivery', $order_send['delivery']['code']);
 
-            if ($apiVersion == 'v4') {
-                $this->assertArrayHasKey('paymentType', $order_send);
-                $this->assertEquals('payment1', $order_send['paymentType']);
-            } elseif ($apiVersion == 'v5') {
-                $this->assertArrayHasKey('payments', $order_send);
-                $this->assertInternalType('array', $order_send['payments']);
-                $this->assertArrayHasKey('type', $order_send['payments'][0]);
-                $this->assertArrayHasKey('externalId', $order_send['payments'][0]);
-                $this->assertEquals('payment1', $order_send['payments'][0]['type']);
-            }
+            $this->assertArrayHasKey('payments', $order_send);
+            $this->assertInternalType('array', $order_send['payments']);
+            $this->assertArrayHasKey('type', $order_send['payments'][0]);
+            $this->assertArrayHasKey('externalId', $order_send['payments'][0]);
+            $this->assertEquals('payment1', $order_send['payments'][0]['type']);
         } else {
             $this->assertEquals(null, $order);
         }
@@ -200,24 +195,19 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('WooCity', $order_send['delivery']['address']['city']);
             $this->assertEquals('delivery', $order_send['delivery']['code']);
 
-            if ($apiVersion == 'v4') {
-                $this->assertArrayHasKey('paymentType', $order_send);
-                $this->assertEquals('payment1', $order_send['paymentType']);
-            } elseif ($apiVersion == 'v5') {
-                $payment = $retailcrm_orders->getPayment();
-                $this->assertInternalType('array', $payment);
+            $payment = $retailcrm_orders->getPayment();
+            $this->assertInternalType('array', $payment);
 
-                if (!empty($payment)) {
-                    $this->assertArrayHasKey('type', $payment);
-                    $this->assertArrayHasKey('order', $payment);
-                    $this->assertArrayHasKey('externalId', $payment);
-                    $this->assertEquals('payment1', $payment['type']);
+            if (!empty($payment)) {
+                $this->assertArrayHasKey('type', $payment);
+                $this->assertArrayHasKey('order', $payment);
+                $this->assertArrayHasKey('externalId', $payment);
+                $this->assertEquals('payment1', $payment['type']);
 
-                    if (!empty($this->options['send_payment_amount']) && $this->options['send_payment_amount'] == 'yes') {
-                        $this->assertArrayHasKey('amount', $payment);
-                    } else {
-                        $this->assertArrayNotHasKey('amount', $payment);
-                    }
+                if (!empty($this->options['send_payment_amount']) && $this->options['send_payment_amount'] == 'yes') {
+                    $this->assertArrayHasKey('amount', $payment);
+                } else {
+                    $this->assertArrayNotHasKey('amount', $payment);
                 }
             }
         } else {
@@ -249,26 +239,6 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                 'is_successful' => false,
                 'retailcrm' => $this->apiMock,
                 'api_version' => 'v5'
-            ),
-            array(
-                'is_successful' => false,
-                'retailcrm' => $this->apiMock,
-                'api_version' => 'v4'
-            ),
-            array(
-                'is_successful' => true,
-                'retailcrm' => $this->apiMock,
-                'api_version' => 'v4'
-            ),
-            array(
-                'is_successful' => false,
-                'retailcrm' => false,
-                'api_version' => 'v4'
-            ),
-            array(
-                'is_successful' => true,
-                'retailcrm' => false,
-                'api_version' => 'v4'
             )
         );
     }
@@ -278,14 +248,6 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
         $this->setUp();
 
         return array(
-            array(
-                'retailcrm' => $this->apiMock,
-                'api_version' => 'v4'
-            ),
-            array(
-                'retailcrm' => false,
-                'api_version' => 'v4'
-            ),
             array(
                 'retailcrm' => $this->apiMock,
                 'api_version' => 'v5'

@@ -41,26 +41,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             $this->load_plugin_textdomain();
 
             if (class_exists( 'WC_Integration' )) {
-                require_once(dirname(__FILE__) . '/include/interfaces/class-wc-retailcrm-builder-interface.php');
-                require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-state.php');
-                require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-result.php');
-                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-logger.php');
-                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-history-assembler.php');
-                require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-paginated-request.php');
-                require_once(dirname(__FILE__) . '/include/components/class-wc-retailcrm-customer-switcher.php');
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstract-builder.php');
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
-                require_once(dirname(__FILE__ ) . '/include/customer/woocommerce/class-wc-retailcrm-wc-customer-builder.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
-                require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
-                require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-corporate-address.php');
-                require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
-                require_once(dirname(__FILE__ ) . '/include/functions.php');
+                self::load_module();
                 add_filter('woocommerce_integrations', array( $this, 'add_integration'));
             } else {
                 add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
@@ -108,6 +89,33 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function add_integration( $integrations ) {
             $integrations[] = 'WC_Retailcrm_Base';
             return $integrations;
+        }
+
+        /**
+         * Loads module classes.
+         */
+        public static function load_module()
+        {
+            require_once(dirname(__FILE__) . '/include/interfaces/class-wc-retailcrm-builder-interface.php');
+            require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-state.php');
+            require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-result.php');
+            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-logger.php');
+            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-history-assembler.php');
+            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-paginated-request.php');
+            require_once(dirname(__FILE__) . '/include/components/class-wc-retailcrm-customer-switcher.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstract-builder.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
+            require_once(dirname(__FILE__ ) . '/include/customer/woocommerce/class-wc-retailcrm-wc-customer-builder.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
+            require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
+            require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-corporate-address.php');
+            require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
+            require_once(dirname(__FILE__ ) . '/include/functions.php');
         }
 
         /**

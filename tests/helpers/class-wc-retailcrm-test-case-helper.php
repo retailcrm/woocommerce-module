@@ -15,7 +15,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         $options = array(
             'api_url' => 'https://example.retailcrm.ru',
             'api_key' => 'dhsHJGYdjkHHJKJSGjhasjhgajsgJGHsg',
-            'api_version' => $apiVersion,
+            'api_version' => 'v5',
             'p_draft' => 'no',
             'p_pending' => 'no',
             'p_private' => 'no',

@@ -32,6 +32,11 @@ if (file_exists($_wcOldBootstrap)) {
 }
 
 $plugin_dir = dirname(dirname(__FILE__)) . '/';
+
 // helpers
+require $plugin_dir . 'src/include/components/class-wc-retailcrm-logger.php';
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-response-helper.php';
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-test-case-helper.php';
+require $plugin_dir . 'tests/helpers/class-wc-retailcrm-log-handler-stdout.php';
+
+WC_Retailcrm_Logger::setAdditionalHandlers(array(new WC_Retailcrm_Log_Handler_Stdout()));

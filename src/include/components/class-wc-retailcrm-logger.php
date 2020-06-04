@@ -22,6 +22,11 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
         private static $instance;
 
         /**
+         * @var array $additionalHandlers
+         */
+        private static $additionalHandlers;
+
+        /**
          * WC_Retailcrm_Logger constructor.
          */
         private function __construct() {}
@@ -34,10 +39,18 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
         private static function getInstance()
         {
             if (empty(static::$instance)) {
-                static::$instance = new WC_Logger();
+                static::$instance = new WC_Logger(self::$additionalHandlers);
             }
 
             return static::$instance;
+        }
+
+        /**
+         * @param array $additionalHandlers
+         */
+        public static function setAdditionalHandlers($additionalHandlers)
+        {
+            self::$additionalHandlers = $additionalHandlers;
         }
 
         /**
