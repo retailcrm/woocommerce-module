@@ -188,7 +188,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                         return false;
                     }
 
-                    $customer = reset($search['customers']);
+                    $arrayCustumers = $search['customers'];
+                    $customer = reset($arrayCustumers);
                 } else {
                     $customer = $search['customer'];
                 }
