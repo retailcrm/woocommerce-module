@@ -26,14 +26,13 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
     /**
      * @param $retailcrm
      * @param $response
-     * @param $apiVersion
      *
      * @dataProvider dataProviderIntegrationModule
      */
-    public function test_integration_module($retailcrm,$response, $apiVersion)
+    public function test_integration_module($retailcrm, $response)
     {
         $client_id = uniqid();
-        $result = WC_Retailcrm_Plugin::integration_module($retailcrm, $client_id, $apiVersion);
+        $result = WC_Retailcrm_Plugin::integration_module($retailcrm, $client_id);
 
         if (!$retailcrm || $response['success'] == false) {
             $this->assertEquals(false, $result);
@@ -58,22 +57,12 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
     private function getResponseData()
     {
         return array(
-            'v4' => array(
-                "true" => array(
-                    "success" => true
-                ),
-                "false" => array(
-                    "success" => false
-                )
+            "true" => array(
+                "success" => true
             ),
-            'v5' => array(
-                "true" => array(
-                    "success" => true
-                ),
-                "false" => array(
-                    "success" => false,
-                    "errorMsg" => "Forbidden"
-                )
+            "false" => array(
+                "success" => false,
+                "errorMsg" => "Forbidden"
             )
         );
     }
@@ -84,61 +73,25 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
 
         return array(
             array(
-                'retailcrm' => $this->getApiMock(
-                    'v4',
-                    $this->getResponseData['v4']['true']
-                ),
-                'response' => $this->getResponseData['v4']['true'],
-                'apiVersion' => 'v4'
+                'retailcrm' => $this->getApiMock($this->getResponseData()['true']),
+                'response' => $this->getResponseData()['true']
             ),
             array(
                 'retailcrm' => false,
-                'response' => $this->getResponseData['v4']['true'],
-                'apiVersion' => 'v4'
+                'response' => $this->getResponseData()['true']
             ),
             array(
-                'retailcrm' => $this->getApiMock(
-                    'v4',
-                    $this->getResponseData['v4']['false']
-                ),
-                'response' => $this->getResponseData['v4']['false'],
-                'apiVersion' => 'v4'
+                'retailcrm' => $this->getApiMock($this->getResponseData()['false']),
+                'response' => $this->getResponseData()['false']
             ),
             array(
                 'retailcrm' => false,
-                'response' => $this->getResponseData['v4']['false'],
-                'apiVersion' => 'v4'
-            ),
-            array(
-                'retailcrm' => $this->getApiMock(
-                    'v5',
-                    $this->getResponseData['v5']['true']
-                ),
-                'response' => $this->getResponseData['v5']['true'],
-                'apiVersion' => 'v5'
-            ),
-            array(
-                'retailcrm' => false,
-                'response' => $this->getResponseData['v5']['true'],
-                'apiVersion' => 'v5'
-            ),
-            array(
-                'retailcrm' => $this->getApiMock(
-                    'v5',
-                    $this->getResponseData['v5']['false']
-                ),
-                'response' => $this->getResponseData['v5']['false'],
-                'apiVersion' => 'v5'
-            ),
-            array(
-                'retailcrm' => false,
-                'response' => $this->getResponseData['v5']['false'],
-                'apiVersion' => 'v5'
+                'response' => $this->getResponseData()['false']
             )
         );
     }
 
-    private function getApiMock($apiVersion, $response)
+    private function getApiMock($response)
     {
         $responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
             ->disableOriginalConstructor()
@@ -159,29 +112,16 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
 
         $responseMock->setResponse($response);
 
-        if ($apiVersion == 'v4') {
-            $apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
-            ->disableOriginalConstructor()
-            ->setMethods(array(
-                'marketplaceSettingsEdit'
-            ))
-            ->getMock();
-
-            $apiMock->expects($this->any())
-                ->method('marketplaceSettingsEdit')
-                ->willReturn($responseMock);
-        } else {
-            $apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
+        $apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
             ->disableOriginalConstructor()
             ->setMethods(array(
                 'integrationModulesEdit'
             ))
             ->getMock();
 
-            $apiMock->expects($this->any())
-                ->method('integrationModulesEdit')
-                ->willReturn($responseMock);
-        }
+        $apiMock->expects($this->any())
+            ->method('integrationModulesEdit')
+            ->willReturn($responseMock);
 
         return $apiMock;
     }

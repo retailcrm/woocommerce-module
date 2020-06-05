@@ -64,11 +64,13 @@ class WC_Retailcrm_Customer_Switcher_Result
             )
         );
 
-        if (!empty($this->wcCustomer)) {
+        if (!empty($this->wcCustomer) && $this->wcCustomer->get_id()) {
             $this->wcCustomer->save();
         }
 
-        $this->wcOrder->save();
+        if (!empty($this->wcOrder) && $this->wcOrder->get_id()) {
+            $this->wcOrder->save();
+        }
 
         return $this;
     }

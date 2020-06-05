@@ -6,11 +6,9 @@
 class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
 {
     /**
-     * @param string $apiVersion
-     *
      * @return array
      */
-    protected function setOptions($apiVersion = 'v5')
+    protected function setOptions()
     {
         $options = array(
             'api_url' => 'https://example.retailcrm.ru',

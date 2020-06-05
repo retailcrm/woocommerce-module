@@ -122,26 +122,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             )
         );
 
-        $api_version_list = array(
-            'v4' => 'v4',
-            'v5' => 'v5'
-        );
-
         $this->form_fields[] = array(
             'title'       => __( 'API settings', 'retailcrm' ),
             'type'        => 'title',
             'description' => '',
             'id'          => 'api_options'
-        );
-
-        $this->form_fields['api_version'] = array(
-            'title'       => __( 'API version', 'retailcrm' ),
-            'description' => __( 'Select API version', 'retailcrm' ),
-            'css'         => 'min-width:50px;',
-            'class'       => 'select',
-            'type'        => 'select',
-            'options'     => $api_version_list,
-            'desc_tip'    =>  true,
         );
 
         $this->form_fields['send_payment_amount'] = array(
@@ -573,6 +558,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
     /**
+<<<<<<< HEAD
      * Validate API version
      *
      * @param string $key
@@ -609,6 +595,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
     /**
+=======
+>>>>>>> Dropped v4, fixes for several bugs, tests.
      * Validate API url
      *
      * @param string $key
@@ -622,7 +610,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $api = new WC_Retailcrm_Proxy(
             $value,
             $post[$this->plugin_id . $this->id . '_api_key'],
-            null,
             $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 
@@ -650,7 +637,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $api = new WC_Retailcrm_Proxy(
             $post[$this->plugin_id . $this->id . '_api_url'],
             $value,
-            null,
             $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 

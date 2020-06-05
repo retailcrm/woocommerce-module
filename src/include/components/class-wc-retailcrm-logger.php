@@ -91,14 +91,14 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
          * This log will work only if debug mode is enabled (see retailcrm_is_debug() for details).
          * Caller should be specified, or message will be ignored at all.
          *
-         * @param string $method
-         * @param array  $messages
+         * @param string        $method
+         * @param array|string  $messages
          */
         public static function debug($method, $messages)
         {
             if (retailcrm_is_debug()) {
                 if (!empty($method) && !empty($messages)) {
-                    $result = substr(
+                    $result = is_array($messages) ? substr(
                         array_reduce(
                             $messages,
                             function ($carry, $item) {
@@ -107,7 +107,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
                             }
                         ),
                         1
-                    );
+                    ) : $messages;
 
                     self::getInstance()->add(
                         self::HANDLE . '_debug',

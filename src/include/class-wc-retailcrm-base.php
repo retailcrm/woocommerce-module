@@ -416,7 +416,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return new WC_Retailcrm_Proxy(
                     $this->get_option('api_url'),
                     $this->get_option('api_key'),
-                    $this->get_option('api_version'),
                     $this->get_option('corporate_enabled', 'no') === 'yes'
                 );
             }
@@ -433,9 +432,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $api_client = $this->getApiClient();
             $clientId = get_option('retailcrm_client_id');
-            $api_version = $this->get_option('api_version');
 
-            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, $api_version, false);
+            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
             delete_option('retailcrm_active_in_crm');
         }
 
@@ -452,15 +450,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $client_id = uniqid();
             }
 
-            if ($settings['api_url'] && $settings['api_key'] && $settings['api_version']) {
+            if ($settings['api_url'] && $settings['api_key']) {
                 $api_client = new WC_Retailcrm_Proxy(
                     $settings['api_url'],
                     $settings['api_key'],
-                    $settings['api_version'],
                     $settings['corporate_enabled'] === 'yes'
                 );
 
-                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id, $settings['api_version']);
+                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id);
 
                 if ($result) {
                     update_option('retailcrm_active_in_crm', true);

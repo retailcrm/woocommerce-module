@@ -687,29 +687,18 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 'city'       => isset($address['city']) ? $address['city'] : '',
                 'state'      => isset($address['region']) ? $address['region'] : '',
                 'postcode'   => isset($address['index']) ? $address['index'] : '',
-                'country'    => $address['countryIso']
+                'country'    => isset($address['countryIso']) ? $address['countryIso'] : ''
             );
 
-            if ($this->retailcrm_settings['api_version'] == 'v5') {
-                if (isset($order['payments']) && $order['payments']) {
-                    $payment = WC_Payment_Gateways::instance();
+            if (isset($order['payments']) && $order['payments']) {
+                $payment = WC_Payment_Gateways::instance();
 
-                    if (count($order['payments']) == 1) {
-                        $payment_types = $payment->payment_gateways();
-                        $payments = $order['payments'];
-                        $paymentType = end($payments);
-                        if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
-                            $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
-                        }
-                    }
-                }
-            } else {
-                if (isset($order['paymentType']) && $order['paymentType']) {
-                    $payment = WC_Payment_Gateways::instance();
+                if (count($order['payments']) == 1) {
                     $payment_types = $payment->payment_gateways();
-
-                    if (isset($options[$order['paymentType']]) && isset($payment_types[$options[$order['paymentType']]])) {
-                        $wc_order->set_payment_method($payment_types[$options[$order['paymentType']]]);
+                    $payments = $order['payments'];
+                    $paymentType = end($payments);
+                    if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
+                        $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
                     }
                 }
             }
@@ -977,13 +966,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     return;
                 }
 
-                $this->prepareChangeToIndividual(
-                    self::arrayValue($crmOrder, 'contact', array()),
-                    $data,
-                    true
-                );
+                if (self::isOrderCorporate($crmOrder)) {
+                    $this->prepareChangeToIndividual(
+                        self::arrayValue($crmOrder, 'contact', array()),
+                        $data,
+                        true
+                    );
 
-                if (isset($order['customer']) && $order['customer']['id'] == $order['contact']['id']) {
                     $data->setNewCustomer(array());
                 }
             }
@@ -992,24 +981,30 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $data->setNewCompany($order['company']);
             }
 
-            try {
-                $result = $switcher->setData($data)
-                    ->build()
-                    ->getResult();
+            if ($data->feasible()) {
+                try {
+                    $result = $switcher->setData($data)
+                        ->build()
+                        ->getResult();
 
-                $result->save();
-            } catch (\Exception $exception) {
-                WC_Retailcrm_Logger::addCaller(
-                    __METHOD__,
-                    sprintf(
+                    $result->save();
+                } catch (\Exception $exception) {
+                    $errorMessage = sprintf(
                         'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s',
                         $order['externalId'],
                         $newCustomerId,
                         isset($order['company']) ? $order['company']['id'] : '',
                         isset($order['company']) ? $order['company']['name'] : '',
                         $exception->getMessage()
-                    )
-                );
+                    );
+                    WC_Retailcrm_Logger::addCaller(__METHOD__, $errorMessage);
+                    WC_Retailcrm_Logger::debug(__METHOD__, sprintf(
+                        '%s%s%s',
+                        $errorMessage,
+                        PHP_EOL,
+                        $exception->getTraceAsString()
+                    ));
+                }
             }
         }
 
@@ -1142,7 +1137,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return $def;
             }
 
-            return $arr[$key];
+            return isset($arr[$key]) ? $arr[$key] : $def;
         }
     }
 

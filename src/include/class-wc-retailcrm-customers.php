@@ -408,13 +408,12 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $corpAddress = new WC_Retailcrm_Customer_Corporate_Address();
 
             $address = $orderAddress
-                ->setFallbackToBilling(true)
                 ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
                 ->build($order)
                 ->get_data();
 
             $shippingAddress = $corpAddress
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
+                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
                 ->setFallbackToBilling(true)
                 ->setIsMain(true)
                 ->build($customer, $order)
@@ -540,8 +539,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                         $dataCorporateCustomers = $search['customersCorporate'];
                         $customer = reset($dataCorporateCustomers);
                     }
-                } elseif (isset($search['customerCorporate'])) {
-                    $customer = $search['customerCorporate'];
                 } else {
                     $customer = false;
                 }

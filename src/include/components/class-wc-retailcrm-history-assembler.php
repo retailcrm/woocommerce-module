@@ -271,10 +271,10 @@ class WC_Retailcrm_History_Assembler
     private static function getMappingValues($groupFilter = array())
     {
         $fields = array();
-        $mappingFile = implode(
+        $mappingFile = realpath(implode(
             DIRECTORY_SEPARATOR,
-            array(WP_CONTENT_DIR, 'plugins', 'woo-retailcrm', 'config', 'objects.xml')
-        );
+            array(__DIR__, '..', '..', 'config', 'objects.xml')
+        ));
 
         if (file_exists($mappingFile)) {
             $objects = simplexml_load_file($mappingFile);

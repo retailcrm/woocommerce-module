@@ -65,12 +65,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
         $this->set_data_fields($data);
         $this->set_offer($item);
-
-        if ($this->settings['api_version'] == 'v5') {
-            $this->set_data_field('discountManualAmount', (float) round($discount_price, 2));
-        } elseif ($this->settings['api_version'] == 'v4') {
-            $this->set_data_field('discount', (float) round($discount_price, 2));
-        }
+        $this->set_data_field('discountManualAmount', (float) round($discount_price, 2));
 
         return $this;
     }

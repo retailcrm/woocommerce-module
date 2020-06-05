@@ -109,6 +109,17 @@ class WC_Retailcrm_Customer_Switcher_State
     }
 
     /**
+     * Returns true if current state may be processable (e.g. when customer or related data was changed).
+     * It doesn't guarantee state validity.
+     *
+     * @return bool
+     */
+    public function feasible()
+    {
+        return !(empty($this->newCustomer) && empty($this->newContact) && empty($this->newCompanyName));
+    }
+
+    /**
      * Throws an exception if state is not valid
      *
      * @throws \InvalidArgumentException

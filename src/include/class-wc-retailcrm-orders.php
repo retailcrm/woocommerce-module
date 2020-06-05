@@ -369,13 +369,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $order = wc_get_order($order_id);
             $this->processOrder($order, true);
 
-            if ($this->retailcrm_settings['api_version'] == 'v4') {
-                $this->order['paymentType'] = $this->retailcrm_settings[$order->get_payment_method()];
-            }
-
             $response = $this->retailcrm->ordersEdit($this->order);
 
+<<<<<<< HEAD
             if ((!empty($response) && $response->isSuccessful()) && $this->retailcrm_settings['api_version'] == 'v5') {
+=======
+            if ($response->isSuccessful()) {
+>>>>>>> Dropped v4, fixes for several bugs, tests.
                 $this->payment = $this->orderUpdatePaymentType($order);
             }
 
@@ -500,7 +500,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $order_data['items'] = $order_items;
 
-            if ($this->retailcrm_settings['api_version'] == 'v5' && !$update) {
+            if (!$update) {
                 $this->order_payment->is_new = true;
                 $order_data['payments'][] = $this->order_payment->build($order)->get_data();
             }

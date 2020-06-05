@@ -51,6 +51,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
                 )
             );
             $this->processChangeToRegular($this->data->getWcOrder(), $newCustomer);
+            $this->data->getWcOrder()->set_billing_company('');
         } else {
             if (!empty($newContact)) {
                 WC_Retailcrm_Logger::debug(
@@ -138,37 +139,14 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
             $wcOrder->{'set_' . $field}($value);
         }
 
-        if (isset($newCustomer['address'])) {
-            $address = $newCustomer['address'];
+        $address = self::arrayValue($newCustomer, 'address', array());
+        $wcOrder->set_billing_state(self::arrayValue($address, 'region', '--'));
+        $wcOrder->set_billing_postcode(self::arrayValue($address, 'index', '--'));
+        $wcOrder->set_billing_country(self::arrayValue($address, 'country', '--'));
+        $wcOrder->set_billing_city(self::arrayValue($address, 'city', '--'));
+        $wcOrder->set_billing_address_1(self::arrayValue($address, 'text', '--'));
+        $wcOrder->set_billing_phone(self::singleCustomerPhone($newCustomer));
 
-            if (isset($address['region'])) {
-                $wcOrder->set_billing_state($address['region']);
-            }
-
-            if (isset($address['index'])) {
-                $wcOrder->set_billing_postcode($address['index']);
-            }
-
-            if (isset($address['country'])) {
-                $wcOrder->set_billing_country($address['country']);
-            }
-
-            if (isset($address['city'])) {
-                $wcOrder->set_billing_city($address['city']);
-            }
-
-            if (isset($address['text'])) {
-                $wcOrder->set_billing_address_1($address['text']);
-            }
-        }
-
-        $customerPhone = self::singleCustomerPhone($newCustomer);
-
-        if (!empty($customerPhone)) {
-            $wcOrder->set_billing_phone($customerPhone);
-        }
-
-        $wcOrder->set_billing_company('');
         $this->result = new WC_Retailcrm_Customer_Switcher_Result($wcCustomer, $wcOrder);
     }
 
@@ -246,7 +224,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
             return $def;
         }
 
-        return $arr[$key];
+        return isset($arr[$key]) ? $arr[$key] : $def;
     }
 
     /**
@@ -259,18 +237,18 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
     private static function singleCustomerPhone($customerData)
     {
         if (!array_key_exists('phones', $customerData)) {
-            return null;
+            return '';
         }
 
         if (empty($customerData['phones']) || !is_array($customerData['phones'])) {
-            return null;
+            return '';
         }
 
         $phones = $customerData['phones'];
         $phone = reset($phones);
 
         if (!isset($phone['number'])) {
-            return null;
+            return '';
         }
 
         return (string) $phone['number'];

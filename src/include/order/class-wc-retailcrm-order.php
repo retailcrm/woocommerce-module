@@ -67,10 +67,6 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
         $this->set_data_fields($data);
         $this->set_number($order);
 
-        if ($this->settings['api_version'] != 'v5') {
-            $this->set_payment_data($order);
-        }
-
         if (isset($this->settings[$order->get_status()])) {
             $this->set_data_field('status', $this->settings[$order->get_status()]);
         }
