@@ -118,6 +118,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * @param $order_id
          *
          * @return mixed
+         * @throws Exception
          */
         public function orderCreate($order_id)
         {
@@ -202,7 +203,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $response = $this->retailcrm->ordersEdit($this->order);
 
-            if ($response->isSuccessful() && $this->retailcrm_settings['api_version'] == 'v5') {
+            if ((!empty($response) && $response->isSuccessful()) && $this->retailcrm_settings['api_version'] == 'v5') {
                 $this->payment = $this->orderUpdatePaymentType($order);
             }
 
@@ -224,7 +225,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $response = $this->retailcrm->ordersGet($order->get_id());
 
-            if ($response->isSuccessful()) {
+            if (!empty($response) && $response->isSuccessful()) {
                 $retailcrmOrder = $response['order'];
 
                 foreach ($retailcrmOrder['payments'] as $payment_data) {
@@ -245,7 +246,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if (isset($payment) && $payment['type'] != $this->retailcrm_settings[$order->get_payment_method()]) {
                 $response = $this->retailcrm->ordersPaymentDelete($payment['id']);
 
-                if ($response->isSuccessful()) {
+                if (!empty($response) && $response->isSuccessful()) {
                     $payment = $this->sendPayment($order);
 
                     return $payment;

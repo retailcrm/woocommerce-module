@@ -120,7 +120,7 @@ class WC_Retailcrm_Plugin {
             return false;
         }
 
-        if ($response->isSuccessful()) {
+        if (!empty($response) && $response->isSuccessful()) {
             return true;
         }
 
@@ -137,3 +137,4 @@ class WC_Retailcrm_Plugin {
         return self::$history_run;
     }
 }
+

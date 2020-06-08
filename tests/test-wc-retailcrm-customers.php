@@ -122,6 +122,21 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    /**
+     * @param $retailcrm
+     * @dataProvider dataProviderApiClient
+     */
+    public function test_create_customer_empty_response($retailcrm)
+    {
+        $this->responseMock = null;
+        $this->apiMock = null;
+        
+        $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
+        $id = $retailcrm_customer->createCustomer($this->customer->get_id());
+
+        $this->assertEquals(null, $id);
+    }
+
     public function dataProviderApiClient()
     {
         $this->setUp();

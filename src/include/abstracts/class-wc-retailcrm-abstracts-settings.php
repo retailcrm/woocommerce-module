@@ -183,7 +183,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 $order_methods_option = array();
                 $order_methods_list = $this->apiClient->orderMethodsList();
 
-                if ($order_methods_list->isSuccessful()) {
+                if (!empty($order_methods_list) && $order_methods_list->isSuccessful()) {
                     foreach ($order_methods_list['orderMethods'] as $order_method) {
                         if ($order_method['active'] == false) {
                             continue;
@@ -217,7 +217,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 $shipping_option_list = array();
                 $retailcrm_shipping_list = $this->apiClient->deliveryTypesList();
 
-                if ($retailcrm_shipping_list->isSuccessful()) {
+                if (!empty($retailcrm_shipping_list) && $retailcrm_shipping_list->isSuccessful()) {
                     foreach ($retailcrm_shipping_list['deliveryTypes'] as $retailcrm_shipping_type) {
                         $shipping_option_list[$retailcrm_shipping_type['code']] = $retailcrm_shipping_type['name'];
                     }
@@ -252,7 +252,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 $payment_option_list = array();
                 $retailcrm_payment_list = $this->apiClient->paymentTypesList();
 
-                if ($retailcrm_payment_list->isSuccessful()) {
+                if (!empty($retailcrm_payment_list) && $retailcrm_payment_list->isSuccessful()) {
                     foreach ($retailcrm_payment_list['paymentTypes'] as $retailcrm_payment_type) {
                         $payment_option_list[$retailcrm_payment_type['code']] = $retailcrm_payment_type['name'];
                     }
@@ -285,7 +285,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 $statuses_option_list = array();
                 $retailcrm_statuses_list = $this->apiClient->statusesList();
 
-                if ($retailcrm_statuses_list->isSuccessful()) {
+                if (!empty($retailcrm_statuses_list) && $retailcrm_statuses_list->isSuccessful()) {
                     foreach ($retailcrm_statuses_list['statuses'] as $retailcrm_status) {
                         $statuses_option_list[$retailcrm_status['code']] = $retailcrm_status['name'];
                     }
@@ -587,7 +587,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         $response = $api->apiVersions();
 
-        if ($response && $response->isSuccessful()) {
+        if (!empty($response) && $response->isSuccessful()) {
             if (!in_array($versionMap[$value], $response['versions'])) {
                 WC_Admin_Settings::add_error( esc_html__( 'The selected API version is unavailable', 'retailcrm' ) );
                 $value = '';

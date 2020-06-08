@@ -102,7 +102,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $this->processCustomer($customer);
                 $response = $this->retailcrm->customersCreate($this->customer);
 
-                if ($response->isSuccessful() && isset($response['id'])) {
+                if ((!empty($response) && $response->isSuccessful()) && isset($response['id'])) {
                     return $response['id'];
                 }
             }
@@ -182,7 +182,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $search = $this->retailcrm->customersList(array('email' => $filter['email']));
             }
 
-            if ($search->isSuccessful()) {
+            if (!empty($search) && $search->isSuccessful()) {
                 if (isset($search['customers'])) {
                     if (empty($search['customers'])) {
                         return false;
