@@ -70,23 +70,24 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
     public function dataProviderIntegrationModule()
     {
         $this->setUp();
+        $responseData = $this->getResponseData();
 
         return array(
             array(
-                'retailcrm' => $this->getApiMock($this->getResponseData()['true']),
-                'response' => $this->getResponseData()['true']
+                'retailcrm' => $this->getApiMock($responseData['true']),
+                'response' => $responseData['true']
             ),
             array(
                 'retailcrm' => false,
-                'response' => $this->getResponseData()['true']
+                'response' => $responseData['true']
             ),
             array(
-                'retailcrm' => $this->getApiMock($this->getResponseData()['false']),
-                'response' => $this->getResponseData()['false']
+                'retailcrm' => $this->getApiMock($responseData['false']),
+                'response' => $responseData['false']
             ),
             array(
                 'retailcrm' => false,
-                'response' => $this->getResponseData()['false']
+                'response' => $responseData['false']
             )
         );
     }

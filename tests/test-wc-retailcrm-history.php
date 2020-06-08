@@ -619,7 +619,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function regenerateMocks()
     {
-        $this->apiMock = $this->getMockBuilder(WC_Retailcrm_Proxy::class)
+        $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
             ->disableOriginalConstructor()
             ->setMethods(array(
                 'ordersHistory',

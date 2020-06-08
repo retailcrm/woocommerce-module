@@ -13,21 +13,21 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
 {
     public function test_empty()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException('\RuntimeException');
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $builder->build();
     }
 
     public function test_empty_array()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException('\RuntimeException');
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $builder->setData(array())->build();
     }
 
     public function test_not_array()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException('\RuntimeException');
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $builder->setData(new stdClass())->build();
     }
@@ -42,7 +42,7 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $wcCustomer = $builder->setData($customerData)->build()->getResult();
 
-        $this->assertInstanceOf(WC_Customer::class, $wcCustomer);
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
 
         if (isset($customerData['firstName'])) {
             $this->assertEquals($customerData['firstName'], $wcCustomer->get_first_name());
