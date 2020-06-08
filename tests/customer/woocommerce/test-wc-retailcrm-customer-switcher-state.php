@@ -44,24 +44,30 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
         $this->assertFalse($state->feasible());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function test_validate_empty()
     {
-        $this->expectException('\InvalidArgumentException');
         $state = new WC_Retailcrm_Customer_Switcher_State();
         $state->validate();
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function test_validate_order()
     {
-        $this->expectException('\InvalidArgumentException');
         $state = new WC_Retailcrm_Customer_Switcher_State();
         $state->setWcOrder(new WC_Order())
             ->validate();
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function test_validate_customer_and_contact_set()
     {
-        $this->expectException('\InvalidArgumentException');
         $state = new WC_Retailcrm_Customer_Switcher_State();
         $state->setWcOrder(new WC_Order())
             ->setNewCustomer(array('id' => 1))

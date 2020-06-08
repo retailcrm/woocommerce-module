@@ -11,23 +11,29 @@
 
 class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helper
 {
+    /**
+     * @expectedException \RuntimeException
+     */
     public function test_empty()
     {
-        $this->expectException('\RuntimeException');
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $builder->build();
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function test_empty_array()
     {
-        $this->expectException('\RuntimeException');
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $builder->setData(array())->build();
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function test_not_array()
     {
-        $this->expectException('\RuntimeException');
         $builder = new WC_Retailcrm_WC_Customer_Builder();
         $builder->setData(new stdClass())->build();
     }

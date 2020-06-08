@@ -11,21 +11,27 @@
 
 class WC_Retailcrm_Customer_Switcher_Result_Test extends WC_Retailcrm_Test_Case_Helper
 {
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function test_invalid_both()
     {
-        $this->expectException('\InvalidArgumentException');
         new WC_Retailcrm_Customer_Switcher_Result(new stdClass(), new stdClass());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function test_invalid_customer()
     {
-        $this->expectException('\InvalidArgumentException');
         new WC_Retailcrm_Customer_Switcher_Result(new stdClass(), new WC_Order());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function test_invalid_order()
     {
-        $this->expectException('\InvalidArgumentException');
         new WC_Retailcrm_Customer_Switcher_Result(new WC_Customer(), new stdClass());
     }
 
