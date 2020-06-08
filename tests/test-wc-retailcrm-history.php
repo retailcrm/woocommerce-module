@@ -296,7 +296,10 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Еврейская Автономная область', $order->get_billing_state());
         $this->assertEquals('Компания1', $order->get_billing_company());
         $this->assertEquals('9135487458709', $order->get_billing_phone());
-        $this->assertEmpty($order->get_customer_id());
+
+        if (!is_wp_older_or_4_6()) {
+            $this->assertEmpty($order->get_customer_id());
+        }
     }
 
     /**
