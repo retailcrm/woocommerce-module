@@ -297,7 +297,12 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Компания1', $order->get_billing_company());
         $this->assertEquals('9135487458709', $order->get_billing_phone());
 
-        if (!is_wp_older_or_4_6()) {
+        $orderUser = $order->get_user();
+
+        if ($orderUser instanceof WP_User) {
+            $this->assertEquals('psycho913', $orderUser->get('_billing_first_name'));
+            $this->assertEquals('psycho913', $orderUser->get('_billing_last_name'));
+        } else {
             $this->assertEmpty($order->get_customer_id());
         }
     }

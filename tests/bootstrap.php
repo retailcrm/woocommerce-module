@@ -40,20 +40,3 @@ require $plugin_dir . 'tests/helpers/class-wc-retailcrm-test-case-helper.php';
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-log-handler-stdout.php';
 
 WC_Retailcrm_Logger::setAdditionalHandlers(array(new WC_Retailcrm_Log_Handler_Stdout()));
-
-/**
- * Returns true if WP version is 4.6 or older. It's useful in some tests.
- *
- * @return bool
- */
-function is_wp_older_or_4_6() {
-    include(ABSPATH . WPINC . '/version.php');
-
-    if (!empty($wp_version)) {
-        $version = explode('.', substr($wp_version, 0, 3));
-
-        return count($version) == 2 && ($version[0] > 4 || $version[1] > 6);
-    }
-
-    return true;
-}
