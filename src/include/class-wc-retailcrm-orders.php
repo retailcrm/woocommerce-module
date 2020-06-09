@@ -127,6 +127,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $wcOrder = wc_get_order($order_id);
             $this->processOrder($wcOrder);
+<<<<<<< HEAD
             $wpUser = $wcOrder->get_user();
 
             if ($wpUser instanceof WP_User) {
@@ -238,6 +239,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
                 $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
             }
+=======
+>>>>>>> company fix for corporate clients implementation & pass client change from cms to retailCRM
 
             try {
                 $response = $this->retailcrm->ordersCreate($this->order);
@@ -254,6 +257,49 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             return $wcOrder;
+        }
+
+        /**
+         * Process order customer data
+         *
+         * @param \WC_Order $wcOrder
+         * @param bool      $update
+         *
+         * @return bool Returns false if order cannot be processed
+         * @throws \Exception
+         */
+        protected function processOrderCustomerInfo($wcOrder, $update = false)
+        {
+            $customerWasChanged = false;
+            $wpUser = $wcOrder->get_user();
+
+            if ($update) {
+                $response = $this->retailcrm->ordersGet($wcOrder->get_id());
+
+                if (!empty($response) && $response->isSuccessful() && isset($response['order'])) {
+                    $customerWasChanged = self::isOrderCustomerWasChanged($wcOrder, $response['order']);
+                }
+            }
+
+            if ($wpUser instanceof WP_User) {
+                if (!WC_Retailcrm_Customers::isCustomer($wpUser)) {
+                    return false;
+                }
+
+                $wpUserId = (int) $wpUser->get('ID');
+
+                if (!$update || $update && $customerWasChanged) {
+                    $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
+                }
+            } else {
+                $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
+
+                if (!$update || $update && $customerWasChanged) {
+                    $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
+                }
+            }
+
+            return true;
         }
 
         /**
@@ -281,7 +327,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $foundCustomerId = $foundCustomer['id'];
             }
 
+            $this->order['contragent']['contragentType'] = 'individual';
+
             if ($this->retailcrm->getCorporateEnabled() && static::isCorporateOrder($wcOrder)) {
+                unset($this->order['contragent']['contragentType']);
+
                 $crmCorporate = $this->customers->searchCorporateCustomer(array(
                     'contactIds' => array($foundCustomerId),
                     'companyName' => $wcOrder->get_billing_company()
@@ -349,6 +399,26 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 >>>>>>> restore correct merge state
                 }
 
+                $companiesResponse = $this->retailcrm->customersCorporateCompanies(
+                    $this->order['customer']['id'],
+                    array(),
+                    null,
+                    null,
+                    'id'
+                );
+
+                if (!empty($companiesResponse) && $companiesResponse->isSuccessful()) {
+                    foreach ($companiesResponse['companies'] as $company) {
+                        if ($company['name'] == $wcOrder->get_billing_company()) {
+                            $this->order['company'] = array(
+                                'id' => $company['id'],
+                                'name' => $company['name']
+                            );
+                            break;
+                        }
+                    }
+                }
+
                 $this->order['contact']['id'] = $foundCustomerId;
             }
         }
@@ -359,6 +429,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * @param int $order_id
          *
          * @return WC_Order $order | null
+         * @throws \Exception
          */
         public function updateOrder($order_id)
         {
@@ -366,8 +437,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
-            $order = wc_get_order($order_id);
-            $this->processOrder($order, true);
+            $wcOrder = wc_get_order($order_id);
+            $this->processOrder($wcOrder, true);
 
             $response = $this->retailcrm->ordersEdit($this->order);
 
@@ -375,11 +446,15 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if ((!empty($response) && $response->isSuccessful()) && $this->retailcrm_settings['api_version'] == 'v5') {
 =======
             if ($response->isSuccessful()) {
+<<<<<<< HEAD
 >>>>>>> Dropped v4, fixes for several bugs, tests.
                 $this->payment = $this->orderUpdatePaymentType($order);
+=======
+                $this->payment = $this->orderUpdatePaymentType($wcOrder);
+>>>>>>> company fix for corporate clients implementation & pass client change from cms to retailCRM
             }
 
-            return $order;
+            return $wcOrder;
         }
 
         /**
@@ -432,9 +507,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          * process to combine order data
          *
          * @param WC_Order $order
-         * @param boolean $update
+         * @param boolean  $update
          *
          * @return void
+         * @throws \Exception
          */
         protected function processOrder($order, $update = false)
         {
@@ -485,12 +561,12 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
+            $order_items = array();
             $order_data['delivery']['address'] = $this->order_address
                 ->setFallbackToBilling(true)
                 ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
                 ->build($order)
                 ->get_data();
-            $order_items = array();
 
             /** @var WC_Order_Item_Product $item */
             foreach ($order->get_items() as $item) {
@@ -505,7 +581,14 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $order_data['payments'][] = $this->order_payment->build($order)->get_data();
             }
 
-            $this->order = apply_filters('retailcrm_process_order', WC_Retailcrm_Plugin::clearArray($order_data), $order);
+            $this->order = WC_Retailcrm_Plugin::clearArray($order_data);
+            $this->processOrderCustomerInfo($order, $update);
+
+            $this->order = apply_filters(
+                'retailcrm_process_order',
+                WC_Retailcrm_Plugin::clearArray($this->order),
+                $order
+            );
         }
 
         /**
@@ -559,6 +642,67 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $billingCompany = $order->get_billing_company();
 
             return !empty($billingCompany);
+        }
+
+        /**
+         * Returns true if passed crm order is corporate
+         *
+         * @param array|\ArrayAccess $order
+         *
+         * @return bool
+         */
+        public static function isCorporateCrmOrder($order)
+        {
+            return (is_array($order) || $order instanceof ArrayAccess)
+                && isset($order['customer'])
+                && isset($order['customer']['type'])
+                && $order['customer']['type'] == 'customer_corporate';
+        }
+
+        /**
+         * Returns true if customer in order was changed. `true` will be returned if one of these four conditions is met:
+         *
+         *  1. If CMS order is corporate and retailCRM order is not corporate or vice versa, then customer obviously
+         *     needs to be updated in retailCRM.
+         *  2. If billing company from CMS order is not the same as the one in the retailCRM order,
+         *     then company needs to be updated.
+         *  3. If contact person or individual externalId is different from customer ID in the CMS order, then
+         *     contact person or customer in retailCRM should be updated (even if customer id in the order is not set).
+         *  4. If contact person or individual email is not the same as the CMS order billing email, then
+         *     contact person or customer in retailCRM should be updated.
+         *
+         * @param \WC_Order $wcOrder
+         * @param array|\ArrayAccess $crmOrder
+         *
+         * @return bool
+         */
+        public static function isOrderCustomerWasChanged($wcOrder, $crmOrder)
+        {
+            $customerWasChanged = self::isCorporateOrder($wcOrder) != self::isCorporateCrmOrder($crmOrder);
+            $synchronizableUserData = self::isCorporateCrmOrder($crmOrder)
+                ? $crmOrder['contact'] : $crmOrder['customer'];
+
+            if (!$customerWasChanged) {
+                if (self::isCorporateCrmOrder($crmOrder)) {
+                    $currentCrmCompany = isset($crmOrder['company']) ? $crmOrder['company']['name'] : '';
+
+                    if (!empty($currentCrmCompany) && $currentCrmCompany != $wcOrder->get_billing_company()) {
+                        $customerWasChanged = true;
+                    }
+                }
+
+                if (isset($synchronizableUserData['externalId'])
+                    && $synchronizableUserData['externalId'] != $wcOrder->get_customer_id()
+                ) {
+                    $customerWasChanged = true;
+                } elseif (isset($synchronizableUserData['email'])
+                    && $synchronizableUserData['email'] != $wcOrder->get_billing_email()
+                ) {
+                    $customerWasChanged = true;
+                }
+            }
+
+            return $customerWasChanged;
         }
 
         /**
