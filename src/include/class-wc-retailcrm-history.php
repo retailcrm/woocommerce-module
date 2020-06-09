@@ -404,10 +404,14 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> sync phone via history
             if (isset($order['phone'])) {
                 $wc_order->set_billing_phone($order['phone']);
             }
 
+<<<<<<< HEAD
             if (isset($order['email'])) {
                 $wc_order->set_billing_email($order['email']);
             }
@@ -417,6 +421,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 =======
 
 =======
+=======
+>>>>>>> sync phone via history
             $this->handleCustomerDataChange($wc_order, $order);
 >>>>>>> Fixes, customer change logic for legal entities & individual persons (contact person will be used in the second case)
 
