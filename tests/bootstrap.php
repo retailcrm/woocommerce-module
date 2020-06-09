@@ -1,6 +1,7 @@
 <?php
 
 $_tests_dir = getenv('WP_TESTS_DIR');
+$_output_logs_to_stdout = getenv('MODULE_LOGS_TO_STDOUT');
 $_wcOldBootstrap = '/tmp/woocommerce/tests/bootstrap.php';
 $_wcNewBootstrap = '/tmp/woocommerce/tests/legacy/bootstrap.php';
 
@@ -39,4 +40,6 @@ require $plugin_dir . 'tests/helpers/class-wc-retailcrm-response-helper.php';
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-test-case-helper.php';
 require $plugin_dir . 'tests/helpers/class-wc-retailcrm-log-handler-stdout.php';
 
-WC_Retailcrm_Logger::setAdditionalHandlers(array(new WC_Retailcrm_Log_Handler_Stdout()));
+if (!empty($_output_logs_to_stdout) && $_output_logs_to_stdout == '1') {
+    WC_Retailcrm_Logger::setAdditionalHandlers(array(new WC_Retailcrm_Log_Handler_Stdout()));
+}

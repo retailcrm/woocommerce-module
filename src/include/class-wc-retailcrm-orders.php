@@ -36,6 +36,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         protected $orders;
 
         /** @var array */
+        private $ordersGetRequestCache = array();
+
+        /** @var array */
         private $order = array();
 
         /** @var array */
@@ -274,10 +277,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $wpUser = $wcOrder->get_user();
 
             if ($update) {
-                $response = $this->retailcrm->ordersGet($wcOrder->get_id());
+                $response = $this->getCrmOrder($wcOrder->get_id());
 
-                if (!empty($response) && $response->isSuccessful() && isset($response['order'])) {
-                    $customerWasChanged = self::isOrderCustomerWasChanged($wcOrder, $response['order']);
+                if (!empty($response)) {
+                    $customerWasChanged = self::isOrderCustomerWasChanged($wcOrder, $response);
                 }
             }
 
@@ -297,6 +300,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if (!$update || $update && $customerWasChanged) {
                     $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
                 }
+            }
+
+            if ($update && $customerWasChanged) {
+                $this->order['firstName'] = $wcOrder->get_shipping_first_name();
+                $this->order['lastName'] = $wcOrder->get_shipping_last_name();
             }
 
             return true;
@@ -470,11 +478,16 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
+<<<<<<< HEAD
             $response = $this->retailcrm->ordersGet($order->get_id());
 
             if (!empty($response) && $response->isSuccessful()) {
                 $retailcrmOrder = $response['order'];
+=======
+            $retailcrmOrder = $this->getCrmOrder($order->get_id());
+>>>>>>> several fixes & environment variable which can be used to output logs to stdout in tests
 
+            if (!empty($retailcrmOrder)) {
                 foreach ($retailcrmOrder['payments'] as $payment_data) {
                     $payment_external_id = explode('-', $payment_data['externalId']);
 
@@ -615,6 +628,31 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         }
 
         /**
+         * ordersGet wrapper with cache (in order to minimize request count).
+         *
+         * @param int|string $orderId
+         * @param bool       $cached
+         *
+         * @return array
+         */
+        protected function getCrmOrder($orderId, $cached = true)
+        {
+            if ($cached && isset($this->ordersGetRequestCache[$orderId])) {
+                return (array) $this->ordersGetRequestCache[$orderId];
+            }
+
+            $crmOrder = array();
+            $response = $this->retailcrm->ordersGet($orderId);
+
+            if (!empty($response) && $response->isSuccessful() && isset($response['order'])) {
+                $crmOrder = (array) $response['order'];
+                $this->ordersGetRequestCache[$orderId] = $crmOrder;
+            }
+
+            return $crmOrder;
+        }
+
+        /**
          * @return array
          */
         public function getOrder()
@@ -678,6 +716,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public static function isOrderCustomerWasChanged($wcOrder, $crmOrder)
         {
+            if (!isset($crmOrder['customer'])) {
+                return false;
+            }
+
             $customerWasChanged = self::isCorporateOrder($wcOrder) != self::isCorporateCrmOrder($crmOrder);
             $synchronizableUserData = self::isCorporateCrmOrder($crmOrder)
                 ? $crmOrder['contact'] : $crmOrder['customer'];
