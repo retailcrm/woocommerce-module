@@ -405,6 +405,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> sync phone via history
             if (isset($order['phone'])) {
@@ -425,6 +426,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 >>>>>>> sync phone via history
             $this->handleCustomerDataChange($wc_order, $order);
 >>>>>>> Fixes, customer change logic for legal entities & individual persons (contact person will be used in the second case)
+=======
+            if (!$this->handleCustomerDataChange($wc_order, $order)) {
+                if (isset($order['phone'])) {
+                    $wc_order->set_billing_phone($order['phone']);
+                }
+
+                if (isset($order['email'])) {
+                    $wc_order->set_billing_email($order['email']);
+                }
+            }
+>>>>>>> don't break customer change with sync
 
 >>>>>>> WIP: Logic for company replacement via component (which was surprisingly easy to implement)
             if (array_key_exists('items', $order)) {
@@ -909,10 +921,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * Handle customer data change (from individual to corporate, company change, etc)
          *
          * @param \WC_Order $wc_order
-         * @param array $order
+         * @param array     $order
+         *
+         * @return bool True if customer change happened; false otherwise.
          */
         protected function handleCustomerDataChange($wc_order, $order)
         {
+            $handled = false;
             $crmOrder = array();
             $newCustomerId = null;
             $switcher = new WC_Retailcrm_Customer_Switcher();
@@ -936,7 +951,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         print_r($order, true)
                     ));
 
-                    return;
+                    return false;
                 }
 
                 $newCustomerId = $order['customer']['id'];
@@ -969,7 +984,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         print_r($order, true)
                     ));
 
-                    return;
+                    return false;
                 }
 
                 if (self::isOrderCorporate($crmOrder)) {
@@ -994,6 +1009,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         ->getResult();
 
                     $result->save();
+                    $handled = true;
                 } catch (\Exception $exception) {
                     $errorMessage = sprintf(
                         'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s',
@@ -1010,8 +1026,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         PHP_EOL,
                         $exception->getTraceAsString()
                     ));
+                    $handled = false;
                 }
             }
+
+            return $handled;
         }
 
         /**
