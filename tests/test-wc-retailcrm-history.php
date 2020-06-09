@@ -300,6 +300,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $orderUser = $order->get_user();
 
         if ($orderUser instanceof WP_User) {
+            WC_Retailcrm_Logger::debug(__METHOD__, get_user_meta($orderUser->ID));
             $this->assertEquals('psycho913', $orderUser->get('_billing_first_name'));
             $this->assertEquals('psycho913', $orderUser->get('_billing_last_name'));
         } else {
