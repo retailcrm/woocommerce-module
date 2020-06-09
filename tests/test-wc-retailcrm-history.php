@@ -126,6 +126,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_history_switch_customer_tests()
     {
+        $this->deleteAllData();
         $this->regenerateMocks();
         $order_id = $this->history_order_create_for_changing_customer();
         $this->assertNotEmpty($order_id);
@@ -296,16 +297,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Еврейская Автономная область', $order->get_billing_state());
         $this->assertEquals('Компания1', $order->get_billing_company());
         $this->assertEquals('9135487458709', $order->get_billing_phone());
-
-        $orderUser = $order->get_user();
-
-        if ($orderUser instanceof WP_User) {
-            WC_Retailcrm_Logger::debug(__METHOD__, get_user_meta($orderUser->ID));
-            $this->assertEquals('psycho913', $orderUser->get('_billing_first_name'));
-            $this->assertEquals('psycho913', $orderUser->get('_billing_last_name'));
-        } else {
-            $this->assertEmpty($order->get_customer_id());
-        }
+        $this->assertEmpty($order->get_customer_id());
     }
 
     /**

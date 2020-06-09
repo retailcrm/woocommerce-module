@@ -48,6 +48,43 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
     }
 
     /**
+     * Removes all data from the DB.
+     */
+    protected function deleteAllData()
+    {
+        if (function_exists('_delete_all_data')) {
+            _delete_all_data();
+        } else {
+            global $wpdb;
+
+            foreach ( array(
+                          $wpdb->posts,
+                          $wpdb->postmeta,
+                          $wpdb->comments,
+                          $wpdb->commentmeta,
+                          $wpdb->term_relationships,
+                          $wpdb->termmeta,
+                      ) as $table ) {
+                //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $wpdb->query( "DELETE FROM {$table}" );
+            }
+
+            foreach ( array(
+                          $wpdb->terms,
+                          $wpdb->term_taxonomy,
+                      ) as $table ) {
+                //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $wpdb->query( "DELETE FROM {$table} WHERE term_id != 1" );
+            }
+
+            $wpdb->query( "UPDATE {$wpdb->term_taxonomy} SET count = 0" );
+
+            $wpdb->query( "DELETE FROM {$wpdb->users} WHERE ID != 1" );
+            $wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE user_id != 1" );
+        }
+    }
+
+    /**
      * @return array
      */
     protected function getOptions()
