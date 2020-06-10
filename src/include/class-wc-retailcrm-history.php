@@ -317,6 +317,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param array $options
          *
          * @return bool
+         * @throws \WC_Data_Exception
          */
         protected function orderUpdate($order, $options)
         {
@@ -328,6 +329,30 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if (isset($options[$order['status']])) {
                 $wc_order->update_status($options[$order['status']]);
+            }
+
+            if (isset($order['customerComment'])) {
+                $wc_order->set_customer_note($order['customerComment']);
+            }
+
+            if (isset($order['managerComment']) && !empty($order['managerComment'])) {
+                $wc_order->add_order_note($order['managerComment'], 0, false);
+            }
+
+            if (isset($order['firstName'])) {
+                $wc_order->set_shipping_first_name($order['firstName']);
+            }
+
+            if (isset($order['lastName'])) {
+                $wc_order->set_shipping_last_name($order['lastName']);
+            }
+
+            if (isset($order['phone'])) {
+                $wc_order->set_billing_phone($order['phone']);
+            }
+
+            if (isset($order['email'])) {
+                $wc_order->set_billing_email($order['email']);
             }
 
             if (array_key_exists('items', $order)) {
@@ -519,7 +544,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $args = array(
                 'status' => isset($options[$order['status']])
-                    ? isset($options[$order['status']])
+                    ? $options[$order['status']]
                     : 'processing',
                 'customer_id' => isset($order['customer']['externalId'])
                     ? $order['customer']['externalId']
