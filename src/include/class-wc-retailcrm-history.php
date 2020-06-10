@@ -1067,10 +1067,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         {
             WC_Retailcrm_Logger::debug(
                 __METHOD__,
-                'Using this individual person data in order to set it into order,',
-                $data->getWcOrder()->get_id(),
-                ': ',
-                $crmCustomer
+                array(
+                    'Using this individual person data in order to set it into order,',
+                    $data->getWcOrder()->get_id(),
+                    ': ',
+                    $crmCustomer
+                )
             );
 
             if ($isContact) {
