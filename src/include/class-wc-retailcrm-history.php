@@ -89,7 +89,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $response = $this->retailcrm->customersHistory(array('startDate' => $date));
             }
 
-            if ($response->isSuccessful()) {
+            if (!empty($response) && $response->isSuccessful()) {
                 if (empty($response['history'])) {
                     return;
                 }
@@ -190,7 +190,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $response = $this->retailcrm->ordersHistory(array('startDate' => $date));
             }
 
-            if ($response->isSuccessful()) {
+            if (!empty($response) && $response->isSuccessful()) {
                 if (empty($response['history'])) {
                     return false;
                 }
@@ -696,9 +696,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $order_items = array();
             if ($event == 'update') {
                 $result = $this->retailcrm->ordersGet($order['externalId']);
-                if ($result->isSuccessful()) {
+
+                if (!empty($result) && $result->isSuccessful()) {
                     $orderCrm = $result['order'];
                 }
+
                 $data = $orderCrm;
             }
 

@@ -47,7 +47,7 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
             try {
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
 
-                if ($response->isSuccessful()) {
+                if (!empty($response) && $response->isSuccessful()) {
                     $result = ' Ok';
                 } else {
                     $result = sprintf(
