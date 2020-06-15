@@ -18,6 +18,9 @@ class WC_Retailcrm_Customer_Switcher_State
    /** @var string $newCompanyName */
     private $newCompanyName;
 
+    /** @var array $companyAddress */
+    private $companyAddress;
+
     /**
      * @return \WC_Order
      */
@@ -95,6 +98,25 @@ class WC_Retailcrm_Customer_Switcher_State
     }
 
     /**
+     * @return array
+     */
+    public function getCompanyAddress()
+    {
+        return $this->companyAddress;
+    }
+
+    /**
+     * @param array $companyAddress
+     *
+     * @return WC_Retailcrm_Customer_Switcher_State
+     */
+    public function setCompanyAddress($companyAddress)
+    {
+        $this->companyAddress = $companyAddress;
+        return $this;
+    }
+
+    /**
      * @param array $newCompany
      *
      * @return WC_Retailcrm_Customer_Switcher_State
@@ -103,6 +125,10 @@ class WC_Retailcrm_Customer_Switcher_State
     {
         if (isset($newCompany['name'])) {
             $this->setNewCompanyName($newCompany['name']);
+        }
+
+        if (isset($newCompany['address']) && !empty($newCompany['address'])) {
+            $this->setCompanyAddress($newCompany['address']);
         }
 
         return $this;

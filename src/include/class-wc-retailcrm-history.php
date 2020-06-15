@@ -926,7 +926,11 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             if (isset($order['company'])) {
-                $data->setNewCompany($order['company']);
+                if (empty($crmOrder)) {
+                    $crmOrder = $this->getCRMOrder($order['id'], 'id');
+                }
+
+                $data->setNewCompany($crmOrder['company']);
             }
 
             if ($data->feasible()) {

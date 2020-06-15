@@ -41,6 +41,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         $newCustomer = $this->data->getNewCustomer();
         $newContact = $this->data->getNewContact();
         $newCompany = $this->data->getNewCompanyName();
+        $companyAddress = $this->data->getCompanyAddress();
 
         if (!empty($newCustomer)) {
             WC_Retailcrm_Logger::debug(
@@ -75,6 +76,10 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
                     ))
                 );
                 $this->processCompanyChange();
+            }
+
+            if (!empty($companyAddress)) {
+                $this->processCompanyAddress();
             }
         }
 
@@ -140,14 +145,29 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         }
 
         $address = self::arrayValue($newCustomer, 'address', array());
-        $wcOrder->set_billing_state(self::arrayValue($address, 'region', '--'));
-        $wcOrder->set_billing_postcode(self::arrayValue($address, 'index', '--'));
-        $wcOrder->set_billing_country(self::arrayValue($address, 'country', '--'));
-        $wcOrder->set_billing_city(self::arrayValue($address, 'city', '--'));
-        $wcOrder->set_billing_address_1(self::arrayValue($address, 'text', '--'));
+        self::setBillingAddressToOrder($wcOrder, $address);
         $wcOrder->set_billing_phone(self::singleCustomerPhone($newCustomer));
 
         $this->result = new WC_Retailcrm_Customer_Switcher_Result($wcCustomer, $wcOrder);
+    }
+
+    /**
+     * Process company address.
+     *
+     * @throws \WC_Data_Exception
+     */
+    protected function processCompanyAddress()
+    {
+        $wcOrder = $this->data->getWcOrder();
+        $companyAddress = $this->data->getCompanyAddress();
+
+        if (!empty($companyAddress)) {
+            self::setBillingAddressToOrder($wcOrder, $companyAddress);
+        }
+
+        if (empty($this->result)) {
+            $this->result = new WC_Retailcrm_Customer_Switcher_Result(null, $wcOrder);
+        }
     }
 
     /**
@@ -205,6 +225,23 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
     public function getData()
     {
         return $this->data;
+    }
+
+    /**
+     * Sets billing address properties in order
+     *
+     * @param \WC_Order $wcOrder
+     * @param array     $address
+     *
+     * @throws \WC_Data_Exception
+     */
+    private static function setBillingAddressToOrder($wcOrder, $address)
+    {
+        $wcOrder->set_billing_state(self::arrayValue($address, 'region', '--'));
+        $wcOrder->set_billing_postcode(self::arrayValue($address, 'index', '--'));
+        $wcOrder->set_billing_country(self::arrayValue($address, 'country', '--'));
+        $wcOrder->set_billing_city(self::arrayValue($address, 'city', '--'));
+        $wcOrder->set_billing_address_1(self::arrayValue($address, 'text', '--'));
     }
 
     /**
