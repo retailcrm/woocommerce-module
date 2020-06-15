@@ -558,45 +558,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
     /**
-<<<<<<< HEAD
-     * Validate API version
-     *
-     * @param string $key
-     * @param string $value
-     *
-     * @return string
-     */
-    public function validate_api_version_field($key, $value)
-    {
-        $post = $this->get_post_data();
-
-        $versionMap = array(
-            'v4' => '4.0',
-            'v5' => '5.0'
-        );
-
-        $api = new WC_Retailcrm_Proxy(
-            $post[$this->plugin_id . $this->id . '_api_url'],
-            $post[$this->plugin_id . $this->id . '_api_key'],
-            null,
-            $this->get_option('corporate_enabled', 'no') === 'yes'
-        );
-
-        $response = $api->apiVersions();
-
-        if (!empty($response) && $response->isSuccessful()) {
-            if (!in_array($versionMap[$value], $response['versions'])) {
-                WC_Admin_Settings::add_error( esc_html__( 'The selected API version is unavailable', 'retailcrm' ) );
-                $value = '';
-            }
-        }
-
-        return $value;
-    }
-
-    /**
-=======
->>>>>>> Dropped v4, fixes for several bugs, tests.
      * Validate API url
      *
      * @param string $key
@@ -646,7 +607,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             $value = '';
         }
 
-        if (!$response->isSuccessful()) {
+        if (empty($response) || !$response->isSuccessful()) {
             WC_Admin_Settings::add_error( esc_html__( 'Enter the correct API key', 'retailcrm' ) );
             $value = '';
         }

@@ -130,120 +130,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $wcOrder = wc_get_order($order_id);
             $this->processOrder($wcOrder);
-<<<<<<< HEAD
-            $wpUser = $wcOrder->get_user();
-
-            if ($wpUser instanceof WP_User) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-                $wpUserId = (int)$wpUser->get('ID');
-                $wooCustomer = new WC_Customer($wpUserId);
-
-<<<<<<< HEAD
-                if (empty($foundCustomer)) {
-                	$foundCustomer = $this->customers->searchCustomer(array(
-                		'email' => $wcOrder->get_billing_email()
-	                ));
-                }
-
-                if (empty($foundCustomer)) {
-                    $customerId = $this->customers->createCustomer($wpUserId);
-=======
-                if ($isCorporateEnabled && WC_Retailcrm_Customers::customerPossiblyCorporate($wooCustomer)) {
-                    $foundRegularCustomer = $this->customers->searchCustomer(array(
-                        'externalId' => $wpUserId
-                    ));
->>>>>>> WIP: corporate customers support
-
-                    // If regular customer was found - create order with it.
-                    if (!empty($foundRegularCustomer)) {
-                        return $this->orderCreate($order_id, true);
-                    }
-
-                    $foundCustomer = $this->customers->searchCorporateCustomer(array(
-                        'externalId' => $wpUserId
-                    ));
-
-                    if (empty($foundCustomer)) {
-                        $customerData = $this->customers->createCorporateCustomer($wpUserId);
-
-                        if ($customerData instanceof WC_Retailcrm_Customer_Corporate_Response) {
-                            if (!empty($customerData->getId())) {
-                                $this->order['customer']['id'] = $customerData->getId();
-                            }
-
-                            if (!empty($customerData->getContactId())) {
-                                $this->order['contact']['id'] = $customerData->getContactId();
-                            }
-
-                            if (!empty($customerData->getContactExternalId())) {
-                                $this->order['contact']['externalId'] = $customerData->getContactExternalId();
-                            }
-                        }
-                    } else {
-                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-
-                        if (isset($foundCustomer['mainCustomerContact']['customer']['id'])) {
-                            $this->order['contact']['id'] = $foundCustomer['mainCustomerContact']['customer']['id'];
-                        }
-                    }
-                } else {
-<<<<<<< HEAD
-	                if (!empty($foundCustomer['externalId'])) {
-		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-	                } else {
-		                $this->order['customer']['id'] = $foundCustomer['id'];
-	                }
-=======
-                    $foundCustomer = $this->customers->searchCustomer(array(
-                        'externalId' => $wpUserId
-                    ));
-
-                    if (empty($foundCustomer)) {
-                        $customerId = $this->customers->createRegularCustomer($wpUserId);
-
-                        if (!empty($customerId)) {
-                            $this->order['customer']['id'] = $customerId;
-                        }
-                    } else {
-                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-                    }
->>>>>>> WIP: corporate customers support
-                }
-=======
-=======
-=======
->>>>>>> restore correct merge state
-                if (!WC_Retailcrm_Customers::isCustomer($wpUser)) {
-                    return $wcOrder;
-                }
-
-<<<<<<< HEAD
->>>>>>> corporate customers alternative logic
->>>>>>> corporate customers alternative logic
-                $wpUserId = (int) $wpUser->get('ID');
-<<<<<<< HEAD
-                $this->fillOrderCreate($wpUserId, $wpUser->get('email'), $wcOrder);
-<<<<<<< HEAD
-=======
->>>>>>> WIP: different (better) logic for corporate clients, fix for possible problem with identifiers
-=======
-                $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
->>>>>>> merge changes
->>>>>>> merge changes
-=======
-                $wpUserId = (int) $wpUser->get('ID');
-                $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
->>>>>>> restore correct merge state
-            } else {
-                $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
-                $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
-            }
-=======
->>>>>>> company fix for corporate clients implementation & pass client change from cms to retailCRM
 
             try {
                 $response = $this->retailcrm->ordersCreate($this->order);
@@ -359,52 +245,12 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     );
                     $this->order['customer']['id'] = $corporateId;
                 } else {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                	if (!empty($foundCustomer['externalId'])) {
-		                $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-	                } else {
-                		$this->order['customer']['id'] = $foundCustomer['id'];
-	                }
-=======
->>>>>>> new address logic & fixes
-                    $foundCustomer = $this->customers->searchCustomer(array(
-                        'email' => $wcOrder->get_billing_email()
-                    ));
-
-                    if (empty($foundCustomer)) {
-                        $customerId = $this->customers->createRegularCustomer($wcCustomer);
-
-                        if (!empty($customerId)) {
-                            $this->order['customer']['id'] = $customerId;
-                        }
-                    } else {
-                        $this->order['customer']['externalId'] = $foundCustomer['externalId'];
-                    }
-<<<<<<< HEAD
-=======
->>>>>>> WIP: corporate customers support
-=======
-=======
-=======
->>>>>>> restore correct merge state
                     $this->customers->fillCorporateAddress(
                         $crmCorporate['id'],
                         new WC_Customer($wcCustomerId),
                         $wcOrder
                     );
-<<<<<<< HEAD
->>>>>>> new address logic & fixes
->>>>>>> new address logic & fixes
                     $this->order['customer']['id'] = $crmCorporate['id'];
-
-=======
-                    $this->order['customer']['id'] = $crmCorporate['id'];
->>>>>>> restore correct merge state
                 }
 
                 $companiesResponse = $this->retailcrm->customersCorporateCompanies(
@@ -450,16 +296,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $response = $this->retailcrm->ordersEdit($this->order);
 
-<<<<<<< HEAD
-            if ((!empty($response) && $response->isSuccessful()) && $this->retailcrm_settings['api_version'] == 'v5') {
-=======
-            if ($response->isSuccessful()) {
-<<<<<<< HEAD
->>>>>>> Dropped v4, fixes for several bugs, tests.
-                $this->payment = $this->orderUpdatePaymentType($order);
-=======
+            if (!empty($response) && $response->isSuccessful()) {
                 $this->payment = $this->orderUpdatePaymentType($wcOrder);
->>>>>>> company fix for corporate clients implementation & pass client change from cms to retailCRM
             }
 
             return $wcOrder;
@@ -478,14 +316,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return null;
             }
 
-<<<<<<< HEAD
-            $response = $this->retailcrm->ordersGet($order->get_id());
-
-            if (!empty($response) && $response->isSuccessful()) {
-                $retailcrmOrder = $response['order'];
-=======
             $retailcrmOrder = $this->getCrmOrder($order->get_id());
->>>>>>> several fixes & environment variable which can be used to output logs to stdout in tests
 
             if (!empty($retailcrmOrder)) {
                 foreach ($retailcrmOrder['payments'] as $payment_data) {

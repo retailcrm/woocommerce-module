@@ -108,33 +108,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         protected function customersHistory($date, $sinceId)
         {
-<<<<<<< HEAD
-            if ($since_id) {
-                $response = $this->retailcrm->customersHistory(array('sinceId' => $since_id));
-            } else {
-                $response = $this->retailcrm->customersHistory(array('startDate' => $date));
-            }
-
-            if (!empty($response) && $response->isSuccessful()) {
-                if (empty($response['history'])) {
-                    return;
-                }
-
-                $history = $response['history'];
-                $end_change = end($history);
-                $new_since_id = $end_change['id'];
-                
-                $mapping = array(
-                    'first_name' => 'first_name',
-                    'last_name' => 'last_name',
-                    'email' => 'billing_email',
-                    'phones' => 'billing_phone',
-                    'address.region' => 'billing_state',
-                    'address.index' => 'billing_postcode',
-                    'address.country' => 'billing_country',
-                    'address.city' => 'billing_city'
-                );
-=======
             $filter = array('startDate' => $date);
 
             if ($sinceId) {
@@ -156,15 +129,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $lastChange = end($history);
                 $customers = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
                 WC_Retailcrm_Plugin::$history_run = true;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> WIP: Change client in the order (not ready at this point; also tests should fail)
-=======
-                WC_Retailcrm_Logger::debug(__METHOD__, 'Assembled customers history:', $customers);
->>>>>>> WIP: Logic for company replacement via component (which was surprisingly easy to implement)
-=======
                 WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
->>>>>>> Compatibility fixes for php 5.3
 
                 foreach ($customers as $crmCustomer) {
                     if (!isset($crmCustomer['externalId'])) {
@@ -228,12 +193,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $filter = array('sinceId' => $since_id);
             }
 
-<<<<<<< HEAD
-            if (!empty($response) && $response->isSuccessful()) {
-                if (empty($response['history'])) {
-                    return false;
-                }
-=======
             $request = new WC_Retailcrm_Paginated_Request();
             $history = $request
                 ->setApi($this->retailcrm)
@@ -243,7 +202,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 ->setLimit(100)
                 ->execute()
                 ->getData();
->>>>>>> WIP: Change client in the order (not ready at this point; also tests should fail)
 
             if (!empty($history)) {
                 $last_change = end($history);
@@ -367,10 +325,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param array $options
          *
          * @return bool
-<<<<<<< HEAD
-=======
          * @throws \Exception
->>>>>>> fixes for possible crashes
          * @throws \WC_Data_Exception
          */
         protected function orderUpdate($order, $options)
@@ -401,32 +356,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $wc_order->set_shipping_last_name($order['lastName']);
             }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> sync phone via history
-            if (isset($order['phone'])) {
-                $wc_order->set_billing_phone($order['phone']);
-            }
-
-<<<<<<< HEAD
-            if (isset($order['email'])) {
-                $wc_order->set_billing_email($order['email']);
-            }
-
-=======
->>>>>>> fixes & more fields for sync
-=======
-
-=======
-=======
->>>>>>> sync phone via history
-            $this->handleCustomerDataChange($wc_order, $order);
->>>>>>> Fixes, customer change logic for legal entities & individual persons (contact person will be used in the second case)
-=======
             if (!$this->handleCustomerDataChange($wc_order, $order)) {
                 if (isset($order['phone'])) {
                     $wc_order->set_billing_phone($order['phone']);
@@ -436,9 +365,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     $wc_order->set_billing_email($order['email']);
                 }
             }
->>>>>>> don't break customer change with sync
 
->>>>>>> WIP: Logic for company replacement via component (which was surprisingly easy to implement)
             if (array_key_exists('items', $order)) {
                 foreach ($order['items'] as $key => $item) {
                     if (!isset($item['offer'][$this->bind_field])) {
@@ -846,7 +773,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     if (empty($crmOrder)) {
                         $result = $this->retailcrm->ordersGet($order['id'], 'id');
 
-                        if ($result->isSuccessful()) {
+                        if (!empty($result) && $result->isSuccessful()) {
                             $crmOrder = $result['order'];
                         }
                     }

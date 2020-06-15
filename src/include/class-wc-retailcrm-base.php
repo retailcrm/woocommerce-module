@@ -279,23 +279,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return;
             }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            $client = $this->getApiClient();
-
-            if (empty($client)) {
-            	return;
-            }
-
-            $wcCustomer = new WC_Customer($customer_id);
-            $response = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
-
-            if ((!empty($response) && $response->isSuccessful()) && isset($response['customers']) && count($response['customers']) > 0) {
-                return;
-            }
-=======
-=======
->>>>>>> restore correct merge state
 	        $client = $this->getApiClient();
 
 	        if (empty($client)) {
@@ -303,9 +286,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
 	        }
 
 	        $wcCustomer = new WC_Customer($customer_id);
-	        $resp = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
+	        $response = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
 
-	        if ($resp && $resp->isSuccessful() && isset($resp['customers']) && count($resp['customers']) > 0) {
+	        if (!empty($response)
+                && $response->isSuccessful()
+                && isset($response['customers'])
+                && count($response['customers']) > 0
+            ) {
 		        return;
 	        }
 

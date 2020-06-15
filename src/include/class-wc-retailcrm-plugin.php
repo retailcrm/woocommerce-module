@@ -184,4 +184,3 @@ class WC_Retailcrm_Plugin {
         return self::$history_run;
     }
 }
-

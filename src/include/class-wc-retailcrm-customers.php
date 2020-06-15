@@ -460,13 +460,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $search = $this->retailcrm->customersList(array('email' => $filter['email']));
             }
 
-<<<<<<< HEAD
             if (!empty($search) && $search->isSuccessful()) {
-=======
-            if (isset($search) && $search->isSuccessful()) {
                 $customer = false;
 
->>>>>>> fix customer squashing
                 if (isset($search['customers'])) {
                     if (empty($search['customers'])) {
                         return false;
@@ -527,7 +523,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         {
 	        $search = $this->retailcrm->customersCorporateList($filter);
 
-            if (isset($search) && $search->isSuccessful()) {
+            if (!empty($search) && $search->isSuccessful()) {
                 if (isset($search['customersCorporate'])) {
                     if (empty($search['customersCorporate'])) {
                         return false;

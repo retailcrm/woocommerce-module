@@ -85,6 +85,11 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
                     return $response;
                 }
 
+                if (empty($response)) {
+                    WC_Retailcrm_Logger::add(sprintf("[%s] null (no response whatsoever)", $called));
+                    return null;
+                }
+
                 if ($response->isSuccessful()) {
                     // Don't print long lists in debug logs (errors while calling this will be easy to detect anyway)
                     // Also don't call useless array_map at all while debug mode is off.
