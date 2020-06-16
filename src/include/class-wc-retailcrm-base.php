@@ -96,6 +96,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
+            add_action('user_register', array($this, 'create_customer'), 10, 2);
             add_action('profile_update', array($this, 'update_customer'), 10, 2);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
@@ -286,17 +287,43 @@ if (!class_exists('WC_Retailcrm_Base')) {
 	        }
 
 	        $wcCustomer = new WC_Customer($customer_id);
-	        $response = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
+	        $email = $wcCustomer->get_billing_email();
+
+	        if (empty($email)) {
+	            $email = $wcCustomer->get_email();
+            }
+
+	        if (empty($email)) {
+	            return;
+            } else {
+	            $wcCustomer->set_billing_email($email);
+	            $wcCustomer->save();
+            }
+
+	        $response = $client->customersList(array('email' => $email));
 
 	        if (!empty($response)
                 && $response->isSuccessful()
                 && isset($response['customers'])
                 && count($response['customers']) > 0
             ) {
-		        return;
-	        }
+		        $customers = $response['customers'];
+		        $customer = reset($customers);
 
-            $this->customers->createCustomer($customer_id);
+		        if (isset($customer['id'])) {
+		            $this->customers->updateCustomerById($customer_id, $customer['id']);
+		            $builder = new WC_Retailcrm_WC_Customer_Builder();
+		            $builder
+                        ->setWcCustomer($wcCustomer)
+                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : array())
+                        ->setAddress(isset($customer['address']) ? $customer['address'] : false)
+                        ->build()
+                        ->getResult()
+                        ->save();
+                }
+	        } else {
+                $this->customers->createCustomer($customer_id);
+            }
         }
 
         /**

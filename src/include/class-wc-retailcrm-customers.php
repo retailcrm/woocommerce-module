@@ -186,6 +186,32 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
+         * Update customer in CRM by ID
+         *
+         * @param int        $customer_id
+         * @param int|string $crmCustomerId
+         *
+         * @return void|\WC_Customer
+         * @throws \Exception
+         */
+        public function updateCustomerById($customer_id, $crmCustomerId)
+        {
+            if (!$this->retailcrm) {
+                return;
+            }
+
+            $customer = $this->wcCustomerGet($customer_id);
+
+            if (self::isCustomer($customer)) {
+                $this->processCustomer($customer);
+                $this->customer['id'] = $crmCustomerId;
+                $this->retailcrm->customersEdit($this->customer, 'id');
+            }
+
+            return $customer;
+        }
+
+        /**
          * Create corporate customer in CRM
          *
          * @param int               $crmCustomerId

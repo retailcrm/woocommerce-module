@@ -51,7 +51,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
                     $this->data->getWcOrder()->get_id()
                 )
             );
-            $this->processChangeToRegular($this->data->getWcOrder(), $newCustomer);
+            $this->processChangeToRegular($this->data->getWcOrder(), $newCustomer, false);
             $this->data->getWcOrder()->set_billing_company('');
         } else {
             if (!empty($newContact)) {
@@ -62,7 +62,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
                         $this->data->getWcOrder()->get_id()
                     )
                 );
-                $this->processChangeToRegular($this->data->getWcOrder(), $newContact);
+                $this->processChangeToRegular($this->data->getWcOrder(), $newContact, true);
             }
 
             if (!empty($newCompany)) {
@@ -91,10 +91,11 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
      *
      * @param \WC_Order $wcOrder
      * @param array     $newCustomer
+     * @param bool      $isContact
      *
      * @throws \WC_Data_Exception
      */
-    public function processChangeToRegular($wcOrder, $newCustomer)
+    public function processChangeToRegular($wcOrder, $newCustomer, $isContact)
     {
         $wcCustomer = null;
 
@@ -145,7 +146,14 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         }
 
         $address = self::arrayValue($newCustomer, 'address', array());
-        self::setBillingAddressToOrder($wcOrder, $address);
+
+        if ($isContact) {
+            self::setShippingAddressToOrder($wcOrder, $address);
+        } else {
+            self::setBillingAddressToOrder($wcOrder, $address);
+            self::setShippingAddressToOrder($wcOrder, $address);
+        }
+
         $wcOrder->set_billing_phone(self::singleCustomerPhone($newCustomer));
 
         $this->result = new WC_Retailcrm_Customer_Switcher_Result($wcCustomer, $wcOrder);
@@ -242,6 +250,23 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         $wcOrder->set_billing_country(self::arrayValue($address, 'country', '--'));
         $wcOrder->set_billing_city(self::arrayValue($address, 'city', '--'));
         $wcOrder->set_billing_address_1(self::arrayValue($address, 'text', '--'));
+    }
+
+    /**
+     * Sets shipping address properties in order
+     *
+     * @param \WC_Order $wcOrder
+     * @param array     $address
+     *
+     * @throws \WC_Data_Exception
+     */
+    private static function setShippingAddressToOrder($wcOrder, $address)
+    {
+        $wcOrder->set_shipping_state(self::arrayValue($address, 'region', '--'));
+        $wcOrder->set_shipping_postcode(self::arrayValue($address, 'index', '--'));
+        $wcOrder->set_shipping_country(self::arrayValue($address, 'country', '--'));
+        $wcOrder->set_shipping_city(self::arrayValue($address, 'city', '--'));
+        $wcOrder->set_shipping_address_1(self::arrayValue($address, 'text', '--'));
     }
 
     /**
