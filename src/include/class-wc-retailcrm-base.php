@@ -357,7 +357,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
          * Edit order in retailCRM
+         *
          * @param int $order_id
+         *
+         * @throws \Exception
          */
         public function update_order($order_id)
         {
