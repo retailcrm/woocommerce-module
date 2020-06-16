@@ -64,6 +64,11 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
             'countryIso' => $order->get_shipping_country()
         );
 
+        if ($data['countryIso'] == '--') {
+            $countries = new WC_Countries();
+            $data['countryIso'] = $countries->get_base_country();
+        }
+
         $this->set_data_fields($data);
         $this->set_number($order);
 
