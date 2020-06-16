@@ -231,6 +231,9 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('с. Верхненазаровское', $order->get_billing_city());
         $this->assertEquals('34000', $order->get_billing_postcode());
         $this->assertEquals('Адыгея Республика', $order->get_billing_state());
+        $this->assertEquals('с. Верхненазаровское', $order->get_shipping_city());
+        $this->assertEquals('34000', $order->get_shipping_postcode());
+        $this->assertEquals('Адыгея Республика', $order->get_shipping_state());
         $this->assertEquals('34687453268933', $order->get_billing_phone());
         $this->assertEmpty($order->get_billing_company());
         $this->assertEmpty($order->get_customer_id());
@@ -292,9 +295,9 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('psycho913', $order->get_billing_first_name());
         $this->assertEquals('psycho913', $order->get_billing_last_name());
         $this->assertEquals('psycho913@example.com', $order->get_billing_email());
-        $this->assertEquals('Валдгейм', $order->get_billing_city());
-        $this->assertEquals('344091', $order->get_billing_postcode());
-        $this->assertEquals('Еврейская Автономная область', $order->get_billing_state());
+        $this->assertEquals('Валдгейм', $order->get_shipping_city());
+        $this->assertEquals('344091', $order->get_shipping_postcode());
+        $this->assertEquals('Еврейская Автономная область', $order->get_shipping_state());
         $this->assertEquals('Компания1', $order->get_billing_company());
         $this->assertEquals('9135487458709', $order->get_billing_phone());
         $this->assertEmpty($order->get_customer_id());
@@ -357,10 +360,10 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Tester4867', $order->get_billing_last_name());
         $this->assertEquals('tester4867@example.com', $order->get_billing_email());
         $this->assertEquals('TestCompany3428769', $order->get_billing_company());
-        $this->assertEquals('--', $order->get_billing_city());
-        $this->assertEquals('--', $order->get_billing_postcode());
-        $this->assertEquals('--', $order->get_billing_state());
-        $this->assertEquals('--', $order->get_billing_country());
+        $this->assertEquals('--', $order->get_shipping_city());
+        $this->assertEquals('--', $order->get_shipping_postcode());
+        $this->assertEquals('--', $order->get_shipping_state());
+        $this->assertEquals('--', $order->get_shipping_country());
         $this->assertEquals('', $order->get_billing_phone());
         $this->assertEmpty($order->get_customer_id());
     }
@@ -422,10 +425,10 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Tester4867', $order->get_billing_last_name());
         $this->assertEquals('tester4867@example.com', $order->get_billing_email());
         $this->assertEquals('TestCompany017089465', $order->get_billing_company());
-        $this->assertEquals('--', $order->get_billing_city());
-        $this->assertEquals('--', $order->get_billing_postcode());
-        $this->assertEquals('--', $order->get_billing_state());
-        $this->assertEquals('--', $order->get_billing_country());
+        $this->assertEquals('--', $order->get_shipping_city());
+        $this->assertEquals('--', $order->get_shipping_postcode());
+        $this->assertEquals('--', $order->get_shipping_state());
+        $this->assertEquals('--', $order->get_shipping_country());
         $this->assertEquals('', $order->get_billing_phone());
         $this->assertEmpty($order->get_customer_id());
     }
@@ -487,10 +490,10 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Tester2890', $order->get_billing_last_name());
         $this->assertEquals('tester2890@example.com', $order->get_billing_email());
         $this->assertEquals('TestCompany017089465', $order->get_billing_company());
-        $this->assertEquals('--', $order->get_billing_city());
-        $this->assertEquals('--', $order->get_billing_postcode());
-        $this->assertEquals('--', $order->get_billing_state());
-        $this->assertEquals('--', $order->get_billing_country());
+        $this->assertEquals('--', $order->get_shipping_city());
+        $this->assertEquals('--', $order->get_shipping_postcode());
+        $this->assertEquals('--', $order->get_shipping_state());
+        $this->assertEquals('--', $order->get_shipping_country());
         $this->assertEquals('32418790888', $order->get_billing_phone());
         $this->assertEmpty($order->get_customer_id());
     }
@@ -550,6 +553,10 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('--', $order->get_billing_postcode());
         $this->assertEquals('--', $order->get_billing_state());
         $this->assertEquals('--', $order->get_billing_country());
+        $this->assertEquals('--', $order->get_shipping_city());
+        $this->assertEquals('--', $order->get_shipping_postcode());
+        $this->assertEquals('--', $order->get_shipping_state());
+        $this->assertEquals('--', $order->get_shipping_country());
         $this->assertEquals('2354708915097', $order->get_billing_phone());
         $this->assertEquals('ул. Пушкина дом Колотушкина', $order->get_billing_address_1());
         $this->assertEmpty($order->get_billing_company());
@@ -2225,7 +2232,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         );
 
         if (!empty($company)) {
-            $order['company'] = $company;
+            $order['order']['company'] = $company;
         }
 
         return $order;
