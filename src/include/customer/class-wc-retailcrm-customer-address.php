@@ -26,7 +26,7 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
         $data = array(
             'index' => $customer->get_billing_postcode(),
             'countryIso' => $customer->get_billing_country(),
-            'region' => $customer->get_billing_state(),
+            'region' => $this->get_state_name($customer->get_billing_country(), $customer->get_billing_state()),
             'city' => $customer->get_billing_city(),
             'text' => $customer->get_billing_address_1() . ', ' . $customer->get_billing_address_2()
         );

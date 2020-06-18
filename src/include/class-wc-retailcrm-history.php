@@ -628,7 +628,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     if (!empty($arItemsOld)) {
-                        $result = end(array_diff($arItemsNew, $arItemsOld));
+                        $diff = array_diff($arItemsNew, $arItemsOld);
+                        $result = end($diff);
                     } else {
                         $result = end($arItemsNew);
                     }

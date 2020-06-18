@@ -26,7 +26,7 @@ class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
             $data = array(
                 'index' => $address['postcode'],
                 'city' => $address['city'],
-                'region' => $address['state']
+                'region' => $this->get_state_name($address['country'], $address['state'])
             );
 
             $this->set_data_fields($data);
