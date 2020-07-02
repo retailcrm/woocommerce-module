@@ -891,4 +891,5 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             return $outputArray;
         }
     }
+    
 endif;
