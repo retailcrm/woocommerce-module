@@ -137,9 +137,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 if ($response instanceof WC_Retailcrm_Response) {
                     if ($response->isSuccessful()) {
                         return $wcOrder;
-                    } else {
-                        return $response->getErrorString();
                     }
+
+                    return $response->getErrorString();
                 }
             } catch (InvalidArgumentException $exception) {
                 return $exception->getMessage();
@@ -177,13 +177,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
                 $wpUserId = (int) $wpUser->get('ID');
 
-                if (!$update || $update && $customerWasChanged) {
+                if (!$update || ($update && $customerWasChanged)) {
                     $this->fillOrderCreate($wpUserId, $wpUser->get('billing_email'), $wcOrder);
                 }
             } else {
                 $wcCustomer = $this->customers->buildCustomerFromOrderData($wcOrder);
 
-                if (!$update || $update && $customerWasChanged) {
+                if (!$update || ($update && $customerWasChanged)) {
                     $this->fillOrderCreate(0, $wcCustomer->get_billing_email(), $wcOrder);
                 }
             }

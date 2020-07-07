@@ -364,6 +364,16 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 if (isset($order['email'])) {
                     $wc_order->set_billing_email($order['email']);
                 }
+
+                if (isset($order['company']['address'])) {
+                    $billingAddress = $order['company']['address'];
+
+                    $wc_order->set_billing_state(self::arrayValue($billingAddress, 'region', '--'));
+                    $wc_order->set_billing_postcode(self::arrayValue($billingAddress, 'index', '--'));
+                    $wc_order->set_billing_country(self::arrayValue($billingAddress, 'country', '--'));
+                    $wc_order->set_billing_city(self::arrayValue($billingAddress, 'city', '--'));
+                    $wc_order->set_billing_address_1(self::arrayValue($billingAddress, 'text', '--'));
+                }
             }
 
             if (array_key_exists('items', $order)) {
@@ -559,6 +569,24 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return false;
             }
 
+            $orderResponse = $this->retailcrm->ordersGet($order['id'], 'id');
+
+            if (null !== $orderResponse && $orderResponse->offsetExists('order')) {
+                $crmOrder = $orderResponse['order'];
+
+                if (isset($crmOrder['customer'])) {
+                    $order['customer'] = $crmOrder['customer'];
+                }
+
+                if (isset($crmOrder['contact'])) {
+                    $order['contact'] = $crmOrder['contact'];
+                }
+
+                if (isset($crmOrder['company'])) {
+                    $order['company'] = $crmOrder['company'];
+                }
+            }
+
             $customerId = isset($order['customer']['externalId']) ? $order['customer']['externalId'] : null;
 
             if (self::isOrderCorporate($order)) {
@@ -577,14 +605,39 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $customer = $order['customer'];
             $contactOrCustomer = array();
             $address = isset($order['customer']['address']) ? $order['customer']['address'] : array();
+            $billingAddress = $address;
             $companyName = '';
 
-            if (self::isOrderCorporate($order)) {
+            if ($this->retailcrm->getCorporateEnabled()) {
+                $billingAddress = isset($order['company']['address']) ? $order['company']['address'] : $address;
+
+                if (empty($billingAddress)) {
+                    $billingAddress = $address;
+                }
+            }
+
+            if ($this->retailcrm->getCorporateEnabled() && self::isOrderCorporate($order)) {
                 if (isset($order['contact'])) {
                     $contactOrCustomer = $order['contact'];
+
+                    if (self::noRealDataInEntity($contactOrCustomer)) {
+                        $response = $this->retailcrm->customersGet($contactOrCustomer['id'], 'id');
+
+                        if (!empty($response) && $response->offsetExists('customer')) {
+                            $contactOrCustomer = $response['customer'];
+                        }
+                    }
                 }
             } else {
                 $contactOrCustomer = $customer;
+
+                if (!self::isOrderCorporate($order) && self::noRealDataInEntity($contactOrCustomer)) {
+                    $response = $this->retailcrm->customersGet($contactOrCustomer['id'], 'id');
+
+                    if (!empty($response) && $response->offsetExists('customer')) {
+                        $contactOrCustomer = $response['customer'];
+                    }
+                }
             }
 
             if ($wc_order instanceof WP_Error) {
@@ -602,7 +655,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             // TODO Check if that works; also don't forget to set this company field while creating order from CMS!
-            if (self::isOrderCorporate($order)
+            if ($this->retailcrm->getCorporateEnabled()
+                && self::isOrderCorporate($order)
                 && !empty($order['company'])
                 && isset($order['company']['name'])
             ) {
@@ -622,17 +676,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             );
 
             $address_billing = array(
-                'first_name' => $contactOrCustomer['firstName'],
+                'first_name' => isset($contactOrCustomer['firstName']) ? $contactOrCustomer['firstName'] : '',
                 'last_name'  => isset($contactOrCustomer['lastName']) ? $contactOrCustomer['lastName'] : '',
                 'company'    => $companyName,
-                'email'      => isset($customer['email']) ? $customer['email'] : '',
+                'email'      => isset($contactOrCustomer['email']) ? $contactOrCustomer['email'] : '',
                 'phone'      => isset($contactOrCustomer['phones'][0]['number']) ? $contactOrCustomer['phones'][0]['number'] : '',
-                'address_1'  => isset($address['text']) ? $address['text'] : '',
+                'address_1'  => isset($billingAddress['text']) ? $billingAddress['text'] : '',
                 'address_2'  => '',
-                'city'       => isset($address['city']) ? $address['city'] : '',
-                'state'      => isset($address['region']) ? $address['region'] : '',
-                'postcode'   => isset($address['index']) ? $address['index'] : '',
-                'country'    => isset($address['countryIso']) ? $address['countryIso'] : ''
+                'city'       => isset($billingAddress['city']) ? $billingAddress['city'] : '',
+                'state'      => isset($billingAddress['region']) ? $billingAddress['region'] : '',
+                'postcode'   => isset($billingAddress['index']) ? $billingAddress['index'] : '',
+                'country'    => isset($billingAddress['countryIso']) ? $billingAddress['countryIso'] : ''
             );
 
             if (isset($order['payments']) && $order['payments']) {
@@ -765,7 +819,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                $data = $order;
             }
 
-            foreach ($data['items'] as $id => $item) {
+            $iterableItems = isset($data['items']) ? $data['items'] : array();
+
+            foreach ($iterableItems as $id => $item) {
                 $order_items[$id]['id'] = $item['id'];
                 $order_items[$id]['offer'] = array('id' => $item['offer']['id']);
 
@@ -1076,6 +1132,32 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         private static function isCustomerChangedToLegal($assembledOrder)
         {
             return isset($assembledOrder['contragentType']) && $assembledOrder['contragentType'] == 'legal-entity';
+        }
+
+        /**
+         * Helper method. Checks if entity only contains identifiers.
+         * Returns true if entity contains only these keys: 'id', 'externalId', 'site', or if array is empty.
+         * Returns false otherwise.
+         *
+         * @param array $entity
+         *
+         * @return bool
+         */
+        private static function noRealDataInEntity($entity)
+        {
+            $allowedKeys = array('id', 'externalId', 'site');
+
+            if (count($entity) <= 3) {
+                foreach (array_keys($entity) as $key) {
+                    if (!in_array($key, $allowedKeys)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         /**
