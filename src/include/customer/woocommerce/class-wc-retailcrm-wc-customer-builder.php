@@ -151,12 +151,14 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
         $this->customer->set_billing_email($this->dataValue('email', $this->customer->get_billing_email()));
         $phones = $this->dataValue('phones', array());
 
-        if (count($phones) > 0) {
+        if ((is_array($phones) || $phones instanceof Countable) && count($phones) > 0) {
             $phoneData = reset($phones);
 
             if (is_array($phoneData) && isset($phoneData['number'])) {
                 $this->customer->set_billing_phone($phoneData['number']);
             }
+        } elseif (is_string($phones) || is_numeric($phones)) {
+            $this->customer->set_billing_phone($phones);
         }
 
         $address = $this->dataValue('address');
