@@ -17,12 +17,6 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
     /** @var string $filter_name */
     protected $filter_name = 'customer_address';
 
-    /** @var string $address_type */
-    protected $address_type = 'shipping';
-
-    /** @var bool $fallback_to_billing */
-    protected $fallback_to_billing = false;
-
     /** @var bool $isMain */
     protected $isMain = true;
 
@@ -43,13 +37,13 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
     }
 
     /**
-     * @param bool $fallback_to_billing
+     * @param bool $fallback_to_shipping
      *
      * @return WC_Retailcrm_Customer_Corporate_Address
      */
-    public function setFallbackToBilling($fallback_to_billing)
+    public function setFallbackToShipping($fallback_to_shipping)
     {
-        $this->fallback_to_billing = $fallback_to_billing;
+        $this->fallback_to_shipping = $fallback_to_shipping;
         return $this;
     }
 
@@ -93,15 +87,17 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
                 'name' => $address['company'],
                 'text' => $this->joinAddresses($address['address_1'], $address['address_2'])
             );
-        } else {
-            if (WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING == $this->address_type) {
-                $data = $this->getCustomerBillingAddress($customer);
+        } else if (self::ADDRESS_TYPE_SHIPPING === $this->address_type) {
+            $data = $this->getCustomerShippingAddress($customer);
 
-                if (empty($address) && $this->fallback_to_billing) {
-                    $data = $this->getCustomerShippingAddress($customer);
-                }
-            } else {
+            if (empty($address) && $this->fallback_to_billing) {
                 $data = $this->getCustomerBillingAddress($customer);
+            }
+        } elseif (self::ADDRESS_TYPE_BILLING === $this->address_type) {
+            $data = $this->getCustomerBillingAddress($customer);
+
+            if (empty($address) && $this->fallback_to_shipping) {
+                $data = $this->getCustomerShippingAddress($customer);
             }
         }
 

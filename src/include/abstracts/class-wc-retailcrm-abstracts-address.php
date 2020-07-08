@@ -20,6 +20,9 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     /** @var bool $fallback_to_billing */
     protected $fallback_to_billing = false;
 
+    /** @var bool $fallback_to_shipping */
+    protected $fallback_to_shipping = false;
+
     /** @var array $data */
     protected $data = array(
         'index' => '',
@@ -55,6 +58,17 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     }
 
     /**
+     * @param bool $fallback_to_shipping
+     *
+     * @return WC_Retailcrm_Abstracts_Address
+     */
+    public function setFallbackToShipping($fallback_to_shipping)
+    {
+        $this->fallback_to_shipping = $fallback_to_shipping;
+        return $this;
+    }
+
+    /**
      * Sets woocommerce address type to work with
      *
      * @param string $addressType
@@ -78,9 +92,15 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     {
         $orderAddress = $order->get_address($this->address_type);
 
-        return (empty($orderAddress) && $this->fallback_to_billing)
-            ? $order->get_address(self::ADDRESS_TYPE_BILLING)
-            : $order->get_address($this->address_type);
+        if (empty($orderAddress) && $this->address_type === self::ADDRESS_TYPE_BILLING && $this->fallback_to_shipping) {
+            $orderAddress = $order->get_address(self::ADDRESS_TYPE_SHIPPING);
+        }
+
+        if (empty($orderAddress) && $this->address_type === self::ADDRESS_TYPE_SHIPPING && $this->fallback_to_billing) {
+            $orderAddress = $order->get_address(self::ADDRESS_TYPE_BILLING);
+        }
+
+        return $orderAddress;
     }
 
     /**

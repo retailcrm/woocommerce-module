@@ -257,10 +257,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $found = false;
             $builder = new WC_Retailcrm_Customer_Corporate_Address();
             $newAddress = $builder
-                ->setFallbackToBilling(true)
+                ->setFallbackToShipping(true)
                 ->setIsMain(false)
                 ->setExplicitIsMain(false)
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
+                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
                 ->build($customer, $order)
                 ->get_data();
             $addresses = $this->retailcrm->customersCorporateAddresses(
