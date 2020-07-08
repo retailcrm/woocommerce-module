@@ -86,6 +86,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
+            add_action('woocommerce_new_order', array($this, 'create_order'), 11, 1);
 
             if (!$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
@@ -269,6 +270,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $this->customers->updateCustomer($customer_id);
+        }
+
+        /**
+         * Create order in retailCRM from admin panel
+         *
+         * @param int $order_id
+         */
+        public function create_order($order_id)
+        {
+            if (is_admin()) {
+                $this->retailcrm_process_order($order_id);
+            }
         }
 
         /**
