@@ -15,6 +15,20 @@
         <field id="personal_discount" group="customer">personalDiscount</field>
         <field id="discount_card_number" group="customer">discountCardNumber</field>
 
+        <field id="id" group="customerCorporate">id</field>
+        <field id="external_id" group="customerCorporate">externalId</field>
+        <field id="nick_name" group="customerCorporate">nickName</field>
+        <field id="vip" group="customerCorporate">vip</field>
+        <field id="bad" group="customerCorporate">bad</field>
+        <field id="custom_fields" group="customerCorporate">customFields</field>
+        <field id="personal_discount" group="customerCorporate">personalDiscount</field>
+        <field id="discount_card_number" group="customerCorporate">discountCardNumber</field>
+        <field id="manager" group="customerCorporate">manager</field>
+        <field id="address" group="customerCorporate">address</field>
+        <field id="main_contact" group="customerCorporate">mainCustomerContact</field>
+        <field id="company.contragent.i_n_n" group="customerCorporate">companyInn</field>
+        <field id="main_company" group="customerCorporate">company</field>
+
         <field id="address.index" group="customerAddress">index</field>
         <field id="address.country" group="customerAddress">country</field>
         <field id="address.region" group="customerAddress">region</field>
@@ -45,6 +59,7 @@
         <field id="order_method" group="order">orderMethod</field>
         <field id="site" group="order">site</field>
         <field id="status" group="order">status</field>
+        <field id="customer" group="order">customer</field>
         <field id="manager" group="order">manager</field>
         <field id="first_name" group="order">firstName</field>
         <field id="last_name" group="order">lastName</field>
@@ -62,6 +77,8 @@
         <field id="shipment_store" group="order">shipmentStore</field>
         <field id="shipment_date" group="order">shipmentDate</field>
         <field id="shipped" group="order">shipped</field>
+        <field id="contact" group="order">contact</field>
+        <field id="company" group="order">company</field>
         <!--<field id="order_product" group="order">item</field>-->
         <field id="payment" group="order">payment</field>
         <field id="payments.amount" group="order">amount</field>

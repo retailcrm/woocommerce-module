@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 3.6.4
+ * Version: 4.0.0
  * WC requires at least: 3.0
  * WC tested up to: 3.9.3
  * Plugin Name: WooCommerce retailCRM
@@ -21,6 +21,8 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
      * Class WC_Integration_Retailcrm
      */
     class WC_Integration_Retailcrm {
+        const WOOCOMMERCE_SLUG = 'woocommerce';
+        const WOOCOMMERCE_PLUGIN_PATH = 'woocommerce/woocommerce.php';
 
         private static $instance;
 
@@ -38,17 +40,8 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function __construct() {
             $this->load_plugin_textdomain();
 
-            if (class_exists( 'WC_Integration' ) ) {
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
-                require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
-                require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
-                require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
-                require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
-                require_once(dirname(__FILE__ ) . '/include/functions.php');
+            if (class_exists( 'WC_Integration' )) {
+                self::load_module();
                 add_filter('woocommerce_integrations', array( $this, 'add_integration'));
             } else {
                 add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
@@ -56,7 +49,30 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         }
 
         public function woocommerce_missing_notice() {
-            echo '<div class="error"><p>Woocommerce is not installed</p></div>';
+            if (static::isWooCommerceInstalled()) {
+                if (!is_plugin_active(static::WOOCOMMERCE_PLUGIN_PATH)) {
+                    echo '
+                    <div class="error">
+                        <p>
+                            Activate WooCommerce in order to enable retailCRM integration!
+                            <a href="' . wp_nonce_url(admin_url('plugins.php')) . '" aria-label="Activate WooCommerce">
+                                Click here to open plugins manager
+                            </a>
+                        </p>
+                    </div>
+                    ';
+                }
+            } else {
+                echo '
+                <div class="error">
+                    <p>
+                        <a href="'
+                    . static::generatePluginInstallationUrl(static::WOOCOMMERCE_SLUG)
+                    . '" aria-label="Install WooCommerce">Install WooCommerce</a> in order to enable retailCRM integration!
+                    </p>
+                </div>
+                ';
+            }
         }
 
         public function load_plugin_textdomain() {
@@ -73,6 +89,78 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function add_integration( $integrations ) {
             $integrations[] = 'WC_Retailcrm_Base';
             return $integrations;
+        }
+
+        /**
+         * Loads module classes.
+         */
+        public static function load_module()
+        {
+            require_once(dirname(__FILE__) . '/include/interfaces/class-wc-retailcrm-builder-interface.php');
+            require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-state.php');
+            require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-result.php');
+            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-logger.php');
+            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-history-assembler.php');
+            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-paginated-request.php');
+            require_once(dirname(__FILE__) . '/include/components/class-wc-retailcrm-customer-switcher.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstract-builder.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
+            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
+            require_once(dirname(__FILE__ ) . '/include/customer/woocommerce/class-wc-retailcrm-wc-customer-builder.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
+            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
+            require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
+            require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-corporate-address.php');
+            require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
+            require_once(dirname(__FILE__ ) . '/include/functions.php');
+        }
+
+        /**
+         * Returns true if WooCommerce was found in plugin cache
+         *
+         * @return bool
+         */
+        private function isWooCommerceInstalled()
+        {
+            $plugins = wp_cache_get( 'plugins', 'plugins' );
+
+            if (!$plugins) {
+                $plugins = get_plugins();
+            } elseif (isset($plugins[''])) {
+                $plugins = $plugins[''];
+            }
+
+            if (!isset($plugins[static::WOOCOMMERCE_PLUGIN_PATH])) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Generate plugin installation url
+         *
+         * @param $pluginSlug
+         *
+         * @return string
+         */
+        private function generatePluginInstallationUrl($pluginSlug)
+        {
+            $action = 'install-plugin';
+
+            return wp_nonce_url(
+                add_query_arg(
+                    array(
+                        'action' => $action,
+                        'plugin' => $pluginSlug
+                    ),
+                    admin_url( 'update.php' )
+                ),
+                $action.'_'.$pluginSlug
+            );
         }
     }
 

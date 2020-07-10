@@ -50,6 +50,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
      */
     public function build($order, $externalId = false)
     {
+        $this->reset_data();
         $data = array();
 
         if (!empty($this->settings['send_payment_amount'])
@@ -79,12 +80,36 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         if ($this->is_new) {
             if (isset($this->settings[$order->get_payment_method()])) {
                 $data['type'] = $this->settings[$order->get_payment_method()];
+            } else {
+                $data = array();
             }
         }
 
         $this->set_data_fields($data);
 
         return $this;
+    }
+
+    /**
+     * Returns false if payment doesn't have method
+     *
+     * @return array
+     */
+    public function get_data()
+    {
+        $data = parent::get_data();
+
+        if (empty($data['type'])) {
+            return array();
+        }
+
+	    if (!empty($this->settings['send_payment_amount'])
+	        && $this->settings['send_payment_amount'] === WC_Retailcrm_Base::NO
+	    ) {
+	    	unset($data['amount']);
+	    }
+
+        return $data;
     }
 
     public function reset_data()

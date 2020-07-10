@@ -122,26 +122,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             )
         );
 
-        $api_version_list = array(
-            'v4' => 'v4',
-            'v5' => 'v5'
-        );
-
         $this->form_fields[] = array(
             'title'       => __( 'API settings', 'retailcrm' ),
             'type'        => 'title',
             'description' => '',
             'id'          => 'api_options'
-        );
-
-        $this->form_fields['api_version'] = array(
-            'title'       => __( 'API version', 'retailcrm' ),
-            'description' => __( 'Select API version', 'retailcrm' ),
-            'css'         => 'min-width:50px;',
-            'class'       => 'select',
-            'type'        => 'select',
-            'options'     => $api_version_list,
-            'desc_tip'    =>  true,
         );
 
         $this->form_fields['send_payment_amount'] = array(
@@ -150,7 +135,16 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'description' => '',
             'class'       => 'checkbox',
             'type'        => 'checkbox',
-            'desc_tip'    =>  true,
+            'desc_tip'    =>  true
+        );
+
+        $this->form_fields['corporate_enabled'] = array(
+            'title'       => __('Corporate customers support', 'retailcrm'),
+            'label'       => __('Enabled'),
+            'description' => '',
+            'class'       => 'checkbox',
+            'type'        => 'checkbox',
+            'desc_tip'    =>  true
         );
 
         $this->form_fields[] = array(
@@ -564,40 +558,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
     /**
-     * Validate API version
-     *
-     * @param string $key
-     * @param string $value
-     *
-     * @return string
-     */
-    public function validate_api_version_field($key, $value)
-    {
-        $post = $this->get_post_data();
-
-        $versionMap = array(
-            'v4' => '4.0',
-            'v5' => '5.0'
-        );
-
-        $api = new WC_Retailcrm_Proxy(
-            $post[$this->plugin_id . $this->id . '_api_url'],
-            $post[$this->plugin_id . $this->id . '_api_key']
-        );
-
-        $response = $api->apiVersions();
-
-        if (!empty($response) && $response->isSuccessful()) {
-            if (!in_array($versionMap[$value], $response['versions'])) {
-                WC_Admin_Settings::add_error( esc_html__( 'The selected API version is unavailable', 'retailcrm' ) );
-                $value = '';
-            }
-        }
-
-        return $value;
-    }
-
-    /**
      * Validate API url
      *
      * @param string $key
@@ -610,7 +570,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
             $value,
-            $post[$this->plugin_id . $this->id . '_api_key']
+            $post[$this->plugin_id . $this->id . '_api_key'],
+            $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 
         $response = $api->apiVersions();
@@ -636,7 +597,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $post = $this->get_post_data();
         $api = new WC_Retailcrm_Proxy(
             $post[$this->plugin_id . $this->id . '_api_url'],
-            $value
+            $value,
+            $this->get_option('corporate_enabled', 'no') === 'yes'
         );
 
         $response = $api->apiVersions();
@@ -645,7 +607,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             $value = '';
         }
 
-        if (!$response->isSuccessful()) {
+        if (empty($response) || !$response->isSuccessful()) {
             WC_Admin_Settings::add_error( esc_html__( 'Enter the correct API key', 'retailcrm' ) );
             $value = '';
         }

@@ -67,7 +67,7 @@ function get_wc_shipping_methods() {
         );
     }
 
-    return apply_filters('retailcrm_shipping_list', $result);
+    return apply_filters('retailcrm_shipping_list', WC_Retailcrm_Plugin::clearArray($result));
 }
 
 function retailcrm_get_delivery_service($method_id, $instance_id) {
@@ -97,4 +97,14 @@ function retailcrm_get_wc_product($id, $settings) {
     }
 
     return wc_get_product($id);
+}
+
+/**
+ * Returns true if either wordpress debug mode or module debugging is enabled
+ *
+ * @return bool
+ */
+function retailcrm_is_debug() {
+    return (defined('WP_DEBUG') && WP_DEBUG == true)
+        || (defined('RCRM_DEBUG') && RCRM_DEBUG == true);
 }

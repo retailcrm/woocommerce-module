@@ -6,20 +6,19 @@
 class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
 {
     /**
-     * @param string $apiVersion
-     *
      * @return array
      */
-    protected function setOptions($apiVersion = 'v5')
+    protected function setOptions()
     {
         $options = array(
             'api_url' => 'https://example.retailcrm.ru',
             'api_key' => 'dhsHJGYdjkHHJKJSGjhasjhgajsgJGHsg',
-            'api_version' => $apiVersion,
+            'api_version' => 'v5',
             'p_draft' => 'no',
             'p_pending' => 'no',
             'p_private' => 'no',
             'p_publish' => 'no',
+            'send_payment_amount' => 'yes',
             'order_methods' => '',
             'flat_rate_shipping' => 'delivery',
             'free_shipping' => 'delivery2',
@@ -46,6 +45,43 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         update_option(WC_Retailcrm_Base::$option_key, $options);
 
         return $options;
+    }
+
+    /**
+     * Removes all data from the DB.
+     */
+    protected function deleteAllData()
+    {
+        if (function_exists('_delete_all_data')) {
+            _delete_all_data();
+        } else {
+            global $wpdb;
+
+            foreach ( array(
+                          $wpdb->posts,
+                          $wpdb->postmeta,
+                          $wpdb->comments,
+                          $wpdb->commentmeta,
+                          $wpdb->term_relationships,
+                          $wpdb->termmeta,
+                      ) as $table ) {
+                //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $wpdb->query( "DELETE FROM {$table}" );
+            }
+
+            foreach ( array(
+                          $wpdb->terms,
+                          $wpdb->term_taxonomy,
+                      ) as $table ) {
+                //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $wpdb->query( "DELETE FROM {$table} WHERE term_id != 1" );
+            }
+
+            $wpdb->query( "UPDATE {$wpdb->term_taxonomy} SET count = 0" );
+
+            $wpdb->query( "DELETE FROM {$wpdb->users} WHERE ID != 1" );
+            $wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE user_id != 1" );
+        }
     }
 
     /**

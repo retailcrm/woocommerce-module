@@ -58,6 +58,14 @@ abstract class WC_Retailcrm_Abstracts_Data
      */
     public function get_data()
     {
-        return apply_filters('retailcrm_before_send_' . $this->filter_name, $this->data);
+        return apply_filters('retailcrm_before_send_' . $this->filter_name, WC_Retailcrm_Plugin::clearArray($this->data));
+    }
+
+    /**
+     * @return array
+     */
+    protected function get_data_without_filters()
+    {
+        return $this->data;
     }
 }

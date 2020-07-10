@@ -14,12 +14,25 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
      */
     class WC_Retailcrm_History
     {
+        /** @var \DateTime */
         protected $startDateOrders;
+
+        /** @var \DateTime */
         protected $startDateCustomers;
+
+        /** @var \DateTime */
         protected $startDate;
+
+        /** @var array|mixed|void */
         protected $retailcrm_settings;
+
+        /** @var bool|\WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5 */
         protected $retailcrm;
+
+        /** @var array|mixed */
         protected $order_methods = array();
+
+        /** @var string */
         protected $bind_field = 'externalId';
 
         /** @var WC_Retailcrm_Order_Item */
@@ -27,7 +40,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
         /**
          * WC_Retailcrm_History constructor.
-         * @param $retailcrm (default = false)
+         *
+         * @param \WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
+         *
+         * @throws \Exception
          */
         public function __construct($retailcrm = false)
         {
@@ -52,9 +68,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         /**
-         * Get history method
+         * Get history method.
          *
          * @return void
+         * @throws \Exception
          */
         public function getHistory()
         {
@@ -69,140 +86,131 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_orders']);
             }
 
-            $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
-            $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
+            try {
+                $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customers_since_id);
+                $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $orders_since_id);
+            } catch (\Exception $exception) {
+                WC_Retailcrm_Logger::add(
+                    sprintf("[%s] - %s", $exception->getMessage(),
+                        'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
+                );
+            }
         }
 
         /**
          * History customers
          *
          * @param string $date
-         * @param int $since_id
+         * @param int    $sinceId
          *
-         * @return null
+         * @return void
+         * @throws \Exception
          */
-        protected function customersHistory($date, $since_id)
+        protected function customersHistory($date, $sinceId)
         {
-            if ($since_id) {
-                $response = $this->retailcrm->customersHistory(array('sinceId' => $since_id));
-            } else {
-                $response = $this->retailcrm->customersHistory(array('startDate' => $date));
+            $filter = array('startDate' => $date);
+
+            if ($sinceId) {
+                $filter = array('sinceId' => $sinceId);
             }
 
-            if (!empty($response) && $response->isSuccessful()) {
-                if (empty($response['history'])) {
-                    return;
-                }
+            $request = new WC_Retailcrm_Paginated_Request();
+            $history = $request
+                ->setApi($this->retailcrm)
+                ->setMethod('customersHistory')
+                ->setParams(array($filter, '{{page}}'))
+                ->setDataKey('history')
+                ->setLimit(100)
+                ->execute()
+                ->getData();
 
-                $history = $response['history'];
-                $end_change = end($history);
-                $new_since_id = $end_change['id'];
+            if (!empty($history)) {
+                $builder = new WC_Retailcrm_WC_Customer_Builder();
+                $lastChange = end($history);
+                $customers = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
+                WC_Retailcrm_Plugin::$history_run = true;
+                WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
 
-                foreach ($history as $record) {
-                    if ($record['source'] == 'api' && $record['apiKey']['current'] == true) {
+                foreach ($customers as $crmCustomer) {
+                    if (!isset($crmCustomer['externalId'])) {
                         continue;
                     }
 
-                    if (isset($record['customer']['externalId'])) {
-                        $customer = new WC_Customer($record['customer']['externalId']);
+                    try {
+                        $builder->reset();
 
-                        if ($customer->get_id() == 0) {
+                        if (!$builder->loadExternalId($crmCustomer['externalId'])) {
+                            WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
+                                'Customer with id=%s is not found in the DB, skipping...',
+                                $crmCustomer['externalId']
+                            ));
                             continue;
                         }
-                    }
 
-                    WC_Retailcrm_Plugin::$history_run = true;
+                        $wcCustomer = $builder
+                            ->setData($crmCustomer)
+                            ->build()
+                            ->getResult();
 
-                    if ($record['field'] == 'first_name' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'first_name', $record['newValue']);
+                        if ($wcCustomer instanceof WC_Customer) {
+                            $wcCustomer->save();
                         }
-                    }
 
-                    elseif ($record['field'] == 'last_name' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']) {
-                            update_user_meta($record['customer']['externalId'], 'last_name', $record['newValue']);
-                        }
+                        WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
+                    } catch (\Exception $exception) {
+                        WC_Retailcrm_Logger::error(sprintf(
+                            'Error while trying to process history: %s',
+                            $exception->getMessage()
+                        ));
+                        WC_Retailcrm_Logger::error(sprintf(
+                            '%s:%d',
+                            $exception->getFile(),
+                            $exception->getLine()
+                        ));
+                        WC_Retailcrm_Logger::error($exception->getTraceAsString());
                     }
-
-                    elseif ($record['field'] == 'email' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_email', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'phones' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_phone', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.region' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_state', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.index' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_postcode', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.country' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_country', $record['newValue']);
-                        }
-                    }
-
-                    elseif ($record['field'] == 'address.city' && isset($record['customer']['externalId'])) {
-                        if ($record['newValue']){
-                            update_user_meta($record['customer']['externalId'], 'billing_city', $record['newValue']);
-                        }
-                    }
-
-                    WC_Retailcrm_Plugin::$history_run = false;
                 }
-            }
 
-            if (empty($response)) {
-                return;
+                update_option('retailcrm_customers_history_since_id', $lastChange['id']);
+                WC_Retailcrm_Plugin::$history_run = false;
             }
-
-            update_option('retailcrm_customers_history_since_id', $new_since_id);
         }
 
-        /**
-         * History orders
-         *
-         * @param string $date
-         * @param int $since_id
-         *
-         * @return boolean
-         */
+	    /**
+	     * History orders
+	     *
+	     * @param string $date
+	     * @param int    $since_id
+	     *
+	     * @return boolean
+	     */
         protected function ordersHistory($date, $since_id)
         {
+            $filter = array('startDate' => $date);
             $options = array_flip(array_filter($this->retailcrm_settings));
 
             if ($since_id) {
-                $response = $this->retailcrm->ordersHistory(array('sinceId' => $since_id));
-            } else {
-                $response = $this->retailcrm->ordersHistory(array('startDate' => $date));
+                $filter = array('sinceId' => $since_id);
             }
 
-            if (!empty($response) && $response->isSuccessful()) {
-                if (empty($response['history'])) {
-                    return false;
-                }
+            $request = new WC_Retailcrm_Paginated_Request();
+            $history = $request
+                ->setApi($this->retailcrm)
+                ->setMethod('ordersHistory')
+                ->setParams(array($filter, '{{page}}'))
+                ->setDataKey('history')
+                ->setLimit(100)
+                ->execute()
+                ->getData();
 
-                $history = $response['history'];
+            if (!empty($history)) {
                 $last_change = end($history);
-                $historyAssembly = self::assemblyOrder($response['history']);
-
+                $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
+                WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled orders history:', $historyAssembly));
                 WC_Retailcrm_Plugin::$history_run = true;
 
                 foreach ($historyAssembly as $orderHistory) {
-                    $order = apply_filters('retailcrm_history_before_save', $orderHistory);
+                    $order = WC_Retailcrm_Plugin::clearArray(apply_filters('retailcrm_history_before_save', $orderHistory));
 
                     if (isset($order['deleted']) && $order['deleted'] == true) {
                         continue;
@@ -221,8 +229,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $this->update_total($wc_order);
                         }
                     } catch (Exception $exception) {
-                        $logger = new WC_Logger();
-                        $logger->add('retailcrm',
+                        WC_Retailcrm_Logger::add(
                             sprintf("[%s] - %s", $exception->getMessage(),
                                 'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
                         );
@@ -241,11 +248,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         /**
          * Update shipping
          *
-         * @param array $order
-         * @param array $options
+         * @param array    $order
+         * @param array    $options
          * @param WC_Order $wc_order
          *
          * @return boolean
+         * @throws \WC_Data_Exception
          */
         protected function updateShippingItemId($order, $options, $wc_order)
         {
@@ -317,6 +325,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param array $options
          *
          * @return bool
+         * @throws \Exception
          * @throws \WC_Data_Exception
          */
         protected function orderUpdate($order, $options)
@@ -347,22 +356,35 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $wc_order->set_shipping_last_name($order['lastName']);
             }
 
-            if (isset($order['phone'])) {
-                $wc_order->set_billing_phone($order['phone']);
-            }
+            if (!$this->handleCustomerDataChange($wc_order, $order)) {
+                if (isset($order['phone'])) {
+                    $wc_order->set_billing_phone($order['phone']);
+                }
 
-            if (isset($order['email'])) {
-                $wc_order->set_billing_email($order['email']);
+                if (isset($order['email'])) {
+                    $wc_order->set_billing_email($order['email']);
+                }
+
+                if (isset($order['company']['address'])) {
+                    $billingAddress = $order['company']['address'];
+
+                    $wc_order->set_billing_state(self::arrayValue($billingAddress, 'region', '--'));
+                    $wc_order->set_billing_postcode(self::arrayValue($billingAddress, 'index', '--'));
+                    $wc_order->set_billing_country(self::arrayValue($billingAddress, 'country', '--'));
+                    $wc_order->set_billing_city(self::arrayValue($billingAddress, 'city', '--'));
+                    $wc_order->set_billing_address_1(self::arrayValue($billingAddress, 'text', '--'));
+                }
             }
 
             if (array_key_exists('items', $order)) {
                 foreach ($order['items'] as $key => $item) {
-
                     if (!isset($item['offer'][$this->bind_field])) {
                         continue;
                     }
 
                     if (isset($item['create']) && $item['create'] == true) {
+                        $arItemsNew = array();
+                        $arItemsOld = array();
                         $product = retailcrm_get_wc_product(
                             $item['offer'][$this->bind_field],
                             $this->retailcrm_settings
@@ -378,8 +400,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $arItemsNew[$order_item_id] = $order_item_id;
                         }
 
-                        $diff = array_diff($arItemsNew, $arItemsOld);
-                        $result = end($diff);
+                        $tmpArray = array_diff($arItemsNew, $arItemsOld);
+                        $result = end($tmpArray);
+
                         $order['items'][$key]['woocomerceId'] = $result;
                     } else {
                         foreach ($wc_order->get_items() as $order_item_id => $order_item) {
@@ -400,11 +423,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             }
 
                             if ($offer_id == $item['offer'][$this->bind_field]
-                                && $itemExternalId[1] == $order_item->get_id()
+                                && (isset($itemExternalId) && $itemExternalId[1] == $order_item->get_id())
                             ) {
                                 $this->deleteOrUpdateOrderItem($item, $order_item, $itemExternalId[1]);
                             }
-
                         }
                     }
                 }
@@ -478,26 +500,30 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             $wc_order->save();
 
-            $checkNewItem = false;
-            foreach ($order['items'] as $item) {
-                if (!empty($item['externalIds'])) {
-                    continue;
-                } else {
-                    $checkNewItem = true;
+            if (isset($order['items'])) {
+                $checkNewItem = false;
+                foreach ($order['items'] as $item) {
+                    if (!empty($item['externalIds'])) {
+                        continue;
+                    } else {
+                        $checkNewItem = true;
+                    }
                 }
-            }
 
-            if ($checkNewItem == true) {
-                $this->editOrder($this->retailcrm_settings, $wc_order, $order,'update');
+                if ($checkNewItem == true) {
+                    $this->editOrder($this->retailcrm_settings, $wc_order, $order,'update');
+                }
             }
 
             return $wc_order->get_id();
         }
 
         /**
-         * @param $item
-         * @param $order_item
-         * @param $order_item_id
+         * @param array $item
+         * @param \WC_Order_Item $order_item
+         * @param string $order_item_id
+         *
+         * @throws \Exception
          */
         private function deleteOrUpdateOrderItem($item, $order_item, $order_item_id)
         {
@@ -527,6 +553,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          * @param array $options
          *
          * @return bool
+         * @throws \WC_Data_Exception
          */
         protected function orderCreate($order, $options)
         {
@@ -542,16 +569,99 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return false;
             }
 
+            $orderResponse = $this->retailcrm->ordersGet($order['id'], 'id');
+
+            if (null !== $orderResponse && $orderResponse->offsetExists('order')) {
+                $crmOrder = $orderResponse['order'];
+
+                if (isset($crmOrder['customer'])) {
+                    $order['customer'] = $crmOrder['customer'];
+                }
+
+                if (isset($crmOrder['contact'])) {
+                    $order['contact'] = $crmOrder['contact'];
+                }
+
+                if (isset($crmOrder['company'])) {
+                    $order['company'] = $crmOrder['company'];
+                }
+            }
+
+            $customerId = isset($order['customer']['externalId']) ? $order['customer']['externalId'] : null;
+
+            if (self::isOrderCorporate($order)) {
+                $customerId = isset($order['contact']['externalId']) ? $order['contact']['externalId'] : null;
+            }
+
             $args = array(
                 'status' => isset($options[$order['status']])
                     ? $options[$order['status']]
                     : 'processing',
-                'customer_id' => isset($order['customer']['externalId'])
-                    ? $order['customer']['externalId']
-                    : null
+                'customer_id' => $customerId
             );
 
+            /** @var WC_Order|WP_Error $wc_order */
             $wc_order = wc_create_order($args);
+            $customer = $order['customer'];
+            $contactOrCustomer = array();
+            $address = isset($order['customer']['address']) ? $order['customer']['address'] : array();
+            $billingAddress = $address;
+            $companyName = '';
+
+            if ($this->retailcrm->getCorporateEnabled()) {
+                $billingAddress = isset($order['company']['address']) ? $order['company']['address'] : $address;
+
+                if (empty($billingAddress)) {
+                    $billingAddress = $address;
+                }
+            }
+
+            if ($this->retailcrm->getCorporateEnabled() && self::isOrderCorporate($order)) {
+                if (isset($order['contact'])) {
+                    $contactOrCustomer = $order['contact'];
+
+                    if (self::noRealDataInEntity($contactOrCustomer)) {
+                        $response = $this->retailcrm->customersGet($contactOrCustomer['id'], 'id');
+
+                        if (!empty($response) && $response->offsetExists('customer')) {
+                            $contactOrCustomer = $response['customer'];
+                        }
+                    }
+                }
+            } else {
+                $contactOrCustomer = $customer;
+
+                if (!self::isOrderCorporate($order) && self::noRealDataInEntity($contactOrCustomer)) {
+                    $response = $this->retailcrm->customersGet($contactOrCustomer['id'], 'id');
+
+                    if (!empty($response) && $response->offsetExists('customer')) {
+                        $contactOrCustomer = $response['customer'];
+                    }
+                }
+            }
+
+            if ($wc_order instanceof WP_Error) {
+                WC_Retailcrm_Logger::add(sprintf(
+                    '[%d] error while creating order: %s',
+                    $order['id'],
+                    print_r($wc_order->get_error_messages(), true)
+                ));
+
+                return false;
+            }
+
+            if (isset($order['managerComment']) && !empty($order['managerComment'])) {
+                $wc_order->add_order_note($order['managerComment'], 0, false);
+            }
+
+            // TODO Check if that works; also don't forget to set this company field while creating order from CMS!
+            if ($this->retailcrm->getCorporateEnabled()
+                && self::isOrderCorporate($order)
+                && !empty($order['company'])
+                && isset($order['company']['name'])
+            ) {
+                $companyName = $order['company']['name'];
+            }
 
             $address_shipping = array(
                 'first_name' => isset($order['firstName']) ? $order['firstName'] : '',
@@ -566,39 +676,28 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             );
 
             $address_billing = array(
-                'first_name' => $order['customer']['firstName'],
-                'last_name'  => isset($order['customer']['lastName']) ? $order['customer']['lastName'] : '',
-                'company'    => '',
-                'email'      => isset($order['customer']['email']) ? $order['customer']['email'] : '',
-                'phone'      => isset($order['customer']['phones'][0]['number']) ? $order['customer']['phones'][0]['number'] : '',
-                'address_1'  => isset($order['customer']['address']['text']) ? $order['customer']['address']['text'] : '',
+                'first_name' => isset($contactOrCustomer['firstName']) ? $contactOrCustomer['firstName'] : '',
+                'last_name'  => isset($contactOrCustomer['lastName']) ? $contactOrCustomer['lastName'] : '',
+                'company'    => $companyName,
+                'email'      => isset($contactOrCustomer['email']) ? $contactOrCustomer['email'] : '',
+                'phone'      => isset($contactOrCustomer['phones'][0]['number']) ? $contactOrCustomer['phones'][0]['number'] : '',
+                'address_1'  => isset($billingAddress['text']) ? $billingAddress['text'] : '',
                 'address_2'  => '',
-                'city'       => isset($order['customer']['address']['city']) ? $order['customer']['address']['city'] : '',
-                'state'      => isset($order['customer']['address']['region']) ? $order['customer']['address']['region'] : '',
-                'postcode'   => isset($order['customer']['address']['index']) ? $order['customer']['address']['index'] : '',
-                'country'    => $order['customer']['address']['countryIso']
+                'city'       => isset($billingAddress['city']) ? $billingAddress['city'] : '',
+                'state'      => isset($billingAddress['region']) ? $billingAddress['region'] : '',
+                'postcode'   => isset($billingAddress['index']) ? $billingAddress['index'] : '',
+                'country'    => isset($billingAddress['countryIso']) ? $billingAddress['countryIso'] : ''
             );
 
-            if ($this->retailcrm_settings['api_version'] == 'v5') {
-                if (isset($order['payments']) && $order['payments']) {
-                    $payment = WC_Payment_Gateways::instance();
+            if (isset($order['payments']) && $order['payments']) {
+                $payment = WC_Payment_Gateways::instance();
 
-                    if (count($order['payments']) == 1) {
-                        $payment_types = $payment->payment_gateways();
-                        $payments = $order['payments'];
-                        $paymentType = end($payments);
-                        if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
-                            $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
-                        }
-                    }
-                }
-            } else {
-                if (isset($order['paymentType']) && $order['paymentType']) {
-                    $payment = WC_Payment_Gateways::instance();
+                if (count($order['payments']) == 1) {
                     $payment_types = $payment->payment_gateways();
-
-                    if (isset($options[$order['paymentType']]) && isset($payment_types[$options[$order['paymentType']]])) {
-                        $wc_order->set_payment_method($payment_types[$options[$order['paymentType']]]);
+                    $payments = $order['payments'];
+                    $paymentType = end($payments);
+                    if (isset($options[$paymentType['type']]) && isset($payment_types[$options[$paymentType['type']]])) {
+                        $wc_order->set_payment_method($payment_types[$options[$paymentType['type']]]);
                     }
                 }
             }
@@ -609,14 +708,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if ($product_data) {
                 foreach ($product_data as $key => $product) {
+                    $arItemsNew = array();
+                    $arItemsOld = array();
                     $item = retailcrm_get_wc_product($product['offer'][$this->bind_field], $this->retailcrm_settings);
+
                     if (!$item) {
                         $logger = new WC_Logger();
                         $logger->add('retailcrm', 'Product not found by ' . $this->bind_field);
                         continue;
                     }
 
-                    if ($product['discountTotal'] > 0) {
+                    if (isset($product['discountTotal']) && $product['discountTotal'] > 0) {
                         $item->set_price($product['initialPrice'] - $product['discountTotal']);
                     }
 
@@ -634,8 +736,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     if (!empty($arItemsOld)) {
-                        $diff = array_diff($arItemsNew, $arItemsOld);
-                        $result = end($diff);
+                        $arItemsTemp = array_diff($arItemsNew, $arItemsOld);
+                        $result = end($arItemsTemp);
                     } else {
                         $result = end($arItemsNew);
                     }
@@ -665,9 +767,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         }
                     }
 
-                    if (!wc_tax_enabled()) {
+                    if (isset($order['delivery']['cost']) && !wc_tax_enabled()) {
                         $shipping->set_total($order['delivery']['cost']);
-                    } else {
+                    } elseif (isset($order['delivery']['netCost'])) {
                         $shipping->set_total($order['delivery']['netCost']);
                     }
 
@@ -700,34 +802,89 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
          */
         protected function editOrder($settings, $wc_order, $order, $event = 'create')
         {
-            $order_items = array();
+            $data= array();
+            $crmOrder= array();
+            $order_items= array();
+
             if ($event == 'update') {
                 $result = $this->retailcrm->ordersGet($order['externalId']);
 
                 if (!empty($result) && $result->isSuccessful()) {
-                    $orderCrm = $result['order'];
+                    $crmOrder = $result['order'];
+                    $data = $crmOrder;
                 }
-
-                $data = $orderCrm;
             }
 
             if ($event == 'create') {
-                $data = $order;
+               $data = $order;
             }
 
-            foreach ($data['items'] as $id => $item) {
+            $iterableItems = isset($data['items']) ? $data['items'] : array();
+
+            foreach ($iterableItems as $id => $item) {
                 $order_items[$id]['id'] = $item['id'];
                 $order_items[$id]['offer'] = array('id' => $item['offer']['id']);
+
+                if (!isset($order['items'][$item['id']])) {
+                    if (empty($crmOrder)) {
+                        $result = $this->retailcrm->ordersGet($order['id'], 'id');
+
+                        if (!empty($result) && $result->isSuccessful()) {
+                            $crmOrder = $result['order'];
+                        }
+                    }
+
+                    if (!empty($crmOrder) && isset($crmOrder['items'][$item['id']])) {
+                        $woocommerceId = self::getItemWoocommerceId($crmOrder['items'][$item['id']]);
+                    } else {
+                        WC_Retailcrm_Logger::add(
+                            sprintf(
+                                "Order externalId=`%s`: item doesn't have woocomerceId, skipping... (item id=`%s`)",
+                                $order['externalId'],
+                                $item['id']
+                            )
+                        );
+                        continue;
+                    }
+                } else {
+                    $woocommerceId = self::getItemWoocommerceId($order['items'][$item['id']]);
+                }
+
+                if (empty($woocommerceId)) {
+                    WC_Retailcrm_Logger::add(
+                        sprintf(
+                            "Order externalId=`%s`: item doesn't have woocomerceId after all assertions, which" .
+                            " is unexpected, skipping... (item id=`%s`)",
+                            $order['externalId'],
+                            $item['id']
+                        )
+                    );
+
+                    continue;
+                }
+
                 $externalIds = array(
                     array(
                         'code' => 'woocomerce',
-                        'value' => $item['offer']['externalId'] . '_' . $order['items'][$item['id']]['woocomerceId'],
+                        'value' => $item['offer']['externalId'] . '_' . $woocommerceId,
                     )
                 );
 
-                if ($item['externalIds']) {
-                    $order_items[$id]['externalIds'] = $item['externalIds'];
-                    $order_items[$id]['externalIds'][] = $externalIds;
+                if (!empty($item['externalIds'])) {
+                    $found = false;
+
+                    foreach ($item['externalIds'] as $key => $extIdArr) {
+                        if (isset($extIdArr['code']) && $extIdArr['code'] == 'woocomerce') {
+                            $item['externalIds'][$key] = $externalIds;
+                            $found = true;
+
+                            break;
+                        }
+                    }
+
+                    if (!$found) {
+                        $order_items[$id]['externalIds'] = array_merge($item['externalIds'], $externalIds);
+                    }
                 } else {
                     $order_items[$id]['externalIds'] = $externalIds;
                 }
@@ -736,7 +893,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             if (!empty($order_items)) {
                 $orderEdit = array(
                     'id' => $order['id'],
-                    'items' => $order_items,
+                    'items' => WC_Retailcrm_Plugin::clearArray($order_items),
                 );
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
@@ -744,151 +901,283 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         /**
-         * @param array $orderHistory
+         * Handle customer data change (from individual to corporate, company change, etc)
+         *
+         * @param \WC_Order $wc_order
+         * @param array     $order
+         *
+         * @return bool True if customer change happened; false otherwise.
+         */
+        protected function handleCustomerDataChange($wc_order, $order)
+        {
+            $handled = false;
+            $crmOrder = array();
+            $newCustomerId = null;
+            $switcher = new WC_Retailcrm_Customer_Switcher();
+            $data = new WC_Retailcrm_Customer_Switcher_State();
+            $data->setWcOrder($wc_order);
+
+            WC_Retailcrm_Logger::debug(
+                __METHOD__,
+                array(
+                    'processing order',
+                    $order
+                )
+            );
+
+            if (isset($order['customer'])) {
+                $crmOrder = $this->getCRMOrder($order['id'], 'id');
+
+                if (empty($crmOrder)) {
+                    WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
+                        'Cannot get order data from retailCRM. Skipping customer change. History data: %s',
+                        print_r($order, true)
+                    ));
+
+                    return false;
+                }
+
+                $newCustomerId = $order['customer']['id'];
+                $isChangedToRegular = self::isCustomerChangedToRegular($order);
+                $isChangedToCorporate = self::isCustomerChangedToLegal($order);
+
+                if (!$isChangedToRegular && !$isChangedToCorporate) {
+                    $isChangedToCorporate = self::isOrderCorporate($crmOrder);
+                    $isChangedToRegular = !$isChangedToCorporate;
+                }
+
+                if ($isChangedToRegular) {
+                    $this->prepareChangeToIndividual(
+                        self::arrayValue($crmOrder, 'customer', array()),
+                        $data
+                    );
+                }
+            }
+
+            if (isset($order['contact'])) {
+                $newCustomerId = $order['contact']['id'];
+
+                if (empty($crmOrder)) {
+                    $crmOrder = $this->getCRMOrder($order['id'], 'id');
+                }
+
+                if (empty($crmOrder)) {
+                    WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
+                        'Cannot get order data from retailCRM. Skipping customer change. History data: %s',
+                        print_r($order, true)
+                    ));
+
+                    return false;
+                }
+
+                if (self::isOrderCorporate($crmOrder)) {
+                    $this->prepareChangeToIndividual(
+                        self::arrayValue($crmOrder, 'contact', array()),
+                        $data,
+                        true
+                    );
+
+                    $data->setNewCustomer(array());
+                }
+            }
+
+            if (isset($order['company'])) {
+                if (empty($crmOrder)) {
+                    $crmOrder = $this->getCRMOrder($order['id'], 'id');
+                }
+
+                $data->setNewCompany($crmOrder['company']);
+            }
+
+            if ($data->feasible()) {
+                try {
+                    $result = $switcher->setData($data)
+                        ->build()
+                        ->getResult();
+
+                    $result->save();
+                    $handled = true;
+                } catch (\Exception $exception) {
+                    $errorMessage = sprintf(
+                        'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s',
+                        $order['externalId'],
+                        $newCustomerId,
+                        isset($order['company']) ? $order['company']['id'] : '',
+                        isset($order['company']) ? $order['company']['name'] : '',
+                        $exception->getMessage()
+                    );
+                    WC_Retailcrm_Logger::addCaller(__METHOD__, $errorMessage);
+                    WC_Retailcrm_Logger::debug(__METHOD__, sprintf(
+                        '%s%s%s',
+                        $errorMessage,
+                        PHP_EOL,
+                        $exception->getTraceAsString()
+                    ));
+                    $handled = false;
+                }
+            }
+
+            return $handled;
+        }
+
+        /**
+         * Returns retailCRM order by id or by externalId.
+         * It returns only order data, not ApiResponse or something.
+         *
+         * @param string $id Order identifier
+         * @param string $by Search field (default: 'externalId')
          *
          * @return array
          */
-        public static function assemblyOrder($orderHistory)
+        protected function getCRMOrder($id, $by = 'externalId')
         {
-            if (file_exists(__DIR__ . '/../config/objects.xml')) {
-                $objects = simplexml_load_file(__DIR__ . '/../config/objects.xml');
-                foreach($objects->fields->field as $object) {
-                    $fields[(string)$object["group"]][(string)$object["id"]] = (string)$object;
-                }
+            $crmOrderResponse = $this->retailcrm->ordersGet($id, $by);
+
+            if (!empty($crmOrderResponse)
+                && $crmOrderResponse->isSuccessful()
+                && $crmOrderResponse->offsetExists('order')
+            ) {
+                return (array) $crmOrderResponse['order'];
             }
 
-            $orders = array();
-
-            foreach ($orderHistory as $change) {
-                if ($change['source'] == 'api'
-                    && isset($change['apiKey']['current'])
-                    && $change['apiKey']['current'] == true
-                ) {
-                    continue;
-                }
-
-                $change['order'] = self::removeEmpty($change['order']);
-                if(isset($change['order']['items']) && $change['order']['items']) {
-                    $items = array();
-                    foreach($change['order']['items'] as $item) {
-                        if(isset($change['created'])) {
-                            $item['create'] = 1;
-                        }
-                        $items[$item['id']] = $item;
-                    }
-                    $change['order']['items'] = $items;
-                }
-
-                if(isset($change['order']['contragent']['contragentType']) && $change['order']['contragent']['contragentType']) {
-                    $change['order']['contragentType'] = $change['order']['contragent']['contragentType'];
-                    unset($change['order']['contragent']);
-                }
-
-                if (!empty($orders) && isset($orders[$change['order']['id']])) {
-                    $orders[$change['order']['id']] = array_merge($orders[$change['order']['id']], $change['order']);
-                } else {
-                    $orders[$change['order']['id']] = $change['order'];
-                }
-
-                if (isset($change['item']) && $change['item']) {
-                    if(isset($orders[$change['order']['id']]['items'][$change['item']['id']])) {
-                        $orders[$change['order']['id']]['items'][$change['item']['id']] = array_merge($orders[$change['order']['id']]['items'][$change['item']['id']], $change['item']);
-                    } else {
-                        $orders[$change['order']['id']]['items'][$change['item']['id']] = $change['item'];
-                    }
-
-                    if ($change['oldValue'] === null
-                        && $change['field'] == 'order_product'
-                    ) {
-                        $orders[$change['order']['id']]['items'][$change['item']['id']]['create'] = true;
-                    }
-
-                    if ($change['newValue'] === null
-                        && $change['field'] == 'order_product'
-                    ) {
-                        $orders[$change['order']['id']]['items'][$change['item']['id']]['delete'] = true;
-                    }
-
-                    if (!isset($orders[$change['order']['id']]['items'][$change['item']['id']]['create'])
-                        && isset($fields['item'][$change['field']])
-                        && $fields['item'][$change['field']]
-                    ) {
-                        $orders[$change['order']['id']]['items'][$change['item']['id']][$fields['item'][$change['field']]] = $change['newValue'];
-                    }
-                } elseif ($change['field'] == 'payments' && isset($change['payment'])) {
-                    if ($change['newValue'] !== null) {
-                        $orders[$change['order']['id']]['payments'][] = self::newValue($change['payment']);
-                    }
-                }  else {
-                    if (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service') {
-                        $orders[$change['order']['id']]['delivery']['service']['code'] = self::newValue($change['newValue']);
-                    } elseif (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']]) {
-                        $orders[$change['order']['id']]['delivery'][$fields['delivery'][$change['field']]] = self::newValue($change['newValue']);
-                    } elseif (isset($fields['orderAddress'][$change['field']]) && $fields['orderAddress'][$change['field']]) {
-                        $orders[$change['order']['id']]['delivery']['address'][$fields['orderAddress'][$change['field']]] = $change['newValue'];
-                    } elseif (isset($fields['integrationDelivery'][$change['field']]) && $fields['integrationDelivery'][$change['field']]) {
-                        $orders[$change['order']['id']]['delivery']['service'][$fields['integrationDelivery'][$change['field']]] = self::newValue($change['newValue']);
-                    } elseif (isset($fields['customerContragent'][$change['field']]) && $fields['customerContragent'][$change['field']]) {
-                        $orders[$change['order']['id']][$fields['customerContragent'][$change['field']]] = self::newValue($change['newValue']);
-                    } elseif (strripos($change['field'], 'custom_') !== false) {
-                        $orders[$change['order']['id']]['customFields'][str_replace('custom_', '', $change['field'])] = self::newValue($change['newValue']);
-                    } elseif (isset($fields['order'][$change['field']]) && $fields['order'][$change['field']]) {
-                        $orders[$change['order']['id']][$fields['order'][$change['field']]] = self::newValue($change['newValue']);
-                    }
-
-                    if (isset($change['created'])) {
-                        $orders[$change['order']['id']]['create'] = 1;
-                    }
-
-                    if (isset($change['deleted'])) {
-                        $orders[$change['order']['id']]['deleted'] = 1;
-                    }
-                }
-            }
-
-            return $orders;
+            return array();
         }
 
-        public static function assemblyCustomer($customerHistory)
+        /**
+         * Sets all needed data for customer switch to switcher state
+         *
+         * @param array                                 $crmCustomer
+         * @param \WC_Retailcrm_Customer_Switcher_State $data
+         * @param bool                                  $isContact
+         */
+        protected function prepareChangeToIndividual($crmCustomer, $data, $isContact = false)
         {
-            $customers = array();
-            foreach ($customerHistory as $change) {
-                $change['order'] = self::removeEmpty($change['customer']);
+            WC_Retailcrm_Logger::debug(
+                __METHOD__,
+                array(
+                    'Using this individual person data in order to set it into order,',
+                    $data->getWcOrder()->get_id(),
+                    ': ',
+                    $crmCustomer
+                )
+            );
 
-                if (!empty($customers[$change['customer']['id']]) && $customers[$change['customer']['id']]) {
-                    $customers[$change['customer']['id']] = array_merge($customers[$change['customer']['id']], $change['customer']);
-                } else {
-                    $customers[$change['customer']['id']] = $change['customer'];
-                }
-            }
-
-            return $customers;
-        }
-
-        public static function newValue($value)
-        {
-            if (isset($value['code'])) {
-                return $value['code'];
+            if ($isContact) {
+                $data->setNewContact($crmCustomer);
             } else {
-                return $value;
+                $data->setNewCustomer($crmCustomer);
             }
         }
 
-        public static function removeEmpty($inputArray)
+        /**
+         * @param array $itemData
+         *
+         * @return int|string|null
+         */
+        protected static function getItemWoocommerceId($itemData)
         {
-            $outputArray = array();
-            if (!empty($inputArray)) {
-                foreach ($inputArray as $key => $element) {
-                    if(!empty($element) || $element === 0 || $element === '0'){
-                        if (is_array($element)) {
-                            $element = self::removeEmpty($element);
-                        }
-                        $outputArray[$key] = $element;
+            $woocommerceId = null;
+
+            if (isset($itemData['woocomerceId'])) {
+                $woocommerceId = $itemData['woocomerceId'];
+            } elseif (isset($itemData['externalIds'])) {
+                foreach ($itemData['externalIds'] as $extIdArr) {
+                    if (isset($extIdArr['code']) && $extIdArr['code'] == 'woocomerce') {
+                        $woocommerceId = $extIdArr['value'];
                     }
                 }
             }
 
-            return $outputArray;
+            if (!empty($woocommerceId) && strpos($woocommerceId, '_') !== false) {
+                $wcIdArr = explode('_', $woocommerceId);
+                $woocommerceId = $wcIdArr[1];
+            }
+
+            return $woocommerceId;
+        }
+
+        /**
+         * Returns true if provided crm order is corporate
+         *
+         * @param array $order
+         *
+         * @return bool
+         */
+        private static function isOrderCorporate($order)
+        {
+            return isset($order['customer']['type']) && $order['customer']['type'] == 'customer_corporate';
+        }
+
+        /**
+         * This assertion returns true if customer was changed from legal entity to individual person.
+         * It doesn't return true if customer was changed from one individual person to another.
+         *
+         * @param array $assembledOrder Order data, assembled from history
+         *
+         * @return bool True if customer in order was changed from corporate to regular
+         */
+        private static function isCustomerChangedToRegular($assembledOrder)
+        {
+            return isset($assembledOrder['contragentType']) && $assembledOrder['contragentType'] == 'individual';
+        }
+
+        /**
+         * This assertion returns true if customer was changed from individual person to a legal entity.
+         * It doesn't return true if customer was changed from one legal entity to another.
+         *
+         * @param array $assembledOrder Order data, assembled from history
+         *
+         * @return bool True if customer in order was changed from corporate to regular
+         */
+        private static function isCustomerChangedToLegal($assembledOrder)
+        {
+            return isset($assembledOrder['contragentType']) && $assembledOrder['contragentType'] == 'legal-entity';
+        }
+
+        /**
+         * Helper method. Checks if entity only contains identifiers.
+         * Returns true if entity contains only these keys: 'id', 'externalId', 'site', or if array is empty.
+         * Returns false otherwise.
+         *
+         * @param array $entity
+         *
+         * @return bool
+         */
+        private static function noRealDataInEntity($entity)
+        {
+            $allowedKeys = array('id', 'externalId', 'site');
+
+            if (count($entity) <= 3) {
+                foreach (array_keys($entity) as $key) {
+                    if (!in_array($key, $allowedKeys)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * @param array|\ArrayObject|\ArrayAccess $arr
+         * @param string $key
+         * @param string $def
+         *
+         * @return mixed|string
+         */
+        private static function arrayValue($arr, $key, $def = '')
+        {
+            if (!is_array($arr) && !($arr instanceof ArrayObject) && !($arr instanceof ArrayAccess)) {
+                return $def;
+            }
+
+            if (!array_key_exists($key, $arr) && !empty($arr[$key])) {
+                return $def;
+            }
+
+            return isset($arr[$key]) ? $arr[$key] : $def;
         }
     }
 

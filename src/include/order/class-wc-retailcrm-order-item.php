@@ -65,12 +65,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
         $this->set_data_fields($data);
         $this->set_offer($item);
-
-        if ($this->settings['api_version'] == 'v5' && round($discount_price, 2)) {
-            $this->set_data_field('discountManualAmount',round($discount_price, 2));
-        } elseif ($this->settings['api_version'] == 'v4' && round($discount_price, 2)) {
-            $this->set_data_field('discount', round($discount_price, 2));
-        }
+        $this->set_data_field('discountManualAmount', (float) round($discount_price, 2));
 
         return $this;
     }
@@ -114,6 +109,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      * @param $price
      *
      * @return float|int
+     * @todo Rounding issues with prices in pennies / cents should be expected here.
      */
     private function calculate_discount(WC_Order_Item_Product $item, $price)
     {

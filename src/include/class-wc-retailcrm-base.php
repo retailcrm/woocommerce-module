@@ -17,17 +17,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
      */
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
+        /** @var string */
         protected $api_url;
+
+        /** @var string */
         protected $api_key;
+
+        /** @var \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool */
         protected $apiClient;
+
+        /** @var mixed */
         protected $order_item;
+
+        /** @var mixed */
         protected $order_address;
+
+        /** @var \WC_Retailcrm_Customers */
         protected $customers;
+
+        /** @var \WC_Retailcrm_Orders */
         protected $orders;
 
         /**
          * Init and hook in the integration.
-         * @param $retailcrm (default = false)
+         * @param \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
          */
         public function __construct($retailcrm = false) {
             parent::__construct();
@@ -83,6 +96,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
+            add_action('user_register', array($this, 'create_customer'), 10, 2);
+            add_action('profile_update', array($this, 'update_customer'), 10, 2);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
@@ -207,11 +222,33 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $ids = false;
 
             if (isset($_GET['order_ids_retailcrm'])) {
+                $appendix = array();
                 $ids = explode(',', $_GET['order_ids_retailcrm']);
+
+                foreach ($ids as $key => $id) {
+                    if (stripos($id, '-') !== false) {
+                        $idSplit = explode('-', $id);
+
+                        if (count($idSplit) == 2) {
+                            $expanded = array();
+                            $first = (int) $idSplit[0];
+                            $last = (int) $idSplit[1];
+
+                            for ($i = $first; $i <= $last; $i++) {
+                                $expanded[] = $i;
+                            }
+
+                            $appendix = array_merge($appendix, $expanded);
+                            unset($ids[$key]);
+                        }
+                    }
+                }
+
+                $ids = array_unique(array_merge($ids, $appendix));
             }
 
             if ($ids) {
-                $this->orders->ordersUpload($ids, true);
+                $this->orders->ordersUpload($ids);
             }
         }
 
@@ -229,34 +266,64 @@ if (!class_exists('WC_Retailcrm_Base')) {
             update_option(static::$option_key, $options);
         }
 
-	    /**
-	     * Create customer in retailCRM
-	     *
-	     * @param int $customer_id
-	     *
-	     * @return void
-	     * @throws \Exception
-	     */
+        /**
+         * Create customer in retailCRM
+         *
+         * @param int $customer_id
+         *
+         * @return void
+         * @throws \Exception
+         */
         public function create_customer($customer_id)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
                 return;
             }
 
-            $client = $this->getApiClient();
+	        $client = $this->getApiClient();
 
-            if (empty($client)) {
-            	return;
+	        if (empty($client)) {
+		        return;
+	        }
+
+	        $wcCustomer = new WC_Customer($customer_id);
+	        $email = $wcCustomer->get_billing_email();
+
+	        if (empty($email)) {
+	            $email = $wcCustomer->get_email();
             }
 
-            $wcCustomer = new WC_Customer($customer_id);
-            $response = $client->customersList(array('email' => $wcCustomer->get_billing_email()));
-
-            if ((!empty($response) && $response->isSuccessful()) && isset($response['customers']) && count($response['customers']) > 0) {
-                return;
+	        if (empty($email)) {
+	            return;
+            } else {
+	            $wcCustomer->set_billing_email($email);
+	            $wcCustomer->save();
             }
 
-            $this->customers->createCustomer($customer_id);
+	        $response = $client->customersList(array('email' => $email));
+
+	        if (!empty($response)
+                && $response->isSuccessful()
+                && isset($response['customers'])
+                && count($response['customers']) > 0
+            ) {
+		        $customers = $response['customers'];
+		        $customer = reset($customers);
+
+		        if (isset($customer['id'])) {
+		            $this->customers->updateCustomerById($customer_id, $customer['id']);
+		            $builder = new WC_Retailcrm_WC_Customer_Builder();
+		            $builder
+                        ->setWcCustomer($wcCustomer)
+                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : array())
+                        ->setAddress(isset($customer['address']) ? $customer['address'] : false)
+                        ->build()
+                        ->getResult()
+                        ->save();
+                }
+	        } else {
+                $this->customers->createCustomer($customer_id);
+            }
         }
 
         /**
@@ -266,6 +333,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function update_customer($customer_id)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
+            if (empty($customer_id)) {
                 return;
             }
 
@@ -286,7 +357,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
          * Edit order in retailCRM
+         *
          * @param int $order_id
+         *
+         * @throws \Exception
          */
         public function update_order($order_id)
         {
@@ -359,7 +433,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return new WC_Retailcrm_Proxy(
                     $this->get_option('api_url'),
                     $this->get_option('api_key'),
-                    $this->get_option('api_version')
+                    $this->get_option('corporate_enabled', 'no') === 'yes'
                 );
             }
 
@@ -375,9 +449,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $api_client = $this->getApiClient();
             $clientId = get_option('retailcrm_client_id');
-            $api_version = $this->get_option('api_version');
 
-            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, $api_version, false);
+            WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
             delete_option('retailcrm_active_in_crm');
         }
 
@@ -394,14 +467,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $client_id = uniqid();
             }
 
-            if ($settings['api_url'] && $settings['api_key'] && $settings['api_version']) {
+            if ($settings['api_url'] && $settings['api_key']) {
                 $api_client = new WC_Retailcrm_Proxy(
                     $settings['api_url'],
                     $settings['api_key'],
-                    $settings['api_version']
+                    $settings['corporate_enabled'] === 'yes'
                 );
 
-                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id, $settings['api_version']);
+                $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id);
 
                 if ($result) {
                     update_option('retailcrm_active_in_crm', true);

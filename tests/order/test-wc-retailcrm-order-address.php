@@ -26,8 +26,11 @@ class WC_Retailcrm_Order_Address_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_build()
     {
-        $order_address = new WC_Retailcrm_Order_Address;
-        $data = $order_address->build($this->order)->get_data();
+        $order_address = new WC_Retailcrm_Order_Address();
+        $data = $order_address
+	        ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
+	        ->build($this->order)
+	        ->get_data();
 
         $this->assertArrayHasKey('index', $data);
         $this->assertArrayHasKey('city', $data);

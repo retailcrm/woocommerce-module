@@ -53,6 +53,12 @@ class WC_Retailcrm_Plugin {
     }
 
     public function activate() {
+        if (!class_exists( 'WC_Integration' ) ) {
+            add_action('admin_notices', array(new WC_Integration_Retailcrm(), 'woocommerce_missing_notice'));
+
+            return;
+        }
+
         if (!class_exists('WC_Retailcrm_Icml')) {
             require_once (dirname(__FILE__) . '/class-wc-retailcrm-icml.php');
         }
@@ -84,13 +90,13 @@ class WC_Retailcrm_Plugin {
     /**
      * Edit configuration in CRM
      *
-     * @param WC_Retailcrm_Proxy $api_client
+     * @param WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5 $api_client
      * @param string $client_id
      * @param bool $active
      *
      * @return boolean
      */
-    public static function integration_module($api_client, $client_id, $api_version, $active = true) {
+    public static function integration_module($api_client, $client_id, $active = true) {
 
         if (!$api_client) {
             return false;
@@ -103,18 +109,12 @@ class WC_Retailcrm_Plugin {
             'active' => $active,
         );
 
-        if ($api_version == 'v4') {
-            $configuration['configurationUrl'] = get_site_url();
+        $configuration['integrationCode'] = self::INTEGRATION_CODE;
+        $configuration['baseUrl'] = get_site_url();
+        $configuration['clientId'] = $client_id;
+        $configuration['accountUrl'] = get_site_url();
 
-            $response = $api_client->marketplaceSettingsEdit($configuration);
-        } else {
-            $configuration['integrationCode'] = self::INTEGRATION_CODE;
-            $configuration['baseUrl'] = get_site_url();
-            $configuration['clientId'] = $client_id;
-            $configuration['accountUrl'] = get_site_url();
-
-            $response = $api_client->integrationModulesEdit($configuration);
-        }
+        $response = $api_client->integrationModulesEdit($configuration);
 
         if (!$response) {
             return false;
@@ -128,6 +128,53 @@ class WC_Retailcrm_Plugin {
     }
 
     /**
+     * Unset empty fields
+     *
+     * @param array $arr input array
+     *
+     * @return array
+     */
+    public static function clearArray(array $arr)
+    {
+        if (!is_array($arr)) {
+            return $arr;
+        }
+
+        $result = array();
+
+        foreach ($arr as $index => $node) {
+            $result[$index] = (is_array($node))
+                ? self::clearArray($node)
+                : $node;
+
+            if ($result[$index] === ''
+                || $result[$index] === null
+                || (is_array($result[$index]) && count($result[$index]) < 1)
+            ) {
+                unset($result[$index]);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns WC_Customer by id. Returns null if there's no such customer.
+     *
+     * @param int $id
+     *
+     * @return \WC_Customer|null
+     */
+    public static function getWcCustomerById($id)
+    {
+        try {
+            return new WC_Customer($id);
+        } catch (\Exception $exception) {
+            return null;
+        }
+    }
+
+    /**
      * Check running history
      *
      * @return boolean
@@ -137,4 +184,3 @@ class WC_Retailcrm_Plugin {
         return self::$history_run;
     }
 }
-

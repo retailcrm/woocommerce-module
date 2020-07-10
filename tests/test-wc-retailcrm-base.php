@@ -45,7 +45,6 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertInternalType('array', $this->unit->form_fields);
         $this->assertArrayHasKey('api_url', $this->unit->form_fields);
         $this->assertArrayHasKey('api_key', $this->unit->form_fields);
-        $this->assertArrayHasKey('api_version', $this->unit->form_fields);
 
         foreach (get_post_statuses() as $key => $status) {
             $this->assertArrayHasKey('p_' . $key, $this->unit->form_fields);

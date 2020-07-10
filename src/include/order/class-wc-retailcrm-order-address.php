@@ -11,6 +11,7 @@
 
 class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
 {
+    /** @var string $filter_name */
     protected $filter_name = 'order_address';
 
     /**
@@ -20,7 +21,7 @@ class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
      */
     public function build($order)
     {
-        $address = $order->get_address('shipping');
+        $address = $this->getOrderAddress($order);
 
         if (!empty($address)) {
             $data = array(
