@@ -151,8 +151,8 @@ msgstr "Ajustes del catálogo"
 msgid "Online assistant"
 msgstr "Consultor en línea"
 
-msgid "Insert the javascript from the Retailcrm admin panel"
-msgstr "Inserte javascript desde el panel de administración de Retailcrm"
+msgid "Insert the javascript from the retailCRM admin panel"
+msgstr "Inserte javascript desde el panel de administración de retailCRM"
 
 msgid "Select API version"
 msgstr "Selecciona la versión de API"
