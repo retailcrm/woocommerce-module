@@ -115,7 +115,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->init_settings();
         }
 
-         /**
+		/**
          * @param $settings
          *
          * @return array
