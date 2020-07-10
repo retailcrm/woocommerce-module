@@ -100,6 +100,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('profile_update', array($this, 'update_customer'), 10, 2);
             add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
             add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
+            add_action('wp_print_scripts', array($this, 'initialize_online_assistant'), 101);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
             add_action('woocommerce_new_order', array($this, 'create_order'), 11, 1);
 
@@ -122,7 +123,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->init_settings();
         }
 
-        /**
+		/**
          * @param $settings
          *
          * @return array
@@ -421,6 +422,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 echo '';
             }
         }
+
+		/**
+		 * Initialize online consultant
+		 */
+		public function initialize_online_assistant()
+		{
+			if (!is_admin()) {
+				echo $this->get_option('online_assistant');
+			}
+		}
 
         /**
         * Get retailcrm api client
