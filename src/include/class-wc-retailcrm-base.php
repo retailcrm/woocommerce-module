@@ -56,14 +56,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $this->init_settings_fields();
             }
 
-            if (!class_exists('WC_Retailcrm_Orders')) {
-                include_once(static::checkCustomFile('orders'));
-            }
-
-            if (!class_exists('WC_Retailcrm_Customers')) {
-                include_once(static::checkCustomFile('customers'));
-            }
-
             $this->customers = new WC_Retailcrm_Customers(
                 $this->apiClient,
                 $this->settings,
@@ -160,26 +152,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             return $settings;
         }
 
-        /**
-         * Check custom file
-         *
-         * @param string $file
-         *
-         * @return string
-         */
-        public static function checkCustomFile($file) {
-            if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-' . $file . '.php' )) {
-                return WP_CONTENT_DIR . '/retailcrm-custom/class-wc-retailcrm-' . $file . '.php';
-            }
-
-            return WP_PLUGIN_DIR . '/woo-retailcrm/include/class-wc-retailcrm-' . $file . '.php';
-        }
-
         public function generate_icml() {
-            if (!class_exists('WC_Retailcrm_Icml')) {
-                require_once (static::checkCustomFile('icml'));
-            }
-
             $retailcrm_icml = new WC_Retailcrm_Icml();
             $retailcrm_icml->generate();
         }
@@ -188,10 +161,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * Get history
          */
         public function retailcrm_history_get() {
-            if (!class_exists('WC_Retailcrm_History')) {
-                include_once(static::checkCustomFile('history'));
-            }
-
             $retailcrm_history = new WC_Retailcrm_History($this->apiClient);
             $retailcrm_history->getHistory();
         }
@@ -207,10 +176,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * Load stock from retailCRM
          */
         public function load_stocks() {
-            if (!class_exists('WC_Retailcrm_Inventories')) {
-                include_once(static::checkCustomFile('inventories'));
-            }
-
             $inventories = new WC_Retailcrm_Inventories($this->apiClient);
             $inventories->updateQuantity();
         }
@@ -376,10 +341,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function initialize_analytics()
         {
-            if (!class_exists('WC_Retailcrm_Google_Analytics')) {
-                include_once(static::checkCustomFile('ga'));
-            }
-
             if ($this->get_option('ua') && $this->get_option('ua_code')) {
                 $retailcrm_analytics = WC_Retailcrm_Google_Analytics::getInstance($this->settings);
                 echo $retailcrm_analytics->initialize_analytics();
@@ -393,10 +354,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function send_analytics()
         {
-            if (!class_exists('WC_Retailcrm_Google_Analytics')) {
-                include_once(static::checkCustomFile('ga'));
-            }
-
             if ($this->get_option('ua') == static::YES && $this->get_option('ua_code') && is_checkout()) {
                 $retailcrm_analytics = WC_Retailcrm_Google_Analytics::getInstance($this->settings);
                 echo $retailcrm_analytics->send_analytics();
@@ -410,10 +367,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function initialize_daemon_collector()
         {
-            if (!class_exists('WC_Retailcrm_Daemon_Collector')) {
-                include_once(static::checkCustomFile('daemon-collector'));
-            }
-
             if ($this->get_option('daemon_collector') == static::YES && $this->get_option('daemon_collector_key')) {
                 $retailcrm_daemon_collector = WC_Retailcrm_Daemon_Collector::getInstance($this->settings);
                 echo $retailcrm_daemon_collector->initialize_daemon_collector();

@@ -96,26 +96,67 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
          */
         public static function load_module()
         {
-            require_once(dirname(__FILE__) . '/include/interfaces/class-wc-retailcrm-builder-interface.php');
-            require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-state.php');
-            require_once(dirname(__FILE__) . '/include/models/class-wc-retailcrm-customer-switcher-result.php');
-            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-logger.php');
-            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-history-assembler.php');
-            require_once(dirname(__FILE__ ) . '/include/components/class-wc-retailcrm-paginated-request.php');
-            require_once(dirname(__FILE__) . '/include/components/class-wc-retailcrm-customer-switcher.php');
-            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstract-builder.php');
-            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-settings.php');
-            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-data.php');
-            require_once(dirname(__FILE__ ) . '/include/abstracts/class-wc-retailcrm-abstracts-address.php');
-            require_once(dirname(__FILE__ ) . '/include/customer/woocommerce/class-wc-retailcrm-wc-customer-builder.php');
-            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order.php');
-            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-payment.php');
-            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-item.php');
-            require_once(dirname(__FILE__ ) . '/include/order/class-wc-retailcrm-order-address.php');
-            require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-address.php');
-            require_once(dirname(__FILE__ ) . '/include/customer/class-wc-retailcrm-customer-corporate-address.php');
-            require_once(dirname(__FILE__ ) . '/include/class-wc-retailcrm-base.php');
-            require_once(dirname(__FILE__ ) . '/include/functions.php');
+            require_once(self::checkCustomFile('include/interfaces/class-wc-retailcrm-builder-interface.php'));
+            require_once(self::checkCustomFile('include/models/class-wc-retailcrm-customer-switcher-state.php'));
+            require_once(self::checkCustomFile('include/models/class-wc-retailcrm-customer-switcher-result.php'));
+            require_once(self::checkCustomFile('include/components/class-wc-retailcrm-logger.php'));
+            require_once(self::checkCustomFile('include/components/class-wc-retailcrm-history-assembler.php'));
+            require_once(self::checkCustomFile('include/components/class-wc-retailcrm-paginated-request.php'));
+            require_once(self::checkCustomFile('include/components/class-wc-retailcrm-customer-switcher.php'));
+            require_once(self::checkCustomFile('include/abstracts/class-wc-retailcrm-abstract-builder.php'));
+            require_once(self::checkCustomFile('include/abstracts/class-wc-retailcrm-abstracts-settings.php'));
+            require_once(self::checkCustomFile('include/abstracts/class-wc-retailcrm-abstracts-data.php'));
+            require_once(self::checkCustomFile('include/abstracts/class-wc-retailcrm-abstracts-address.php'));
+            require_once(self::checkCustomFile('include/customer/woocommerce/class-wc-retailcrm-wc-customer-builder.php'));
+            require_once(self::checkCustomFile('include/order/class-wc-retailcrm-order.php'));
+            require_once(self::checkCustomFile('include/order/class-wc-retailcrm-order-payment.php'));
+            require_once(self::checkCustomFile('include/order/class-wc-retailcrm-order-item.php'));
+            require_once(self::checkCustomFile('include/order/class-wc-retailcrm-order-address.php'));
+            require_once(self::checkCustomFile('include/customer/class-wc-retailcrm-customer-address.php'));
+            require_once(self::checkCustomFile('include/customer/class-wc-retailcrm-customer-corporate-address.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-icml.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-orders.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-customers.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-inventories.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-history.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-ga.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-daemon-collector.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-base.php'));
+            require_once(self::checkCustomFile('include/functions.php'));
+        }
+
+        /**
+         * Check custom file
+         *
+         * @param string $file
+         *
+         * @return string
+         */
+        public static function checkCustomFile($file)
+        {
+            $oldCustomizationFiles = array(
+                'include/class-wc-retailcrm-icml.php',
+                'include/class-wc-retailcrm-orders.php',
+                'include/class-wc-retailcrm-customers.php',
+                'include/class-wc-retailcrm-inventories.php',
+                'include/class-wc-retailcrm-history.php',
+                'include/class-wc-retailcrm-ga.php',
+                'include/class-wc-retailcrm-daemon-collector.php'
+            );
+
+            if (in_array($file, $oldCustomizationFiles)) {
+                $pathWithoutInclude = WP_CONTENT_DIR . '/retailcrm-custom/' . str_replace('include/', '', $file);
+
+                if (file_exists($pathWithoutInclude)) {
+                    return $pathWithoutInclude;
+                }
+            }
+
+            if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/' . $file)) {
+                return WP_CONTENT_DIR . '/retailcrm-custom/' . $file;
+            }
+
+            return WP_PLUGIN_DIR . '/woo-retailcrm/' . $file;
         }
 
         /**
