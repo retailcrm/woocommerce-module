@@ -134,26 +134,10 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
          */
         public static function checkCustomFile($file)
         {
-            $oldCustomizationFiles = array(
-                'include/class-wc-retailcrm-icml.php',
-                'include/class-wc-retailcrm-orders.php',
-                'include/class-wc-retailcrm-customers.php',
-                'include/class-wc-retailcrm-inventories.php',
-                'include/class-wc-retailcrm-history.php',
-                'include/class-wc-retailcrm-ga.php',
-                'include/class-wc-retailcrm-daemon-collector.php'
-            );
+            $withoutInclude = WP_CONTENT_DIR . '/retailcrm-custom/' . str_replace('include/', '', $file);
 
-            if (in_array($file, $oldCustomizationFiles)) {
-                $pathWithoutInclude = WP_CONTENT_DIR . '/retailcrm-custom/' . str_replace('include/', '', $file);
-
-                if (file_exists($pathWithoutInclude)) {
-                    return $pathWithoutInclude;
-                }
-            }
-
-            if (file_exists( WP_CONTENT_DIR . '/retailcrm-custom/' . $file)) {
-                return WP_CONTENT_DIR . '/retailcrm-custom/' . $file;
+            if (file_exists($withoutInclude)) {
+                return $withoutInclude;
             }
 
             return WP_PLUGIN_DIR . '/woo-retailcrm/' . $file;
