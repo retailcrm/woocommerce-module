@@ -34,12 +34,6 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->unit = new \WC_Retailcrm_Base($this->apiMock);
     }
 
-    public function test_retailcrm_check_custom_file()
-    {
-        $file = \WC_Retailcrm_Base::checkCustomFile('ga');
-        $this->assertInternalType('string', $file);
-    }
-
     public function test_retailcrm_form_fields()
     {
         $this->assertInternalType('array', $this->unit->form_fields);
