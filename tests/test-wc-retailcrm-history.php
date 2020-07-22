@@ -54,7 +54,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $this->assertNotEmpty($order_added->get_date_created());
-        $this->assertEquals($order_added->get_date_created()->date('Y-m-d H:i:s'),$order['history'][0]['createdAt']);
+        $this->assertEquals($order_added->get_date_created()->date('Y-m-d H:i:s'), $order['history'][0]['createdAt']);
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
         $this->assertNotEmpty($shipping_address['postcode']);
