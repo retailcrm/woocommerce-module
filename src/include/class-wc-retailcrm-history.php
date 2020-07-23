@@ -602,6 +602,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             /** @var WC_Order|WP_Error $wc_order */
             $wc_order = wc_create_order($args);
+            $wc_order->set_date_created($order['createdAt']);
             $customer = $order['customer'];
             $contactOrCustomer = array();
             $address = isset($order['customer']['address']) ? $order['customer']['address'] : array();

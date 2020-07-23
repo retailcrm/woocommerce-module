@@ -23,12 +23,13 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_history_order_create()
     {
         $product = WC_Helper_Product::create_simple_product();
+        $order = $this->get_history_data_new_order($product->get_id());
 
         $this->mockHistory(
             true,
             true,
             $this->empty_history(),
-            $this->get_history_data_new_order($product->get_id())
+            $order
         );
 
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
@@ -52,6 +53,8 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
         }
 
+        $this->assertNotEmpty($order_added->get_date_created());
+        $this->assertEquals($order_added->get_date_created()->date('Y-m-d H:i:s'), $order['history'][0]['createdAt']);
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
         $this->assertNotEmpty($shipping_address['postcode']);
@@ -133,7 +136,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->regenerateMocks();
         $this->history_order_switch_customer($order_id);
-        
+
         $this->regenerateMocks();
         $this->history_order_switch_customer_to_corporate($order_id);
 
@@ -173,7 +176,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->assertEquals('tester001@example.com', $order_added->get_billing_email());
         $this->assertNotEmpty($order_added->get_id());
-        
+
         return $order_added->get_id();
     }
 
