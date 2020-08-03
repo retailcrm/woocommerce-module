@@ -375,16 +375,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 echo '';
             }
         }
-
-		/**
-		 * Initialize online consultant
-		 */
-		public function initialize_online_assistant()
-		{
-			if (!is_admin()) {
-				echo $this->get_option('online_assistant');
-			}
-		}
+    
+        /**
+         * Initialize online consultant
+         */
+        public function initialize_online_assistant()
+        {
+            if (!is_admin()) {
+                echo $this->get_option('online_assistant');
+            }
+        }
 
         /**
         * Get retailcrm api client

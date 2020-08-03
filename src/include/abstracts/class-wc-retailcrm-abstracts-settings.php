@@ -151,7 +151,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'title'       => __( 'Online assistant', 'retailcrm' ),
             'type'        => 'textarea',
             'id'          => 'online_assistant',
-            'placeholder' => __( 'Insert the javascript from the retailCRM admin panel', 'retailcrm' )
+            'placeholder' => __( 'Insert the Online consultant code here', 'retailcrm' )
         );
 
         $this->form_fields[] = array(
@@ -573,8 +573,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function validate_online_assistant_field($key, $value)
     {
     	$onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
-    	if (!empty($onlineAssistant) && is_string($onlineAssistant))
-    	{
+    	if (!empty($onlineAssistant) && is_string($onlineAssistant)){
+    	    
     	    return wp_unslash($onlineAssistant);
     	}
     	return '';
