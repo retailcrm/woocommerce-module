@@ -71,6 +71,10 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
 
         if ($order->is_paid()) {
             $data['status'] = 'paid';
+
+            if (isset($this->settings[$order->get_payment_method()])) {
+                $data['type'] = $this->settings[$order->get_payment_method()];
+            }
         }
 
         if ($order->get_date_paid()) {
