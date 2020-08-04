@@ -576,6 +576,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     	if (!empty($onlineAssistant) && is_string($onlineAssistant)) {
     	    return wp_unslash($onlineAssistant);
     	}
+    	
     	return '';
     }
 
