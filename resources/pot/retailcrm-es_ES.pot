@@ -148,6 +148,12 @@ msgstr "Los métodos de la formalización del pedido"
 msgid "Catalog settings"
 msgstr "Ajustes del catálogo"
 
+msgid "Online assistant"
+msgstr "Consultor en línea"
+
+msgid "Insert the Online consultant code here"
+msgstr "Inserte el código de consultor en Línea aquí"
+
 msgid "Select API version"
 msgstr "Selecciona la versión de API"
 

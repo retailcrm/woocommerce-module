@@ -157,6 +157,12 @@ msgstr "Способы оформления заказа"
 msgid "Catalog settings"
 msgstr "Настройки каталога"
 
+msgid "Online assistant"
+msgstr "Онлайн консультант"
+
+msgid "Insert the Online consultant code here"
+msgstr "Вставьте код Онлайн-консультанта здесь"
+
 msgid "Select API version"
 msgstr "Выберите версию API"
 

@@ -147,6 +147,13 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'desc_tip'    =>  true
         );
 
+        $this->form_fields['online_assistant'] = array(
+            'title'       => __( 'Online assistant', 'retailcrm' ),
+            'type'        => 'textarea',
+            'id'          => 'online_assistant',
+            'placeholder' => __( 'Insert the Online consultant code here', 'retailcrm' )
+        );
+
         $this->form_fields[] = array(
             'title'       => __( 'Catalog settings', 'retailcrm' ),
             'type'        => 'title',
@@ -555,6 +562,23 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <?php
 
         return ob_get_clean();
+    }
+
+    /**
+    * Returns the original value for the online_consultant field (ignores woocommerce validation)
+    * @param $key
+    * @param $value
+    * @return string
+    */
+    public function validate_online_assistant_field($key, $value)
+    {
+    	$onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
+    	
+    	if (!empty($onlineAssistant) && is_string($onlineAssistant)) {
+    	    return wp_unslash($onlineAssistant);
+    	}
+    	
+    	return '';
     }
 
     /**
