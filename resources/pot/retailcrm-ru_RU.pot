@@ -247,6 +247,9 @@ msgstr "Передача номера заказа"
 msgid "Transferring the payment amount"
 msgstr "Передача суммы оплаты"
 
+msgid "Do not transmit the cost of delivery"
+msgstr "Не передавать себестоимости доставки"
+
 msgid "Corporate customers support"
 msgstr "Поддержка корпоративных клиентов"
 

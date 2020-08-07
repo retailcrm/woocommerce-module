@@ -138,6 +138,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'desc_tip'    =>  true
         );
 
+        $this->form_fields['send_delivery_net_cost'] = array(
+            'title'       => __( 'Do not transmit the cost of delivery', 'retailcrm' ),
+            'label'       => ' ',
+            'description' => '',
+            'class'       => 'checkbox',
+            'type'        => 'checkbox',
+            'desc_tip'    =>  true
+        );
+
         $this->form_fields['corporate_enabled'] = array(
             'title'       => __('Corporate customers support', 'retailcrm'),
             'label'       => __('Enabled'),

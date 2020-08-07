@@ -400,7 +400,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     $order_data['delivery']['cost'] = $shipping_cost;
                 }
 
-                if ($shipping['total']) {
+                $activeNetCost = null;
+
+                if (isset($this->retailcrm_settings['send_delivery_net_cost'])){
+                    $activeNetCost = $this->retailcrm_settings['send_delivery_net_cost'];
+                }
+
+                if ($shipping['total'] && $activeNetCost != 'yes') {
                     $order_data['delivery']['netCost'] = $shipping['total'];
                 }
             }
