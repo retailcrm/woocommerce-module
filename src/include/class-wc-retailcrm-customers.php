@@ -621,10 +621,12 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function isCustomer($user)
         {
-            if (empty($this->retailcrm_settings['client_roles']))
-                $selectedRoles = [self::CUSTOMER_ROLE, self::ADMIN_ROLE];
+            $retailcrmSettings = $this->retailcrm_settings['client_roles'];
+
+            if (empty($retailcrmSettings))
+                $selectedRoles = array(self::CUSTOMER_ROLE, self::ADMIN_ROLE);
             else
-                $selectedRoles = $this->retailcrm_settings['client_roles'];
+                $selectedRoles = $retailcrmSettings;
 
             if ($user instanceof WP_User) {
                 $userRoles = $user->roles;

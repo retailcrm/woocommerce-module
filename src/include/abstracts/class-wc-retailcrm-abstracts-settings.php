@@ -182,12 +182,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * Client roles options
                  */
                 $client_roles_option = array();
-                $client_roles_list = wp_roles();
+                $client_roles_list = wp_roles()->get_names();
 
-
-                if ($client_roles_list && !empty($client_roles_list->get_names())) {
-                    foreach ($client_roles_list->get_names() as $code => $name) {
-                        $client_roles_option[$code] =$name;
+                if (!empty($client_roles_list)) {
+                    foreach ($client_roles_list as $code => $name) {
+                        $client_roles_option[$code] = $name;
                     }
 
                     $this->form_fields[] = array(
