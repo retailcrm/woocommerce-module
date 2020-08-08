@@ -171,7 +171,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if ($wpUser instanceof WP_User) {
-                if (!WC_Retailcrm_Customers::isCustomer($wpUser)) {
+                if(!$this->customers->isCustomer($wpUser)){
                     return false;
                 }
 

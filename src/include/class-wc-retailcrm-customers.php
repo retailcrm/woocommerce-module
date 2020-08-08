@@ -106,7 +106,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $data_customers = array();
 
             foreach ($users as $user) {
-                if (!static::isCustomer($user)) {
+                if (!$this->isCustomer($user)) {
                     continue;
                 }
 
@@ -149,7 +149,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 return null;
             }
 
-            if (self::isCustomer($customer)) {
+            if ($this->isCustomer($customer)) {
                 $this->processCustomer($customer, $order);
                 $response = $this->retailcrm->customersCreate($this->customer);
 
@@ -177,7 +177,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $customer = $this->wcCustomerGet($customer_id);
 
-            if (self::isCustomer($customer)) {
+            if ($this->isCustomer($customer)) {
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
             }
@@ -202,7 +202,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $customer = $this->wcCustomerGet($customer_id);
 
-            if (self::isCustomer($customer)) {
+            if ($this->isCustomer($customer)) {
                 $this->processCustomer($customer);
                 $this->customer['id'] = $crmCustomerId;
                 $this->retailcrm->customersEdit($this->customer, 'id');
@@ -235,7 +235,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 return null;
             }
 
-            if (self::isCustomer($customer)) {
+            if ($this->isCustomer($customer)) {
                 $this->processCorporateCustomer($crmCustomerId, $customer, $order);
                 $response = $this->retailcrm->customersCorporateCreate($this->customerCorporate);
 
@@ -493,7 +493,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     if (empty($search['customers'])) {
                         return false;
                     }
-                    
+
                     if (isset($filter['email']) && count($filter) == 1) {
                         foreach ($search['customers'] as $finding) {
                             if (isset($finding['email']) && $finding['email'] == $filter['email']) {
@@ -619,16 +619,27 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          *
          * @return bool
          */
-        public static function isCustomer($user)
+        public function isCustomer($user)
         {
-            if ($user instanceof WC_Customer) {
-                return $user->get_role() == self::CUSTOMER_ROLE || $user->get_role() == self::ADMIN_ROLE;
-            } elseif ($user instanceof WP_User) {
-                return in_array(self::CUSTOMER_ROLE, $user->roles)
-                    || in_array(self::ADMIN_ROLE, $user->roles);
+            if (empty($this->retailcrm_settings['client_roles']))
+                $selectedRoles = [self::CUSTOMER_ROLE, self::ADMIN_ROLE];
+            else
+                $selectedRoles = $this->retailcrm_settings['client_roles'];
+
+            if ($user instanceof WP_User) {
+                $userRoles = $user->roles;
+            } elseif ($user instanceof WC_Customer) {
+                $wpUser = get_user_by('id', $user->get_id());
+                $userRoles = $wpUser->roles;
+            } else {
+                return false;
             }
 
-            return false;
+            $result = array_filter($userRoles, function ($userRole) use ($selectedRoles) {
+                return in_array($userRole, $selectedRoles);
+            });
+
+            return !empty($result);
         }
     }
 endif;
