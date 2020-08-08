@@ -1,4 +1,5 @@
 <?php
+
 /**
  * RetailCRM Integration.
  *
@@ -24,7 +25,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         const CUSTOMER_ROLE = 'customer';
 
-	    /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
+        /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
         /** @var array */
@@ -547,7 +548,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function searchCorporateCustomer($filter, $returnGroup = false)
         {
-	        $search = $this->retailcrm->customersCorporateList($filter);
+            $search = $this->retailcrm->customersCorporateList($filter);
 
             if (!empty($search) && $search->isSuccessful()) {
                 if (isset($search['customersCorporate'])) {
@@ -621,12 +622,16 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function isCustomer($user)
         {
-            $retailcrmSettings = $this->retailcrm_settings['client_roles'];
+            $retailcrmSettings = array();
+            if (array_key_exists('client_roles', $this->retailcrm_settings)) {
+                $retailcrmSettings = $this->retailcrm_settings['client_roles'];
+            }
 
-            if (empty($retailcrmSettings))
+            if (empty($retailcrmSettings)) {
                 $selectedRoles = array(self::CUSTOMER_ROLE, self::ADMIN_ROLE);
-            else
+            } else {
                 $selectedRoles = $retailcrmSettings;
+            }
 
             if ($user instanceof WP_User) {
                 $userRoles = $user->roles;
