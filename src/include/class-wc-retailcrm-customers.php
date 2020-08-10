@@ -637,7 +637,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $userRoles = $user->roles;
             } elseif ($user instanceof WC_Customer) {
                 $wpUser = get_user_by('id', $user->get_id());
-                $userRoles = $wpUser->roles;
+                $userRoles = ($wpUser) ? $wpUser->roles : array($user->get_role());
             } else {
                 return false;
             }
