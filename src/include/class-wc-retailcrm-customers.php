@@ -623,6 +623,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         public function isCustomer($user)
         {
             $retailcrmSettings = array();
+
             if (!empty($this->retailcrm_settings) && array_key_exists('client_roles', $this->retailcrm_settings)) {
                 $retailcrmSettings = $this->retailcrm_settings['client_roles'];
             }
