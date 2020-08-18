@@ -136,6 +136,15 @@ msgstr "Métodos de pago"
 msgid "Delivery types"
 msgstr "Métodos de envío"
 
+msgid "Select client roles which will be uploaded from website to retailCRM"
+msgstr "Seleccione los roles del cliente que se cargarán desde el sitio web a retailCRM"
+
+msgid "Client roles available for uploading to retailCRM"
+msgstr "Roles del cliente disponibles para cargar en retailCRM"
+
+msgid "Client roles"
+msgstr "Roles del cliente"
+
 msgid "Select order methods which will be uploaded from retailCRM to the website"
 msgstr "Elige el método de formalización de los pedidos que se van a subir desde retailCRM a la página web"
 

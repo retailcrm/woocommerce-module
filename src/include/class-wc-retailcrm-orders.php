@@ -171,7 +171,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if ($wpUser instanceof WP_User) {
-                if (!WC_Retailcrm_Customers::isCustomer($wpUser)) {
+                if (!$this->customers->isCustomer($wpUser)) {
                     return false;
                 }
 
@@ -369,7 +369,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $order_data = $this->orders->build($order)->get_data();
 
             if ($order->get_items('shipping')) {
-                $shippings = $order->get_items( 'shipping' );
+                $shippings = $order->get_items('shipping');
                 $shipping = reset($shippings);
                 $shipping_code = explode(':', $shipping['method_id']);
 

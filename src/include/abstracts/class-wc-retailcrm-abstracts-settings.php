@@ -179,6 +179,36 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 add_action('admin_print_footer_scripts', array($this, 'show_blocks'), 99);
 
                 /**
+                 * Client roles options
+                 */
+                $client_roles_option = array();
+                $client_roles_list = wp_roles()->get_names();
+
+                if (!empty($client_roles_list)) {
+                    foreach ($client_roles_list as $code => $name) {
+                        $client_roles_option[$code] = $name;
+                    }
+
+                    $this->form_fields[] = array(
+                        'title' => __('Client roles', 'retailcrm'),
+                        'type' => 'heading',
+                        'description' => '',
+                        'id' => 'client_roles_options'
+                    );
+
+                    $this->form_fields['client_roles'] = array(
+                        'label'       =>  ' ',
+                        'title'       => __('Client roles available for uploading to retailCRM', 'retailcrm'),
+                        'class'       => '',
+                        'type'        => 'multiselect',
+                        'description' => __('Select client roles which will be uploaded from website to retailCRM', 'retailcrm'),
+                        'options'     => $client_roles_option,
+                        'css'         => 'min-height:100px;',
+                        'select_buttons' => true
+                    );
+                }
+
+                /**
                  * Order methods options
                  */
                 $order_methods_option = array();
