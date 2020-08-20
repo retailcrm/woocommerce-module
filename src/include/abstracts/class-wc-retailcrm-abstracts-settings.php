@@ -680,14 +680,16 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 'cursor':'pointer',
                 'width':'310px'
             });
-            jQuery('h2.retailcrm_hidden').toggle(
+            jQuery('h2.retailcrm_hidden').bind(
+                'click',
                 function() {
-                    jQuery(this).next('table.form-table').show(100);
-                    jQuery(this).find('span').html('&#11014;');
-                },
-                function() {
-                    jQuery(this).next('table.form-table').hide(100);
-                    jQuery(this).find('span').html('&#11015;');
+                    if(jQuery(this).next('table.form-table').is(":hidden")) {
+                        jQuery(this).next('table.form-table').show(100);
+                        jQuery(this).find('span').html('&#11014;');
+                    } else {
+                        jQuery(this).next('table.form-table').hide(100);
+                        jQuery(this).find('span').html('&#11015;');
+                    }
                 }
             );
         </script>
