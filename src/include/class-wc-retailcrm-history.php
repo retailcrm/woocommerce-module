@@ -284,7 +284,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $shipping->set_total($order['delivery']['cost']);
             }
 
-            if (isset($order['delivery']['netCost']) && wc_tax_enabled()) {
+            $activeNetCost = $this->retailcrm_settings['send_delivery_net_cost'];
+
+            if (isset($order['delivery']['netCost']) && wc_tax_enabled() && $activeNetCost != 'yes') {
                 $shipping->set_total($order['delivery']['netCost']);
             }
 
