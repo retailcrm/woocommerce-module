@@ -1,4 +1,4 @@
-=== Woocommerce retailCRM ===
+=== Woocommerce retailCRM TEST ===
 Contributors: retailCRM
 Donate link: http://retailcrm.ru/
 Tags: Интеграция, retailCRM
