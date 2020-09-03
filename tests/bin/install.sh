@@ -76,6 +76,10 @@ install_woocommerce() {
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
 
+    git status
+    git config core.autocrlf false
+    git status
+
     if [[ ! $WC_VERSION == 'latest' ]]; then
       git checkout $WC_VERSION
 
