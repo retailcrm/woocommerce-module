@@ -381,7 +381,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function initialize_online_assistant()
         {
-            if (!is_admin()) {
+            if (!is_admin() && !is_wplogin()) {
                 echo $this->get_option('online_assistant');
             }
         }
