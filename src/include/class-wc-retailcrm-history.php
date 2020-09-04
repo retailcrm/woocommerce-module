@@ -563,14 +563,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return false;
             }
 
-            if (is_array($this->order_methods)
-                && $this->order_methods
-                && isset($order['orderMethod'])
-                && !in_array($order['orderMethod'], $this->order_methods)
-            ) {
-                return false;
-            }
-
             $orderResponse = $this->retailcrm->ordersGet($order['id'], 'id');
 
             if (null !== $orderResponse && $orderResponse->offsetExists('order')) {
