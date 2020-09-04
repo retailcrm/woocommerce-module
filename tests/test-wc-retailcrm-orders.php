@@ -207,6 +207,8 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                 } else {
                     $this->assertArrayNotHasKey('amount', $payment);
                 }
+            } else {
+                $this->assertEquals(array(), $payment);
             }
         } else {
             $this->assertEquals(null, $order);

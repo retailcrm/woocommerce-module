@@ -426,7 +426,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
 
             $order_data['items'] = $order_items;
 
-            if (!$update) {
+            if (!$update && $order->get_total() > 0) {
                 $this->order_payment->is_new = true;
                 $order_data['payments'][] = $this->order_payment->build($order)->get_data();
             }

@@ -53,9 +53,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         $this->reset_data();
         $data = array();
 
-        if (!empty($this->settings['send_payment_amount'])
-            && $this->settings['send_payment_amount'] === WC_Retailcrm_Base::YES
-        ) {
+        if (!empty($this->settings['send_payment_amount']) && $this->settings['send_payment_amount'] === WC_Retailcrm_Base::YES) {
             $data['amount'] = (double) $order->get_total();
         }
 
