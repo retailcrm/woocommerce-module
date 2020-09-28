@@ -54,7 +54,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $this->assertNotEmpty($order_added->get_date_created());
-        $this->assertEquals($order_added->get_date_created()->date('Y-m-d H:i:s'), $order['history'][0]['createdAt']);
+        $this->assertEquals("2018-01-01 00:00:00", $order['history'][0]['createdAt']);
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
         $this->assertNotEmpty($shipping_address['postcode']);
@@ -764,6 +764,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                             array(
                                 'id' => 160,
                                 'initialPrice' => 100,
+                                'discountTotal' => 5,
                                 'createdAt' => '2018-01-01 00:00:00',
                                 'quantity' => 1,
                                 'status' => 'new',
@@ -773,6 +774,8 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                                         'value' =>"160_".$product_create_id
                                     )
                                 ),
+                                'initialPrice' => 15,
+                                'discountTotal' => 1,
                                 'offer' => array(
                                     'id' => 1,
                                     'externalId' => $product_create_id,
@@ -1057,6 +1060,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                         array(
                             'id' => 160,
                             'initialPrice' => 100,
+                            'discountTotal' => 5,
                             'createdAt' => '2018-01-01 00:00:00',
                             'quantity' => 1,
                             'status' => 'new',
@@ -1066,6 +1070,8 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                                     'value' =>"160_".$productId
                                 )
                             ),
+                            'initialPrice' => 15,
+                            'discountTotal' => 1,
                             'offer' => array(
                                 'id' => 1,
                                 'externalId' => $productId,
@@ -2198,7 +2204,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                             'code' => 'base',
                         ),
                         'initialPrice' => 16,
-                        'discountTotal' => 0,
+                        'discountTotal' => 5,
                         'vatRate' => 'none',
                         'createdAt' => '2020-06-04 14:54:54',
                         'quantity' => 1,
