@@ -189,8 +189,17 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             if ($update && $customerWasChanged) {
-                $this->order['firstName'] = $wcOrder->get_shipping_first_name();
-                $this->order['lastName'] = $wcOrder->get_shipping_last_name();
+                $firstName = $wcOrder->get_shipping_first_name();
+                $lastName = $wcOrder->get_shipping_last_name();
+
+                if(empty($firstName) && empty($lastName))
+                {
+                    $firstName = $wcOrder->get_billing_first_name();
+                    $lastName = $wcOrder->get_billing_last_name();
+                }
+
+                $this->order['firstName'] = $firstName;
+                $this->order['lastName'] = $lastName;
             }
 
             return true;
@@ -425,6 +434,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             $order_data['items'] = $order_items;
+
+            $order_data['discountManualAmount'] = 0;
+            $order_data['discountManualPercent'] = 0;
 
             if (!$update && $order->get_total() > 0) {
                 $this->order_payment->is_new = true;

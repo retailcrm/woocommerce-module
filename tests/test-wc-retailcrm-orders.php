@@ -184,6 +184,9 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('Sormani', $order_send['lastName']);
             $this->assertEquals('admin@example.org', $order_send['email']);
             $this->assertEquals('US', $order_send['countryIso']);
+            $this->assertEquals(0, $order_send['discountManualAmount']);
+            $this->assertEquals(0, $order_send['discountManualPercent']);
+            
             if (mb_strlen($order_send['delivery']['address']['index']) === 6) {
                 $this->assertEquals('123456', $order_send['delivery']['address']['index']);
             } else {

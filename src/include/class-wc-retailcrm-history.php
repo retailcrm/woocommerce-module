@@ -721,17 +721,27 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         continue;
                     }
 
-                    if (isset($product['discountTotal']) && $product['discountTotal'] > 0) {
-                        $item->set_price($product['initialPrice'] - $product['discountTotal']);
-                    }
-
                     foreach ($wc_order->get_items() as $order_item_id => $order_item) {
                         $arItemsOld[$order_item_id] = $order_item_id;
                     }
 
                     $wc_order->add_product(
                         $item,
-                        $product['quantity']
+                        $product['quantity'],
+                        array(
+                            'subtotal' => wc_get_price_excluding_tax(
+                                $item,
+                                array(
+                                    'price' => $product['initialPrice'],
+                                    'qty' => $product['quantity'],)
+                            ),
+                            'total' => wc_get_price_excluding_tax(
+                                $item,
+                                array(
+                                    'price' => $product['initialPrice'] - $product['discountTotal'],
+                                    'qty' => $product['quantity'],)
+                            ),
+                        )
                     );
 
                     foreach ($wc_order->get_items() as $order_item_id => $order_item) {
