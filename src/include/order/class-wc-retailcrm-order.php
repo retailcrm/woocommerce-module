@@ -64,10 +64,10 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
         
         $data = array(
             'externalId' => $order->get_id(),
-            'createdAt' => $order->get_date_created()->date('Y-m-d H:i:s'),
-            'firstName' => $firstName,
-            'lastName' => $lastName,
-            'email' => $order->get_billing_email(),
+            'createdAt' => $order->get_date_created()->date('Y-m-d H:i:s'), 
+            'firstName' => $order->get_shipping_first_name(),
+            'lastName' => $order->get_shipping_last_name(),
+            'email' => strtolower($order->get_billing_email()),
             'customerComment' => $order->get_customer_note(),
             'phone' => $order->get_billing_phone(),
             'countryIso' => $order->get_shipping_country()
