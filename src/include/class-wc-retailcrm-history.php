@@ -83,7 +83,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             if (!$customers_since_id && isset($this->retailcrm_settings['history_customers'])) {
-                $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_orders']);
+                $this->startDateCustomers = new DateTime($this->retailcrm_settings['history_customers']);
             }
 
             try {
