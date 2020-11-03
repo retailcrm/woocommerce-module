@@ -91,12 +91,13 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     protected function getOrderAddress($order)
     {
         $orderAddress = $order->get_address($this->address_type);
-
-        if (empty($orderAddress) && $this->address_type === self::ADDRESS_TYPE_BILLING && $this->fallback_to_shipping) {
+        $checkEmptyArray = array_filter($orderAddress);
+        
+        if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_BILLING && $this->fallback_to_shipping) {
             $orderAddress = $order->get_address(self::ADDRESS_TYPE_SHIPPING);
         }
 
-        if (empty($orderAddress) && $this->address_type === self::ADDRESS_TYPE_SHIPPING && $this->fallback_to_billing) {
+        if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_SHIPPING && $this->fallback_to_billing) {
             $orderAddress = $order->get_address(self::ADDRESS_TYPE_BILLING);
         }
 
