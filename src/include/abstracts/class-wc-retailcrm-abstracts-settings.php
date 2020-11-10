@@ -129,15 +129,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'id'          => 'api_options'
         );
 
-        $this->form_fields['send_payment_amount'] = array(
-            'title'       => __( 'Transferring the payment amount', 'retailcrm' ),
-            'label'       => ' ',
-            'description' => '',
-            'class'       => 'checkbox',
-            'type'        => 'checkbox',
-            'desc_tip'    =>  true
-        );
-
         $this->form_fields['send_delivery_net_cost'] = array(
             'title'       => __( 'Do not transmit the cost of delivery', 'retailcrm' ),
             'label'       => ' ',

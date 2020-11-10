@@ -30,7 +30,6 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_build($externalId)
     {
 	    $settings = $this->getOptions();
-	    $settings['send_payment_amount'] = 'no';
 	    $order_payment = new WC_Retailcrm_Order_Payment($settings);
 
         $data = $order_payment->build($this->order, $externalId)->get_data();
@@ -42,7 +41,6 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $this->assertArrayHasKey('type', $data);
-        $this->assertArrayNotHasKey('amount', $data);
         $this->assertArrayHasKey('order', $data);
     }
 
@@ -54,7 +52,6 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_build_with_amount($externalId)
     {
         $settings = $this->getOptions();
-        $settings['send_payment_amount'] = 'yes';
         $order_payment = new WC_Retailcrm_Order_Payment($settings);
 
         $data = $order_payment->build($this->order, $externalId)->get_data();
@@ -66,7 +63,6 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
 	    }
 
 	    $this->assertArrayHasKey('type', $data);
-        $this->assertArrayHasKey('amount', $data);
         $this->assertArrayHasKey('order', $data);
     }
 
