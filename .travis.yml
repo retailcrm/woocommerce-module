@@ -21,10 +21,10 @@ before_script:
 
 env:
   global:
-  - DB_NAME=wc_retailcrm_test
-  - DB_USER=root
-  - DB_PASS=''
-  - DB_HOST=localhost
+    - DB_NAME=wc_retailcrm_test
+    - DB_USER=root
+    - DB_PASS=''
+    - DB_HOST=localhost
 
 script: make test
 
