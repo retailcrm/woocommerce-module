@@ -374,9 +374,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 }
             }
 
-            if (empty($createdAt)) {
-                $createdAt = new WC_DateTime();
-            }
+            // If a customer has placed an order as a guest, then $customer->get_date_created() == null,
+            // then we take $order->get_date_created() order
+            $createdAt = empty($createdAt) ? $order->get_date_created() : $createdAt;
 
             $data_customer = array(
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),

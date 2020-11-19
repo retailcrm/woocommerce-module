@@ -44,6 +44,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         $this->customer->set_billing_email($this->customer->get_email());
         $this->customer->set_password('password');
         $this->customer->set_billing_phone('89000000000');
+        $this->customer->set_date_created(date('Y-m-d H:i:s'));
         $this->customer->save();
     }
 
@@ -91,6 +92,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('createdAt', $customer_send);
             $this->assertArrayHasKey('email', $customer_send);
             $this->assertNotEmpty($customer_send['externalId']);
+            $this->assertNotEmpty($customer_send['createdAt']);
             $this->assertNotEmpty($customer_send['firstName']);
             $this->assertNotEmpty($customer_send['email']);
         } else {
@@ -115,6 +117,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('createdAt', $customer_send);
             $this->assertArrayHasKey('email', $customer_send);
             $this->assertNotEmpty($customer_send['externalId']);
+            $this->assertNotEmpty($customer_send['createdAt']);
             $this->assertNotEmpty($customer_send['firstName']);
             $this->assertNotEmpty($customer_send['email']);
             $this->assertInstanceOf('WC_Customer', $customer);
