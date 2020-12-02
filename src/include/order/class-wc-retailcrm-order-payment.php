@@ -53,10 +53,6 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         $this->reset_data();
         $data = array();
 
-        if (!empty($this->settings['send_payment_amount']) && $this->settings['send_payment_amount'] === WC_Retailcrm_Base::YES) {
-            $data['amount'] = (double) $order->get_total();
-        }
-
         if (!$this->is_new) {
             $data['externalId'] = $externalId;
         } else {
@@ -105,12 +101,6 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
             return array();
         }
 
-	    if (!empty($this->settings['send_payment_amount'])
-	        && $this->settings['send_payment_amount'] === WC_Retailcrm_Base::NO
-	    ) {
-	    	unset($data['amount']);
-	    }
-
         return $data;
     }
 
@@ -118,7 +108,6 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
     {
         $this->data = array(
             'externalId' => '',
-            'amount' => 0.00,
             'type' => '',
             'status' => '',
             'paidAt' => '',

@@ -204,12 +204,7 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
                 $this->assertArrayHasKey('order', $payment);
                 $this->assertArrayHasKey('externalId', $payment);
                 $this->assertEquals('payment1', $payment['type']);
-
-                if (!empty($this->options['send_payment_amount']) && $this->options['send_payment_amount'] == 'yes') {
-                    $this->assertArrayHasKey('amount', $payment);
-                } else {
-                    $this->assertArrayNotHasKey('amount', $payment);
-                }
+                $this->assertArrayNotHasKey('amount', $payment);
             } else {
                 $this->assertEquals(array(), $payment);
             }
