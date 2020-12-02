@@ -128,7 +128,7 @@ class WC_Retailcrm_Paginated_Request
             );
 
             if ($response instanceof WC_Retailcrm_Response && $response->offsetExists($this->dataKey)) {
-                $this->data = array_merge($response[$this->dataKey]);
+                $this->data = array_merge($this->data, $response[$this->dataKey]);
                 $page = $response['pagination']['currentPage'] + 1;
             }
 
