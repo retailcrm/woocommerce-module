@@ -3,6 +3,9 @@ VERSION = `cat $(FILE)`
 
 .PHONY: test
 
+before_script:
+	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(WP_VERSION) $(WC_VERSION) $(DB_PASS) $(SKIP_DB_CREATE)
+
 svn_clone:
 	mkdir /tmp/svn_plugin_dir
 	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --username $(USERNAME) --password $(PASSWORD) --no-auth-cache
@@ -45,3 +48,10 @@ run_tests:
 	docker-compose --no-ansi up -d --build mysql
 	docker-compose --no-ansi run --rm --no-deps app make local_test
 	docker-compose stop
+
+phpcs-config:
+	phpcs --config-set installed_paths vendor/phpcompatibility/php-compatibility
+
+phpcomp: phpcs-config
+	phpcs -i
+	phpcs -s -p ./src --standard=PHPCompatibility --runtime-set testVersion 5.4-7.3
