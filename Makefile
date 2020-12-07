@@ -33,6 +33,7 @@ endif
 
 test:
 ifeq ($(USE_COMPOSER),1)
+	cat /home/travis/build/retailcrm/woocommerce-module/phpunit.xml
 	vendor/phpunit/phpunit/phpunit -c phpunit.xml.dist
 else
 	phpunit -c phpunit.xml.dist
