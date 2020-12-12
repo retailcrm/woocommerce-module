@@ -232,7 +232,7 @@ jobs:
       env: WP_VERSION=latest WC_VERSION=3.9.0 WP_MULTISITE=0
     - php: 7.2
       env: WP_VERSION=latest WC_VERSION=3.9.0 WP_MULTISITE=0 USE_COMPOSER=1
-    - php: 7.3
+    - php: 7.3.20
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0 USE_COMPOSER=1
 
     - php: 7.0
@@ -241,7 +241,7 @@ jobs:
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0
     - php: 7.2
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0 USE_COMPOSER=1
-    - php: 7.3
+    - php: 7.3.20
       env: WP_VERSION=latest WC_VERSION=latest WP_MULTISITE=0 USE_COMPOSER=1
       after_success: bash <(curl -s https://codecov.io/bash)
 
