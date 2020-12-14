@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 
+= 4.2.1=
+* Редизайн RetailCRM
+
 = 4.2.0=
 * Исправлен баг с получением даты создания незарегистрированного пользователя
 * Изменена логика работы с оплатами, удалена опция "Передача суммы оплаты"
