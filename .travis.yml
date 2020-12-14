@@ -250,7 +250,7 @@ jobs:
       script: skip
       before_deploy:
         - export VERSION=`cat VERSION`
-        - git config --local user.name "retailCRM"
+        - git config --local user.name "RetailCRM"
         - git config --local user.email "support@retailcrm.ru"
         - export TRAVIS_TAG=v$VERSION
         - git tag $TRAVIS_TAG

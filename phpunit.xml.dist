@@ -11,7 +11,7 @@
     stopOnFailure="false"
     >
     <testsuites>
-        <testsuite name="Retailcrm WooCommerce Test Suite">
+        <testsuite name="RetailCRM WooCommerce Test Suite">
             <directory suffix=".php">tests</directory>
         </testsuite>
     </testsuites>
