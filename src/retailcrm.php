@@ -1,11 +1,11 @@
 <?php
 /**
- * Version: 4.2.0
+ * Version: 4.2.1
  * WC requires at least: 3.0
  * WC tested up to: 3.9.3
- * Plugin Name: WooCommerce retailCRM
+ * Plugin Name: WooCommerce RetailCRM
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
- * Description: Integration plugin for WooCommerce & retailCRM
+ * Description: Integration plugin for WooCommerce & RetailCRM
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
  * Text Domain: retailcrm
@@ -54,7 +54,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
                     echo '
                     <div class="error">
                         <p>
-                            Activate WooCommerce in order to enable retailCRM integration!
+                            Activate WooCommerce in order to enable RetailCRM integration!
                             <a href="' . wp_nonce_url(admin_url('plugins.php')) . '" aria-label="Activate WooCommerce">
                                 Click here to open plugins manager
                             </a>
@@ -68,7 +68,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
                     <p>
                         <a href="'
                     . static::generatePluginInstallationUrl(static::WOOCOMMERCE_SLUG)
-                    . '" aria-label="Install WooCommerce">Install WooCommerce</a> in order to enable retailCRM integration!
+                    . '" aria-label="Install WooCommerce">Install WooCommerce</a> in order to enable RetailCRM integration!
                     </p>
                 </div>
                 ';

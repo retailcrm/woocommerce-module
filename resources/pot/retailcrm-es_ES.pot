@@ -20,19 +20,19 @@ msgid "RetailDriver LLC"
 msgstr "RetailDriver LLC"
 
 #. Description of the plugin/theme
-msgid "Integration plugin for WooCommerce & retailCRM"
-msgstr "El plugin de integración para WooCommerce & retailCRM"
+msgid "Integration plugin for WooCommerce & RetailCRM"
+msgstr "El plugin de integración para WooCommerce & RetailCRM"
 
 #. Plugin URI of the plugin/theme
 msgid "https://wordpress.org/plugins/woo-retailcrm/"
 msgstr "https://wordpress.org/plugins/woo-retailcrm/"
 
 #. Plugin Name of the plugin/theme
-msgid "WooCommerce retailCRM"
-msgstr "WooCommerce retailCRM"
+msgid "WooCommerce RetailCRM"
+msgstr "WooCommerce RetailCRM"
 
-msgid "This functionality allows to upload orders to CRM differentially."
-msgstr "Esta función permite la subida selectiva de los pedidos al retailCRM."
+msgid "This functionality allows to upload orders to RetailCRM differentially."
+msgstr "Esta función permite la subida selectiva de los pedidos al RetailCRM."
 
 msgid "Uploading orders by identifiers."
 msgstr "Subida de los pedidos por identificadores."
@@ -64,14 +64,14 @@ msgstr "Los clientes y pedidos están subidos"
 msgid "Enter the correct API key"
 msgstr "Introduce la llave API correcta"
 
-msgid "Enter the correct URL of CRM"
-msgstr "Introduce el enlace del retailCRM correcto"
+msgid "Enter the correct URL of RetailCRM"
+msgstr "Introduce el enlace del RetailCRM correcto"
 
 msgid "The selected API version is unavailable"
 msgstr "La versión de API elegida no está disponible"
 
-msgid "This functionality allows to generate ICML products catalog for uploading to retailCRM."
-msgstr "Esta función permite generar los catálogos de pedidos ICML para subida al retailCRM."
+msgid "This functionality allows to generate ICML products catalog for uploading to RetailCRM."
+msgstr "Esta función permite generar los catálogos de pedidos ICML para subida al RetailCRM."
 
 msgid "Generating ICML"
 msgstr "Generando ICML"
@@ -85,8 +85,8 @@ msgstr "Generar catálogo ICML"
 msgid "Settings"
 msgstr "Ajustes"
 
-msgid "Uploading the existing customers and orders to retailCRM"
-msgstr "Subida de los clientes existentes y pedidos al retailCRM."
+msgid "Uploading the existing customers and orders to RetailCRM"
+msgstr "Subida de los clientes existentes y pedidos al RetailCRM."
 
 msgid "Uploading all customers and orders"
 msgstr "Subir todos los clientes y pedidos"
@@ -115,8 +115,8 @@ msgstr "Activar UA"
 msgid "UA settings"
 msgstr "Ajustes de UA"
 
-msgid "Enable this setting if you would like to get information on leftover stocks from retailCRM to the website."
-msgstr "Active esta opción si quiere recibir la información del stock de los productos desde retailCRM a la página web."
+msgid "Enable this setting if you would like to get information on leftover stocks from RetailCRM to the website."
+msgstr "Active esta opción si quiere recibir la información del stock de los productos desde RetailCRM a la página web."
 
 msgid "Stock balance"
 msgstr "El stock"
@@ -136,20 +136,20 @@ msgstr "Métodos de pago"
 msgid "Delivery types"
 msgstr "Métodos de envío"
 
-msgid "Select client roles which will be uploaded from website to retailCRM"
-msgstr "Seleccione los roles del cliente que se cargarán desde el sitio web a retailCRM"
+msgid "Select client roles which will be uploaded from website to RetailCRM"
+msgstr "Seleccione los roles del cliente que se cargarán desde el sitio web a RetailCRM"
 
-msgid "Client roles available for uploading to retailCRM"
-msgstr "Roles del cliente disponibles para cargar en retailCRM"
+msgid "Client roles available for uploading to RetailCRM"
+msgstr "Roles del cliente disponibles para cargar en RetailCRM"
 
 msgid "Client roles"
 msgstr "Roles del cliente"
 
-msgid "Select order methods which will be uploaded from retailCRM to the website"
-msgstr "Elige el método de formalización de los pedidos que se van a subir desde retailCRM a la página web"
+msgid "Select order methods which will be uploaded from RetailCRM to the website"
+msgstr "Elige el método de formalización de los pedidos que se van a subir desde RetailCRM a la página web"
 
-msgid "Order methods available for uploading from retailCRM"
-msgstr "Los métodos de la formalización de los pedidos disponibles para subida desde retailCRM"
+msgid "Order methods available for uploading from RetailCRM"
+msgstr "Los métodos de la formalización de los pedidos disponibles para subida desde RetailCRM"
 
 msgid "Order methods"
 msgstr "Los métodos de la formalización del pedido"
@@ -172,14 +172,14 @@ msgstr "Versión de API"
 msgid "API settings"
 msgstr "Ajustes de API"
 
-msgid "Enter your API key. You can find it in the administration section of retailCRM"
-msgstr "Introduce la llave API. Puede encontrarla en apartado administrativo del retailCRM"
+msgid "Enter your API key. You can find it in the administration section of RetailCRM"
+msgstr "Introduce la llave API. Puede encontrarla en apartado administrativo del RetailCRM"
 
 msgid "Enter with your API URL (https://yourdomain.retailcrm.pro)."
 msgstr "Introduce enlace de API (https://yourdomain.retailcrm.pro)."
 
-msgid "Integration with retailCRM management system."
-msgstr "La integración con el sistema de gestión del retailCRM ."
+msgid "Integration with RetailCRM management system."
+msgstr "La integración con el sistema de gestión del RetailCRM ."
 
 msgid "Every 15 minutes"
 msgstr "Cada 15 minutos"
@@ -199,8 +199,8 @@ msgstr "El enlace API"
 msgid "Main settings"
 msgstr "Los ajustes generales"
 
-msgid "retailCRM"
-msgstr "retailCRM"
+msgid "RetailCRM"
+msgstr "RetailCRM"
 
 msgid "Daemon Collector settings"
 msgstr "Ajustes de Daemon Collector"
@@ -217,11 +217,11 @@ msgstr "Active esta configuración para activar Daemon Collector en la página w
 msgid "Site key"
 msgstr "Clave de la página web"
 
-msgid "Disable data editing in retailCRM"
-msgstr "Desactivar edición de datos en retailCRM"
+msgid "Disable data editing in RetailCRM"
+msgstr "Desactivar edición de datos en RetailCRM"
 
-msgid "Data updating in retailCRM"
-msgstr "Actualización de datos en retailCRM"
+msgid "Data updating in RetailCRM"
+msgstr "Actualización de datos en RetailCRM"
 
 msgid "Activate the binding via sku (xml)"
 msgstr "Activar conexión por sku (xmlId)"
@@ -229,8 +229,8 @@ msgstr "Activar conexión por sku (xmlId)"
 msgid "Stock synchronization and link between products"
 msgstr "Sincronización de stock y conexión de productos"
 
-msgid "Enable transferring the number to retailCRM"
-msgstr "Activar la transferencia de números en retailCRM"
+msgid "Enable transferring the number to RetailCRM"
+msgstr "Activar la transferencia de números en RetailCRM"
 
 msgid "Transferring the order number"
 msgstr "Transferencia de un número de pedido"
