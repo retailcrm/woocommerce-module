@@ -473,7 +473,7 @@ jobs:
         uses: actions/create-release@v1
         if: env.LAST_TAG != env.RELEASE_TAG
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           tag_name: ${{ env.RELEASE_TAG }}
           release_name: ${{ env.RELEASE_TAG }}

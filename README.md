@@ -1,7 +1,7 @@
-[![Build Status](https://img.shields.io/travis/retailcrm/woocommerce-module/master.svg?style=flat-square)](https://travis-ci.org/retailcrm/woocommerce-module)
-[![Coverage](https://img.shields.io/codecov/c/gh/retailcrm/woocommerce-module/master.svg?style=flat-square)](https://codecov.io/gh/retailcrm/woocommerce-module)
-[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/woo-retailcrm.svg?style=flat-square)](https://wordpress.org/plugins/woo-retailcrm/)
-[![PHP version](https://img.shields.io/badge/PHP->=5.3-blue.svg?style=flat-square)](https://php.net/)
+[![Build Status](https://github.com/retailcrm/woocommerce-module/workflows/woo/badge.svg)](https://github.com/retailcrm/woocommerce-module/actions)
+[![Coverage](https://img.shields.io/codecov/c/gh/retailcrm/woocommerce-module/master.svg?logo=github)](https://codecov.io/gh/retailcrm/woocommerce-module)
+[![GitHub release](https://img.shields.io/github/release/retailcrm/woocommerce-module.svg?logo=codecov)](https://github.com/retailcrm/woocommerce-module/releases)
+[![PHP version](https://img.shields.io/badge/PHP->=5.4-blue.svg?logo=php)](https://php.net/)
 
 Woocommerce-module
 ==================
