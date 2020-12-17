@@ -1,0 +1,493 @@
+name: woo
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '*.*'
+  pull_request:
+
+env:
+  DB_HOST: 127.0.0.1
+  DB_USER: root
+  DB_PASS: root
+  DB_NAME: wc_retailcrm_test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - php-version: '5.3'
+            wp: '4.4'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+            coverage: 1
+          - php-version: '5.4'
+            wp: '4.4'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.4'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.4'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.4'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.4'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.4'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.4'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.4'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.5'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.5'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.5'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.5'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.5'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.5'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.5'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.5'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.5'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.6'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.6'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.6'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.6'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.6'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.6'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.6'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.6'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.6'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.7'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.7'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.7'
+            wc: '3.0.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.7'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.7'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.7'
+            wc: '3.1.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.7'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.4'
+            wp: '4.7'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.7'
+            wc: '3.2.0'
+            phpunit-version: 'phpunit:4.8.18'
+
+          - php-version: '5.3'
+            wp: '4.8'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.8'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '4.8'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '4.8'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '4.8'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.3'
+            wp: '4.8'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '5.6'
+            wp: '4.8'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '4.8'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '4.8'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '4.8'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '4.8'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '4.8'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '4.8'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '4.8'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '4.9'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '4.9'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '4.9'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '4.9'
+            wc: '3.3.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '4.9'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '4.9'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '4.9'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '4.9'
+            wc: '3.4.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '4.9'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '4.9'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '4.9'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '4.9'
+            wc: '3.5.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '5.0'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '5.0'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '5.0'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '5.0'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '5.1'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '5.1'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '5.1'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '5.1'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '5.6'
+            wp: '5.2'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:4.8.18'
+          - php-version: '7.0'
+            wp: '5.2'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '5.2'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '5.2'
+            wc: '3.6.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '7.0'
+            wp: '5.1'
+            wc: '3.7.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '5.1'
+            wc: '3.7.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '5.1'
+            wc: '3.7.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '7.0'
+            wp: '5.2'
+            wc: '3.7.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '5.2'
+            wc: '3.7.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '5.2'
+            wc: '3.7.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '7.0'
+            wp: '5.3'
+            wc: '3.8.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: '5.3'
+            wc: '3.8.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: '5.3'
+            wc: '3.8.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '7.0'
+            wp: 'latest'
+            wc: '3.9.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: 'latest'
+            wc: '3.9.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: 'latest'
+            wc: '3.9.0'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.3'
+            wp: 'latest'
+            wc: '3.9.0'
+            phpunit-version: 'phpunit:6.4.3'
+
+          - php-version: '7.0'
+            wp: 'latest'
+            wc: 'latest'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.1'
+            wp: 'latest'
+            wc: 'latest'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.2'
+            wp: 'latest'
+            wc: 'latest'
+            phpunit-version: 'phpunit:6.4.3'
+          - php-version: '7.3'
+            wp: 'latest'
+            wc: 'latest'
+            phpunit-version: 'phpunit:6.4.3'
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASS }}
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: xdebug
+          tools: composer:v1, ${{ matrix.phpunit-version }}
+          extensions: gd, mbstring, mysqli, zip, mcrypt, mysql, pdo_mysql, dom
+      - name: Install Woocommerce
+        env:
+          WP_VERSION: ${{ matrix.wp }}
+          WC_VERSION: ${{ matrix.wc }}
+        run: make install
+      - name: Run tests
+        env:
+          WP_VERSION: ${{ matrix.wp }}
+          WC_VERSION: ${{ matrix.wc }}
+        run: make test
+      - name: Coverage
+        env:
+          COVERAGE: ${{ matrix.coverage }}
+        if: env.COVERAGE == 1
+        run: |
+          make coverage
+          bash <(curl -s https://codecov.io/bash)
+
+  deploy:
+    needs: ['test']
+    if: success() && github.event_name == 'push' && github.repository_owner == 'retailcrm' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP 7.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+          tools: composer:v1
+      - name: Build release
+        run: |
+          git fetch origin --unshallow --tags
+          export LAST_TAG=`git describe --abbrev=0 --tags`
+          export VERSION=`cat VERSION`
+          export ARCHIVE_NAME=retailcrm-$VERSION.ocmod.zip
+          export ARCHIVE_PATH="/tmp/$ARCHIVE_NAME"
+          export RELEASE_TAG=v$VERSION
+          export LAST_COMMIT=`git log --oneline --format=%B -n 1 HEAD | head -n 1`
+          make build_archive
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        if: env.LAST_TAG != env.RELEASE_TAG
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: ${{ env.RELEASE_TAG }}
+          body: ${{ env.LAST_COMMIT }}
+          draft: false
+          prerelease: false
+      - name: Deploy
+        env:
+          SVNREPOURL: ${{ secrets.SVNREPOURL }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          make svn_clone
+          make svn_push
+      - name: Cleanup
+        if: env.LAST_TAG != env.RELEASE_TAG
+        run: make remove_dir
