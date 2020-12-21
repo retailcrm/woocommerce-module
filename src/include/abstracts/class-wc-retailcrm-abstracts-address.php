@@ -82,6 +82,27 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     }
 
     /**
+     * Validate address
+     *
+     * @param array $address
+     *
+     * @return bool
+     */
+    public function validateAddress($address)
+    {
+        if (empty($address['country']) ||
+            empty($address['state']) ||
+            empty($address['postcode']) ||
+            empty($address['city']) ||
+            empty($address['address_1'])
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Returns address from order. Respects fallback_to_billing parameter.
      *
      * @param \WC_Order $order
@@ -91,7 +112,7 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     protected function getOrderAddress($order)
     {
         $orderAddress = $order->get_address($this->address_type);
-        $checkEmptyArray = array_filter($orderAddress);
+        $checkEmptyArray = $this->validateAddress($orderAddress) ? array_filter($orderAddress) : array();
         
         if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_BILLING && $this->fallback_to_shipping) {
             $orderAddress = $order->get_address(self::ADDRESS_TYPE_SHIPPING);
