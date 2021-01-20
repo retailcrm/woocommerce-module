@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 
+= 4.2.3=
+* Обновление версии в маркетплейсе
+
 = 4.2.2=
 * Переход на github actions
 
