@@ -105,22 +105,14 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
     /**
      * @param WC_Order $order
      */
-    protected function set_number($order)
-    {
-        if ($this->is_new) {
-            $this->set_data_field('number', $order->get_order_number());
-        }
-
-        if (isset($this->settings['update_number'])
-            && $this->settings['update_number'] == WC_Retailcrm_Base::YES
-        ) {
-            if (!$this->is_new) {
-                $this->set_data_field('number', $order->get_order_number());
-            }
-        } elseif (!$this->is_new) {
-            unset($this->data['number']);
-        }
-    }
+	protected function set_number($order)
+	{
+		if (isset($this->settings['update_number']) && $this->settings['update_number'] == WC_Retailcrm_Base::YES ) {
+			$this->set_data_field('number', $order->get_order_number());
+		} else {
+			unset($this->data['number']);
+		}
+	}
 
     public function reset_data()
     {
