@@ -56,15 +56,16 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
         $firstName = $order->get_shipping_first_name();
         $lastName = $order->get_shipping_last_name();
 
-        if(empty($firstName) && empty($lastName))
-        {
+        if (empty($firstName) && empty($lastName)) {
             $firstName = $order->get_billing_first_name();
             $lastName = $order->get_billing_last_name();
         }
-        
+
+        $dateCreate = $order->get_date_created();
+
         $data = array(
             'externalId' => $order->get_id(),
-            'createdAt' => $order->get_date_created()->date('Y-m-d H:i:s'),
+            'createdAt' => !empty($dateCreate) ? $dateCreate->date('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
             'firstName' => $firstName,
             'lastName' => $lastName,
             'email' => strtolower($order->get_billing_email()),
