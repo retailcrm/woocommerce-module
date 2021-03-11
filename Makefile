@@ -33,7 +33,8 @@ install:
 test:
 	phpunit -c phpunit.xml.dist
 
-local_test: install
+local_test:
+	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(WP_VERSION) $(WC_VERSION) $(DB_PASS) $(SKIP_DB_CREATE)
 	phpunit -c phpunit.xml.dist
 
 run_tests:
