@@ -371,7 +371,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return;
             }
 
-            if ($update === true) {
+	        if ($order->get_status() == 'auto-draft') {
+		        return;
+	        }
+
+	        if ($update === true) {
                 $this->orders->is_new = false;
             }
 
