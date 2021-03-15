@@ -241,9 +241,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 ));
 
                 if (empty($crmCorporate)) {
-	                $crmCorporate = $this->customers->searchCorporateCustomer(array(
-		                'companyName' => $wcOrder->get_billing_company()
-	                ));
+                    $crmCorporate = $this->customers->searchCorporateCustomer(array(
+                        'companyName' => $wcOrder->get_billing_company()
+                    ));
                 }
 
                 if (empty($crmCorporate)) {
@@ -368,6 +368,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         protected function processOrder($order, $update = false)
         {
             if (!$order instanceof WC_Order) {
+                return;
+            }
+
+            if ($order->get_status() == 'auto-draft') {
                 return;
             }
 
