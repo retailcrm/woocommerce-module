@@ -241,9 +241,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 ));
 
                 if (empty($crmCorporate)) {
-	                $crmCorporate = $this->customers->searchCorporateCustomer(array(
-		                'companyName' => $wcOrder->get_billing_company()
-	                ));
+                    $crmCorporate = $this->customers->searchCorporateCustomer(array(
+                        'companyName' => $wcOrder->get_billing_company()
+                    ));
                 }
 
                 if (empty($crmCorporate)) {
@@ -371,11 +371,11 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 return;
             }
 
-	        if ($order->get_status() == 'auto-draft') {
-		        return;
-	        }
+            if ($order->get_status() == 'auto-draft') {
+                return;
+            }
 
-	        if ($update === true) {
+            if ($update === true) {
                 $this->orders->is_new = false;
             }
 
