@@ -53,6 +53,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
             }
 
             $page = 1;
+            $variationProducts = array();
 
             do {
                 /** @var WC_Retailcrm_Response $result */
@@ -70,8 +71,14 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                         $product = retailcrm_get_wc_product($offer[$this->bind_field], $this->retailcrm_settings);
 
                         if ($product instanceof WC_Product) {
-                            if ($product->get_type() == 'variable') {
-                                continue;
+                            if ($product->get_type() == 'variation' || $product->get_type() == 'variable') {
+                                $parentId = $product->get_parent_id();
+
+                                if (isset($variationProducts[$parentId])) {
+                                    $variationProducts[$parentId] += $offer['quantity'];
+                                } else {
+                                    $variationProducts[$parentId] = $offer['quantity'];
+                                }
                             }
 
                             $product->set_manage_stock(true);
@@ -79,6 +86,13 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                             $success[] = $product->save();
                         }
                     }
+                }
+
+                foreach ($variationProducts as $id => $quantity) {
+                    $variationProduct = wc_get_product($id);
+                    $variationProduct->set_manage_stock(true);
+                    $variationProduct->set_stock($quantity);
+                    $success[] = $variationProduct->save();
                 }
             } while ($page <= $totalPageCount);
 
