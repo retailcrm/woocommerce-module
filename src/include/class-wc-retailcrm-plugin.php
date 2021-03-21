@@ -60,11 +60,11 @@ class WC_Retailcrm_Plugin {
         }
 
         if (!class_exists('WC_Retailcrm_Icml')) {
-            require_once (dirname(__FILE__) . '/class-wc-retailcrm-icml.php');
+            require_once(WC_Integration_Retailcrm::checkCustomFile('include/class-wc-retailcrm-icml.php'));
         }
 
         if (!class_exists('WC_Retailcrm_Base')) {
-            require_once (dirname(__FILE__) . '/class-wc-retailcrm-base.php');
+            require_once(WC_Integration_Retailcrm::checkCustomFile('include/class-wc-retailcrm-base.php'));
         }
 
         $retailcrm_icml = new WC_Retailcrm_Icml();

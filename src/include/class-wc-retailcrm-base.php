@@ -9,7 +9,7 @@
 
 if (!class_exists('WC_Retailcrm_Base')) {
     if (!class_exists('WC_Retailcrm_Abstracts_Settings')) {
-        include_once 'abstracts/class-wc-retailcrm-abstracts-settings.php';
+        include_once(WC_Integration_Retailcrm::checkCustomFile('include/abstracts/class-wc-retailcrm-abstracts-settings.php'));
     }
 
     /**
@@ -46,7 +46,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             parent::__construct();
 
             if (!class_exists( 'WC_Retailcrm_Proxy')) {
-                include_once(__DIR__ . '/api/class-wc-retailcrm-proxy.php');
+                include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-proxy.php'));
             }
 
             if ($retailcrm === false) {

@@ -12,11 +12,11 @@
  */
 
 if ( ! class_exists( 'WC_Retailcrm_Exception_Curl' ) ) {
-    include_once( __DIR__ . '/class-wc-retailcrm-exception-curl.php' );
+    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-exception-curl.php'));
 }
 
 if ( ! class_exists( 'WC_Retailcrm_Response' ) ) {
-    include_once( __DIR__ . '/class-wc-retailcrm-response.php' );
+    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
 }
 
 class WC_Retailcrm_Request

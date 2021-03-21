@@ -271,10 +271,7 @@ class WC_Retailcrm_History_Assembler
     private static function getMappingValues($groupFilter = array())
     {
         $fields = array();
-        $mappingFile = realpath(implode(
-            DIRECTORY_SEPARATOR,
-            array(__DIR__, '..', '..', 'config', 'objects.xml')
-        ));
+        $mappingFile = realpath(WC_Integration_Retailcrm::checkCustomFile('config/objects.xml'));
 
         if (file_exists($mappingFile)) {
             $objects = simplexml_load_file($mappingFile);

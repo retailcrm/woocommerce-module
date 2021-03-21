@@ -12,7 +12,7 @@
  */
 
 if ( ! class_exists( 'WC_Retailcrm_Exception_Json' ) ) {
-    include_once( __DIR__ . '/class-wc-retailcrm-exception-json.php' );
+    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-exception-json.php'));
 }
 
 
