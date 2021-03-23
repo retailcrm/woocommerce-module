@@ -82,6 +82,72 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    public function test_history_order_create_deleted_items()
+    {
+        $product = WC_Helper_Product::create_simple_product();
+        $product_deleted = WC_Helper_Product::create_simple_product();
+
+        $order = $this->get_history_data_new_order_deleted_items($product->get_id(), $product_deleted->get_id());
+
+        $this->mockHistory(
+            true,
+            true,
+            $this->empty_history(),
+            $order
+        );
+
+        $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
+        $retailcrm_history->getHistory();
+
+        $orders = wc_get_orders(array('numberposts' => -1));
+        $order_added = end($orders);
+
+        if (!$order_added) {
+            $this->fail('$order_added is null - no orders were added after receiving history');
+        }
+
+        $order_added_items = $order_added->get_items();
+        $this->assertEquals(1, count($order_added_items));
+
+        $order_added_item = reset($order_added_items);
+        $shipping_address = $order_added->get_address('shipping');
+        $billing_address = $order_added->get_address('billing');
+        $options = get_option(\WC_Retailcrm_Base::$option_key);
+        $this->assertEquals(self::STATUS_1, $options[$order_added->get_status()]);
+
+        if (is_object($order_added_item)) {
+            $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
+        }
+
+        $this->assertNotEmpty($order_added->get_date_created());
+        $this->assertEquals("2018-01-01 00:00:00", $order['history'][0]['createdAt']);
+        $this->assertNotEmpty($shipping_address['first_name']);
+        $this->assertNotEmpty($shipping_address['last_name']);
+        $this->assertNotEmpty($shipping_address['postcode']);
+        $this->assertNotEmpty($shipping_address['city']);
+        $this->assertNotEmpty($shipping_address['country']);
+        $this->assertNotEmpty($shipping_address['state']);
+
+        if (isset($billing_address['phone'])) {
+            $this->assertNotEmpty($billing_address['phone']);
+        }
+
+        if (isset($billing_address['email'])) {
+            $this->assertNotEmpty($billing_address['email']);
+        }
+
+        $this->assertNotEmpty($billing_address['first_name']);
+        $this->assertNotEmpty($billing_address['last_name']);
+        $this->assertNotEmpty($billing_address['postcode']);
+        $this->assertNotEmpty($billing_address['city']);
+        $this->assertNotEmpty($billing_address['country']);
+        $this->assertNotEmpty($billing_address['state']);
+
+        if ($order_added->get_payment_method()) {
+            $this->assertEquals('payment4', $options[$order_added->get_payment_method()]);
+        }
+    }
+
     public function test_history_order_add_product()
     {
         $product = WC_Helper_Product::create_simple_product();
@@ -811,6 +877,216 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                 "totalCount" => 1,
                 "currentPage" => 1,
                 "totalPageCount" => 1
+            )
+        );
+    }
+
+    private function get_history_data_new_order_deleted_items($product_create_id, $product_delete_id)
+    {
+        return array(
+            'success' => true,
+            'history' => array(
+                array(
+                    'id' => 1,
+                    'createdAt' => '2018-01-01 00:00:00',
+                    'created' => true,
+                    'source' => 'user',
+                    'user' => array(
+                        'id' => 1
+                    ),
+                    'field' => 'status',
+                    'oldValue' => null,
+                    'newValue' => array(
+                        'code' => self::STATUS_1
+                    ),
+                    'order' => array(
+                        'slug' => 3,
+                        'id' => 3,
+                        'number' => '3C',
+                        'orderType' => 'eshop-individual',
+                        'orderMethod' => 'phone',
+                        'countryIso' => 'RU',
+                        'createdAt' => '2018-01-01 00:00:00',
+                        'statusUpdatedAt' => '2018-01-01 00:00:00',
+                        'summ' => 100,
+                        'totalSumm' => 100,
+                        'prepaySum' => 0,
+                        'purchaseSumm' => 50,
+                        'markDatetime' => '2018-01-01 00:00:00',
+                        'firstName' => 'Test',
+                        'lastName' => 'Test',
+                        'phone' => '80000000000',
+                        'call' => false,
+                        'expired' => false,
+                        'customer' => array(
+                            'type' => 'customer',
+                            'segments' => array(),
+                            'id' => 1,
+                            'firstName' => 'Test',
+                            'lastName' => 'Test',
+                            'email' => 'email@test.ru',
+                            'phones' => array(
+                                array(
+                                    'number' => '111111111111111'
+                                ),
+                                array(
+                                    'number' => '+7111111111'
+                                )
+                            ),
+                            'address' => array(
+                                'index' => '111111',
+                                'countryIso' => 'RU',
+                                'region' => 'Test region',
+                                'city' => 'Test',
+                                'text' => 'Test text address'
+                            ),
+                            'createdAt' => '2018-01-01 00:00:00',
+                            'managerId' => 1,
+                            'vip' => false,
+                            'bad' => false,
+                            'site' => 'test-com',
+                            'contragent' => array(
+                                'contragentType' => 'individual'
+                            ),
+                            'personalDiscount' => 0,
+                            'cumulativeDiscount' => 0,
+                            'marginSumm' => 58654,
+                            'totalSumm' => 61549,
+                            'averageSumm' => 15387.25,
+                            'ordersCount' => 4,
+                            'costSumm' => 101,
+                            'customFields' => array(
+                                'custom' => 'test'
+                            )
+                        ),
+                        'contragent' => array(),
+                        'delivery' => array(
+                            'cost' => 0,
+                            'netCost' => 0,
+                            'address' => array(
+                                'index' => '111111',
+                                'countryIso' => 'RU',
+                                'region' => 'Test region',
+                                'city' => 'Test',
+                                'text' => 'Test text address'
+                            )
+                        ),
+                        'site' => 'test-com',
+                        'status' => self::STATUS_1,
+                        'items' => array(
+                            array(
+                                'id' => 160,
+                                'initialPrice' => 15,
+                                'discountTotal' => 1,
+                                'createdAt' => '2018-01-01 00:00:00',
+                                'quantity' => 1,
+                                'status' => 'new',
+                                'externalIds' => array(
+                                    array(
+                                        'code' => 'woocomerce',
+                                        'value' => "160_" . $product_create_id
+                                    )
+                                ),
+                                'offer' => array(
+                                    'id' => 1,
+                                    'externalId' => $product_create_id,
+                                    'xmlId' => '1',
+                                    'name' => 'Test name',
+                                    'vatRate' => 'none'
+                                ),
+                                'properties' => array(),
+                                'purchasePrice' => 10
+                            ),
+                            array(
+                                'id' => 161,
+                                'initialPrice' => 100,
+                                'discountTotal' => 5,
+                                'createdAt' => '2018-01-01 00:00:00',
+                                'quantity' => 1,
+                                'status' => 'new',
+                                'externalIds' => array(
+                                    array(
+                                        'code' => 'woocomerce',
+                                        'value' => "161_" . $product_delete_id
+                                    )
+                                ),
+                                'offer' => array(
+                                    'id' => 2,
+                                    'externalId' => $product_delete_id,
+                                    'xmlId' => '2',
+                                    'name' => 'Test name 2',
+                                    'vatRate' => 'none'
+                                ),
+                                'properties' => array(),
+                                'purchasePrice' => 50
+                            )
+                        ),
+                        'paymentType' => 'payment4',
+                        'payments' => array(
+                            array(
+                                'id' => 1,
+                                'type' => 'payment4',
+                                'amount' => 100,
+                            )
+                        ),
+                        'fromApi' => false,
+                        'length' => 0,
+                        'width' => 0,
+                        'height' => 0,
+                        'shipmentStore' => 'main',
+                        'shipped' => false,
+                        'customFields' => array(),
+                        'uploadedToExternalStoreSystem' => false
+                    )
+                ),
+                array(
+                    'id' => 2,
+                    'createdAt' => '2018-01-01 00:01:00',
+                    'source' => 'api',
+                    'field' => 'order_product',
+                    'oldValue' => array(
+                        'id' => 161,
+                        'offer' => array(
+                            'id' => 2,
+                            'externalId' => $product_delete_id
+                        )
+                    ),
+                    'newValue' => null,
+                    'order' => array(
+                        'id' => 3,
+                        'site' => 'test-com',
+                        'status' => self::STATUS_1
+                    ),
+                    'item' => array(
+                        'id' => 161,
+                        'initialPrice' => 100,
+                        'discountTotal' => 5,
+                        'createdAt' => '2018-01-01 00:00:00',
+                        'quantity' => 1,
+                        'status' => 'new',
+                        'externalIds' => array(
+                            array(
+                                'code' => 'woocomerce',
+                                'value' => "161_" . $product_delete_id
+                            )
+                        ),
+                        'offer' => array(
+                            'id' => 2,
+                            'externalId' => $product_delete_id,
+                            'xmlId' => '2',
+                            'name' => 'Test name 2',
+                            'vatRate' => 'none'
+                        ),
+                        'properties' => array(),
+                        'purchasePrice' => 50
+                    )
+                )
+            ),
+            'pagination' => array(
+                'limit' => 100,
+                'totalCount' => 2,
+                'currentPage' => 1,
+                'totalPageCount' => 1
             )
         );
     }
