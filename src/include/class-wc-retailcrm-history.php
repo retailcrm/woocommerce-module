@@ -716,6 +716,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if ($productData) {
                 foreach ($productData as $key => $product) {
+                    if (isset($product['delete']) && $product['delete'] == true) {
+                        continue;
+                    }
+
                     $arItemsNew = array();
                     $arItemsOld = array();
                     $item = retailcrm_get_wc_product($product['offer'][$this->bindField], $this->retailcrmSettings);
@@ -838,6 +842,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $iterableItems = isset($data['items']) ? $data['items'] : array();
 
             foreach ($iterableItems as $id => $item) {
+                if (isset($item['delete']) && $item['delete'] == true) {
+                    continue;
+                }
+
                 $orderItems[$id]['id'] = $item['id'];
                 $orderItems[$id]['offer'] = array('id' => $item['offer']['id']);
 
