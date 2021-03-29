@@ -22,7 +22,7 @@ if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
             $this->corporateEnabled = $corporateEnabled;
 
             if ( ! class_exists( 'WC_Retailcrm_Client_V5' ) ) {
-                include_once( __DIR__ . '/class-wc-retailcrm-client-v5.php' );
+                include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-client-v5.php'));
             }
 
             $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key, 'v5');

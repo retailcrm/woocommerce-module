@@ -195,7 +195,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     }
 
     if (!class_exists('WC_Retailcrm_Plugin')) {
-        require_once (dirname(__FILE__) . '/include/class-wc-retailcrm-plugin.php');
+        require_once(WC_Integration_Retailcrm::checkCustomFile('include/class-wc-retailcrm-plugin.php'));
     }
 
     $plugin = WC_Retailcrm_Plugin::getInstance(__FILE__);
