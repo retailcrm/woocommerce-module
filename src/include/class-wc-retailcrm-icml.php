@@ -250,8 +250,8 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                     array_walk($offer['params'], array($this, 'setOffersParams'), $e);
                 }
 
-                if (array_key_exists('dimension', $offer)) {
-                    $e->addChild('dimension', $offer['dimension']);
+                if (array_key_exists('dimensions', $offer)) {
+                    $e->addChild('dimensions', $offer['dimensions']);
                 }
 
                 if (array_key_exists('weight', $offer)) {
@@ -471,18 +471,18 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 }
             }
 
-            $dimension = '';
+            $dimensions = '';
 
             if ($product->get_length() != '') {
-                $dimension = wc_get_dimension($product->get_length(), 'cm');
+                $dimensions = wc_get_dimension($product->get_length(), 'cm');
             }
 
             if ($product->get_width() != '') {
-                $dimension .= '/' . wc_get_dimension($product->get_width(), 'cm');
+                $dimensions .= '/' . wc_get_dimension($product->get_width(), 'cm');
             }
 
             if ($product->get_height() != '') {
-                $dimension .= '/' . wc_get_dimension($product->get_height(), 'cm');
+                $dimensions .= '/' . wc_get_dimension($product->get_height(), 'cm');
             }
 
             $weight = '';
@@ -506,7 +506,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 'url' => ($product->get_parent_id() > 0) ? $parent->get_permalink() : $product->get_permalink(),
                 'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
                 'categoryId' => $term_list,
-                'dimension' => $dimension,
+                'dimensions' => $dimensions,
                 'weight' => $weight,
                 'tax' => isset($tax) ? $tax['rate'] : 'none'
             );
