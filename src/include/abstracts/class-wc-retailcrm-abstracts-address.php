@@ -82,24 +82,24 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     }
 
     /**
-     * Validate address
+     * Validate order address
      *
      * @param array $address
      *
      * @return bool
      */
-    public function validateAddress($address)
+    private function validateAddress($address)
     {
-        if (empty($address['country']) ||
-            empty($address['state']) ||
-            empty($address['postcode']) ||
-            empty($address['city']) ||
-            empty($address['address_1'])
+        if (
+            !empty($address['country']) &&
+            !empty($address['state']) &&
+            !empty($address['city']) &&
+            !empty($address['address_1'])
         ) {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -111,19 +111,25 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      */
     protected function getOrderAddress($order)
     {
-        $orderAddress = $order->get_address($this->address_type);
-        $checkEmptyArray = $this->validateAddress($orderAddress) ? array_filter($orderAddress) : array();
-        
-        if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_BILLING && $this->fallback_to_shipping) {
-            $orderAddress = $order->get_address(self::ADDRESS_TYPE_SHIPPING);
-        }
+        $shippingAddress = array_filter($order->get_address(self::ADDRESS_TYPE_SHIPPING));
+        $billingAddress = array_filter($order->get_address(self::ADDRESS_TYPE_BILLING));
 
-        if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_SHIPPING && $this->fallback_to_billing) {
-            $orderAddress = $order->get_address(self::ADDRESS_TYPE_BILLING);
+        if ($this->validateAddress($shippingAddress)) {
+            // If shipping address full return his.
+            return $shippingAddress;
+        } elseif ($this->validateAddress($billingAddress)) {
+            // If billing address full return his.
+            return $billingAddress;
+        } else {
+            // If address not full, but somebody fields have data.
+            if (!empty($shippingAddress)) {
+                return $shippingAddress;
+            } elseif (!empty($billingAddress)) {
+                return $billingAddress;
+            }
         }
-
-        return $orderAddress;
     }
+
 
     /**
      * Glue two addresses

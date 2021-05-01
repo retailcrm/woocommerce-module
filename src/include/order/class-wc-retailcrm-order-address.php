@@ -23,24 +23,31 @@ class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
     {
         $address = $this->getOrderAddress($order);
 
+        $postcode = isset($address['postcode']) ? $address['postcode'] : '';
+        $city = isset($address['city']) ? $address['city'] : '';
+        $state = isset($address['state']) ? $address['state'] : '';
+        $country = isset($address['country']) ? $address['country'] : '';
+        $region = $this->get_state_name($country, $state);
+        $address_1 = isset($address['address_1']) ? $address['address_1'] : '';
+        $address_2 = isset($address['address_2']) ? $address['address_2'] : '';
+
         if (!empty($address)) {
             $data = array(
-                'index' => $address['postcode'],
-                'city' => $address['city'],
-                'region' => $this->get_state_name($address['country'], $address['state'])
+                'index' => $postcode,
+                'city' => $city,
+                'region' => $region,
+                'text' => sprintf(
+                    '%s %s %s %s %s',
+                    $postcode,
+                    $state,
+                    $city,
+                    $address_1,
+                    $address_2
+                )
             );
 
             $this->set_data_fields($data);
         }
-
-        $this->set_data_field('text', sprintf(
-            "%s %s %s %s %s",
-            $address['postcode'],
-            $address['state'],
-            $address['city'],
-            $address['address_1'],
-            $address['address_2']
-        ));
 
         return $this;
     }
