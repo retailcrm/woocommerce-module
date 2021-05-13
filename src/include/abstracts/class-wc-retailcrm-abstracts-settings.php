@@ -438,7 +438,40 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     );
                 }
 
-                /*
+                /**
+                 * WhatsApp options
+                 */
+                $this->form_fields[] = array(
+                    'title'       => __('Settings of WhatsApp', 'retailcrm'),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'id'          => 'whatsapp_options'
+                );
+
+                $this->form_fields['whatsapp_active'] = array(
+                    'label'       => __('Activate WhatsApp', 'retailcrm'),
+                    'title'       => __('WhatsApp', 'retailcrm'),
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'description' => __('Activate this setting to activate WhatsApp on the website', 'retailcrm')
+                );
+
+                $this->form_fields['whatsapp_location_icon'] = array(
+                    'label'       => __('Place in the lower right corner of the website', 'retailcrm'),
+                    'title'       => __('WhatsApp icon location', 'retailcrm'),
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'description' => __('By default, WhatsApp icon is located in the lower left corner of the website', 'retailcrm')
+                );
+
+                $this->form_fields['whatsapp_number'] = array(
+                    'title'       => __('Enter your phone number', 'retailcrm'),
+                    'class'       => '',
+                    'type'        => 'text',
+                    'description' => __('WhatsApp chat will be opened with this contact', 'retailcrm')
+                );
+
+                /**
                  * Generate icml file
                  */
                 $this->form_fields[] = array(
@@ -668,6 +701,32 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         return $value;
     }
+
+
+    /**
+     * Validate whatsapp phone number
+     *
+     * @param string $key
+     * @param string $value
+     *
+     * @return string
+     */
+    public function validate_whatsapp_number_field($key, $value)
+    {
+        $post = $this->get_post_data();
+
+        if (!empty($post['woocommerce_integration-retailcrm_whatsapp_active'])) {
+            $phoneNumber = preg_replace('/[^+0-9]/', '', $value);
+
+            if (empty($value) || strlen($value) > 25 || strlen($phoneNumber) !== strlen($value)) {
+                WC_Admin_Settings::add_error(esc_html__('Introduce the correct phone number', 'retailcrm'));
+                $value = '';
+            }
+        }
+
+        return $value;
+    }
+
 
     /**
      * Scritp show|hide block settings
