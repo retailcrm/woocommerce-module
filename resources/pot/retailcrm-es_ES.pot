@@ -243,3 +243,31 @@ msgstr "Soporte a clientes corporativos"
 
 msgid "Enabled"
 msgstr "Habilitado"
+
+msgid "Settings of WhatsApp"
+msgstr "Ajustes de WhatsApp"
+
+msgid "Activar WhatsApp"
+msgstr "Активировать WhatsApp"
+
+msgid "Activate this setting to activate WhatsApp on the website"
+msgstr "Activa esta configuración para activar WhatsApp en la página web"
+
+msgid "WhatsApp icon location"
+msgstr "Ubicación del ícono de WhatsApp"
+
+msgid "Place in the lower right corner of the website"
+msgstr "Colocar en la esquina inferior derecha de la pagina web"
+
+msgid "By default, WhatsApp icon is located in the lower left corner of the website"
+msgstr "Por defecto, el ícono de WhatsApp se encuentra en la esquina inferior izquierda de la página web"
+
+msgid "Enter your phone number"
+msgstr "Introduce tu número de teléfono"
+
+msgid "WhatsApp chat will be opened with this contact"
+msgstr "Se abrirá una ventana de chat con este contacto en WhatsApp"
+
+msgid "Introduce the correct phone number"
+msgstr "Introduce el número de teléfono correcto"
+
