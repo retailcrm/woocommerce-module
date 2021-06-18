@@ -187,6 +187,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected function ordersHistory($date, $sinceId)
         {
             $filter = array('startDate' => $date);
+
+            unset($this->retailcrmSettings['client_roles']);
+
             $options = array_flip(array_filter($this->retailcrmSettings));
 
             if ($sinceId) {
