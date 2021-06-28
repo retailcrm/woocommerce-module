@@ -412,7 +412,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                                 isset($this->retailcrmSettings['bind_by_sku'])
                                 && $this->retailcrmSettings['bind_by_sku'] == WC_Retailcrm_Base::YES
                             ) {
-                                $offerId = $item['offer']['article'];
+                                $offerId = $item['offer']['xmlId'];
                             } elseif ($orderItem['variation_id'] != 0 ) {
                                 $offerId = $orderItem['variation_id'];
                             } else {
