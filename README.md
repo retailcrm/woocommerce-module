@@ -6,7 +6,7 @@
 Woocommerce-module
 ==================
 
-Integration plugin for WooCommerce and [RetailCRM](http://retailcrm.ru)
+Integration plugin for WooCommerce and [Simla.com](https://www.simla.com)
 
 [Documentation](https://docs.retailcrm.ru/Users/Integration/SiteModules/WooCommerce) page
 

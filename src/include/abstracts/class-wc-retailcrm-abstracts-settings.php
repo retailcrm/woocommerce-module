@@ -25,8 +25,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function __construct() {
         $this->id                 = 'integration-retailcrm';
-        $this->method_title       = __('RetailCRM', 'retailcrm');
-        $this->method_description = __('Integration with RetailCRM management system.', 'retailcrm');
+        $this->method_title       = __('Simla.com', 'retailcrm');
+        $this->method_description = __('Integration with Simla.com management system.', 'retailcrm');
 
         static::$option_key = $this->get_option_key();
 
@@ -116,7 +116,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'api_key' => array(
                 'title'             => __( 'API key', 'retailcrm' ),
                 'type'              => 'text',
-                'description'       => __( 'Enter your API key. You can find it in the administration section of RetailCRM', 'retailcrm' ),
+                'description'       => __( 'Enter your API key. You can find it in the administration section of Simla.com', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             )
@@ -198,10 +198,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $this->form_fields['client_roles'] = array(
                         'label'       =>  ' ',
-                        'title'       => __('Client roles available for uploading to RetailCRM', 'retailcrm'),
+                        'title'       => __('Client roles available for uploading to Simla.com', 'retailcrm'),
                         'class'       => '',
                         'type'        => 'multiselect',
-                        'description' => __('Select client roles which will be uploaded from website to RetailCRM', 'retailcrm'),
+                        'description' => __('Select client roles which will be uploaded from website to Simla.com', 'retailcrm'),
                         'options'     => $client_roles_option,
                         'css'         => 'min-height:100px;',
                         'select_buttons' => true
@@ -232,10 +232,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $this->form_fields['order_methods'] = array(
                         'label'       =>  ' ',
-                        'title'       => __('Order methods available for uploading from RetailCRM', 'retailcrm'),
+                        'title'       => __('Order methods available for uploading from Simla.com', 'retailcrm'),
                         'class'       => '',
                         'type'        => 'multiselect',
-                        'description' => __('Select order methods which will be uploaded from RetailCRM to the website', 'retailcrm'),
+                        'description' => __('Select order methods which will be uploaded from Simla.com to the website', 'retailcrm'),
                         'options'     => $order_methods_option,
                         'css'         => 'min-height:100px;',
                         'select_buttons' => true
@@ -358,7 +358,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'title'       => __('Stock balance', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting if you would like to get information on leftover stocks from RetailCRM to the website.', 'retailcrm')
+                    'description' => __('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website.', 'retailcrm')
                 );
 
                 /**
@@ -432,7 +432,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'label'             => __('Upload', 'retailcrm'),
                         'title'             => __('Uploading all customers and orders', 'retailcrm' ),
                         'type'              => 'button',
-                        'description'       => __('Uploading the existing customers and orders to RetailCRM', 'retailcrm' ),
+                        'description'       => __('Uploading the existing customers and orders to Simla.com', 'retailcrm' ),
                         'desc_tip'          => true,
                         'id'                => 'uploads-retailcrm'
                     );
@@ -485,7 +485,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'label'             => __('Generate now', 'retailcrm'),
                     'title'             => __('Generating ICML', 'retailcrm'),
                     'type'              => 'button',
-                    'description'       => __('This functionality allows to generate ICML products catalog for uploading to RetailCRM.', 'retailcrm'),
+                    'description'       => __('This functionality allows to generate ICML products catalog for uploading to Simla.com.', 'retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'icml-retailcrm'
                 );
@@ -526,14 +526,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 $this->form_fields['history'] = array(
                     'label'       => __('Activate history uploads', 'retailcrm'),
-                    'title'       => __('Upload data from RetailCRM', 'retailcrm'),
+                    'title'       => __('Upload data from Simla.com', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox'
                 );
 
                 $this->form_fields['deactivate_update_order'] = array(
-                     'label'       => __('Disable data editing in RetailCRM', 'retailcrm'),
-                     'title'       => __('Data updating in RetailCRM', 'retailcrm'),
+                     'label'       => __('Disable data editing in Simla.com', 'retailcrm'),
+                     'title'       => __('Data updating in Simla.com', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'
                 );
@@ -546,7 +546,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 );
 
                 $this->form_fields['update_number'] = array(
-                     'label'       => __('Enable transferring the number to RetailCRM', 'retailcrm'),
+                     'label'       => __('Enable transferring the number to Simla.com', 'retailcrm'),
                      'title'       => __('Transferring the order number', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'
@@ -766,7 +766,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $wp_admin_bar->add_menu(
             array(
                 'id' => 'retailcrm_top_menu',
-                'title' => __('RetailCRM', 'retailcrm')
+                'title' => __('Simla.com', 'retailcrm')
             )
         );
         $wp_admin_bar->add_menu(
