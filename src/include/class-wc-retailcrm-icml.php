@@ -52,7 +52,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
         {
             $this->settings = get_option(WC_Retailcrm_Base::$option_key);
             $this->shop = get_bloginfo( 'name' );
-            $this->file = ABSPATH . 'retailcrm.xml';
+            $this->file = ABSPATH . 'simla.xml';
             $this->tmpFile = sprintf('%s.tmp', $this->file);
         }
 

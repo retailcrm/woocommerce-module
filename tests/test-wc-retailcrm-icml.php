@@ -23,8 +23,8 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
         $icml = new WC_Retailcrm_Icml();
         $icml->generate();
 
-        $this->assertFileExists(ABSPATH . 'retailcrm.xml');
-        $xml = simplexml_load_file(ABSPATH . 'retailcrm.xml');
+        $this->assertFileExists(ABSPATH . 'simla.xml');
+        $xml = simplexml_load_file(ABSPATH . 'simla.xml');
         $res = $xml->xpath('/yml_catalog/shop/categories/category[@id]');
 
         $this->assertNotEmpty($res);

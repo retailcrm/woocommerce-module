@@ -1,5 +1,5 @@
-# Translation of Plugins - Woocommerce RetailCRM - Development (trunk) in Russian
-# This file is distributed under the same license as the Plugins - Woocommerce RetailCRM - Development (trunk) package.
+# Translation of Plugins - Woocommerce Simla.com - Development (trunk) in Russian
+# This file is distributed under the same license as the Plugins - Woocommerce Simla.com - Development (trunk) package.
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2018-06-06 08:53:26+0000\n"
@@ -9,39 +9,39 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: ru\n"
-"Project-Id-Version: Plugins - Woocommerce RetailCRM - Development (trunk)\n"
+"Project-Id-Version: Plugins - Woocommerce Simla.com - Development (trunk)\n"
 
 #. Author URI of the plugin/theme
-msgid "https://retailcrm.pro/"
-msgstr "https://retailcrm.ru/"
+msgid "https://simla.com/"
+msgstr "https://simla.com/"
 
 #. Author of the plugin/theme
 msgid "RetailDriver LLC"
 msgstr "RetailDriver LLC"
 
 #. Description of the plugin/theme
-msgid "Integration plugin for WooCommerce & RetailCRM"
-msgstr "Интеграционный плагин для WooCommerce & RetailCRM"
+msgid "Integration plugin for WooCommerce & Simla.com"
+msgstr "Интеграционный плагин для WooCommerce & Simla.com"
 
 #. Plugin URI of the plugin/theme
 msgid "https://wordpress.org/plugins/woo-retailcrm/"
 msgstr "https://wordpress.org/plugins/woo-retailcrm/"
 
 #. Plugin Name of the plugin/theme
-msgid "WooCommerce RetailCRM"
-msgstr "WooCommerce RetailCRM"
+msgid "WooCommerce Simla.com"
+msgstr "WooCommerce Simla.com"
 
 msgid "Activate history uploads"
 msgstr "Активировать загрузку истории изменений"
 
-msgid "Upload data from RetailCRM"
-msgstr "Загрузка данных из RetailCRM"
+msgid "Upload data from Simla.com"
+msgstr "Загрузка данных из Simla.com"
 
 msgid "Generating ICML catalog by wp-cron"
 msgstr "Генерация ICML каталога товаров с помощью wp-cron"
 
-msgid "This functionality allows to upload orders to RetailCRM differentially."
-msgstr "Эта функция позволяет производить выборочную выгрузку заказов в RetailCRM"
+msgid "This functionality allows to upload orders to Simla.com differentially."
+msgstr "Эта функция позволяет производить выборочную выгрузку заказов в Simla.com"
 
 msgid "Uploading orders by identifiers."
 msgstr "Выгрузка заказов по идентификаторам"
@@ -73,14 +73,14 @@ msgstr "Клиенты и заказы были выгружены"
 msgid "Enter the correct API key"
 msgstr "Введите корректный API ключ"
 
-msgid "Enter the correct URL of RetailCRM"
-msgstr "Введите корректный адрес RetailCRM"
+msgid "Enter the correct URL of Simla.com"
+msgstr "Введите корректный адрес Simla.com"
 
 msgid "The selected API version is unavailable"
 msgstr "Выбранная версия API недоступна"
 
-msgid "This functionality allows to generate ICML products catalog for uploading to RetailCRM."
-msgstr "Эта функция позволяет сгенерировать ICML каталог товаров для выгрузки в RetailCRM"
+msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com."
+msgstr "Эта функция позволяет сгенерировать ICML каталог товаров для выгрузки в Simla.com"
 
 msgid "Generating ICML"
 msgstr "Генерация ICML"
@@ -94,8 +94,8 @@ msgstr "Генерация ICML каталога"
 msgid "Settings"
 msgstr "Настройки"
 
-msgid "Uploading the existing customers and orders to RetailCRM"
-msgstr "Выгрузка существующих клиентов и заказов в RetailCRM"
+msgid "Uploading the existing customers and orders to Simla.com"
+msgstr "Выгрузка существующих клиентов и заказов в Simla.com"
 
 msgid "Uploading all customers and orders"
 msgstr "Выгрузка всех клиентов и заказов"
@@ -124,8 +124,8 @@ msgstr "Активировать UA"
 msgid "UA settings"
 msgstr "Настройки UA"
 
-msgid "Enable this setting if you would like to get information on leftover stocks from RetailCRM to the website."
-msgstr "Активируйте данную настройку, если хотите получать остатки по товарам из RetailCRM на сайт."
+msgid "Enable this setting if you would like to get information on leftover stocks from Simla.com to the website."
+msgstr "Активируйте данную настройку, если хотите получать остатки по товарам из Simla.com на сайт."
 
 msgid "Stock balance"
 msgstr "Остатки"
@@ -145,20 +145,20 @@ msgstr "Способы оплаты"
 msgid "Delivery types"
 msgstr "Способы доставки"
 
-msgid "Select client roles which will be uploaded from website to RetailCRM"
-msgstr "Выберите роли клиентов, которые будут выгружаться в RetailCRM"
+msgid "Select client roles which will be uploaded from website to Simla.com"
+msgstr "Выберите роли клиентов, которые будут выгружаться в Simla.com"
 
-msgid "Client roles available for uploading to RetailCRM"
-msgstr "Роли клиентов, доступные для выгрузки в RetailCRM"
+msgid "Client roles available for uploading to Simla.com"
+msgstr "Роли клиентов, доступные для выгрузки в Simla.com"
 
 msgid "Client roles"
 msgstr "Роли клиентов"
 
-msgid "Select order methods which will be uploaded from RetailCRM to the website"
-msgstr "Выберите способы оформления заказов, которые будут выгружаться из RetailCRM на сайт"
+msgid "Select order methods which will be uploaded from Simla.com to the website"
+msgstr "Выберите способы оформления заказов, которые будут выгружаться из Simla.com на сайт"
 
-msgid "Order methods available for uploading from RetailCRM"
-msgstr "Способы оформления заказа, доступные для выгрузки из RetailCRM"
+msgid "Order methods available for uploading from Simla.com"
+msgstr "Способы оформления заказа, доступные для выгрузки из Simla.com"
 
 msgid "Order methods"
 msgstr "Способы оформления заказа"
@@ -181,14 +181,14 @@ msgstr "Версия API"
 msgid "API settings"
 msgstr "Настройки API"
 
-msgid "Enter your API key. You can find it in the administration section of RetailCRM"
-msgstr "Введите API ключ. Вы можете найти его в административном разделе RetailCRM."
+msgid "Enter your API key. You can find it in the administration section of Simla.com"
+msgstr "Введите API ключ. Вы можете найти его в административном разделе Simla.com."
 
-msgid "Enter API of URL (https://yourdomain.retailcrm.pro)."
-msgstr "Введите API URL (https://yourdomain.retailcrm.ru)."
+msgid "Enter API of URL (https://yourdomain.simla.com)."
+msgstr "Введите API URL (https://yourdomain.simla.com)."
 
-msgid "Integration with RetailCRM management system."
-msgstr "Интеграция с системой управления RetailCRM"
+msgid "Integration with Simla.com management system."
+msgstr "Интеграция с системой управления Simla.com"
 
 msgid "Every 15 minutes"
 msgstr "Каждые 15 минут"
@@ -208,8 +208,8 @@ msgstr "API URL"
 msgid "Main settings"
 msgstr "Главные настройки"
 
-msgid "RetailCRM"
-msgstr "RetailCRM"
+msgid "Simla.com"
+msgstr "Simla.com"
 
 msgid "Daemon Collector settings"
 msgstr "Настройка Daemon Collector"
@@ -226,11 +226,11 @@ msgstr "Активируйте эту настройку для активаци
 msgid "Site key"
 msgstr "Ключ сайта"
 
-msgid "Disable data editing in RetailCRM"
-msgstr "Деактивировать редактирование данных в RetailCRM"
+msgid "Disable data editing in Simla.com"
+msgstr "Деактивировать редактирование данных в Simla.com"
 
-msgid "Data updating in RetailCRM"
-msgstr "Обновление данных в RetailCRM"
+msgid "Data updating in Simla.com"
+msgstr "Обновление данных в Simla.com"
 
 msgid "Activate the binding via sku (xml)"
 msgstr "Активировать связь по sku(xmlId)"
@@ -238,8 +238,8 @@ msgstr "Активировать связь по sku(xmlId)"
 msgid "Stock synchronization and link between products"
 msgstr "Синхронизация остатков и связь товаров"
 
-msgid "Enable transferring the number to RetailCRM"
-msgstr "Активировать передачу номера в RetailCRM"
+msgid "Enable transferring the number to Simla.com"
+msgstr "Активировать передачу номера в Simla.com"
 
 msgid "Transferring the order number"
 msgstr "Передача номера заказа"

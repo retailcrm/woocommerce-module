@@ -156,9 +156,49 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
 
         public function generate_icml() {
-            $retailcrm_icml = new WC_Retailcrm_Icml();
-            $retailcrm_icml->generate();
+            /*
+             * A temporary solution.
+             * We have rebranded the module and changed the name of the ICML file.
+             * This solution checks the url specified to the ICML file and updates it if necessary.
+             */
+
+            $codeSite   = '';
+            $infoApiKey = $this->apiClient->credentials();
+
+            if (empty($infoApiKey) === false && $infoApiKey->isSuccessful() === true) {
+                if (empty($infoApiKey['siteAccess']) === false && $infoApiKey['siteAccess'] === 'access_selective') {
+                    if (empty($infoApiKey['sitesAvailable']) === false && count($infoApiKey['sitesAvailable']) === 1) {
+                        $codeSite = $infoApiKey['sitesAvailable'][0];
+                    }
+                }
+            }
+
+            if (empty($codeSite) === false) {
+                $getSites = $this->apiClient->sitesList();
+
+                if (empty($getSites['sites']) === false && $getSites->isSuccessful() === true) {
+                    if(empty($getSites['sites'][$codeSite]) === false) {
+                        $dataSite = $getSites['sites'][$codeSite];
+
+                        if (empty($dataSite['ymlUrl']) === false) {
+                            $ymlUrl = $dataSite['ymlUrl'];
+
+                            if (strpos($ymlUrl, 'simla') === false) {
+                                $ymlUrl = str_replace('retailcrm', 'simla', $ymlUrl);
+                                $dataSite['ymlUrl'] = $ymlUrl;
+
+                                $this->apiClient->sitesEdit($dataSite);
+                            }
+                        }
+                    }
+                }
+            }
+
+            $retailCrmIcml = new WC_Retailcrm_Icml();
+            $retailCrmIcml->generate();
+
         }
+
 
         /**
          * Get history
