@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 
+= 4.3.1 =
+* Ребрендинг модуля RetailCRM --> Simla.com
+
 = 4.3.0 =
 * Ребрендинг модуля RetailCRM --> Simla.com
 * Исправили баг в работе опции "Активировать связь по sku(xmlId)"
