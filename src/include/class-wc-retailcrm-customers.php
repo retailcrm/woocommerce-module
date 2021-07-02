@@ -91,42 +91,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Upload customers to CRM
-         *
-         * @param array $ids
-         *
-         * @return array mixed
-         */
-        public function customersUpload($ids = array())
-        {
-            if (!$this->retailcrm) {
-                return null;
-            }
-
-            $users = get_users(array('include' => $ids));
-            $data_customers = array();
-
-            foreach ($users as $user) {
-                if (!$this->isCustomer($user)) {
-                    continue;
-                }
-
-                $customer = $this->wcCustomerGet($user->ID);
-                $this->processCustomer($customer);
-                $data_customers[] = $this->customer;
-            }
-
-            $data = \array_chunk($data_customers, 50);
-
-            foreach ($data as $array_customers) {
-                $this->retailcrm->customersUpload($array_customers);
-                time_nanosleep(0, 250000000);
-            }
-
-            return $data;
-        }
-
-        /**
          * Create customer in CRM
          *
          * @param int | WC_Customer $customer
@@ -334,6 +298,19 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             return $customerId;
         }
+
+        /**
+         * Process customer for upload
+         *
+         * @param WC_Customer $customer
+         *
+         * @return void
+         */
+        public function processCustomerForUpload($customer)
+        {
+            $this->processCustomer($customer);
+        }//end processCustomerForUpload()
+
 
         /**
          * Process customer

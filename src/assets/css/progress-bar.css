@@ -1,0 +1,27 @@
+.retail-progress {
+    border-radius: 18px;
+    border: 1px solid rgba(122, 122, 122, 0.15);
+    width: 400px;
+    height: 18px;
+    overflow: hidden;
+    transition: height 0.25s ease;
+}
+
+.retail-progress__loader {
+    width: 0;
+    border-radius: 18px;
+    background: #6427D6;
+    color: white;
+    text-align: center;
+    padding: 0 30px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: width 0.4s ease-in;
+    line-height: 18px;
+}
+
+.retail-hidden {
+    display: none !important;
+}
+
+

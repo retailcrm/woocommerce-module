@@ -38,6 +38,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var \WC_Retailcrm_Orders */
         protected $orders;
 
+        /** @var WC_Retailcrm_Uploader */
+        protected $uploader;
+
         /**
          * Init and hook in the integration.
          * @param \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
@@ -72,10 +75,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 new WC_Retailcrm_Order_Payment($this->settings)
             );
 
+            $this->uploader = new WC_Retailcrm_Uploader($this->apiClient, $this->orders, $this->customers);
+
             // Actions.
             add_action('woocommerce_update_options_integration_' .  $this->id, array($this, 'process_admin_options'));
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'api_sanitized'));
-            add_action('admin_bar_menu', array($this, 'add_retailcrm_button'), 100 );
+            add_action('admin_bar_menu', array($this, 'add_retailcrm_button'), 100);
             add_action('woocommerce_checkout_order_processed', array($this, 'retailcrm_process_order'), 10, 1);
             add_action('retailcrm_history', array($this, 'retailcrm_history_get'));
             add_action('retailcrm_icml', array($this, 'generate_icml'));
@@ -83,7 +88,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_do_upload', array($this, 'upload_to_crm'));
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
             add_action('wp_ajax_order_upload', array($this, 'order_upload'));
-            add_action('admin_print_footer_scripts', array($this, 'ajax_upload'), 99);
             add_action('admin_print_footer_scripts', array($this, 'ajax_generate_icml'), 99);
             add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
@@ -225,53 +229,24 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
          * Upload selected orders
+         *
+         * @return void
          */
-        public function order_upload() {
-            $ids = false;
+        public function order_upload()
+        {
+            $this->uploader->uploadSelectedOrders();
 
-            if (isset($_GET['order_ids_retailcrm'])) {
-                $appendix = array();
-                $ids = explode(',', $_GET['order_ids_retailcrm']);
-
-                foreach ($ids as $key => $id) {
-                    if (stripos($id, '-') !== false) {
-                        $idSplit = explode('-', $id);
-
-                        if (count($idSplit) == 2) {
-                            $expanded = array();
-                            $first = (int) $idSplit[0];
-                            $last = (int) $idSplit[1];
-
-                            for ($i = $first; $i <= $last; $i++) {
-                                $expanded[] = $i;
-                            }
-
-                            $appendix = array_merge($appendix, $expanded);
-                            unset($ids[$key]);
-                        }
-                    }
-                }
-
-                $ids = array_unique(array_merge($ids, $appendix));
-            }
-
-            if ($ids) {
-                $this->orders->ordersUpload($ids);
-            }
-        }
+        }//end order_upload()
 
         /**
          * Upload archive customers and order to retailCRM
          */
         public function upload_to_crm()
         {
-            $options = array_filter(get_option(static::$option_key));
+            $page = filter_input(INPUT_POST, 'RETAILCRM_EXPORT_ORDERS_STEP');
 
-            $this->customers->customersUpload();
-            $this->orders->ordersUpload();
-
-            $options['uploads'] = static::YES;
-            update_option(static::$option_key, $options);
+            $this->uploader->uploadArchiveCustomers($page);
+            $this->uploader->uploadArchiveOrders($page);
         }
 
         /**
@@ -434,7 +409,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function include_whatsapp_icon_style()
         {
-            wp_register_style('whatsapp_icon_style', plugins_url() . '/woo-retailcrm/assets/css/whatsapp_icon.min.css', false, '0.1');
+            wp_register_style('whatsapp_icon_style', plugins_url() . '/woo-retailcrm/assets/css/whatsapp-icon.min.css', false, '0.1');
             wp_enqueue_style('whatsapp_icon_style');
         }
 

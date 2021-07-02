@@ -23,7 +23,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     /**
      * WC_Retailcrm_Abstracts_Settings constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->id                 = 'integration-retailcrm';
         $this->method_title       = __('Simla.com', 'retailcrm');
         $this->method_description = __('Integration with Simla.com management system.', 'retailcrm');
@@ -35,26 +36,29 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         ) {
             add_action('init', array($this, 'init_settings_fields'), 99);
         }
-    }
 
-    public function ajax_upload()
+        // Include js scripts
+        $this->includeJsScripts();
+
+    }//end __construct()
+
+
+    /**
+     * In this function we include JS scripts.
+     *
+     * @return void
+     */
+    private function includeJsScripts()
     {
-        $ajax_url = admin_url('admin-ajax.php');
-        ?>
-        <script type="text/javascript">
-        jQuery('#uploads-retailcrm').bind('click', function() {
-            jQuery.ajax({
-                type: "POST",
-                url: '<?php echo $ajax_url; ?>?action=do_upload',
-                success: function (response) {
-                    alert('<?php echo __('Customers and orders were uploaded', 'retailcrm'); ?>');
-                    console.log('AJAX response : ',response);
-                }
-            });
-        });
-        </script>
-        <?php
-    }
+        wp_register_script('retailcrm-export', plugins_url() . '/woo-retailcrm/assets/js/retailcrm-export.js');
+        wp_enqueue_script('retailcrm-export');
+
+        // перенести в отдельный метод
+        wp_register_style('retailcrm-orders-export', plugins_url() . '/woo-retailcrm/assets/css/progress-bar.css', false, '0.1');
+        wp_enqueue_style('retailcrm-orders-export');
+
+    }//end includeJsScripts()
+
 
     public function ajax_generate_icml()
     {
@@ -109,7 +113,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'api_url' => array(
                 'title'             => __( 'API of URL', 'retailcrm' ),
                 'type'              => 'text',
-                'description'       => __( 'Enter API of URL (https://yourdomain.retailcrm.pro).', 'retailcrm' ),
+                'description'       => __( 'Enter API of URL (https://yourdomain.simla.com).', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             ),
@@ -418,25 +422,23 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Uploads options
                  */
-                $options = array_filter(get_option(static::$option_key));
+                $this->form_fields[] = array(
+                    'title'       => __('Settings of uploading', 'retailcrm'),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'id'          => 'upload_options'
+                );
 
-                if (!isset($options['uploads'])) {
-                    $this->form_fields[] = array(
-                        'title'       => __('Settings of uploading', 'retailcrm'),
-                        'type'        => 'heading',
-                        'description' => '',
-                        'id'          => 'upload_options'
-                    );
+                $this->form_fields['upload-button'] = array(
+                    'label'       => __('Upload', 'retailcrm'),
+                    'title'       => __('Uploading all customers and orders', 'retailcrm'),
+                    'type'        => 'button',
+                    'description' => __('Uploading the existing customers and orders to Simla.com', 'retailcrm'),
+                    'desc_tip'    => true,
+                    'id'         => 'export-orders-submit'
+                );
 
-                    $this->form_fields['upload-button'] = array(
-                        'label'             => __('Upload', 'retailcrm'),
-                        'title'             => __('Uploading all customers and orders', 'retailcrm' ),
-                        'type'              => 'button',
-                        'description'       => __('Uploading the existing customers and orders to Simla.com', 'retailcrm' ),
-                        'desc_tip'          => true,
-                        'id'                => 'uploads-retailcrm'
-                    );
-                }
+                    //echo '<div id="export-orders-progress" class="retail-progress retail-hidden"></div>';
 
                 /**
                  * WhatsApp options
@@ -636,11 +638,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function validate_online_assistant_field($key, $value)
     {
     	$onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
-    	
+
     	if (!empty($onlineAssistant) && is_string($onlineAssistant)) {
     	    return wp_unslash($onlineAssistant);
     	}
-    	
+
     	return '';
     }
 
