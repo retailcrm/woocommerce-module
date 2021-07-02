@@ -271,3 +271,6 @@ msgstr "Se abrirá una ventana de chat con este contacto en WhatsApp"
 msgid "Introduce the correct phone number"
 msgstr "Introduce el número de teléfono correcto"
 
+msgid "You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open."
+msgstr "Presionando el botón «Exportar» puedes descargar a todos los pedidos y clientes de CMS a Simla.com. Este proceso puede llevar mucho tiempo y es necesario mantener abierta la pestaña hasta que termine el proceso."
+
