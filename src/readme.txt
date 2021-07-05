@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 
+= 4.3.2 =
+* Исправление мелких ошибок
+
 = 4.3.1 =
 * Ребрендинг модуля RetailCRM --> Simla.com
 
