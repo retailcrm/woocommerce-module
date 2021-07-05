@@ -184,7 +184,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             $ymlUrl = $dataSite['ymlUrl'];
 
                             if (strpos($ymlUrl, 'simla') === false) {
-                                $ymlUrl = str_replace('retailcrm', 'simla', $ymlUrl);
+	                            $ymlUrl = str_replace('/retailcrm.xml', '/simla.xml', $ymlUrl);
                                 $dataSite['ymlUrl'] = $ymlUrl;
 
                                 $this->apiClient->sitesEdit($dataSite);

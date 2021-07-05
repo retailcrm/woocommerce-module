@@ -1,6 +1,6 @@
 <?php
 /**
- * Version: 4.3.1
+ * Version: 4.3.2
  * WC requires at least: 3.0
  * WC tested up to: 4.7.1
  * Plugin Name: WooCommerce Simla.com
