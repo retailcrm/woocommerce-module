@@ -1,11 +1,11 @@
 === Woocommerce Simla.com ===
 Contributors: Simla.com
 Donate link: https://www.simla.com
-Tags: Интеграция, Simla.com
+Tags: Интеграция, Simla.com, simla
 Requires PHP: 5.3
-Requires at least: 5.7
-Tested up to: 5.3.2
-Stable tag: 3.5
+Requires at least: 5.3
+Tested up to: 5.7.2
+Stable tag: 4.3.1
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
