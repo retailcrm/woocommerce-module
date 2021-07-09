@@ -496,6 +496,13 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 $tax = reset($tax_rates);
             }
 
+            if ($product->get_manage_stock() == true) {
+                $stockQuantity = $product->get_stock_quantity();
+                $quantity = empty($stockQuantity) === false ? $stockQuantity : 0;
+            } else {
+                $quantity = $product->get_stock_status() === 'instock' ? 1 : 0;
+            }
+
             $product_data = array(
                 'id' => $product->get_id(),
                 'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
@@ -504,7 +511,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
                 'price' => wc_get_price_including_tax($product),
                 'picture' => $image[0],
                 'url' => ($product->get_parent_id() > 0) ? $parent->get_permalink() : $product->get_permalink(),
-                'quantity' => is_null($product->get_stock_quantity()) ? 0 : $product->get_stock_quantity(),
+                'quantity' => $quantity,
                 'categoryId' => $term_list,
                 'dimensions' => $dimensions,
                 'weight' => $weight,
