@@ -19,11 +19,9 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             ->disableOriginalConstructor()
             ->setMethods(array(
                 'ordersGet',
-                'ordersUpload',
                 'ordersCreate',
                 'ordersEdit',
                 'customersGet',
-                'customersUpload',
                 'customersCreate',
                 'customersEdit'
             ))
@@ -59,23 +57,6 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals($wc_customer, $retailcrm_customer->wcCustomerGet($this->customer->get_id()));
     }
 
-    /**
-     * @param retailcrm
-     * @dataProvider dataProviderApiClient
-     */
-    public function test_customers_upload($retailcrm)
-    {
-        $retailcrm_customer = $this->getRetailcrmCustomer($retailcrm);
-        $data = $retailcrm_customer->customersUpload();
-
-        if ($retailcrm) {
-            $this->assertInternalType('array', $data);
-            $this->assertInternalType('array', $data[0]);
-            $this->assertArrayHasKey('externalId', $data[0][0]);
-        } else {
-            $this->assertEquals(null, $data);
-        }
-    }
 
     /**
      * @param $retailcrm

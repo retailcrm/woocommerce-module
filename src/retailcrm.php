@@ -122,7 +122,9 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/class-wc-retailcrm-ga.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-daemon-collector.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-base.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-uploader.php'));
             require_once(self::checkCustomFile('include/functions.php'));
+
         }
 
         /**

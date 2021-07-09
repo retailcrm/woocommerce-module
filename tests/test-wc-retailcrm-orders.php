@@ -12,7 +12,6 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
             ->disableOriginalConstructor()
             ->setMethods(array(
                 'ordersGet',
-                'ordersUpload',
                 'ordersCreate',
                 'ordersEdit',
                 'customersGet',
@@ -26,22 +25,6 @@ class WC_Retailcrm_Orders_Test extends  WC_Retailcrm_Test_Case_Helper
         parent::setUp();
     }
 
-    /**
-     * @param $retailcrm
-     * @dataProvider dataProviderRetailcrm
-     */
-    public function test_order_upload($retailcrm)
-    {
-        $this->options = $this->setOptions();
-        $retailcrm_orders = $this->getRetailcrmOrders($retailcrm);
-        $upload_orders = $retailcrm_orders->ordersUpload();
-
-        if ($retailcrm) {
-            $this->assertInternalType('array', $upload_orders);
-        } else {
-            $this->assertEquals(null, $upload_orders);
-        }
-    }
 
     /**
      * @param $retailcrm
