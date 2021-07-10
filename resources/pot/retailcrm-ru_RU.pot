@@ -283,4 +283,8 @@ msgstr "Введите корректный номер телефона"
 msgid "You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open."
 msgstr "Вы можете экспортировать все заказы и клиентов из CMS в Simla.com, нажав кнопку «Выгрузить». Этот процесс может занять много времени, и до его завершения необходимо держать вкладку открытой."
 
+msgid "Debug information"
+msgstr "Отладочная информация"
+
+
 

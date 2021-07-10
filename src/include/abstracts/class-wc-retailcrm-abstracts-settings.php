@@ -36,37 +36,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         ) {
             add_action('init', array($this, 'init_settings_fields'), 99);
         }
-
-        // Include js scripts
-        $this->includeJsScripts();
-
-        // Include css file
-        $this->includeCssFile();
-
-    }//end __construct()
-
-
-    /**
-     * In this method we include JS scripts.
-     *
-     * @return void
-     */
-    private function includeJsScripts()
-    {
-        wp_register_script('retailcrm-export', plugins_url() . '/woo-retailcrm/assets/js/retailcrm-export.js');
-        wp_enqueue_script('retailcrm-export');
-    }
-
-
-    /**
-     * In this method we include CSS file
-     *
-     * @return void
-     */
-    private function includeCssFile()
-    {
-        wp_register_style('retailcrm-orders-export', plugins_url() . '/woo-retailcrm/assets/css/progress-bar.min.css', false, '0.1');
-        wp_enqueue_style('retailcrm-orders-export');
     }
 
 
@@ -88,6 +57,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         </script>
         <?php
     }
+
 
     public function ajax_selected_order()
     {
@@ -111,6 +81,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         </script>
         <?php
     }
+
 
     /**
      * Initialize integration settings form fields.
@@ -507,7 +478,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'type'        => 'checkbox'
                 );
 
-                /*
+                /**
                  * Upload single order
                  */
                 $this->form_field[] = array(
@@ -560,6 +531,16 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                      'title'       => __('Transferring the order number', 'retailcrm'),
                      'class'       => 'checkbox',
                      'type'        => 'checkbox'
+                );
+
+                /**
+                 * Debug information
+                 */
+                $this->form_fields[] = array(
+                    'title'       => __('Debug information', 'retailcrm'),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'id'          => 'cron_info_options'
                 );
             }
         }
