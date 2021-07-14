@@ -88,6 +88,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_icml', array($this, 'generate_icml'));
             add_action('retailcrm_inventories', array($this, 'load_stocks'));
             add_action('wp_ajax_do_upload', array($this, 'upload_to_crm'));
+            add_action('wp_ajax_cron_info', array($this, 'get_cron_info'), 99);
             add_action('wp_ajax_content_upload', array($this, 'count_upload_data'), 99);
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
             add_action('wp_ajax_order_upload', array($this, 'order_upload'));
@@ -103,6 +104,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_enqueue_scripts', array($this, 'include_whatsapp_icon_style'), 101);
             add_action('wp_print_footer_scripts', array($this, 'initialize_whatsapp'), 101);
             add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
+            add_action('admin_enqueue_scripts', array($this, 'include_files_for_admin'), 101);
             add_action('woocommerce_new_order', array($this, 'create_order'), 11, 1);
 
             if (
@@ -416,6 +418,54 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
 
         /**
+         * In this method we include files in admin WP
+         *
+         * @return void
+         */
+        public function include_files_for_admin()
+        {
+            $this->include_css_files_for_admin();
+            $this->include_js_scripts_for_admin();
+        }
+
+
+        /**
+         * In this method we include CSS file
+         *
+         * @return void
+         */
+        private function include_css_files_for_admin()
+        {
+            $path =  plugins_url() . '/woo-retailcrm/assets/css/';
+
+            // Include style for export
+            wp_register_style('retailcrm-export-style', $path . 'progress-bar.min.css', false, '0.1');
+            wp_enqueue_style('retailcrm-export-style');
+
+            // Include style for debug info
+            wp_register_style('retailcrm-debug-info-style', $path . 'debug-info.min.css', false, '0.1');
+            wp_enqueue_style('retailcrm-debug-info-style');
+        }
+
+
+        /**
+         * In this method we include JS scripts.
+         *
+         * @return void
+         */
+        private function include_js_scripts_for_admin()
+        {
+            $path =  plugins_url() . '/woo-retailcrm/assets/js/';
+
+            wp_register_script('retailcrm-export', $path . 'retailcrm-export.js');
+            wp_enqueue_script('retailcrm-export', $path . 'retailcrm-export.js', '', '', true);
+
+            wp_register_script('retailcrm-cron-info', $path . 'retailcrm-cron-info.js');
+            wp_enqueue_script('retailcrm-cron-info', $path . 'retailcrm-export.js', '', '', true);
+        }
+
+
+        /**
          * Include style for WhatsApp icon
          */
         public function include_whatsapp_icon_style()
@@ -445,7 +495,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
 
         /**
-         * Rerurn count upload data
+         * Return count upload data
          */
         public function count_upload_data()
         {
@@ -453,6 +503,38 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 array(
                     'count_orders' => $this->uploader->getCountOrders(),
                     'count_users'  => $this->uploader->getCountUsers()
+                )
+            );
+
+            wp_die();
+        }
+
+
+        /**
+         * Return time work next cron
+         */
+        public function get_cron_info() {
+            $icml        = 'This option is disabled';
+            $history     = 'This option is disabled';
+            $inventories = 'This option is disabled';
+
+            if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
+                $history = date("H:i:s d-m-Y", wp_next_scheduled('retailcrm_history'));
+            }
+
+            if (isset($this->settings['icml']) && $this->settings['icml'] == static::YES) {
+                $icml = date("H:i:s d-m-Y", wp_next_scheduled('retailcrm_icml'));
+            }
+
+            if (isset($this->settings['sync']) && $this->settings['sync'] == static::YES) {
+                $inventories = date("H:i:s d-m-Y ", wp_next_scheduled('retailcrm_inventories'));
+            }
+
+            echo json_encode(
+                array(
+                    'history'     => $history,
+                    'icml'        => $icml,
+                    'inventories' => $inventories
                 )
             );
 
@@ -522,3 +604,4 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
     }
 }
+
