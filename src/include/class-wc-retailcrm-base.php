@@ -118,6 +118,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_deactivate', array($this, 'deactivate'));
         }
 
+
         /**
          * Init settings fields
          */
@@ -126,6 +127,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->init_form_fields();
             $this->init_settings();
         }
+
 
          /**
          * @param $settings
@@ -164,6 +166,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             return $settings;
         }
+
 
         public function generate_icml()
         {
@@ -219,6 +222,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $retailcrm_history->getHistory();
         }
 
+
         /**
          * @param int $order_id
          */
@@ -226,6 +230,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $this->orders->orderCreate($order_id);
         }
+
 
         /**
          * Load stock from retailCRM
@@ -236,6 +241,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $inventories->updateQuantity();
         }
 
+
         /**
          * Upload selected orders
          *
@@ -245,6 +251,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $this->uploader->uploadSelectedOrders();
         }
+
 
         /**
          * Upload archive customers and order to retailCRM
@@ -260,6 +267,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $this->uploader->uploadArchiveOrders($page);
             }
         }
+
 
         /**
          * Create customer in retailCRM
@@ -322,6 +330,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
+
         /**
          * Edit customer in retailCRM
          * @param int $customer_id
@@ -339,6 +348,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->customers->updateCustomer($customer_id);
         }
 
+
         /**
          * Create order in retailCRM from admin panel
          *
@@ -350,6 +360,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $this->retailcrm_process_order($order_id);
             }
         }
+
 
         /**
          * Edit order in retailCRM
@@ -367,6 +378,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->orders->updateOrder($order_id);
         }
 
+
         /**
          * Init google analytics code
          */
@@ -379,6 +391,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 echo '';
             }
         }
+
 
         /**
          * Google analytics send code
@@ -393,6 +406,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
+
         /**
          * Daemon collector
          */
@@ -405,6 +419,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 echo '';
             }
         }
+
 
         /**
          * Initialize online consultant
@@ -560,6 +575,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             return false;
         }
 
+
         /**
          * Deactivate module in marketplace retailCRM
          *
@@ -573,6 +589,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
             delete_option('retailcrm_active_in_crm');
         }
+
 
         /**
          * @param $settings

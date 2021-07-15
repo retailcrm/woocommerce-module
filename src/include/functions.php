@@ -105,8 +105,12 @@ function retailcrm_get_wc_product($id, $settings) {
  * @return bool
  */
 function retailcrm_is_debug() {
-    return (defined('WP_DEBUG') && WP_DEBUG == true)
-        || (defined('RCRM_DEBUG') && RCRM_DEBUG == true);
+
+    $options =  get_option(WC_Retailcrm_Base::$option_key);
+
+    if (isset($options['debug_mode']) === true && $options['debug_mode'] === WC_Retailcrm_Base::YES) {
+        return true;
+    }
 }
 
 /**
