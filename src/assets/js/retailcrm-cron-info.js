@@ -1,7 +1,7 @@
 jQuery(function () {
     function RetailcrmCronInfo()
     {
-        this.title = jQuery('h2[id="woocommerce_integration-retailcrm_16"]').get(0);
+        this.title = jQuery('.debug_info_options').get(0)
 
         if (typeof this.title  === 'undefined') {
             return false;

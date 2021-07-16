@@ -286,5 +286,14 @@ msgstr "Вы можете экспортировать все заказы и к
 msgid "Debug information"
 msgstr "Отладочная информация"
 
+msgid "Debug mode"
+msgstr "Режим отладки"
+
+msgid "Enable debug mode in module"
+msgstr "Активировать режим отладки в модуле"
+
+msgid "Is required to enable debug mode for advanced logs"
+msgstr "Требуется включить режим отладки для расширенного логирования"
+
 
 

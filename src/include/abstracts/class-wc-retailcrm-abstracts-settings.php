@@ -533,14 +533,21 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                      'type'        => 'checkbox'
                 );
 
+                $this->form_fields['debug_mode'] = array(
+                     'label'       => __('Enable debug mode in module', 'retailcrm'),
+                     'title'       => __('Debug mode', 'retailcrm'),
+                     'description' => __('Is required to enable debug mode for advanced logs', 'retailcrm'),
+                     'class'       => 'checkbox',
+                     'type'        => 'checkbox'
+                );
+
                 /**
                  * Debug information
                  */
                 $this->form_fields[] = array(
                     'title'       => __('Debug information', 'retailcrm'),
                     'type'        => 'heading',
-                    'description' => '',
-                    'id'          => 'cron_info_options'
+                    'class'       => 'debug_info_options'
                 );
             }
         }
@@ -760,6 +767,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 'title' => __('Simla.com', 'retailcrm')
             )
         );
+
         $wp_admin_bar->add_menu(
             array(
                 'id' => 'retailcrm_ajax_generate_icml',
@@ -769,6 +777,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 'class' => 'retailcrm_ajax_generate_icml'
             )
         );
+
         $wp_admin_bar->add_menu(
             array(
                 'id' => 'retailcrm_ajax_generate_setings',
