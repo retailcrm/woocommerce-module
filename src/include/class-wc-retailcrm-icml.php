@@ -359,9 +359,9 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             );
 
             foreach ($products as $offer) {
-                if ($offer->get_type() == 'simple') {
-                    $this->setOffer($full_product_list, $product_attributes, $offer);
-                } elseif ($offer->get_type() == 'variable') {
+                $type = $offer->get_type();
+
+                if (strpos($type, 'variable') || strpos($type, 'variation')) {
                     foreach ($offer->get_children() as $child_id) {
                         $child_product = wc_get_product($child_id);
                         if (!$child_product) {
@@ -370,6 +370,8 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
 
                         $this->setOffer($full_product_list, $product_attributes, $child_product, $offer);
                     }
+                } else {
+                    $this->setOffer($full_product_list, $product_attributes, $offer);
                 }
             }
 
