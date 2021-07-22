@@ -1,13 +1,14 @@
 <?php
 /**
- * Version: 4.3.4
- * WC requires at least: 3.0
- * WC tested up to: 4.7.1
  * Plugin Name: WooCommerce Simla.com
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
+ * Version: 4.3.5
+ * Tested up to: 5.8
+ * WC requires at least: 3.0
+ * WC tested up to: 5.4
  * Text Domain: retailcrm
  */
 
