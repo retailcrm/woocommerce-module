@@ -1,7 +1,7 @@
 <?php
 /**
- * Version: 4.3.3
- * WC requires at least: 4.0
+ * Version: 4.3.4
+ * WC requires at least: 3.0
  * WC tested up to: 4.7.1
  * Plugin Name: WooCommerce Simla.com
  * Plugin URI: https://wordpress.org/plugins/woo-retailcrm/

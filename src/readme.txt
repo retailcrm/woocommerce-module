@@ -3,7 +3,7 @@ Contributors: Simla.com
 Donate link: https://www.simla.com
 Tags: Интеграция, Simla.com, simla
 Requires PHP: 5.3
-Requires at least: 5.5
+Requires at least: 5.3
 Tested up to: 5.8
 Stable tag: 4.3.2
 License: GPLv1 or later
@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+
+= 4.3.4 =
+* Исправление мелких ошибок
 
 = 4.3.3 =
 * Изменен дизайн иконки WhatsApp.
