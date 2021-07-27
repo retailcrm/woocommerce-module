@@ -107,61 +107,65 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             )
         );
 
-        $this->form_fields[] = array(
-            'title'       => __( 'API settings', 'retailcrm' ),
-            'type'        => 'title',
-            'description' => '',
-            'id'          => 'api_options'
-        );
-
-        $this->form_fields['send_delivery_net_cost'] = array(
-            'title'       => __( 'Do not transmit the cost of delivery', 'retailcrm' ),
-            'label'       => ' ',
-            'description' => '',
-            'class'       => 'checkbox',
-            'type'        => 'checkbox',
-            'desc_tip'    =>  true
-        );
-
-        $this->form_fields['corporate_enabled'] = array(
-            'title'       => __('Corporate customers support', 'retailcrm'),
-            'label'       => __('Enabled'),
-            'description' => '',
-            'class'       => 'checkbox',
-            'type'        => 'checkbox',
-            'desc_tip'    =>  true
-        );
-
-        $this->form_fields['online_assistant'] = array(
-            'title'       => __( 'Online assistant', 'retailcrm' ),
-            'type'        => 'textarea',
-            'id'          => 'online_assistant',
-            'placeholder' => __( 'Insert the Online consultant code here', 'retailcrm' )
-        );
-
-        $this->form_fields[] = array(
-            'title'       => __( 'Catalog settings', 'retailcrm' ),
-            'type'        => 'title',
-            'description' => '',
-            'id'          => 'catalog_options'
-        );
-
-        foreach (get_post_statuses() as $status_key => $status_value) {
-            $this->form_fields['p_' . $status_key] = array(
-                'title'       => $status_value,
-                'label'       => ' ',
-                'description' => '',
-                'class'       => 'checkbox',
-                'type'        => 'checkbox',
-                'desc_tip'    =>  true,
-            );
-        }
+        $post = $this->get_post_data();
+        $apiUrl = !empty($post[$this->plugin_id . $this->id . '_api_url']) ? $post[$this->plugin_id . $this->id . '_api_url'] : null;
+        $apiKey = !empty($post[$this->plugin_id . $this->id . '_api_key']) ? $post[$this->plugin_id . $this->id . '_api_key'] : null;
 
         if ($this->apiClient) {
             if (isset($_GET['page']) && $_GET['page'] == 'wc-settings'
                 && isset($_GET['tab']) && $_GET['tab'] == 'integration'
             ) {
                 add_action('admin_print_footer_scripts', array($this, 'show_blocks'), 99);
+
+                $this->form_fields[] = array(
+                    'title'       => __( 'API settings', 'retailcrm' ),
+                    'type'        => 'title',
+                    'description' => '',
+                    'id'          => 'api_options'
+                );
+
+                $this->form_fields['send_delivery_net_cost'] = array(
+                    'title'       => __( 'Do not transmit the cost of delivery', 'retailcrm' ),
+                    'label'       => ' ',
+                    'description' => '',
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'desc_tip'    =>  true
+                );
+
+                $this->form_fields['corporate_enabled'] = array(
+                    'title'       => __('Corporate customers support', 'retailcrm'),
+                    'label'       => __('Enabled'),
+                    'description' => '',
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'desc_tip'    =>  true
+                );
+
+                $this->form_fields['online_assistant'] = array(
+                    'title'       => __( 'Online assistant', 'retailcrm' ),
+                    'type'        => 'textarea',
+                    'id'          => 'online_assistant',
+                    'placeholder' => __( 'Insert the Online consultant code here', 'retailcrm' )
+                );
+
+                $this->form_fields[] = array(
+                    'title'       => __( 'Catalog settings', 'retailcrm' ),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'id'          => 'catalog_options'
+                );
+
+                foreach (get_post_statuses() as $status_key => $status_value) {
+                    $this->form_fields['p_' . $status_key] = array(
+                        'title'       => $status_value,
+                        'label'       => ' ',
+                        'description' => '',
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox',
+                        'desc_tip'    =>  true,
+                    );
+                }
 
                 /**
                  * Client roles options
@@ -549,6 +553,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'type'        => 'heading',
                     'class'       => 'debug_info_options'
                 );
+            }
+        } elseif (empty($apiUrl) === false && empty($apiKey) === false) {
+            $api = new WC_Retailcrm_Proxy(
+                $apiUrl,
+                $apiKey,
+                $this->get_option('corporate_enabled', 'no') === 'yes'
+            );
+
+            $response = $api->apiVersions();
+
+            if ($response->isSuccessful()) {
+               header("Refresh:0");
             }
         }
     }
