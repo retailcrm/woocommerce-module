@@ -361,7 +361,7 @@ if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
             foreach ($products as $offer) {
                 $type = $offer->get_type();
 
-                if (strpos($type, 'variable') || strpos($type, 'variation')) {
+                if (strpos($type, 'variable') !== false || strpos($type, 'variation') !== false) {
                     foreach ($offer->get_children() as $child_id) {
                         $child_product = wc_get_product($child_id);
                         if (!$child_product) {
