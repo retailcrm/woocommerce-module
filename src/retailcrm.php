@@ -5,10 +5,10 @@
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.3.8
+ * Version: 4.4.0
  * Tested up to: 5.8
- * WC requires at least: 3.0
- * WC tested up to: 5.4
+ * WC requires at least: 5.4
+ * WC tested up to: 5.8
  * Text Domain: retailcrm
  */
 
@@ -20,6 +20,8 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
 
     /**
      * Class WC_Integration_Retailcrm
+     *
+     * @codeCoverageIgnore
      */
     class WC_Integration_Retailcrm {
         const WOOCOMMERCE_SLUG = 'woocommerce';
@@ -125,7 +127,6 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/class-wc-retailcrm-base.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-uploader.php'));
             require_once(self::checkCustomFile('include/functions.php'));
-
         }
 
         /**

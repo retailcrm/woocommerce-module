@@ -35,9 +35,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         /** @var string */
         protected $bindField = 'externalId';
 
-        /** @var WC_Retailcrm_Order_Item */
-        protected $orderItem;
-
         /**
          * WC_Retailcrm_History constructor.
          *
@@ -49,7 +46,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         {
             $this->retailcrmSettings = get_option(WC_Retailcrm_Base::$option_key);
 
-            if (isset($this->retailcrmSettings['bind_by_sku'])
+            if (
+                isset($this->retailcrmSettings['bind_by_sku'])
                 && $this->retailcrmSettings['bind_by_sku'] == WC_Retailcrm_Base::YES
             ) {
                 $this->bindField = 'xmlId';
@@ -78,23 +76,29 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $ordersSinceId = get_option('retailcrm_orders_history_since_id');
             $customersSinceId = get_option('retailcrm_customers_history_since_id');
 
+            // @codeCoverageIgnoreStart
+            // TODO: There is a task to analyze the work of getting history by date
             if (!$ordersSinceId && isset($this->retailcrmSettings['history_orders'])) {
                 $this->startDateOrders = new DateTime($this->retailcrmSettings['history_orders']);
             }
 
+
             if (!$customersSinceId && isset($this->retailcrmSettings['history_customers'])) {
                 $this->startDateCustomers = new DateTime($this->retailcrmSettings['history_customers']);
             }
+            // @codeCoverageIgnoreEnd
 
             try {
                 $this->customersHistory($this->startDateCustomers->format('Y-m-d H:i:s'), $customersSinceId);
                 $this->ordersHistory($this->startDateOrders->format('Y-m-d H:i:s'), $ordersSinceId);
+            // @codeCoverageIgnoreStart
             } catch (\Exception $exception) {
                 WC_Retailcrm_Logger::add(
                     sprintf("[%s] - %s", $exception->getMessage(),
                         'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine())
                 );
             }
+            // @codeCoverageIgnoreEnd
         }
 
         /**
@@ -132,6 +136,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
 
                 foreach ($customers as $crmCustomer) {
+                    // Only update customers, if customer not exist in WP - skip this customer !
                     if (!isset($crmCustomer['externalId'])) {
                         continue;
                     }
@@ -139,6 +144,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     try {
                         $builder->reset();
 
+                        // @codeCoverageIgnoreStart
                         if (!$builder->loadExternalId($crmCustomer['externalId'])) {
                             WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
                                 'Customer with id=%s is not found in the DB, skipping...',
@@ -146,6 +152,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             ));
                             continue;
                         }
+                        // @codeCoverageIgnoreEnd
 
                         $wcCustomer = $builder
                             ->setData($crmCustomer)
@@ -157,6 +164,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         }
 
                         WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
+
+                    // @codeCoverageIgnoreStart
                     } catch (\Exception $exception) {
                         WC_Retailcrm_Logger::error(sprintf(
                             'Error while trying to process history: %s',
@@ -169,6 +178,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         ));
                         WC_Retailcrm_Logger::error($exception->getTraceAsString());
                     }
+                    // @codeCoverageIgnoreEnd
                 }
 
                 update_option('retailcrm_customers_history_since_id', $lastChange['id']);
@@ -206,6 +216,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             if (!empty($history)) {
                 $lastChange = end($history);
                 $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
+
                 WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled orders history:', $historyAssembly));
                 WC_Retailcrm_Plugin::$history_run = true;
 
@@ -226,8 +237,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         $wcOrder = wc_get_order($wcOrderId);
 
                         if ($wcOrder instanceof WC_Order) {
-                            $this->update_total($wcOrder);
+                            $wcOrder->calculate_totals();
                         }
+
+                    // @codeCoverageIgnoreStart
                     } catch (Exception $exception) {
                         WC_Retailcrm_Logger::add(
                             sprintf("[%s] - %s", $exception->getMessage(),
@@ -236,6 +249,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                         continue;
                     }
+                    // @codeCoverageIgnoreEnd
                 }
 
                 update_option('retailcrm_orders_history_since_id', $lastChange['id']);
@@ -307,18 +321,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         }
 
         /**
-         * Calculate totals in order
-         *
-         * @param WC_Order $order
-         *
-         * @return void
-         */
-        protected function update_total($order)
-        {
-            $order->calculate_totals();
-        }
-
-        /**
          * Update order in WC
          *
          * @param array $order
@@ -366,13 +368,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 }
 
                 if (isset($order['contact']['address'])) {
+                    var_dump('test');
                     $billingAddress = $order['contact']['address'];
 
-                    $wcOrder->set_billing_state(self::arrayValue($billingAddress, 'region', ''));
-                    $wcOrder->set_billing_postcode(self::arrayValue($billingAddress, 'index', ''));
-                    $wcOrder->set_billing_country(self::arrayValue($billingAddress, 'country', ''));
-                    $wcOrder->set_billing_city(self::arrayValue($billingAddress, 'city', ''));
-                    $wcOrder->set_billing_address_1(self::arrayValue($billingAddress, 'text', ''));
+                    // @codeCoverageIgnoreStart
+                    // TODO: There is a task to analyze the work set billing address in WC order
+                    $wcOrder->set_billing_state(self::arrayValue($billingAddress, 'region'));
+                    $wcOrder->set_billing_postcode(self::arrayValue($billingAddress, 'index'));
+                    $wcOrder->set_billing_country(self::arrayValue($billingAddress, 'country'));
+                    $wcOrder->set_billing_city(self::arrayValue($billingAddress, 'city'));
+                    $wcOrder->set_billing_address_1(self::arrayValue($billingAddress, 'text'));
+                    // @codeCoverageIgnoreEnd
                 }
             }
 
@@ -885,6 +891,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     if (!empty($crmOrder) && isset($crmOrder['items'][$item['id']])) {
                         $woocommerceId = self::getItemWoocommerceId($crmOrder['items'][$item['id']]);
                     } else {
+                        // @codeCoverageIgnoreStart
                         WC_Retailcrm_Logger::add(
                             sprintf(
                                 "Order externalId=`%s`: item doesn't have woocomerceId, skipping... (item id=`%s`)",
@@ -893,6 +900,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             )
                         );
                         continue;
+                        // @codeCoverageIgnoreEnd
                     }
                 } else {
                     $woocommerceId = self::getItemWoocommerceId($order['items'][$item['id']]);

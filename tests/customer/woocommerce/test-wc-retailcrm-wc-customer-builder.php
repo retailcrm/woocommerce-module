@@ -11,13 +11,29 @@
 
 class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helper
 {
+    protected $customer;
+
+    public function setUp()
+    {
+        $this->customer = new WC_Customer();
+
+        $this->customer->set_first_name('Tester First Name');
+        $this->customer->set_last_name('Tester Last Name');
+        $this->customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
+        $this->customer->set_password('password');
+        $this->customer->set_billing_phone('89000000000');
+        $this->customer->set_date_created(date('Y-m-d H:i:s'));
+        $this->customer->save();
+    }
+
     /**
      * @expectedException \RuntimeException
      */
     public function test_empty()
     {
         $builder = new WC_Retailcrm_WC_Customer_Builder();
-        $builder->build();
+
+        $this->assertEmpty($builder->build()->getResult());
     }
 
     /**
@@ -26,7 +42,8 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
     public function test_empty_array()
     {
         $builder = new WC_Retailcrm_WC_Customer_Builder();
-        $builder->setData(array())->build();
+
+        $this->assertEmpty($builder->setData(array())->build()->getResult());
     }
 
     /**
@@ -35,13 +52,14 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
     public function test_not_array()
     {
         $builder = new WC_Retailcrm_WC_Customer_Builder();
-        $builder->setData(new stdClass())->build();
+
+        $this->assertEquals('test', $builder->setData('test')->build()->getResult());
     }
 
     /**
      * @dataProvider customerData
      *
-     * @param array $customerData
+     * @param $customerData
      */
     public function test_build($customerData)
     {
@@ -87,6 +105,133 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
         }
     }
 
+    public function test_set_field()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+        $customerData = $this->customerData()[1]['customer'];
+        $wcCustomer = $builder
+            ->setFirstName($customerData['firstName'])
+            ->setLastName($customerData['lastName'])
+            ->setEmail($customerData['email'])
+            ->setExternalId($customerData['externalId'])
+            ->setPhones($customerData['phones'])
+            ->setAddress($customerData['address'])
+            ->build()
+            ->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+        $this->assertEquals($customerData['firstName'], $wcCustomer->get_first_name());
+        $this->assertEquals($customerData['lastName'], $wcCustomer->get_last_name());
+        $this->assertEquals($customerData['email'], $wcCustomer->get_billing_email());
+        $this->assertEquals($customerData['phones'][0]['number'], $wcCustomer->get_billing_phone());
+
+        $address = $customerData['address'];
+
+        $this->assertEquals($address['region'], $wcCustomer->get_billing_state());
+        $this->assertEquals($address['index'], $wcCustomer->get_billing_postcode());
+        $this->assertEquals($address['country'], $wcCustomer->get_billing_country());
+        $this->assertEquals($address['city'], $wcCustomer->get_billing_city());
+    }
+
+    public function test_phone_string()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+
+        $customerData = $this->customerData()[1]['customer'];
+        $customerData['phones'] = '123454567';
+
+        $wcCustomer = $builder->setData($customerData)->build()->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+        $this->assertEquals('123454567', $wcCustomer->get_billing_phone());
+    }
+
+    public function test_set_phone_string()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+        $customerData = $this->customerData()[1]['customer'];
+        $wcCustomer = $builder->setData($customerData)->setPhones('123456789')->build()->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+        $this->assertEquals($customerData['phones'][0]['number'], $wcCustomer->get_billing_phone());
+    }
+
+    public function test_set_address_empty()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+        $customerData = $this->customerData()[1]['customer'];
+
+        $wcCustomer = $builder->setData($customerData)->setAddress(array())->build()->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+
+        $this->assertEmpty($wcCustomer->get_billing_state());
+        $this->assertEmpty($wcCustomer->get_billing_postcode());
+        $this->assertEmpty($wcCustomer->get_billing_country());
+        $this->assertEmpty($wcCustomer->get_billing_city());
+    }
+
+    public function test_set_wc_customer()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+        $wcCustomer = $builder->setWcCustomer($this->customer)->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+        $this->assertEquals($this->customer->get_id(), $wcCustomer->get_id());
+        $this->assertEquals($this->customer->get_first_name(), $wcCustomer->get_first_name());
+        $this->assertEquals($this->customer->get_last_name(), $wcCustomer->get_last_name());
+        $this->assertEquals($this->customer->get_billing_phone(), $wcCustomer->get_billing_phone());
+        $this->assertEquals($this->customer->get_email(), $wcCustomer->get_email());
+    }
+
+    public function test_set_not_wc_customer()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+        $wcCustomer = $builder->setWcCustomer(null)->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+        $this->assertEquals(null, $wcCustomer->get_id());
+        $this->assertEquals(null, $wcCustomer->get_first_name());
+        $this->assertEquals(null, $wcCustomer->get_last_name());
+        $this->assertEquals(null, $wcCustomer->get_billing_phone());
+        $this->assertEquals(null, $wcCustomer->get_email());
+    }
+
+    public function test_load_wc_customer_by_id()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+        $isValidExternalId = $builder->loadExternalId($this->customer->get_id());
+        $wcCustomer = $builder->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+        $this->assertEquals(true, $isValidExternalId);
+        $this->assertEquals($this->customer->get_id(), $wcCustomer->get_id());
+        $this->assertEquals($this->customer->get_first_name(), $wcCustomer->get_first_name());
+        $this->assertEquals($this->customer->get_last_name(), $wcCustomer->get_last_name());
+        $this->assertEquals($this->customer->get_billing_phone(), $wcCustomer->get_billing_phone());
+        $this->assertEquals($this->customer->get_email(), $wcCustomer->get_email());
+    }
+
+    public function test_load_wc_customer_by_not_valid_id()
+    {
+        $builder = new WC_Retailcrm_WC_Customer_Builder();
+
+        $builder->loadExternalId(null);
+
+        $wcCustomer = $builder->getResult();
+
+        $this->assertInstanceOf('\WC_Customer', $wcCustomer);
+
+        $this->assertEquals(null, $wcCustomer->get_id());
+        $this->assertEquals(null, $wcCustomer->get_first_name());
+        $this->assertEquals(null, $wcCustomer->get_last_name());
+        $this->assertEquals(null, $wcCustomer->get_billing_phone());
+        $this->assertEquals(null, $wcCustomer->get_email());
+    }
+
+    /**
+     * @return array
+     */
     public function customerData()
     {
         return array(
@@ -121,8 +266,12 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
                     'personalDiscount' => 0,
                     'cumulativeDiscount' => 0,
                     'address' => array(
-                        'id' => 3132,
-                        'text' => 'ул. Пушкина дом Колотушкина',
+                        'id'      => 3132,
+                        'text'    => 'street_test',
+                        'region'  => 'region_test',
+                        'index'   => '112233',
+                        'country' => 'country_test',
+                        'city'    => 'city_test'
                     ),
                     'segments' => array(),
                     'firstName' => 'tester001',
@@ -135,3 +284,4 @@ class WC_Retailcrm_WC_Customer_Builder_Test extends WC_Retailcrm_Test_Case_Helpe
         );
     }
 }
+

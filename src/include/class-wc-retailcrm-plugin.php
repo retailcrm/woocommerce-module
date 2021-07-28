@@ -1,16 +1,17 @@
 <?php
 
-class WC_Retailcrm_Plugin {
+class WC_Retailcrm_Plugin
+{
 
     public $file;
-
     public static $history_run = false;
     private static $instance = null;
 
     const MARKETPLACE_LOGO = 'https://s3.eu-central-1.amazonaws.com/retailcrm-billing/images/5b69ce4bda663-woocommercesvg2.svg';
     const INTEGRATION_CODE = 'woocommerce';
 
-    public static function getInstance($file) {
+    public static function getInstance($file)
+    {
         if (self::$instance === null) {
             self::$instance = new self($file);
         }
@@ -18,13 +19,20 @@ class WC_Retailcrm_Plugin {
         return self::$instance;
     }
 
-    private function __construct($file) {
+    /**
+     * @param $file
+     *
+     * @codeCoverageIgnore
+     */
+    private function __construct($file)
+    {
         $this->file = $file;
 
         add_filter('cron_schedules', array($this, 'filter_cron_schedules'), 10, 1);
     }
 
-    public function filter_cron_schedules($schedules) {
+    public function filter_cron_schedules($schedules)
+    {
         return array_merge(
             $schedules,
             array(
@@ -44,16 +52,22 @@ class WC_Retailcrm_Plugin {
         );
     }
 
-    public function register_activation_hook() {
+    public function register_activation_hook()
+    {
         register_activation_hook($this->file, array($this, 'activate'));
     }
 
-    public function register_deactivation_hook() {
+    public function register_deactivation_hook()
+    {
         register_deactivation_hook($this->file, array($this, 'deactivate'));
     }
 
-    public function activate() {
-        if (!class_exists( 'WC_Integration' ) ) {
+    /**
+     * @codeCoverageIgnore
+     */
+    public function activate()
+    {
+        if (!class_exists('WC_Integration')) {
             add_action('admin_notices', array(new WC_Integration_Retailcrm(), 'woocommerce_missing_notice'));
 
             return;
@@ -71,7 +85,8 @@ class WC_Retailcrm_Plugin {
         $retailcrm_icml->generate();
     }
 
-    public function deactivate() {
+    public function deactivate()
+    {
         do_action('retailcrm_deactivate');
 
         if (wp_next_scheduled('retailcrm_icml')) {
@@ -96,9 +111,10 @@ class WC_Retailcrm_Plugin {
      *
      * @return boolean
      */
-    public static function integration_module($api_client, $client_id, $active = true) {
+    public static function integration_module($api_client, $client_id, $active = true)
+    {
 
-        if (!$api_client) {
+        if (!$api_client instanceof WC_Retailcrm_Proxy) {
             return false;
         }
 
@@ -116,15 +132,7 @@ class WC_Retailcrm_Plugin {
 
         $response = $api_client->integrationModulesEdit($configuration);
 
-        if (!$response) {
-            return false;
-        }
-
-        if (!empty($response) && $response->isSuccessful()) {
-            return true;
-        }
-
-        return false;
+        return !empty($response) && $response->isSuccessful();
     }
 
     /**
@@ -147,7 +155,8 @@ class WC_Retailcrm_Plugin {
                 ? self::clearArray($node)
                 : $node;
 
-            if ($result[$index] === ''
+            if (
+                $result[$index] === ''
                 || $result[$index] === null
                 || (is_array($result[$index]) && count($result[$index]) < 1)
             ) {
@@ -156,22 +165,6 @@ class WC_Retailcrm_Plugin {
         }
 
         return $result;
-    }
-
-    /**
-     * Returns WC_Customer by id. Returns null if there's no such customer.
-     *
-     * @param int $id
-     *
-     * @return \WC_Customer|null
-     */
-    public static function getWcCustomerById($id)
-    {
-        try {
-            return new WC_Customer($id);
-        } catch (\Exception $exception) {
-            return null;
-        }
     }
 
     /**

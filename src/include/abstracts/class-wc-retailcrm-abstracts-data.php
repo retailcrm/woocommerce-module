@@ -29,6 +29,9 @@ abstract class WC_Retailcrm_Abstracts_Data
      */
     abstract public function build($data);
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function set_data_field($field, $value)
     {
         if (isset($this->data[$field]) && \gettype($value) !== \gettype($this->data[$field])) {
@@ -45,8 +48,10 @@ abstract class WC_Retailcrm_Abstracts_Data
      */
     protected function set_data_fields($fields)
     {
-        foreach ($fields as $field => $value) {
-            $this->set_data_field($field, $value);
+        if (!empty($fields)) {
+            foreach ($fields as $field => $value) {
+                $this->set_data_field($field, $value);
+            }
         }
     }
 

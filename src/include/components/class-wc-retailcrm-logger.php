@@ -10,6 +10,8 @@
 if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
     /**
      * Class WC_Retailcrm_Logger
+     *
+     * @codeCoverageIgnore
      */
     class WC_Retailcrm_Logger
     {

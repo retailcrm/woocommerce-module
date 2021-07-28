@@ -1,10 +1,13 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-function get_wc_shipping_methods_by_zones($enhanced = false) {
+// @codeCoverageIgnoreStart
+// TODO: There is a task to analyze the work
+function get_wc_shipping_methods_by_zones($enhanced = false)
+{
     $result = array();
 
     $shippingZones = WC_Shipping_Zones::get_zones();
@@ -51,8 +54,10 @@ function get_wc_shipping_methods_by_zones($enhanced = false) {
 
     return $result;
 }
+// @codeCoverageIgnoreEnd
 
-function get_wc_shipping_methods() {
+function get_wc_shipping_methods()
+{
     $wc_shipping = WC_Shipping::instance();
     $shipping_methods = $wc_shipping->get_shipping_methods();
 
@@ -70,7 +75,8 @@ function get_wc_shipping_methods() {
     return apply_filters('retailcrm_shipping_list', WC_Retailcrm_Plugin::clearArray($result));
 }
 
-function retailcrm_get_delivery_service($method_id, $instance_id) {
+function retailcrm_get_delivery_service($method_id, $instance_id)
+{
     $shippings_by_zone = get_wc_shipping_methods_by_zones(true);
     $method = explode(':', $method_id);
     $method_id = $method[0];
@@ -89,8 +95,10 @@ function retailcrm_get_delivery_service($method_id, $instance_id) {
  *
  * @return false|WC_Product|null
  */
-function retailcrm_get_wc_product($id, $settings) {
-    if (isset($settings['bind_by_sku'])
+function retailcrm_get_wc_product($id, $settings)
+{
+    if (
+        isset($settings['bind_by_sku'])
         && $settings['bind_by_sku'] == WC_Retailcrm_Base::YES
     ) {
         $id = wc_get_product_id_by_sku($id);
@@ -104,8 +112,8 @@ function retailcrm_get_wc_product($id, $settings) {
  *
  * @return bool
  */
-function retailcrm_is_debug() {
-
+function retailcrm_is_debug()
+{
     $options =  get_option(WC_Retailcrm_Base::$option_key);
 
     if (isset($options['debug_mode']) === true && $options['debug_mode'] === WC_Retailcrm_Base::YES) {
@@ -122,10 +130,10 @@ function is_wplogin()
 {
     $ABSPATH_MY = str_replace(array('\\','/'), DIRECTORY_SEPARATOR, ABSPATH);
 
-    return ((in_array($ABSPATH_MY.'wp-login.php', get_included_files())
-        || in_array($ABSPATH_MY.'wp-register.php', get_included_files()))
+    return (
+        (in_array($ABSPATH_MY . 'wp-login.php', get_included_files())
+        || in_array($ABSPATH_MY . 'wp-register.php', get_included_files()))
         || (isset($_GLOBALS['pagenow']) && $GLOBALS['pagenow'] === 'wp-login.php')
-        || $_SERVER['PHP_SELF']== '/wp-login.php'
+        || $_SERVER['PHP_SELF'] == '/wp-login.php'
     );
 }
-

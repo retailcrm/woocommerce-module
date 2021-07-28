@@ -69,7 +69,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
             $order_id = wc_get_order_id_by_order_key($_GET['key']);
             $order = wc_get_order($order_id);
 
-            if (!$order) {
+            if (is_object($order) === false) {
                 return $js;
             }
 

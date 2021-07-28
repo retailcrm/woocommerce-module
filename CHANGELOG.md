@@ -1,3 +1,10 @@
+## 2021-12-15 4.4.0
+* Migrating to PHP 5.6. We tested the module, improved performance, security and test coverage.
+* Add validate countryIso. Fix bug with duplicate customer address
+* Fix bugs in history
+* Fix PHP warning and deprecated
+* Add documentation for module
+
 ## 2021-08-30 4.3.8
 * Updated logic work address
 * Added transfer of the client's comment to the WC order

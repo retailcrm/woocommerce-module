@@ -27,12 +27,15 @@ class WC_Retailcrm_Google_Analytics_Test extends WC_Retailcrm_Test_Case_Helper
 
     /**
      * @param $checkout
+     *
      * @dataProvider dataProvider
      */
     public function test_send_analytics($checkout)
     {
-        if ($checkout) {
+        if ($checkout === true) {
             $_GET['key'] = $this->orderKey;
+        } elseif (is_null($checkout)) {
+            $_GET['key'] = '';
         }
 
         $js = $this->ga->send_analytics();
@@ -52,6 +55,9 @@ class WC_Retailcrm_Google_Analytics_Test extends WC_Retailcrm_Test_Case_Helper
         return array(
             array(
                 'checkout' => false
+            ),
+            array(
+                'checkout' => null
             ),
             array(
                 'checkout' => true

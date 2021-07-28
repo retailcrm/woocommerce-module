@@ -37,7 +37,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         private $customers;
 
-
         /**
          * WC_Retailcrm_Uploader constructor.
          *
@@ -52,7 +51,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             $this->customers = $customers;
         }
 
-
         /**
          * Uploads selected order in CRM
          *
@@ -63,15 +61,14 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         {
             $response = filter_input(INPUT_GET, 'order_ids_retailcrm');
 
-            if (empty($response) === false) {
+            if (false === empty($response)) {
                 $ids = array_unique(explode(',', $response));
 
-                if (empty($ids) === false) {
+                if (false === empty($ids)) {
                     $this->uploadArchiveOrders(0, $ids);
                 }
             }
         }
-
 
         /**
          * Uploads archive order in CRM
@@ -95,8 +92,10 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 $orderId      = $dataOrder->ID;
                 $errorMessage = $this->orders->orderCreate($orderId);
 
-                if (is_string($errorMessage) === true) {
-                    $errorMessage = empty($errorMessage) === true ? 'Order exist. External id: ' . $orderId : $errorMessage;
+                if (true === is_string($errorMessage)) {
+                    $errorMessage = empty($errorMessage) === true
+                        ? 'Order exist. External id: ' . $orderId
+                        : $errorMessage;
                     $uploadErrors[$orderId] = $errorMessage;
                 }
             }
@@ -105,7 +104,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
             return array();
         }
-
 
         /**
          * Uploads archive customer in CRM
@@ -123,7 +121,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
             $users = $this->getCmsUsers($page);
 
-            if (empty($users) === false) {
+            if (false === empty($users)) {
                 $dataCustomers = array();
 
                 foreach ($users as $user) {
@@ -141,7 +139,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
             return $dataCustomers;
         }
-
 
         /**
          * Return orders ids
@@ -164,7 +161,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             );
         }
 
-
         /**
          * Return count orders
          *
@@ -176,7 +172,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
             $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM $wpdb->posts WHERE post_type = 'shop_order'");
 
-            return empty($result[0]->count) === false ? $result[0]->count : 0;
+            return empty($result[0]->count) === false ? (int) $result[0]->count : 0;
         }
 
 
@@ -217,6 +213,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          * @param array $errors Id order - key and message error - value.
          *
          * @return void
+         *
+         *  @codeCoverageIgnore
          */
         private function logOrdersUploadErrors($errors)
         {

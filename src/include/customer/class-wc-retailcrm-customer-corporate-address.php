@@ -17,9 +17,6 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
     /** @var bool $isMain */
     protected $isMain = true;
 
-    /** @var bool $explicitIsMain */
-    protected $explicitIsMain;
-
     /**
      * @param bool $isMain
      *
@@ -28,17 +25,6 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
     public function setIsMain($isMain)
     {
         $this->isMain = $isMain;
-        return $this;
-    }
-
-    /**
-     * @param bool $explicitIsMain
-     *
-     * @return WC_Retailcrm_Customer_Corporate_Address
-     */
-    public function setExplicitIsMain($explicitIsMain)
-    {
-        $this->explicitIsMain = $explicitIsMain;
         return $this;
     }
 
@@ -53,17 +39,13 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
         $address = $this->getCustomerAddress($customer, $order);
 
         if (!empty($address)) {
-            if ($this->isMain) {
-                $address['isMain'] = true;
-            } elseif ($this->explicitIsMain) {
-                $address['isMain'] = false;
-            }
+            $address['isMain'] = $this->isMain;
 
             $corporateCustomerAddress = apply_filters(
                 'retailcrm_process_customer_corporate_address',
                 WC_Retailcrm_Plugin::clearArray(array_merge(
                     $address,
-                    array('isMain' => $address['isMain'])
+                    array('isMain' => $this->isMain)
                 )),
                 $customer
             );
@@ -72,7 +54,6 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
         } else {
             WC_Retailcrm_Logger::add('Error Corporate Customer address is empty');
         }
-
 
         return $this;
     }

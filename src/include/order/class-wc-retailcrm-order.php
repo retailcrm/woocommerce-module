@@ -14,8 +14,6 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
     /** @var bool */
     public $is_new = true;
 
-    protected $filter_name = 'order';
-
     protected $data = array(
         'externalId' => 0,
         'status' => '',
@@ -74,7 +72,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
             'countryIso' => $order->get_shipping_country()
         );
 
-        if ($data['countryIso'] == '--') {
+        if ($data['countryIso'] == '--' || empty($data['countryIso'])) {
             $countries = new WC_Countries();
             $data['countryIso'] = $countries->get_base_country();
         }
@@ -89,19 +87,6 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
         return $this;
     }
 
-    /**
-     * @param WC_Order $order
-     */
-    protected function set_payment_data($order)
-    {
-        if ($order->get_payment_method() && isset($this->settings[$order->get_payment_method()])) {
-            $this->set_data_field('paymentType', $this->settings[$order->get_payment_method()]);
-        }
-
-        if ($order->is_paid()) {
-            $this->set_data_field('paymentStatus', 'paid');
-        }
-    }
 
     /**
      * @param WC_Order $order

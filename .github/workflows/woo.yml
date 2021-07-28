@@ -464,6 +464,7 @@ jobs:
           php --version
           composer --version
           phpunit --version
+
       - name: Install Woocommerce
         env:
           WP_VERSION: ${{ matrix.wp }}

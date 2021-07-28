@@ -39,6 +39,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function ajax_generate_icml()
     {
         $ajax_url = admin_url('admin-ajax.php');
@@ -59,6 +62,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function ajax_selected_order()
     {
         $ajax_url = admin_url('admin-ajax.php');
@@ -140,7 +146,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'placeholder' => __( 'Insert the Online consultant code here', 'retailcrm' )
                 );
 
-                $this->form_fields[] = array(
+                $this->form_fields['catalog_options'] = array(
                     'title'       => __( 'Catalog settings', 'retailcrm' ),
                     'type'        => 'heading',
                     'description' => '',
@@ -521,7 +527,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Debug information
                  */
-                $this->form_fields[] = array(
+                $this->form_fields['debug-info'] = array(
                     'title'       => __('Debug information', 'retailcrm'),
                     'type'        => 'heading',
                     'class'       => 'debug_info_options'
@@ -549,6 +555,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      * @param array $data
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function generate_button_html($key, $data)
     {
@@ -590,6 +598,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      * @param array $data
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function generate_heading_html($key, $data)
     {
@@ -616,8 +626,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
     /**
     * Returns the original value for the online_consultant field (ignores woocommerce validation)
+    *
     * @param $key
     * @param $value
+    *
     * @return string
     */
     public function validate_online_assistant_field($key, $value)
@@ -636,6 +648,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      *
      * @param string $key
      * @param string $value
+     *
+     * @codeCoverageIgnore
      *
      * @return string
      */
@@ -663,6 +677,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      *
      * @param string $key
      * @param string $value
+     *
+     * @codeCoverageIgnore
      *
      * @return string
      */
@@ -696,6 +712,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      * @param string $key
      * @param string $value
      *
+     * @codeCoverageIgnore
+     *
      * @return string
      */
     public function validate_whatsapp_number_field($key, $value)
@@ -717,6 +735,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
     /**
      * Scritp show|hide block settings
+     *
+     * @codeCoverageIgnore
      */
     function show_blocks()
     {
@@ -744,6 +764,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
     /**
      * Add button in admin
+     *
+     * @codeCoverageIgnore
      */
     function add_retailcrm_button() {
         global $wp_admin_bar;
