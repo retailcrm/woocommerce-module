@@ -145,15 +145,6 @@ msgstr "Способы оплаты"
 msgid "Delivery types"
 msgstr "Способы доставки"
 
-msgid "Select client roles which will be uploaded from website to Simla.com"
-msgstr "Выберите роли клиентов, которые будут выгружаться в Simla.com"
-
-msgid "Client roles available for uploading to Simla.com"
-msgstr "Роли клиентов, доступные для выгрузки в Simla.com"
-
-msgid "Client roles"
-msgstr "Роли клиентов"
-
 msgid "Select order methods which will be uploaded from Simla.com to the website"
 msgstr "Выберите способы оформления заказов, которые будут выгружаться из Simla.com на сайт"
 

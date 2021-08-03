@@ -599,32 +599,19 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function isCustomer($user)
         {
-            $retailcrmSettings = array();
-
-            if (!empty($this->retailcrm_settings) && array_key_exists('client_roles', $this->retailcrm_settings)) {
-                $retailcrmSettings = $this->retailcrm_settings['client_roles'];
-            }
-
-            if (empty($retailcrmSettings)) {
-                $selectedRoles = array(self::CUSTOMER_ROLE, self::ADMIN_ROLE);
-            } else {
-                $selectedRoles = $retailcrmSettings;
-            }
+            $clientRoles = wp_roles()->get_names();
+            $clientRoles = apply_filters('retailcrm_customer_roles', WC_Retailcrm_Plugin::clearArray($clientRoles));
 
             if ($user instanceof WP_User) {
-                $userRoles = $user->roles;
+                $userRole = !empty($user->roles[0]) ? $user->roles[0] : null;
             } elseif ($user instanceof WC_Customer) {
-                $wpUser = get_user_by('id', $user->get_id());
-                $userRoles = ($wpUser) ? $wpUser->roles : array($user->get_role());
+                $role = $user->get_role();
+                $userRole = !empty($role) ? $role : null;
             } else {
                 return false;
             }
 
-            $result = array_filter($userRoles, function ($userRole) use ($selectedRoles) {
-                return in_array($userRole, $selectedRoles);
-            });
-
-            return !empty($result);
+            return array_key_exists($userRole, $clientRoles);
         }
     }
 endif;
