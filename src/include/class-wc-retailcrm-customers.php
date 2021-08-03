@@ -603,15 +603,15 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $clientRoles = apply_filters('retailcrm_customer_roles', WC_Retailcrm_Plugin::clearArray($clientRoles));
 
             if ($user instanceof WP_User) {
-                $userRole = empty($user->roles[0]) === false ? $user->roles[0] : null;
+                $userRole = !empty($user->roles[0]) ? $user->roles[0] : null;
             } elseif ($user instanceof WC_Customer) {
                 $role = $user->get_role();
-                $userRole = empty($role) === false  ? $role : null;
+                $userRole = !empty($role) ? $role : null;
             } else {
                 return false;
             }
 
-            return empty($clientRoles[$userRole]) === false;
+            return array_key_exists($userRole, $clientRoles);
         }
     }
 endif;
