@@ -16,7 +16,7 @@
  *
  * @link       https://wordpress.org/plugins/woo-retailcrm/
  *
- * @version    4.3.6
+ * @version    4.3.7
  *
  * @package    RetailCRM
  */
