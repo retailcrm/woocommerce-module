@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 5.3
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 4.3.6
+Stable tag: 4.3.7
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,10 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+
+= 4.3.7 =
+* Исправили ошибку с неправильной выгрузкой архивных клиентов.
+* Удалил опцию "Роли клиентов" с настроек модуля.
 
 = 4.3.6 =
 * Обновили отображение настроек модуля

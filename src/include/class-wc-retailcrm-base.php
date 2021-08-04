@@ -258,7 +258,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function upload_to_crm()
         {
-            $page = filter_input(INPUT_POST, 'RETAILCRM_EXPORT_ORDERS_STEP');
+            $page = filter_input(INPUT_POST, 'Step');
             $entity = filter_input(INPUT_POST, 'Entity');
 
             if ($entity === 'customer') {
@@ -472,10 +472,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $path =  plugins_url() . '/woo-retailcrm/assets/js/';
 
-            wp_register_script('retailcrm-export', $path . 'retailcrm-export.js');
+            wp_register_script('retailcrm-export', $path . 'retailcrm-export.js', false, '0.1');
             wp_enqueue_script('retailcrm-export', $path . 'retailcrm-export.js', '', '', true);
 
-            wp_register_script('retailcrm-cron-info', $path . 'retailcrm-cron-info.js');
+            wp_register_script('retailcrm-cron-info', $path . 'retailcrm-cron-info.js', false, '0.1');
             wp_enqueue_script('retailcrm-cron-info', $path . 'retailcrm-export.js', '', '', true);
         }
 
@@ -564,10 +564,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
 
         /**
-        * Get retailcrm api client
-        *
-        * @return bool|WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5
-        */
+         * Get retailcrm api client
+         *
+         * @return bool|WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5
+         */
         public function getApiClient()
         {
             if ($this->get_option('api_url') && $this->get_option('api_key')) {

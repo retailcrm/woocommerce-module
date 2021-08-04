@@ -30,8 +30,8 @@ jQuery(function () {
             dataType: "json"
         })
             .done(function (response) {
-                _this.ordersCount = response.count_orders;
-                _this.customersCount = response.count_users;
+                _this.ordersCount = Number(response.count_orders);
+                _this.customersCount = Number(response.count_users);
                 jQuery(_this.submitButton).removeClass('retail-hidden');
 
                 _this.displayCountUploadData();
@@ -71,12 +71,12 @@ jQuery(function () {
         let data = {};
 
         if (this.customersStep * this.customersStepSize < this.customersCount) {
-            data.RETAILCRM_EXPORT_CUSTOMERS_STEP = this.customersStep;
+            data.Step = this.customersStep;
             data.Entity = 'customer';
             this.customersStep++;
         } else {
             if (this.ordersStep * this.ordersStepSize < this.ordersCount) {
-                data.RETAILCRM_EXPORT_ORDERS_STEP = this.ordersStep;
+                data.Step = this.ordersStep;
                 data.Entity = 'order';
                 this.ordersStep++;
             } else {
