@@ -235,9 +235,6 @@ msgstr "Активировать передачу номера в Simla.com"
 msgid "Transferring the order number"
 msgstr "Передача номера заказа"
 
-msgid "Do not transmit the cost of delivery"
-msgstr "Не передавать себестоимости доставки"
-
 msgid "Corporate customers support"
 msgstr "Поддержка корпоративных клиентов"
 

@@ -226,9 +226,6 @@ msgstr "Activar la transferencia de números en Simla.com"
 msgid "Transferring the order number"
 msgstr "Transferencia de un número de pedido"
 
-msgid "Do not transmit the cost of delivery"
-msgstr "No transferir el costo de envío"
-
 msgid "Corporate customers support"
 msgstr "Soporte a clientes corporativos"
 
