@@ -32,7 +32,7 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
                 'countryIso' => $order->get_billing_country(),
                 'region' => $this->get_state_name($order->get_billing_country(), $order->get_billing_state()),
                 'city' => $order->get_billing_city(),
-                'text' => $order->get_billing_address_1() . ', ' . $order->get_billing_address_2()
+                'text' => implode(', ', array_filter(array($order->get_billing_address_1(), $order->get_billing_address_2())))
             );
         } else {
             $data = array(
@@ -40,7 +40,7 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
                 'countryIso' => $customer->get_billing_country(),
                 'region' => $this->get_state_name($customer->get_billing_country(), $customer->get_billing_state()),
                 'city' => $customer->get_billing_city(),
-                'text' => $customer->get_billing_address_1() . ', ' . $customer->get_billing_address_2()
+                'text' => implode(', ', array_filter(array($customer->get_billing_address_1(), $customer->get_billing_address_2())))
             );
         }
 
