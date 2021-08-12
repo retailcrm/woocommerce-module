@@ -15,16 +15,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
      */
     class WC_Retailcrm_Customers
     {
-        /**
-         * Administrator role
-         */
-        const ADMIN_ROLE = 'administrator';
-
-        /**
-         * Every customer has this role
-         */
-        const CUSTOMER_ROLE = 'customer';
-
         /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
@@ -222,12 +212,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $found = false;
             $builder = new WC_Retailcrm_Customer_Corporate_Address();
             $newAddress = $builder
-                ->setFallbackToShipping(true)
                 ->setIsMain(false)
                 ->setExplicitIsMain(false)
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
                 ->build($customer, $order)
                 ->get_data();
+
             $addresses = $this->retailcrm->customersCorporateAddresses(
                 $corporateId,
                 array(),
@@ -327,16 +316,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $firstName = $customer->get_first_name();
             $lastName = $customer->get_last_name();
             $billingPhone = $customer->get_billing_phone();
-            $email = $customer->get_billing_email();
+            $email = strtolower($customer->get_billing_email());
 
             if (empty($firstName) && empty($lastName) && $order instanceof WC_Order) {
                 $firstName = $order->get_billing_first_name();
                 $lastName = $order->get_billing_last_name();
-
-                if (empty($firstName) && empty($lastName)) {
-                    $firstName = $order->get_shipping_first_name();
-                    $lastName = $order->get_shipping_last_name();
-                }
 
                 if (empty($firstName)) {
                     $firstName = $customer->get_username();
@@ -359,7 +343,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $lastName,
-                'email' => $customer->get_billing_email(),
+                'email' => $email,
                 'address' => $this->customer_address->build($customer, $order)->get_data()
             );
 
@@ -371,6 +355,21 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $data_customer['phones'][] = array(
                     'number' => $customer->get_billing_phone()
                 );
+            }
+
+            // If the client is corporate, set the value isContact.
+            if ($this->isCorporateEnabled()) {
+                if ($order !== null) {
+                    $company = $order->get_billing_company();
+                }
+
+                if (empty($company)) {
+                    $company = $customer->get_billing_company();
+                }
+
+                if (!empty($company)) {
+                    $data_customer['isContact'] = true;
+                }
             }
 
             $this->customer = apply_filters(
@@ -408,38 +407,33 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 )
             );
 
-            $orderAddress = new WC_Retailcrm_Order_Address();
             $corpAddress = new WC_Retailcrm_Customer_Corporate_Address();
 
-            $address = $orderAddress
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
-                ->build($order)
-                ->get_data();
-
-            $shippingAddress = $corpAddress
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_BILLING)
-                ->setFallbackToBilling(true)
+            $billingAddress = $corpAddress
                 ->setIsMain(true)
                 ->build($customer, $order)
                 ->get_data();
 
-            if (isset($address['text'])) {
-                $data_company['contragent']['legalAddress'] = $address['text'];
+            if (!empty($billingAddress)) {
+                $data_company['contragent']['legalAddress'] = implode(
+                    ', ',
+                    array(
+                        $billingAddress['index'],
+                        $billingAddress['city'],
+                        $billingAddress['region'],
+                        $billingAddress['text']
+                    )
+                );
             }
+
+            $this->customerCorporateAddress = $billingAddress;
 
             $this->customerCorporate = apply_filters(
                 'retailcrm_process_customer_corporate',
                 WC_Retailcrm_Plugin::clearArray($data_customer),
                 $customer
             );
-            $this->customerCorporateAddress = apply_filters(
-                'retailcrm_process_customer_corporate_address',
-                WC_Retailcrm_Plugin::clearArray(array_merge(
-                    $shippingAddress,
-                    array('isMain' => true)
-                )),
-                $customer
-            );
+
             $this->customerCorporateCompany = apply_filters(
                 'retailcrm_process_customer_corporate_company',
                 WC_Retailcrm_Plugin::clearArray($data_company),
@@ -448,7 +442,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * @param array $filter
+         * @param array $filter Search customer by fields.
          *
          * @return bool|array
          */
@@ -457,11 +451,16 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if (isset($filter['externalId'])) {
                 $search = $this->retailcrm->customersGet($filter['externalId']);
             } elseif (isset($filter['email'])) {
-                if (empty($filter['email']) && count($filter) == 1) {
+                if (empty($filter['email'])) {
                     return false;
                 }
 
-                $search = $this->retailcrm->customersList(array('email' => $filter['email']));
+                // If customer not corporate, we need unset this field.
+                if (empty($filter['isContact'])) {
+                    unset($filter['isContact']);
+                }
+
+                $search = $this->retailcrm->customersList($filter);
             }
 
             if (!empty($search) && $search->isSuccessful()) {
@@ -472,7 +471,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                         return false;
                     }
 
-                    if (isset($filter['email']) && count($filter) == 1) {
+                    if (!empty($filter['email'])) {
                         foreach ($search['customers'] as $finding) {
                             if (isset($finding['email']) && $finding['email'] == $filter['email']) {
                                 $customer = $finding;
@@ -495,12 +494,13 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * Returns customer data by externalId or by email, returns false in case of failure
          *
-         * @param $customerExternalId
-         * @param $customerEmailOrPhone
+         * @param string $customerExternalId   Customer externalId.
+         * @param string $customerEmailOrPhone Customer email or phone.
+         * @param bool $isContact              Customer is the contact person.
          *
          * @return array|bool
          */
-        public function findCustomerEmailOrId($customerExternalId, $customerEmailOrPhone)
+        public function findCustomerEmailOrId($customerExternalId, $customerEmailOrPhone, $isContact)
         {
             $customer = false;
 
@@ -509,7 +509,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             if (!$customer && !empty($customerEmailOrPhone)) {
-                $customer = $this->searchCustomer(array('email' => $customerEmailOrPhone));
+                $customer = $this->searchCustomer(array('email' => $customerEmailOrPhone, 'isContact' => $isContact));
             }
 
             return $customer;

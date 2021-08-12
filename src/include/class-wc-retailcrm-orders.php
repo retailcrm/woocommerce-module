@@ -142,12 +142,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $firstName = $wcOrder->get_shipping_first_name();
                 $lastName = $wcOrder->get_shipping_last_name();
 
-                if(empty($firstName) && empty($lastName))
-                {
-                    $firstName = $wcOrder->get_billing_first_name();
-                    $lastName = $wcOrder->get_billing_last_name();
-                }
-
                 $this->order['firstName'] = $firstName;
                 $this->order['lastName'] = $lastName;
             }
@@ -166,8 +160,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         protected function fillOrderCreate($wcCustomerId, $wcCustomerEmail, $wcOrder)
         {
-            $foundCustomerId = '';
-            $foundCustomer = $this->customers->findCustomerEmailOrId($wcCustomerId, $wcCustomerEmail);
+            $isContact = $this->retailcrm->getCorporateEnabled() && static::isCorporateOrder($wcOrder);
+
+            $foundCustomer = $this->customers->findCustomerEmailOrId(
+                $wcCustomerId,
+                strtolower($wcCustomerEmail),
+                $isContact
+            );
 
             if (empty($foundCustomer)) {
                 $foundCustomerId = $this->customers->createCustomer($wcCustomerId, $wcOrder);
@@ -368,12 +367,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
+            $order_data['delivery']['address'] = $this->order_address->build($order)->get_data();
             $order_items = array();
-            $order_data['delivery']['address'] = $this->order_address
-                ->setFallbackToBilling(true)
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
-                ->build($order)
-                ->get_data();
 
             /** @var WC_Order_Item_Product $item */
             foreach ($order->get_items() as $item) {
