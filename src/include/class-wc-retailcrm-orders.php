@@ -166,7 +166,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         protected function fillOrderCreate($wcCustomerId, $wcCustomerEmail, $wcOrder)
         {
-            $foundCustomerId = '';
             $foundCustomer = $this->customers->findCustomerEmailOrId($wcCustomerId, $wcCustomerEmail);
 
             if (empty($foundCustomer)) {
@@ -368,12 +367,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
+            $order_data['delivery']['address'] = $this->order_address->build($order)->get_data();
             $order_items = array();
-            $order_data['delivery']['address'] = $this->order_address
-                ->setFallbackToBilling(true)
-                ->setWCAddressType(WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
-                ->build($order)
-                ->get_data();
 
             /** @var WC_Order_Item_Product $item */
             foreach ($order->get_items() as $item) {

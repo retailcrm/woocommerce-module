@@ -187,9 +187,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
         protected function ordersHistory($date, $sinceId)
         {
             $filter = array('startDate' => $date);
-
-            unset($this->retailcrmSettings['client_roles']);
-
             $options = array_flip(array_filter($this->retailcrmSettings));
 
             if ($sinceId) {
@@ -368,14 +365,14 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     $wcOrder->set_billing_email($order['email']);
                 }
 
-                if (isset($order['company']['address'])) {
-                    $billingAddress = $order['company']['address'];
+                if (isset($order['contact']['address'])) {
+                    $billingAddress = $order['contact']['address'];
 
-                    $wcOrder->set_billing_state(self::arrayValue($billingAddress, 'region', '--'));
-                    $wcOrder->set_billing_postcode(self::arrayValue($billingAddress, 'index', '--'));
-                    $wcOrder->set_billing_country(self::arrayValue($billingAddress, 'country', '--'));
-                    $wcOrder->set_billing_city(self::arrayValue($billingAddress, 'city', '--'));
-                    $wcOrder->set_billing_address_1(self::arrayValue($billingAddress, 'text', '--'));
+                    $wcOrder->set_billing_state(self::arrayValue($billingAddress, 'region', ''));
+                    $wcOrder->set_billing_postcode(self::arrayValue($billingAddress, 'index', ''));
+                    $wcOrder->set_billing_country(self::arrayValue($billingAddress, 'country', ''));
+                    $wcOrder->set_billing_city(self::arrayValue($billingAddress, 'city', ''));
+                    $wcOrder->set_billing_address_1(self::arrayValue($billingAddress, 'text', ''));
                 }
             }
 
@@ -569,7 +566,8 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 return false;
             }
 
-            if (is_array($this->orderMethods)
+            if (
+                is_array($this->orderMethods)
                 && $this->orderMethods
                 && isset($order['orderMethod'])
                 && !in_array($order['orderMethod'], $this->orderMethods)
@@ -613,21 +611,17 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             $wcOrder->set_date_created($order['createdAt']);
             $customer = $order['customer'];
             $contactOrCustomer = array();
-            $address = isset($order['customer']['address']) ? $order['customer']['address'] : array();
-            $billingAddress = $address;
-            $companyName = '';
-
-            if ($this->retailcrm->getCorporateEnabled()) {
-                $billingAddress = isset($order['company']['address']) ? $order['company']['address'] : $address;
-
-                if (empty($billingAddress)) {
-                    $billingAddress = $address;
-                }
-            }
+            $billingAddress = '';
 
             if ($this->retailcrm->getCorporateEnabled() && self::isOrderCorporate($order)) {
                 if (isset($order['contact'])) {
                     $contactOrCustomer = $order['contact'];
+
+                    if (!empty($order['contact']['address'])) {
+                        $billingAddress = $order['contact']['address'];
+                    } else {
+                        WC_Retailcrm_Logger::add(sprintf('[%d] => %s', $order['id'], 'Error: Contact address is empty'));
+                    }
 
                     if (self::noRealDataInEntity($contactOrCustomer)) {
                         $response = $this->retailcrm->customersGet($contactOrCustomer['id'], 'id');
@@ -639,6 +633,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 }
             } else {
                 $contactOrCustomer = $customer;
+
+                if (!empty($customer['address'])) {
+                    $billingAddress = $customer['address'];
+                } else {
+                    WC_Retailcrm_Logger::add(sprintf('[%d] => %s', $order['id'], 'Error: Customer address is empty'));
+                }
+
 
                 if (!self::isOrderCorporate($order) && self::noRealDataInEntity($contactOrCustomer)) {
                     $response = $this->retailcrm->customersGet($contactOrCustomer['id'], 'id');
@@ -663,13 +664,15 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $wcOrder->add_order_note($order['managerComment'], 0, false);
             }
 
-            // TODO Check if that works; also don't forget to set this company field while creating order from CMS!
-            if ($this->retailcrm->getCorporateEnabled()
+            $companyName = '';
+
+            if (
+                $this->retailcrm->getCorporateEnabled()
                 && self::isOrderCorporate($order)
-                && !empty($order['company'])
-                && isset($order['company']['name'])
+                && !empty($customer['mainCompany'])
+                && isset($customer['mainCompany']['name'])
             ) {
-                $companyName = $order['company']['name'];
+                $companyName = $customer['mainCompany']['name'];
             }
 
             $addressShipping = array(

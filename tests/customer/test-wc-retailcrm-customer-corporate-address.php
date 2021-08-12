@@ -9,7 +9,7 @@
  * @see      http://help.retailcrm.ru
  */
 
-class WC_Retailcrm_Customer_Address_Test extends WC_Retailcrm_Test_Case_Helper
+class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Case_Helper
 {
     protected $customer;
 
@@ -29,21 +29,27 @@ class WC_Retailcrm_Customer_Address_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_build_and_reset_address()
     {
-        $customer_address = new WC_Retailcrm_Customer_Address();
-        $data = $customer_address->build($this->customer)->get_data();
+        $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
+        $data = $customer_address
+            ->setIsMain(true)
+            ->setExplicitIsMain(false)
+            ->build($this->customer)
+            ->get_data();
 
         $this->assertArrayHasKey('index', $data);
         $this->assertArrayHasKey('city', $data);
         $this->assertArrayHasKey('region', $data);
         $this->assertArrayHasKey('text', $data);
         $this->assertArrayHasKey('countryIso', $data);
+        $this->assertArrayHasKey('isMain', $data);
         $this->assertEquals('000000', $data['index']);
         $this->assertEquals('TestCity', $data['city']);
         $this->assertEquals('TestState', $data['region']);
         $this->assertEquals('TestAddress1, TestAddress2', $data['text']);
         $this->assertEquals('CO', $data['countryIso']);
+        $this->assertEquals(true, $data['isMain']);
 
-        // Check reset customer address data
+        // Check reset customer corporate address data
         $customer_address->reset_data();
 
         $data = $customer_address->get_data();
@@ -58,10 +64,38 @@ class WC_Retailcrm_Customer_Address_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('', $data['text']);
     }
 
+    public function test_build_not_main_company()
+    {
+        $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
+        $data = $customer_address
+            ->setIsMain(false)
+            ->setExplicitIsMain(true)
+            ->build($this->customer)
+            ->get_data();
+
+        $this->assertArrayHasKey('index', $data);
+        $this->assertArrayHasKey('city', $data);
+        $this->assertArrayHasKey('region', $data);
+        $this->assertArrayHasKey('text', $data);
+        $this->assertArrayHasKey('countryIso', $data);
+        $this->assertArrayHasKey('isMain', $data);
+        $this->assertEquals('000000', $data['index']);
+        $this->assertEquals('TestCity', $data['city']);
+        $this->assertEquals('TestState', $data['region']);
+        $this->assertEquals('TestAddress1, TestAddress2', $data['text']);
+        $this->assertEquals('CO', $data['countryIso']);
+        $this->assertEquals(false, $data['isMain']);
+    }
+
+
     public function test_empty_address()
     {
-        $customer_address = new WC_Retailcrm_Customer_Address();
-        $data = $customer_address->build(null)->get_data();
+        $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
+        $data = $customer_address
+            ->setIsMain(false)
+            ->setExplicitIsMain(true)
+            ->build(null)
+            ->get_data();
 
         $this->assertArrayHasKey('index', $data);
         $this->assertArrayHasKey('city', $data);

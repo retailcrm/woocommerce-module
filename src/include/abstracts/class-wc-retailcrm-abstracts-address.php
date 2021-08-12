@@ -11,18 +11,6 @@
 
 abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Data
 {
-    const ADDRESS_TYPE_BILLING = 'billing';
-    const ADDRESS_TYPE_SHIPPING = 'shipping';
-
-    /** @var string $address_type */
-    protected $address_type = 'shipping';
-
-    /** @var bool $fallback_to_billing */
-    protected $fallback_to_billing = false;
-
-    /** @var bool $fallback_to_shipping */
-    protected $fallback_to_shipping = false;
-
     /** @var array $data */
     protected $data = array(
         'index' => '',
@@ -47,63 +35,7 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     }
 
     /**
-     * @param bool $fallback_to_billing
-     *
-     * @return self
-     */
-    public function setFallbackToBilling($fallback_to_billing)
-    {
-        $this->fallback_to_billing = $fallback_to_billing;
-        return $this;
-    }
-
-    /**
-     * @param bool $fallback_to_shipping
-     *
-     * @return WC_Retailcrm_Abstracts_Address
-     */
-    public function setFallbackToShipping($fallback_to_shipping)
-    {
-        $this->fallback_to_shipping = $fallback_to_shipping;
-        return $this;
-    }
-
-    /**
-     * Sets woocommerce address type to work with
-     *
-     * @param string $addressType
-     *
-     * @return self
-     */
-    public function setWCAddressType($addressType = WC_Retailcrm_Abstracts_Address::ADDRESS_TYPE_SHIPPING)
-    {
-        $this->address_type = $addressType;
-        return $this;
-    }
-
-    /**
-     * Validate address
-     *
-     * @param array $address
-     *
-     * @return bool
-     */
-    public function validateAddress($address)
-    {
-        if (empty($address['country']) ||
-            empty($address['state']) ||
-            empty($address['postcode']) ||
-            empty($address['city']) ||
-            empty($address['address_1'])
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns address from order. Respects fallback_to_billing parameter.
+     * Returns shipping address from order.
      *
      * @param \WC_Order $order
      *
@@ -111,18 +43,61 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      */
     protected function getOrderAddress($order)
     {
-        $orderAddress = $order->get_address($this->address_type);
-        $checkEmptyArray = $this->validateAddress($orderAddress) ? array_filter($orderAddress) : array();
-        
-        if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_BILLING && $this->fallback_to_shipping) {
-            $orderAddress = $order->get_address(self::ADDRESS_TYPE_SHIPPING);
+        if ($order === null) {
+            return array();
         }
 
-        if (empty($checkEmptyArray) && $this->address_type === self::ADDRESS_TYPE_SHIPPING && $this->fallback_to_billing) {
-            $orderAddress = $order->get_address(self::ADDRESS_TYPE_BILLING);
+        $orderShippingAddress = array(
+            'postcode' => $order->get_shipping_postcode(),
+            'state' => $order->get_shipping_state(),
+            'city' => $order->get_shipping_city(),
+            'address_1' => $order->get_shipping_address_1(),
+            'address_2' => $order->get_shipping_address_2()
+        );
+
+        if (!empty($orderShippingAddress)) {
+            return array(
+                'index'  => $orderShippingAddress['postcode'],
+                'city'   => $orderShippingAddress['city'],
+                'region' => $this->get_state_name($order->get_shipping_country(), $orderShippingAddress['state']),
+                'text'   => implode(' ', $orderShippingAddress)
+            );
+        }
+    }
+
+    /**
+     * Returns billing address from customer.
+     *
+     * @param \WC_Customer $customer
+     * @param \WC_Order $order
+     *
+     * @return array
+     */
+    protected function getCustomerAddress($customer, $order)
+    {
+        if ($customer === null) {
+            return array();
         }
 
-        return $orderAddress;
+        $customerBillingAddress = $customer->get_billing_address();
+
+        if ($order instanceof WC_Order && empty($customerBillingAddress)) {
+            return array(
+                'index' => $order->get_billing_postcode(),
+                'countryIso' => $order->get_billing_country(),
+                'region' => $this->get_state_name($order->get_billing_country(), $order->get_billing_state()),
+                'city' => $order->get_billing_city(),
+                'text' => $this->joinAddresses($order->get_billing_address_1(), $order->get_billing_address_2())
+            );
+        } else {
+            return array(
+                'index' => $customer->get_billing_postcode(),
+                'countryIso' => $customer->get_billing_country(),
+                'region' => $this->get_state_name($customer->get_billing_country(), $customer->get_billing_state()),
+                'city' => $customer->get_billing_city(),
+                'text' => $this->joinAddresses($customer->get_billing_address_1(), $customer->get_billing_address_2())
+            );
+        }
     }
 
     /**
@@ -135,15 +110,7 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      */
     protected function joinAddresses($address1 = '', $address2 = '')
     {
-        if (empty($address1) && empty($address2)) {
-            return '';
-        }
-
-        if (empty($address2) && !empty($address1)) {
-            return $address1;
-        }
-
-        return $address1 . ', ' . $address2;
+        return implode(', ', array_filter(array($address1, $address2)));
     }
 
     /**
