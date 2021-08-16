@@ -79,7 +79,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
                 array(
                     'name' => 'orderMethod2',
                     'code' => 'orderMethod2',
-                    'active' => true
+                    'active' => false
                 )
             )
         );
@@ -92,11 +92,13 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             'deliveryTypes' => array(
                 array(
                     'name' => 'delivery1',
-                    'code' => 'delivery1'
+                    'code' => 'delivery1',
+                    'active' => true
                 ),
                 array(
                     'name' => 'delivery2',
-                    'code' => 'delivery2'
+                    'code' => 'delivery2',
+                    'active' => true
                 )
             )
         );
@@ -109,11 +111,13 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             'paymentTypes' => array(
                 array(
                     'name' => 'payment1',
-                    'code' => 'payment1'
+                    'code' => 'payment1',
+                    'active' => true
                 ),
                 array(
                     'name' => 'payment2',
-                    'code' => 'payment2'
+                    'code' => 'payment2',
+                    'active' => true
                 )
             )
         );
@@ -126,11 +130,13 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             'statuses' => array(
                 array(
                     'name' => 'status1',
-                    'code' => 'status1'
+                    'code' => 'status1',
+                    'active' => true
                 ),
                 array(
                     'name' => 'status2',
-                    'code' => 'status2'
+                    'code' => 'status2',
+                    'active' => true
                 )
             )
         );
