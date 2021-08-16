@@ -200,6 +200,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 if (!empty($retailcrm_shipping_list) && $retailcrm_shipping_list->isSuccessful()) {
                     foreach ($retailcrm_shipping_list['deliveryTypes'] as $retailcrm_shipping_type) {
+                        if ($retailcrm_shipping_type['active'] == false) {
+                            continue;
+                        }
+
                         $shipping_option_list[$retailcrm_shipping_type['code']] = $retailcrm_shipping_type['name'];
                     }
 
@@ -235,6 +239,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 if (!empty($retailcrm_payment_list) && $retailcrm_payment_list->isSuccessful()) {
                     foreach ($retailcrm_payment_list['paymentTypes'] as $retailcrm_payment_type) {
+                        if ($retailcrm_payment_type['active'] == false) {
+                            continue;
+                        }
+
                         $payment_option_list[$retailcrm_payment_type['code']] = $retailcrm_payment_type['name'];
                     }
 
@@ -268,6 +276,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 if (!empty($retailcrm_statuses_list) && $retailcrm_statuses_list->isSuccessful()) {
                     foreach ($retailcrm_statuses_list['statuses'] as $retailcrm_status) {
+                        if ($retailcrm_status['active'] == false) {
+                            continue;
+                        }
+
                         $statuses_option_list[$retailcrm_status['code']] = $retailcrm_status['name'];
                     }
 
