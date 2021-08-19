@@ -1,215 +1,215 @@
 ## 2021-08-04 4.3.7
-* Исправили ошибку с неправильной выгрузкой архивных клиентов.
-* Удалил опцию "Роли клиентов" с настроек модуля.
+* Fixed an error with incorrect unloading of archived clients
+* Removed the "Client roles" option from the module settings
 
 ## 2021-07-27 4.3.6
-* Обновили отображение настроек модуля
-* Исправлен баг с добавлением вариативных товаров в каталог как обычных
+* Updated the presentation of the module settings
+* Fixed a bug connected with adding variable products to the catalogue as usual products
 
 ## 2021-07-22 4.3.5
-* Обновление версии в маркетплейсе
+* Updated version in Marketplace
 
 ## 2021-07-22 4.3.4
-* Исправление мелких ошибок
+* Minor bugs were fixed
 
 ## 2021-07-21 4.3.3
-* Изменен дизайн иконки WhatsApp
-* Добавлена возможность включать расширенное логирование в настройках модуля
-* Добавлен блок "Отладочная информация"
-* Улучшена генерация ICML каталога
-* Добавлена пакетная выгрузка архивных заказов и клиентов
+* Redesigned the WhatsApp icon
+* Added the ability to enable extended logging in the module settings
+* Added the"Debug info" block
+* Improved ICML catalogue generation
+* Added batch export of archived orders and customers
 
 ## 2021-07-05 4.3.2
-* Исправление мелких ошибок
+* Minor bugs were fixed
 
 ## 2021-07-02 4.3.1
-* Ребрендинг модуля RetailCRM --> Simla.com
+* Rebranding of RetailCRM module --> Simla.com
 
 ## 2021-06-30 4.3.0
-* Ребрендинг модуля RetailCRM --> Simla.com
-* Исправили баг в работе опции "Активировать связь по sku(xmlId)"
-* Добавлена возможность использовать ссылку чат WhatsApp на сайте
-* Исправили мелкие баги в работе истории и генерации каталога ICML
+* Rebranding of RetailCRM module --> Simla.com
+* Fixed a bug in the "Activate link by sku (xmlId)" option
+* Added the ability to use the WhatsApp chat link on the site
+* Fixed minor bugs in the history and generation of the ICML catalogue
 
 ## 2021-03-15 4.2.4
-* Добавили отображение общего количества вариативных товаров
-* Добавили валидацию на дату создания заказа
-* Добавили валидацию на заказы с auto-draft статусом
-* Обновили версии WP и WC в локальных тестах
-* Исправили баг в опции "Передача номера заказа"
+* Added a display of the total number of variable products
+* Added validation for the order creation date
+* Added validation for orders with auto-draft status
+* Updated WP and WC versions in local tests
+* Fixed a bug in the "Transfer of order number" option
 
 ## 2021-01-20 4.2.3
-* Обновление версии в маркетплейсе
+* Updated version in the Marketplace
 
 ## 2020-12-17 4.2.2
-* Редизайн RetailCRM
+* RetailCRM’s redesign
 
 ## 2020-12-15 4.2.1
-* Редизайн RetailCRM
+* RetailCRM’s redesign
 
 ## 2020-12-02 4.2.0
-* Исправлен баг с получением даты создания незарегистрированного пользователя
-* Изменена логика работы с оплатами, удалена опция "Передача суммы оплаты"
-* Исправлен баг с пустым shipping адресом, если он пуст используем billing адрес
-* Добавлены переводы главной страницы на испанский и английский
-* Исправлен баг с удалением товаров при использовании опции "Активировать связь по sku(xmlId)"
+* Fixed a bug connected with receiving the date of creation of an unregistered user
+* Changed the logic of payments by deleting the "Transfer of payment amount" option
+* Fixed the “shipping” address bug. If it is empty, use a “billing” address
+* Added Spanish and English translations of the main page
+* Fixed a bug connected with deleting products when using the "Activate link by sku (xmlId)" option
 
 ## 2020-09-21 4.1.5
-* Исправлен баг с передачей email. Email перед отправкой в RetailCRM всегда переводиться в нижний регистр.
-* Исправлен баг с передачей оплаты с нулевой суммой
-* Улучшена работа скидок в заказе
+* Fixed a bug connected with transferring emails. Before being sent to RetailCRM, emails are always converted to lower case.
+* Fixed a bug connected with transfers of payments of no amount
+* Improved the work of discounts in the order
 
 ## 2020-08-27 4.1.4
-* Добавлены переводы для передачи себестоимости доставки
-* Исправлен баг с некорректным отображением онлайн консультанта на странице авторизации
+* Added translations to transfer the prime cost of the delivery
+* Fixed a bug connected with an incorrect displaying the Live Chat on the login page
 
 ## 2020-08-20 4.1.3
-* Добавлены переводы для опции роли клиентов
-* Добавлена возможность опционально передавать себестоимость доставки
+* Added translations for the option of customers’ role
+* Added the ability to optionally transfer the prime cost of delivery
 
 ## 2020-08-20 4.1.2
-* Исправлен баг с отсутствием настроек справочников
+* Fixed a bug connected with missing data books settings
 
 ## 2020-08-08 4.1.1
-* Добавлена настройка выбора ролей клиентов для выгрузки в RetailCRM
+* Added a setting for selecting customer roles for upload to RetailCRM
 
 ## 2020-08-05 4.1.0
-* Добавлена возможность подключения Онлайн-консультанта
+* Added the ability to connect the Live Chat
 
 ## 2020-07-28 4.0.1
-* Исправлена передача статуса оплаты
+* Fixed transfer of payment status
 
 ## 2020-06-18 4.0.0
-* Поддержка корпоративных клиентов
-* Поддержка изменения покупателя в заказе
+* Support for corporate customers
+* Support for changing a customer in an order
 
 ## 2020-06-18 3.6.4
-* Передача названия региона / штата / провинции вместо кода
+* Passing the region / state / province name instead of the code
 
 ## 2020-06-10 3.6.3
-* Улучшено обновление данных заказа по истории
+* Improved order data updating by history
 
 ## 2020-04-13 3.6.2
-* Исправлена ошибка, которая приводила к дублированию некоторых клиентов
+* Fixed a bug that led to duplication of some customers
 
 ## 2019-03-31 3.6.1
-* Исправлена ошибка генерации каталога товаров
+* Fixed a bug connected with generating a product catalogue
 
 ## 2020-03-25 3.6.0
-* Добавлена настройка передачи суммы оплаты
+* Added the setting for transferring the payment amount
 
 ## 2019-10-07 3.5.4
-* Добавлена возможность обработки одинаковых товарных позиций
+* Added the ability to process identical product items
 
 ## 2019-04-22 3.5.2
-* Исправлен баг с выгрузкой заказов в RetailCRM
-* Исправлена ошибка переводов
+* Fixed a bug connected with exporting orders to RetailCRM
+* Fixed a translation error
 
 ## 2019-04-16 3.5.1
-* Исправлен баг при активации плагина
+* Fixed a bug connected with plugin activation
 
 ## 2019-03-06 3.5.0
-* Добавлена настройка деактивации выгрузки изменений заказа в RetailCRM
-* Добавлена настройка активации выгрузки SKU в xmlId и связь товаров по полю xmlId
-* Добавлена настройка передачи номера заказа в RetailCRM
+* Added a setting to deactivate uploading order changes to RetailCRM
+* Added a setting for activating SKU exporting to xmlId and linking products by the “xmlId” field
+* Added a setting for transferring order numbers to RetailCRM
 
 ## 2019-03-06 3.4.5
-* Исправлен баг с добавлением скидки при уменьшении количества товара
-* Перенесена инициализация формы настроек после инициализации всех плагинов
+* Fixed a bug connected with adding a discount when decreasing the quantity of a product
+* Moved the initialization of the settings form after the initialization of all plugins
 
 ## 2019-02-25 3.4.4
-* Добавлена генерация уникального id к externalId отправляемой оплаты
+* Added generation of a unique id to the externalId of the payment being sent
 
 ## 2019-02-15 3.4.3
-* Исправлено сохранение типа оплаты при создании заказа при обработке истории изменений на стороне WC
-* Исправлено сохранение типа оплаты при изменении заказа при обработке истории изменений на стороне WC
-* Исправлено подключение файлов методом checkCustomFile
+* Fixed saving of the payment type when creating an order when processing the history of changes on the WC side
+* Fixed saving of the payment type when changing an order when processing the history of changes on the WC side
+* Fixed connecting files using the checkCustomFile method
 
 ## 2019-02-07 3.4.2
-* Исправлено изменение типа оплаты на стороне WC
-* Добавлен вывод неактивных типов оплаты в настройках
-* Удалена генерация внешнего кода клиента
+* Fixed change of payment type on the WC side
+* Added inactive payment types in the settings
+* Removed external code generation of a customer
 
 ## 2019-01-22 v3.4.1
-* Исправлена архивная выгрузка клиентов
+* Fixed archive export of customers
 
 ## 2019-01-17 v3.4.0
-* Добавлена настройка Daemon Collector
-* Изменена логика передачи данных по заказам и клиентам. Данные доставки передаются в заказ, данные оплаты в карточку клиента.
+* Added Daemon Collector setting
+* Changed the logic of data transfer for orders and customers. Delivery data is transferred to the order, payment data to the customer card.
 
 ## 2018-12-14 v3.3.8
-* Добавлена выгрузка картинок для категорий товаров в ICML
+* Added export of images for product categories to ICML
 
 ## 2018-12-11 v3.3.7
-* Исправление бага в активации
+* Fixed a bug connected with activation
 
 ## 2018-12-06 v3.3.6
-* Исправлена активация модуля в маркетплейсе RetailCRM при использовании api v4
-* Расширена отправляемая конфигурация
+* Fixed module activation in RetailCRM’s marketplace when using api v4
+* Expanded configuration for sending
 
 ## 2018-10-25 v3.3.5
-* Добавлена активация модуля в маркетплейсе RetailCRM
+* Added module activation in RetailCRM’s marketplace
 
 ## 2018-08-30 v3.3.4
-* Исправлен баг с занулением количества товара в заказе WC
+* Fixed a bug connected with zeroing the quantity of the product in the WC order
 
 ## 2018-08-30 v3.3.3
-* Добавлены кнопки для перехода в настройки плагина и для генерации каталога в админ-панели wordpress
-* Добавлена передача статуса оплаты на v5
+* Added buttons to go to the plugin settings and to generate a catalogue in the WordPress admin panel
+* Added transfer of payment status on v5
 
 ## 2018-08-22 v3.3.2
-* Убрана проверка существования задач в wp-cron при каждой загрузке страницы
-* Задачи в wp-cron теперь активируются в настройках плагина
+* Removed check for the existence of tasks in wp-cron on every page loading
+* Tasks in wp-cron are now activated in the plugin settings
 
 ## 2018-08-09 v3.3.1
-* Исправлена ошибка с дублированием товаров с WC
+* Fixed a bug connected with duplication of products from WC
 
 ## 2018-08-06 v3.3.0
-* Переработана механика обработки истории изменений (добавлена склейка всех изменений)
-* Добавлен фильтр "retailcrm_history_before_save" для модификации данных истории
+* Reworked the mechanics of handling change history (added merging of all changes)
+* Added filter "retailcrm_history_before_save" to modify the history data
 
 ## 2018-07-19 v3.2.0
-* Улучшен метод выборки данных о доставках и оплатах в настройках плагина. (Выбираются все типы оплат, а не только разрешенные. Доставки, которые созданы для отдельных зон, передаются как сервисы)
-* Исправлены ошибки при обработке истории изменений
-* Добавлены тесты для обработки истории изменений
+* Improved the method for selection of data on deliveries and payments in the plugin settings. (All types of payments are selected, not just allowed ones. Deliveries that are created for individual zones are transferred as services)
+* Fixed bugs when processing change history
+* Added tests for processing history of changes
 
 ## 2018-06-19 v3.1.1
-* Исправлен код отправки данных в UA
-* Добавлены новые фильтры, добавлена передача новых параметров в существущие
+* Fixed the code for sending data to UA
+* Added new filters, and added transfer of new parameters to existing ones
 
 ## 2018-05-28 v3.1.0
-* В интерфейс настроек плагина добавлена возможность ручной выгрузки заказов
-* Исправлена инициализация кода UA для отправки заказов на всех страницах
+* Added the ability to manually export orders to the plugin settings interface
+* Fixed initialization of the UA code for sending orders on all pages
 
 ## 2018-04-26 v3.0.0
-* Добавлены тесты
-* Произведен рефакторинг кода
-* Добавлены хуки
+* Added tests
+* Refactoring of the code
+* Webhooks added
 
 ## 2018-03-22 v2.1.4
-* Исправлена ошибка при активированном модуле без настроек
-* Добавлен фильтр при формировании массива заказа
-* Исправлена генерация icml с неполной картинкой товара
+* Fixed a bug connected with the activated module without settings
+* Added a filter when forming an order array
+* Fixed generation of icml with incomplete product picture
 
 ## 2018-03-22 v2.1.3
-* Исправлена ошибка на php5.3
+* Fixed a bug on php5.3
 
 ## 2018-03-21 v2.1.2
-* Добавлена локализация плагина
-* Добавлена интеграция с UA
+* Added plugin localization
+* Added integration with UA
 
 ## 2018-03-12 v2.1.1
-* Исправлена ошибка редактирования информации о клиенте
+* Fixed a bug connected with editing customer information
 
 ## 2018-02-26 v2.1.0
-* Переработана механика генерации icml каталога товаров
-* В icml каталог добавлена выгрузка налоговой ставки
-* Исправлен пересчет итогов после изменения количества товара в RetailCRM
+* Reworked mechanics of generating icml product catalog
+* Added tax rate export to icml catalog
+* Fixed recalculation of totals after changing the quantity of a product in RetailCRM
 
 ## 2018-02-19 v2.0.6
-* Исправлено возникновение Warning на PHP 7.2 при генерации каталога товаров
-* Добавлена настройка выгрузки заказов из RetailCRM с определенными способами оформления
-* Выгрузка изменений из RetailCRM осуществляется по sinceId
+* Fixed occurrence of a Warning in PHP 7.2 when generating a product catalog
+* Added a setting for exporting orders from RetailCRM with certain order methods
+* Changes are exported from RetailCRM by sinceId
 
 ## 2018-02-02 v2.0.5
-* Исправлен неверный подсчет скидки на товары
+* Fixed an incorrect calculation of discounts for products
