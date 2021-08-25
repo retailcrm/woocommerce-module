@@ -343,12 +343,12 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 $wcOrder->update_status($options[$order['status']]);
             }
 
-            if (isset($order['customerComment'])) {
-                $wcOrder->set_customer_note($order['customerComment']);
-            }
-
             if (isset($order['managerComment']) && !empty($order['managerComment'])) {
                 $wcOrder->add_order_note($order['managerComment'], 0, false);
+            }
+
+            if (isset($order['customerComment']) && !empty($order['customerComment'])) {
+                $wcOrder->set_customer_note($order['customerComment']);
             }
 
             if (isset($order['firstName'])) {
@@ -661,6 +661,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
             if (isset($order['managerComment']) && !empty($order['managerComment'])) {
                 $wcOrder->add_order_note($order['managerComment'], 0, false);
+            }
+
+            if (isset($order['customerComment']) && !empty($order['customerComment'])) {
+                $wcOrder->set_customer_note($order['customerComment']);
             }
 
             // TODO Check if that works; also don't forget to set this company field while creating order from CMS!
