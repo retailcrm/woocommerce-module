@@ -22,19 +22,22 @@ class WC_Retailcrm_History_Assembler
         foreach ($orderHistory as $change) {
             $change['order'] = self::removeEmpty($change['order']);
 
-            if(isset($change['order']['items']) && $change['order']['items']) {
+            if (isset($change['order']['items']) && $change['order']['items']) {
                 $items = array();
-                foreach($change['order']['items'] as $item) {
-                    if(isset($change['created'])) {
+
+                foreach ($change['order']['items'] as $item) {
+                    if (isset($change['created'])) {
                         $item['create'] = 1;
                     }
+
                     $items[$item['id']] = $item;
                 }
                 $change['order']['items'] = $items;
             }
 
-            if(isset($change['order']['contragent']['contragentType']) && $change['order']['contragent']['contragentType']) {
+            if (isset($change['order']['contragent']['contragentType']) && $change['order']['contragent']['contragentType']) {
                 $change['order']['contragentType'] = $change['order']['contragent']['contragentType'];
+                
                 unset($change['order']['contragent']);
             }
 
@@ -45,35 +48,28 @@ class WC_Retailcrm_History_Assembler
             }
 
             if (isset($change['item']) && $change['item']) {
-                if(isset($orders[$change['order']['id']]['items'][$change['item']['id']])) {
+                if (isset($orders[$change['order']['id']]['items'][$change['item']['id']])) {
                     $orders[$change['order']['id']]['items'][$change['item']['id']] = array_merge($orders[$change['order']['id']]['items'][$change['item']['id']], $change['item']);
                 } else {
                     $orders[$change['order']['id']]['items'][$change['item']['id']] = $change['item'];
                 }
 
-                if ($change['oldValue'] === null
-                    && $change['field'] == 'order_product'
-                ) {
+                if ($change['oldValue'] === null && $change['field'] == 'order_product') {
                     $orders[$change['order']['id']]['items'][$change['item']['id']]['create'] = true;
                 }
 
-                if ($change['newValue'] === null
-                    && $change['field'] == 'order_product'
-                ) {
+                if ($change['newValue'] === null && $change['field'] == 'order_product') {
                     $orders[$change['order']['id']]['items'][$change['item']['id']]['delete'] = true;
                 }
 
-                if (!isset($orders[$change['order']['id']]['items'][$change['item']['id']]['create'])
-                    && isset($fields['item'][$change['field']])
-                    && $fields['item'][$change['field']]
-                ) {
+                if (isset($fields['item'][$change['field']]) && $fields['item'][$change['field']]) {
                     $orders[$change['order']['id']]['items'][$change['item']['id']][$fields['item'][$change['field']]] = $change['newValue'];
                 }
             } elseif ($change['field'] == 'payments' && isset($change['payment'])) {
                 if ($change['newValue'] !== null) {
                     $orders[$change['order']['id']]['payments'][] = self::newValue($change['payment']);
                 }
-            }  else {
+            } else {
                 if (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service') {
                     $orders[$change['order']['id']]['delivery']['service']['code'] = self::newValue($change['newValue']);
                 } elseif (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']]) {
@@ -120,7 +116,8 @@ class WC_Retailcrm_History_Assembler
         foreach ($customerHistory as $change) {
             $change['customer'] = self::removeEmpty($change['customer']);
 
-            if (isset($change['deleted'])
+            if (
+                isset($change['deleted'])
                 && $change['deleted']
                 && isset($customers[$change['customer']['id']])
             ) {
@@ -138,7 +135,8 @@ class WC_Retailcrm_History_Assembler
                 $customers[$change['customer']['id']] = $change['customer'];
             }
 
-            if (isset($fields['customer'][$change['field']])
+            if (
+                isset($fields['customer'][$change['field']])
                 && $fields['customer'][$change['field']]
             ) {
                 $customers[
@@ -148,7 +146,8 @@ class WC_Retailcrm_History_Assembler
                 ] = self::newValue($change['newValue']);
             }
 
-            if (isset($fieldsAddress['customerAddress'][$change['field']])
+            if (
+                isset($fieldsAddress['customerAddress'][$change['field']])
                 && $fieldsAddress['customerAddress'][$change['field']]
             ) {
                 if (!isset($customers[$change['customer']['id']]['address'])) {
@@ -166,9 +165,7 @@ class WC_Retailcrm_History_Assembler
 
             // email_marketing_unsubscribed_at old value will be null and new value will be datetime in
             // `Y-m-d H:i:s` format if customer was marked as unsubscribed in retailCRM
-            if (isset($change['customer']['id']) &&
-                $change['field'] == 'email_marketing_unsubscribed_at'
-            ) {
+            if (isset($change['customer']['id']) && $change['field'] == 'email_marketing_unsubscribed_at') {
                 if ($change['oldValue'] == null && is_string(self::newValue($change['newValue']))) {
                     $customers[$change['customer']['id']]['subscribed'] = false;
                 } elseif (is_string($change['oldValue']) && self::newValue($change['newValue']) == null) {
@@ -195,7 +192,8 @@ class WC_Retailcrm_History_Assembler
         foreach ($customerHistory as $change) {
             $change['customer'] = self::removeEmpty($change['customer']);
 
-            if (isset($change['deleted'])
+            if (
+                isset($change['deleted'])
                 && $change['deleted']
                 && isset($customersCorporate[$change['customer']['id']])
             ) {
@@ -204,7 +202,8 @@ class WC_Retailcrm_History_Assembler
             }
 
             if (isset($customersCorporate[$change['customer']['id']])) {
-                if (isset($customersCorporate[$change['customer']['id']]['deleted'])
+                if (
+                    isset($customersCorporate[$change['customer']['id']]['deleted'])
                     && $customersCorporate[$change['customer']['id']]['deleted']
                 ) {
                     continue;
@@ -218,7 +217,8 @@ class WC_Retailcrm_History_Assembler
                 $customersCorporate[$change['customer']['id']] = $change['customer'];
             }
 
-            if (isset($fields['customerCorporate'][$change['field']])
+            if (
+                isset($fields['customerCorporate'][$change['field']])
                 && $fields['customerCorporate'][$change['field']]
             ) {
                 $customersCorporate[
@@ -228,9 +228,7 @@ class WC_Retailcrm_History_Assembler
                 ] = self::newValue($change['newValue']);
             }
 
-            if (isset($fields['customerAddress'][$change['field']])
-                && $fields['customerAddress'][$change['field']]
-            ) {
+            if (isset($fields['customerAddress'][$change['field']]) && $fields['customerAddress'][$change['field']]) {
                 if (empty($customersCorporate[$change['customer']['id']]['address'])) {
                     $customersCorporate[$change['customer']['id']]['address'] = array();
                 }
@@ -276,7 +274,7 @@ class WC_Retailcrm_History_Assembler
         if (file_exists($mappingFile)) {
             $objects = simplexml_load_file($mappingFile);
 
-            foreach($objects->fields->field as $object) {
+            foreach ($objects->fields->field as $object) {
                 if (empty($groupFilter) || in_array($object["group"], $groupFilter)) {
                     $fields[(string)$object["group"]][(string)$object["id"]] = (string)$object;
                 }
@@ -315,7 +313,7 @@ class WC_Retailcrm_History_Assembler
 
         if (!empty($inputArray)) {
             foreach ($inputArray as $key => $element) {
-                if(!empty($element) || $element === 0 || $element === '0'){
+                if (!empty($element) || $element === 0 || $element === '0') {
                     if (is_array($element)) {
                         $element = self::removeEmpty($element);
                     }
@@ -349,7 +347,8 @@ class WC_Retailcrm_History_Assembler
 
         foreach ($historyEntries as $entry) {
             if (!isset($entry[$recordType]['externalId'])) {
-                if ($entry['source'] == 'api'
+                if (
+                    $entry['source'] == 'api'
                     && isset($change['apiKey']['current'])
                     && $entry['apiKey']['current'] == true
                     && $entry['field'] != 'externalId'
@@ -373,7 +372,8 @@ class WC_Retailcrm_History_Assembler
                 $notOurChanges[$externalId] = array();
             }
 
-            if ($entry['source'] == 'api'
+            if (
+                $entry['source'] == 'api'
                 && isset($entry['apiKey']['current'])
                 && $entry['apiKey']['current'] == true
             ) {
