@@ -1,3 +1,10 @@
+## 2021-08-30 4.3.8
+* Updated logic work address
+* Added transfer of the client's comment to the WC order
+* Added the ability to skip inactive statuses in settings module
+* Deleted option 'Do not transmit the cost of delivery'
+* Fix bug in archive upload
+
 ## 2021-08-04 4.3.7
 * Fixed an error with incorrect unloading of archived clients
 * Removed the "Client roles" option from the module settings
