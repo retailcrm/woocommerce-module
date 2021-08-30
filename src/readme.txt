@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 5.3
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 4.3.7
+Stable tag: 4.3.8
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,13 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+
+= 4.3.8 =
+* Updated logic work address
+* Added transfer of the client's comment to the WC order
+* Added the ability to skip inactive statuses in settings module
+* Deleted option 'Do not transmit the cost of delivery'
+* Fix bug in archive upload
 
 = 4.3.7 =
 * Fixed an error with incorrect unloading of archived clients
