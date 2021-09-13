@@ -18,7 +18,7 @@
 
 ![](https://lh4.googleusercontent.com/gYTT8iHXVZKweniR9Wi5SknH0WUqGnz8bP_TOOUs1WpOyZiKZ8FxhKL73rT0f0GilHmqqhd7YXOJ3kokBTbQrJsseZ0yixiuGusnKD__9LmR2L5L4b3tlZfEClAMOP91I1_88V0M=s0)
 
-Обратите внимание, что в настройках сопоставления, перечень существующих оплат в WooCommerce выводится *вне зависимости от его активности*.
+Обратите внимание, что в настройках сопоставления, перечень существующих оплат в WooCommerce выводится *вне зависимости от их активности*.
 
 На стороне CRM доступные доставки можно увидеть перейдя в *Настройки - Справочники - Типы оплат*
 
