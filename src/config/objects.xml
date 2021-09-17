@@ -79,7 +79,7 @@
         <field id="shipped" group="order">shipped</field>
         <field id="contact" group="order">contact</field>
         <field id="company" group="order">company</field>
-        <!--<field id="order_product" group="order">item</field>-->
+
         <field id="payment" group="order">payment</field>
         <field id="payments.amount" group="order">amount</field>
         <field id="payments.paid_at" group="order">paidAt</field>
@@ -89,7 +89,7 @@
 
         <field id="order_product.id" group="item">id</field>
         <field id="order_product.initial_price" group="item">initialPrice</field>
-        <field id="order_product.discount" group="item">discount</field>
+        <field id="order_product.discount_total" group="item">discountTotal</field>
         <field id="order_product.discount_percent" group="item">discountPercent</field>
         <field id="order_product.quantity" group="item">quantity</field>
         <field id="order_product.status" group="item">status</field>
