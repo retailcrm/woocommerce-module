@@ -44,6 +44,9 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         /** @var array */
         private $payment = array();
 
+        /**@var array */
+        private $customFields = array();
+
         public function __construct(
             $retailcrm,
             $retailcrm_settings,
@@ -60,6 +63,10 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             $this->customers = $customers;
             $this->orders = $orders;
             $this->order_payment = $order_payment;
+
+            if (!empty($retailcrm_settings['order-meta-data-retailcrm'])) {
+                $this->customFields = json_decode($retailcrm_settings['order-meta-data-retailcrm'], true);
+            }
         }
 
         /**
@@ -400,6 +407,16 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             if (!$update && $order->get_total() > 0) {
                 $this->order_payment->is_new = true;
                 $order_data['payments'][] = $this->order_payment->build($order)->get_data();
+            }
+
+            if (!empty($this->customFields)) {
+                foreach ($this->customFields as $metaKey => $customKey) {
+                    $metaValue = $order->get_meta($metaKey);
+
+                    if (!empty($metaValue)) {
+                        $order_data['customFields'][$customKey] = $metaValue;
+                    }
+                }
             }
 
             $this->order = WC_Retailcrm_Plugin::clearArray($order_data);

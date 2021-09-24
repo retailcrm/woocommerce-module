@@ -161,6 +161,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                         if ($wcCustomer instanceof WC_Customer) {
                             $wcCustomer->save();
+
+                            $customerCustomFields = $this->getCustomData('customer');
+
+                            $this->updateMetaData($customerCustomFields, $crmCustomer, $wcCustomer->get_id());
                         }
 
                         WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
@@ -235,6 +239,9 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                         }
 
                         $wcOrder = wc_get_order($wcOrderId);
+                        $orderCustomFields = $this->getCustomData('order');
+
+                        $this->updateMetaData($orderCustomFields, $order, $wcOrderId, 'order');
 
                         if ($wcOrder instanceof WC_Order) {
                             $wcOrder->calculate_totals();
@@ -1074,6 +1081,48 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
             }
 
             return $handled;
+        }
+
+        /**
+         * Get custom fields mapping with settings.
+         *
+         * @param string $dataType This data type which we get.
+         *
+         * @return mixed|void
+         */
+        private function getCustomData($dataType)
+        {
+            if (!empty($this->retailcrmSettings["$dataType-meta-data-retailcrm"])) {
+                return json_decode(
+                    $this->retailcrmSettings["$dataType-meta-data-retailcrm"],
+                    true
+                );
+            }
+        }
+
+        /**
+         * Update meta data in CMS.
+         *
+         * @param array  $customFields Custom fields witch settings mapping.
+         * @param array  $data         Data witch CRM.
+         * @param int    $idPost       ID post in which we update the metadata.
+         * @param string $dataType     Data type which to update the metadata.
+         *
+         * @return void
+         */
+        private function updateMetaData($customFields, $data, $idPost, $dataType = 'customer')
+        {
+            if (!empty($customFields)) {
+                foreach ($customFields as $metaKey => $customKey) {
+                    if (!empty($data['customFields'][$customKey])) {
+                        if ($dataType === 'order') {
+                            update_post_meta($idPost, $metaKey, $data['customFields'][$customKey]);
+                        } else {
+                            update_user_meta($idPost, $metaKey, $data['customFields'][$customKey]);
+                        }
+                    }
+                }
+            }
         }
 
         /**

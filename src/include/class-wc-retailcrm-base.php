@@ -32,6 +32,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
          * Init and hook in the integration.
+         *
          * @param \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
          */
         public function __construct($retailcrm = false)
@@ -77,6 +78,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_inventories', array($this, 'load_stocks'));
             add_action('wp_ajax_do_upload', array($this, 'upload_to_crm'));
             add_action('wp_ajax_cron_info', array($this, 'get_cron_info'), 99);
+            add_action('wp_ajax_set_meta_fields', array($this, 'set_meta_fields'), 99);
             add_action('wp_ajax_content_upload', array($this, 'count_upload_data'), 99);
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
             add_action('wp_ajax_upload_selected_orders', array($this, 'upload_selected_orders'));
@@ -461,6 +463,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             // Include style for debug info
             wp_register_style('retailcrm-debug-info-style', $path . 'debug-info.min.css', false, '0.1');
             wp_enqueue_style('retailcrm-debug-info-style');
+
+            // Include style for meta fields
+            wp_register_style('retailcrm-meta-fields-style', $path . 'meta-fields.min.css', false, '0.1');
+            wp_enqueue_style('retailcrm-meta-fields-style');
         }
 
         /**
@@ -479,6 +485,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             wp_register_script('retailcrm-cron-info', $path . 'retailcrm-cron-info.js', false, '0.1');
             wp_enqueue_script('retailcrm-cron-info', $path . 'retailcrm-export.js', '', '', true);
+
+            wp_register_script('retailcrm-meta-fields', $path . 'retailcrm-meta-fields.js', false, '0.1');
+            wp_enqueue_script('retailcrm-meta-fields', $path . 'retailcrm-meta-fields.js', '', '', true);
         }
 
         /**
@@ -545,31 +554,112 @@ if (!class_exists('WC_Retailcrm_Base')) {
          * Return time work next cron
          */
         public function get_cron_info() {
-            $icml        = 'This option is disabled';
-            $history     = 'This option is disabled';
-            $inventories = 'This option is disabled';
+            $defaultValue = __('This option is disabled', 'retailcrm');
+            $icml         = $defaultValue;
+            $history      = $defaultValue;
+            $inventories  = $defaultValue;
+            $translate    = array(
+                'tr_td_cron'        => __('Cron launches', 'retailcrm'),
+                'tr_td_icml'        => __('Generation ICML', 'retailcrm'),
+                'tr_td_history'     => __('Syncing history', 'retailcrm'),
+                'tr_td_inventories' => __('Syncing inventories', 'retailcrm'),
+            );
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
-                $history = date("H:i:s d-m-Y", wp_next_scheduled('retailcrm_history'));
+                $history = date( 'H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
             }
 
             if (isset($this->settings['icml']) && $this->settings['icml'] == static::YES) {
-                $icml = date("H:i:s d-m-Y", wp_next_scheduled('retailcrm_icml'));
+                $icml = date( 'H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
             }
 
             if (isset($this->settings['sync']) && $this->settings['sync'] == static::YES) {
-                $inventories = date("H:i:s d-m-Y ", wp_next_scheduled('retailcrm_inventories'));
+                $inventories = date( 'H:i:s d-m-Y ', wp_next_scheduled('retailcrm_inventories'));
             }
 
             echo json_encode(
                 array(
                     'history'     => $history,
                     'icml'        => $icml,
-                    'inventories' => $inventories
+                    'inventories' => $inventories,
+                    'translate'   => $translate,
                 )
             );
 
             wp_die();
+        }
+
+        /**
+         * Set meta fields in settings
+         */
+        public function set_meta_fields()
+        {
+            $orderMetaData        = $this->getMetaData('order');
+            $customerMetaData     = $this->getMetaData('user');
+            $orderCustomFields    = $this->getCustomFields('order');
+            $customerCustomFields = $this->getCustomFields('customer');
+
+            $translate = array(
+                'tr_lb_order'    => __('Custom fields for order', 'retailcrm'),
+                'tr_lb_customer' => __('Custom fields for customer', 'retailcrm'),
+                'tr_btn'         => __('Add new select for order', 'retailcrm'),
+            );
+
+            echo json_encode(
+                array(
+                    'order'     => array('custom' => $orderCustomFields, 'meta' => $orderMetaData),
+                    'customer'  => array('custom' => $customerCustomFields, 'meta' => $customerMetaData),
+                    'translate' => $translate,
+                )
+            );
+
+            wp_die();
+        }
+
+        /**
+         * Get custom fields with CRM
+         *
+         * @return array
+         */
+        private function getCustomFields($entity)
+        {
+            $customFields = array('default_retailcrm' => __('Select value', 'retailcrm'));
+            $getCustomFields = $this->apiClient->customFieldsList(array('entity' => $entity), 100);
+
+            if (!empty($getCustomFields['customFields']) && $getCustomFields->isSuccessful()) {
+                foreach ($getCustomFields['customFields'] as $field) {
+                    if (!empty($field['code']) && $field['name']) {
+                        $customFields[$field['code']] = $field['name'];
+                    }
+                }
+            }
+
+            return $customFields;
+        }
+
+        /**
+         * Get meta data with CMS
+         *
+         * @return array
+         */
+        private function getMetaData($entity)
+        {
+            global $wpdb;
+
+            $table = $entity === 'order' ? $wpdb->postmeta : $wpdb->usermeta;
+
+            $metaData = array('default_retailcrm' => __('Select value', 'retailcrm'));
+            $sqlQuery = "SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`";
+            $defaultMetaFields = file(
+                __DIR__ . '/../assets/default/default_meta_fields.txt',
+                FILE_IGNORE_NEW_LINES
+            );
+
+            foreach ($wpdb->get_results($sqlQuery) as $metaValue) {
+                $metaData[$metaValue->meta_key] = $metaValue->meta_key;
+            }
+
+            return array_diff($metaData, $defaultMetaFields);
         }
 
         /**
@@ -603,7 +693,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
             delete_option('retailcrm_active_in_crm');
         }
-
 
         /**
          * @param $settings

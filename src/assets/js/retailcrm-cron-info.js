@@ -25,20 +25,24 @@ jQuery(function () {
                 _this.icml = response.icml;
                 _this.inventories = response.inventories;
 
-                _this.displayInfoAboutCron();
-
+                _this.displayInfoAboutCron(
+                    response.translate.tr_td_cron,
+                    response.translate.tr_td_icml,
+                    response.translate.tr_td_history,
+                    response.translate.tr_td_inventories
+                );
             })
     }
 
-    RetailcrmCronInfo.prototype.displayInfoAboutCron = function () {
+    RetailcrmCronInfo.prototype.displayInfoAboutCron = function (cron, icml, history, inventories) {
         this.table = jQuery(this.title).next();
         this.table.append('<tbody class="retail-debug-info"></tbody>');
         this.infoTable = jQuery('tbody[class="retail-debug-info"]').get(0);
 
-        jQuery(this.infoTable).append("<tr><td class='retail-cron-info-title'>" + "Cron launches:" + "</td></tr>");
-        jQuery(this.infoTable).append("<tr><td class='retail-cron-info'>" + "History: " + this.history +  "</td></tr>");
-        jQuery(this.infoTable).append("<tr><td class='retail-cron-info'>" + "Icml: " +  this.icml +  "</td></tr>");
-        jQuery(this.infoTable).append("<tr><td class='retail-cron-info'>" + "Inventories: " + this.inventories +  "</td></tr>");
+        jQuery(this.infoTable).append("<tr><td class='retail-cron-info-title'>" + cron + " : " + "</td></tr>");
+        jQuery(this.infoTable).append("<tr><td class='retail-cron-info'>" + icml + " : " +  this.icml +  "</td></tr>");
+        jQuery(this.infoTable).append("<tr><td class='retail-cron-info'>" + history +  " : " + this.history +  "</td></tr>");
+        jQuery(this.infoTable).append("<tr><td class='retail-cron-info'>" + inventories + " : " + this.inventories +  "</td></tr>");
     }
 
     window.RetailcrmCronInfo = RetailcrmCronInfo;

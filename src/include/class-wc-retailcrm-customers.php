@@ -36,6 +36,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /** @var array */
         private $customerCorporateAddress = array();
 
+        /**@var array */
+        private $customFields = array();
+
         /**
          * WC_Retailcrm_Customers constructor.
          *
@@ -48,6 +51,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $this->retailcrm = $retailcrm;
             $this->retailcrm_settings = $retailcrm_settings;
             $this->customer_address = $customer_address;
+
+            if (!empty($retailcrm_settings['customer-meta-data-retailcrm'])) {
+                $this->customFields = json_decode($retailcrm_settings['customer-meta-data-retailcrm'], true);
+            }
         }
 
         /**
@@ -367,6 +374,16 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
                 if (!empty($company)) {
                     $data_customer['isContact'] = true;
+                }
+            }
+
+            if (!empty($this->customFields)) {
+                foreach ($this->customFields as $metaKey => $customKey) {
+                    $metaValue = $customer->get_meta($metaKey);
+
+                    if (!empty($metaValue)) {
+                        $data_customer['customFields'][$customKey] = $metaValue;
+                    }
                 }
             }
 

@@ -171,6 +171,10 @@ class WC_Retailcrm_History_Assembler
                 ] = self::newValue($change['newValue']);
             }
 
+            if (strripos($change['field'], 'custom_') !== false) {
+                $customers[$change['customer']['id']]['customFields'][str_replace( 'custom_', '', $change['field'])] = self::newValue($change['newValue']);
+            }
+
             // email_marketing_unsubscribed_at old value will be null and new value will be datetime in
             // `Y-m-d H:i:s` format if customer was marked as unsubscribed in retailCRM
             if (isset($change['customer']['id']) && $change['field'] == 'email_marketing_unsubscribed_at') {

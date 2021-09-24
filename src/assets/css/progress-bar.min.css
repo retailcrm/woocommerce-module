@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 .retail-progress{border-radius:18px;border:1px solid rgba(122,122,122,.15);width:400px;height:18px;overflow:hidden;transition:height .25s ease}.retail-progress__loader{width:0;border-radius:18px;background:#4169e1;color:#fff;text-align:center;padding:0 30px;font-size:18px;font-weight:600;transition:width .4s ease-in;line-height:18px;box-sizing:border-box}.retail-hidden{display:none!important}.retail-count-data-upload{margin-bottom:20px;size:30px;color:#4169e1;font-weight:700}
+=======
+.retail-progress{border-radius:18px;border:1px solid rgba(122,122,122,.15);width:400px;height:18px;overflow:hidden;transition:height .25s ease}.retail-progress__loader{width:0;border-radius:18px;background:#4169e1;color:#fff;text-align:center;padding:0 30px;font-size:18px;font-weight:600;transition:width .4s ease-in;line-height:18px;box-sizing:border-box}.retailcrm-hidden{display:none!important}.retail-count-data-upload{margin-bottom:20px;size:30px;color:#4169e1;font-weight:700}
+>>>>>>> Add mapping metadata fields in settings

@@ -274,3 +274,36 @@ msgstr "Activar el modo de depuración en el módulo"
 msgid "Is required to enable debug mode for advanced logs"
 msgstr "Se requiere el modo de depuración para habilitar el registro avanzado de logs"
 
+msgid "Custom fields"
+msgstr "Campos personalizados"
+
+msgid "Select value"
+msgstr "Selecciona un valor"
+
+msgid "Custom fields for order"
+msgstr "Campos de pedido personalizados"
+
+msgid "Custom fields for customer"
+msgstr "Campos de clientes personalizados"
+
+msgid "Add new select for order"
+msgstr "Añadir"
+
+msgid "Add new select for customer"
+msgstr "Añadir"
+
+msgid "This option is disabled"
+msgstr "Opción desactivada"
+
+msgid "Cron launches"
+msgstr "Tareas de cron"
+
+msgid "Generation ICML"
+msgstr "Generación del catálogo"
+
+msgid "Syncing history"
+msgstr "Sincronización del historial"
+
+msgid "Syncing inventories"
+msgstr "Sincronización de inventario"
+
