@@ -343,8 +343,6 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     $shipping_method = $shipping['method_id'] . ':' . $shipping['instance_id'];
                 }
 
-                $shipping_cost = $shipping['total'] + $shipping['total_tax'];
-
                 if (!empty($shipping_method) && !empty($this->retailcrm_settings[$shipping_method])) {
                     $order_data['delivery']['code'] = $this->retailcrm_settings[$shipping_method];
                     $service = retailcrm_get_delivery_service($shipping['method_id'], $shipping['instance_id']);
@@ -358,12 +356,12 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     }
                 }
 
-                if (!empty($shipping_cost)) {
-                    $order_data['delivery']['cost'] = $shipping_cost;
-                }
-
-                if (!empty($shipping['total'])) {
+                if (isset($shipping['total'])) {
                     $order_data['delivery']['netCost'] = $shipping['total'];
+
+                    if (isset($shipping['total_tax'])) {
+                        $order_data['delivery']['cost'] = $shipping['total'] + $shipping['total_tax'];
+                    }
                 }
             }
 
