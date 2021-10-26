@@ -71,8 +71,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                         $product = retailcrm_get_wc_product($offer[$this->bind_field], $this->retailcrm_settings);
 
                         if ($product instanceof WC_Product) {
-                            if ($product->get_type() == 'variation' || $product->get_type() == 'variable') {
-                                $parentId = $product->get_parent_id();
+                            if (($product->get_type() == 'variation' || $product->get_type() == 'variable') && $parentId = $product->get_parent_id()) {
 
                                 if (isset($variationProducts[$parentId])) {
                                     $variationProducts[$parentId] += $offer['quantity'];
