@@ -43,7 +43,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          * @param array                         $retailcrm_settings
          * @param WC_Retailcrm_Customer_Address $customer_address
          */
-        public function __construct($retailcrm = false, $retailcrm_settings, $customer_address)
+        public function __construct($retailcrm, $retailcrm_settings, $customer_address)
         {
             $this->retailcrm = $retailcrm;
             $this->retailcrm_settings = $retailcrm_settings;
@@ -73,7 +73,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function isCorporateEnabled()
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return false;
             }
 
@@ -92,7 +92,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function createCustomer($customer, $order = null)
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
@@ -126,7 +126,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function updateCustomer($customer_id)
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return;
             }
 
@@ -151,7 +151,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function updateCustomerById($customer_id, $crmCustomerId)
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return;
             }
 
@@ -178,7 +178,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function createCorporateCustomerForOrder($crmCustomerId, $customer, $order)
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
@@ -277,6 +277,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $this->customerCorporateCompany['address'] = array(
                     'id' => $response['id'],
                 );
+
                 $this->retailcrm->customersCorporateCompaniesCreate(
                     $customerId,
                     $this->customerCorporateCompany,
