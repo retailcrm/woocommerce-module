@@ -76,16 +76,16 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         /**
          * Uploads archive order in CRM
          *
-         * @param integer $page Number page uploads.
+         * @param int     $page Number page uploads.
          * @param array   $ids  Ids orders upload.
          *
-         * @return array
+         * @return array|null
          * @throws Exception Invalid argument exception.
          */
         public function uploadArchiveOrders($page, $ids = array())
         {
-            if (is_object($this->retailcrm) === false) {
-                return;
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
+                return null;
             }
 
             $uploadErrors = array();
@@ -117,8 +117,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         public function uploadArchiveCustomers($page)
         {
-            if (is_object($this->retailcrm) === false) {
-                return;
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
+                return null;
             }
 
             $users = $this->getCmsUsers($page);

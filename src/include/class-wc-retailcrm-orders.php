@@ -45,7 +45,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
         private $payment = array();
 
         public function __construct(
-            $retailcrm = false,
+            $retailcrm,
             $retailcrm_settings,
             $order_item,
             $order_address,
@@ -72,7 +72,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public function orderCreate($order_id)
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
@@ -245,7 +245,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
          */
         public function updateOrder($order_id)
         {
-            if (!$this->retailcrm) {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
