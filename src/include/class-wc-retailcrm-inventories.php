@@ -74,10 +74,12 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                             if ($product->get_type() == 'variation' || $product->get_type() == 'variable') {
                                 $parentId = $product->get_parent_id();
 
-                                if (isset($variationProducts[$parentId])) {
-                                    $variationProducts[$parentId] += $offer['quantity'];
-                                } else {
-                                    $variationProducts[$parentId] = $offer['quantity'];
+                                if (!empty($parentId)) {
+                                    if (isset($variationProducts[$parentId])) {
+                                        $variationProducts[$parentId] += $offer['quantity'];
+                                    } else {
+                                        $variationProducts[$parentId] = $offer['quantity'];
+                                    }
                                 }
                             }
 
@@ -88,11 +90,16 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                     }
                 }
 
-                foreach ($variationProducts as $id => $quantity) {
-                    $variationProduct = wc_get_product($id);
-                    $variationProduct->set_manage_stock(true);
-                    $variationProduct->set_stock($quantity);
-                    $success[] = $variationProduct->save();
+                if (!empty($variationProducts)) {
+                    foreach ($variationProducts as $id => $quantity) {
+                        $variationProduct = wc_get_product($id);
+
+                        if (is_object($variationProduct)) {
+                            $variationProduct->set_manage_stock(true);
+                            $variationProduct->set_stock($quantity);
+                            $success[] = $variationProduct->save();
+                        }
+                    }
                 }
             } while ($page <= $totalPageCount);
 
