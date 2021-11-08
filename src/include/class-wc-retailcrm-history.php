@@ -394,6 +394,18 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             $arItemsOld[$orderItemId] = $orderItemId;
                         }
 
+                        if (isset($item['externalIds'])) {
+                            foreach ($item['externalIds'] as $externalId) {
+                                if ($externalId['code'] == 'woocomerce') {
+                                    $itemExternalId = explode('_', $externalId['value']);
+                                }
+                            }
+
+                            if (array_key_exists($itemExternalId[1], $arItemsOld)) {
+                                continue;
+                            }
+                        }
+
                         $wcOrder->add_product($product, $item['quantity']);
 
                         foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
@@ -405,13 +417,13 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
 
                         $order['items'][$key]['woocomerceId'] = $result;
                     } else {
-                        foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
+                        foreach ($wcOrder->get_items() as $orderItem) {
                             if (
                                 isset($this->retailcrmSettings['bind_by_sku'])
                                 && $this->retailcrmSettings['bind_by_sku'] == WC_Retailcrm_Base::YES
                             ) {
                                 $offerId = $item['offer']['xmlId'];
-                            } elseif ($orderItem['variation_id'] != 0 ) {
+                            } elseif ($orderItem['variation_id'] != 0) {
                                 $offerId = $orderItem['variation_id'];
                             } else {
                                 $offerId = $orderItem['product_id'];
@@ -426,6 +438,7 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                             } else {
                                 $itemExternalId = explode('_', $item['externalId']);
                             }
+
                             if (
                                 $offerId == $item['offer'][$this->bindField]
                                 && (isset($itemExternalId) && $itemExternalId[1] == $orderItem->get_id())
@@ -773,7 +786,6 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                     }
 
                     $order['items'][$key]['woocomerceId'] = $result;
-
                 }
             }
 
