@@ -604,6 +604,10 @@ if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
                 if (isset($crmOrder['company'])) {
                     $order['company'] = $crmOrder['company'];
                 }
+
+                if (isset($crmOrder['delivery'])) {
+                    $order['delivery'] = $crmOrder['delivery'];
+                }
             }
 
             $customerId = isset($order['customer']['externalId']) ? $order['customer']['externalId'] : null;
