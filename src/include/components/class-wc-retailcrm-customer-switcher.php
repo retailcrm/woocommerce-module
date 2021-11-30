@@ -245,11 +245,11 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
      */
     private static function setBillingAddressToOrder($wcOrder, $address)
     {
-        $wcOrder->set_billing_state(self::arrayValue($address, 'region', '--'));
-        $wcOrder->set_billing_postcode(self::arrayValue($address, 'index', '--'));
-        $wcOrder->set_billing_country(self::arrayValue($address, 'country', '--'));
-        $wcOrder->set_billing_city(self::arrayValue($address, 'city', '--'));
-        $wcOrder->set_billing_address_1(self::arrayValue($address, 'text', '--'));
+        $wcOrder->set_billing_state(self::arrayValue($address, 'region', ''));
+        $wcOrder->set_billing_postcode(self::arrayValue($address, 'index', ''));
+        $wcOrder->set_billing_country(self::arrayValue($address, 'country', ''));
+        $wcOrder->set_billing_city(self::arrayValue($address, 'city', ''));
+        $wcOrder->set_billing_address_1(self::arrayValue($address, 'text', ''));
     }
 
     /**
@@ -262,11 +262,11 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
      */
     private static function setShippingAddressToOrder($wcOrder, $address)
     {
-        $wcOrder->set_shipping_state(self::arrayValue($address, 'region', '--'));
-        $wcOrder->set_shipping_postcode(self::arrayValue($address, 'index', '--'));
-        $wcOrder->set_shipping_country(self::arrayValue($address, 'country', '--'));
-        $wcOrder->set_shipping_city(self::arrayValue($address, 'city', '--'));
-        $wcOrder->set_shipping_address_1(self::arrayValue($address, 'text', '--'));
+        $wcOrder->set_shipping_state(self::arrayValue($address, 'region', ''));
+        $wcOrder->set_shipping_postcode(self::arrayValue($address, 'index', ''));
+        $wcOrder->set_shipping_country(self::arrayValue($address, 'country', ''));
+        $wcOrder->set_shipping_city(self::arrayValue($address, 'city', ''));
+        $wcOrder->set_shipping_address_1(self::arrayValue($address, 'text', ''));
     }
 
     /**
