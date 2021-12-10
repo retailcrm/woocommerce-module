@@ -84,7 +84,7 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
         if ($order instanceof WC_Order && empty($customerBillingAddress)) {
             return array(
                 'index' => $order->get_billing_postcode(),
-                'countryIso' => $order->get_billing_country(),
+                'countryIso' => $this->validateCountryCode($order->get_billing_country()),
                 'region' => $this->get_state_name($order->get_billing_country(), $order->get_billing_state()),
                 'city' => $order->get_billing_city(),
                 'text' => $this->joinAddresses($order->get_billing_address_1(), $order->get_billing_address_2())
@@ -92,12 +92,26 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
         } else {
             return array(
                 'index' => $customer->get_billing_postcode(),
-                'countryIso' => $customer->get_billing_country(),
+                'countryIso' => $this->validateCountryCode($customer->get_billing_country()),
                 'region' => $this->get_state_name($customer->get_billing_country(), $customer->get_billing_state()),
                 'city' => $customer->get_billing_city(),
                 'text' => $this->joinAddresses($customer->get_billing_address_1(), $customer->get_billing_address_2())
             );
         }
+    }
+
+    /**
+     * Validate countryIso. Check if a given code represents a valid ISO 3166-1 alpha-2 code.
+     *
+     * @param $countryCode
+     *
+     * @return string
+     */
+    private function validateCountryCode($countryCode)
+    {
+        $countries = new WC_Countries();
+
+        return $countries->country_exists($countryCode) ? $countryCode : '';
     }
 
     /**
