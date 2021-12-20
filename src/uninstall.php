@@ -16,11 +16,12 @@
  *
  * @link       https://wordpress.org/plugins/woo-retailcrm/
  *
- * @version    4.3.8
+ * @version    4.4.0
  *
  * @package    RetailCRM
  */
 
+// @codeCoverageIgnoreStart
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
@@ -45,3 +46,4 @@ $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'retailcrm_client_i
 
 // Clear any cached data that has been removed
 wp_cache_flush();
+// @codeCoverageIgnoreEnd

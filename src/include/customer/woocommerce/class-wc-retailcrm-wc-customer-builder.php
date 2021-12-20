@@ -235,3 +235,4 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
         return true;
     }
 }
+

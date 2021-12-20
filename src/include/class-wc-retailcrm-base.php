@@ -18,20 +18,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
      */
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
-        /** @var string */
-        protected $api_url;
-
-        /** @var string */
-        protected $api_key;
-
         /** @var \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool */
         protected $apiClient;
-
-        /** @var mixed */
-        protected $order_item;
-
-        /** @var mixed */
-        protected $order_address;
 
         /** @var \WC_Retailcrm_Customers */
         protected $customers;
@@ -118,7 +106,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_deactivate', array($this, 'deactivate'));
         }
 
-
         /**
          * Init settings fields
          */
@@ -127,7 +114,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->init_form_fields();
             $this->init_settings();
         }
-
 
          /**
          * @param $settings
@@ -167,7 +153,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             return $settings;
         }
 
-
+        /**
+         * Generate ICML
+         *
+         * @codeCoverageIgnore Check in another tests
+         */
         public function generate_icml()
         {
             /*
@@ -212,9 +202,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $retailCrmIcml->generate();
         }
 
-
         /**
          * Get history
+         *
+         * @codeCoverageIgnore Check in another tests
          */
         public function retailcrm_history_get()
         {
@@ -222,18 +213,20 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $retailcrm_history->getHistory();
         }
 
-
         /**
          * @param int $order_id
+         *
+         * @codeCoverageIgnore Check in another tests
          */
         public function retailcrm_process_order($order_id)
         {
             $this->orders->orderCreate($order_id);
         }
 
-
         /**
          * Load stock from retailCRM
+         *
+         * @codeCoverageIgnore Check in another tests
          */
         public function load_stocks()
         {
@@ -241,9 +234,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $inventories->updateQuantity();
         }
 
-
         /**
          * Upload selected orders
+         *
+         * @codeCoverageIgnore Check in another tests
          *
          * @return void
          */
@@ -252,9 +246,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->uploader->uploadSelectedOrders();
         }
 
-
         /**
          * Upload archive customers and order to retailCRM
+         *
+         * @codeCoverageIgnore Check in another tests
          */
         public function upload_to_crm()
         {
@@ -268,12 +263,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Create customer in retailCRM
          *
          * @param int $customer_id
          *
+         * @codeCoverageIgnore There is a task for analysis
          * @return void
          * @throws \Exception
          */
@@ -330,9 +325,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Edit customer in retailCRM
+         *
+         * @codeCoverageIgnore Check in another tests
+         *
          * @param int $customer_id
          */
         public function update_customer($customer_id)
@@ -348,9 +345,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->customers->updateCustomer($customer_id);
         }
 
-
         /**
          * Create order in retailCRM from admin panel
+         *
+         * @codeCoverageIgnore Check in another tests
          *
          * @param int $order_id
          */
@@ -361,9 +359,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Edit order in retailCRM
+         *
+         * @codeCoverageIgnore Check in another tests
          *
          * @param int $order_id
          *
@@ -378,7 +377,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->orders->updateOrder($order_id);
         }
 
-
         /**
          * Init google analytics code
          */
@@ -392,9 +390,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Google analytics send code
+         *
+         * @codeCoverageIgnore Check in another tests
          */
         public function send_analytics()
         {
@@ -406,9 +405,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Daemon collector
+         *
+         * @codeCoverageIgnore Check in another tests
          */
         public function initialize_daemon_collector()
         {
@@ -420,7 +420,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Initialize online consultant
          */
@@ -431,9 +430,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * In this method we include files in admin WP
+         *
+         * @codeCoverageIgnore
          *
          * @return void
          */
@@ -443,9 +443,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->include_js_scripts_for_admin();
         }
 
-
         /**
          * In this method we include CSS file
+         *
+         * @codeCoverageIgnore
          *
          * @return void
          */
@@ -462,9 +463,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_enqueue_style('retailcrm-debug-info-style');
         }
 
-
         /**
          * In this method we include JS scripts.
+         *
+         * @codeCoverageIgnore
          *
          * @return void
          */
@@ -479,16 +481,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_enqueue_script('retailcrm-cron-info', $path . 'retailcrm-export.js', '', '', true);
         }
 
-
         /**
          * Include style for WhatsApp icon
+         *
+         * @codeCoverageIgnore
+         *
+         * @return void
          */
         public function include_whatsapp_icon_style()
         {
             wp_register_style('whatsapp_icon_style', plugins_url() . '/woo-retailcrm/assets/css/whatsapp-icon.min.css', false, '0.1');
             wp_enqueue_style('whatsapp_icon_style');
         }
-
 
         /**
          * Initialize WhatsApp
@@ -514,7 +518,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-
         /**
          * Return count upload data
          */
@@ -529,7 +532,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             wp_die();
         }
-
 
         /**
          * Return time work next cron
@@ -562,7 +564,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_die();
         }
 
-
         /**
          * Get retailcrm api client
          *
@@ -580,7 +581,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             return false;
         }
-
 
         /**
          * Deactivate module in marketplace retailCRM

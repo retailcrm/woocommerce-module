@@ -110,7 +110,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         );
 
         if (isset($newCustomer['externalId'])) {
-            $wcCustomer = WC_Retailcrm_Plugin::getWcCustomerById($newCustomer['externalId']);
+            $wcCustomer = new WC_Customer($newCustomer['externalId']);
 
             if (!empty($wcCustomer)) {
                 $wcOrder->set_customer_id($wcCustomer->get_id());

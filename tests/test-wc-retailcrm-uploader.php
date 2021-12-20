@@ -5,14 +5,13 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
     protected $apiMock;
     protected $responseMock;
     protected $customer;
+    private $order;
 
     public function setUp()
     {
         $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response')
                                    ->disableOriginalConstructor()
-                                   ->setMethods(array(
-                                       'isSuccessful'
-                                   ))
+                                   ->setMethods(array('isSuccessful'))
                                    ->getMock();
 
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
@@ -23,17 +22,21 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
                                   'uploadArchiveCustomers',
                                   'uploadArchiveOrders',
                                   'getCountUsers',
-                                  'getCountOrders'
+                                  'getCountOrders',
+                                  'customersGet',
+                                  'customersList',
+                                  'ordersCreate'
                               ))
                               ->getMock();
 
-        $this->responseMock->expects($this->any())
-                           ->method('isSuccessful')
-                           ->willReturn(true);
 
-        $this->apiMock->expects($this->any())
-                      ->method('customersCreate')
-                      ->willReturn($this->responseMock);
+        $this->setMockResponse($this->responseMock, 'isSuccessful', true);
+        $this->setMockResponse(
+            $this->apiMock,
+            'customersList',
+            array('success' => true, 'customers' => array(array('externalId' => 1)))
+        );
+        $this->setMockResponse($this->apiMock, 'customersCreate', $this->responseMock);
 
         $this->customer = new WC_Customer();
         $this->customer->set_first_name('Tester');
@@ -44,8 +47,9 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
         $this->customer->set_billing_phone('89000000000');
         $this->customer->set_date_created(date('Y-m-d H:i:s'));
         $this->customer->save();
-    }
 
+        $this->order = WC_Helper_Order::create_order();
+    }
 
     /**
      * @param retailcrm
@@ -65,7 +69,6 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-
     /**
      * @param $retailcrm
      * @dataProvider dataProviderApiClient
@@ -82,23 +85,21 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-
-    /**
-     * @param retailcrm
-     * @dataProvider dataProviderApiClient
-     */
-    public function test_get_count_orders_upload($retailcrm)
+    public function test_get_count_orders_upload()
     {
-        $retailcrm_uploader = $this->getRetailcrmUploader($retailcrm);
-        $data = $retailcrm_uploader->getCountOrders();
+        $retailcrm_uploader = $this->getRetailcrmUploader($this->apiMock);
+        $count_orders = $retailcrm_uploader->getCountOrders();
 
-        if ($retailcrm) {
-            $this->assertInternalType('int', $data);
-        } else {
-            $this->assertEquals(null, $data);
-        }
+        $this->assertInternalType('int', $count_orders);
     }
 
+    public function test_get_count_users_upload()
+    {
+        $retailcrm_uploader = $this->getRetailcrmUploader($this->apiMock);
+        $count_users = $retailcrm_uploader->getCountUsers();
+
+        $this->assertInternalType('int', $count_users);
+    }
 
     public function dataProviderApiClient()
     {
@@ -131,10 +132,8 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
             $retailcrm,
             $this->getOptions(),
             new WC_Retailcrm_Order_Item($this->getOptions()),
-            new WC_Retailcrm_Order_Address,
-            new WC_Retailcrm_Customers(
-                $retailcrm, $this->getOptions(), new WC_Retailcrm_Customer_Address
-            ),
+            new WC_Retailcrm_Order_Address(),
+            new WC_Retailcrm_Customers($retailcrm, $this->getOptions(), new WC_Retailcrm_Customer_Address()),
             new WC_Retailcrm_Order($this->getOptions()),
             new WC_Retailcrm_Order_Payment($this->getOptions())
         );
@@ -142,4 +141,3 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
         return new WC_Retailcrm_Uploader($retailcrm, $order, $customer);
     }
 }
-

@@ -176,3 +176,4 @@ class WC_Retailcrm_Customer_Switcher_State
         }
     }
 }
+

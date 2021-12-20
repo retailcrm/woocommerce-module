@@ -14,6 +14,7 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
     public function test_feasible()
     {
         $state = new WC_Retailcrm_Customer_Switcher_State();
+
         $this->assertFalse($state->feasible());
 
         $state->setNewCustomer(array())
@@ -35,7 +36,7 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
 
         $state->setNewCustomer(array())
             ->setNewContact(array())
-            ->setNewCompany(array('name' => 'test'));
+            ->setNewCompany(array('name' => 'test', 'address' => 'address_test'));
         $this->assertTrue($state->feasible());
 
         $state->setNewCustomer(array())
@@ -50,6 +51,7 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
     public function test_validate_empty()
     {
         $state = new WC_Retailcrm_Customer_Switcher_State();
+
         $state->validate();
     }
 
@@ -59,8 +61,8 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
     public function test_validate_order()
     {
         $state = new WC_Retailcrm_Customer_Switcher_State();
-        $state->setWcOrder(new WC_Order())
-            ->validate();
+
+        $state->setWcOrder(new WC_Order())->validate();
     }
 
     /**
@@ -69,6 +71,7 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
     public function test_validate_customer_and_contact_set()
     {
         $state = new WC_Retailcrm_Customer_Switcher_State();
+
         $state->setWcOrder(new WC_Order())
             ->setNewCustomer(array('id' => 1))
             ->setNewContact(array('id' => 1))
@@ -76,13 +79,15 @@ class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_H
     }
 
     /**
-     * @@doesNotPerformAssertions
+     * @doesNotPerformAssertions
      */
     public function test_validate_ok()
     {
         $state = new WC_Retailcrm_Customer_Switcher_State();
+
         $state->setWcOrder(new WC_Order())
             ->setNewCustomer(array('id' => 1))
             ->validate();
     }
 }
+

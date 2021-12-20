@@ -35,4 +35,16 @@ class WC_Retailcrm_Order_Item_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('offer', $data);
         }
     }
+
+    public function test_bind_by_sku()
+    {
+        $order_item = new WC_Retailcrm_Order_Item(['bind_by_sku' => 'yes']);
+
+        foreach ($this->order->get_items() as $item) {
+            $data = $order_item->build($item)->get_data();
+
+            $this->assertArrayHasKey('offer', $data);
+            $this->assertArrayHasKey('xmlId', $data['offer']);
+        }
+    }
 }

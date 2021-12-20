@@ -21,6 +21,8 @@ abstract class WC_Retailcrm_Abstract_Builder implements WC_Retailcrm_Builder_Int
 
     /**
      * @return array|mixed
+     *
+     * @codeCoverageIgnore
      */
     public function getData()
     {

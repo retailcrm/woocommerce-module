@@ -32,7 +32,6 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
         $data = $customer_address
             ->setIsMain(true)
-            ->setExplicitIsMain(false)
             ->build($this->customer)
             ->get_data();
 
@@ -69,7 +68,6 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
         $data = $customer_address
             ->setIsMain(false)
-            ->setExplicitIsMain(true)
             ->build($this->customer)
             ->get_data();
 
@@ -93,7 +91,6 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
         $data = $customer_address
             ->setIsMain(false)
-            ->setExplicitIsMain(true)
             ->build(null)
             ->get_data();
 

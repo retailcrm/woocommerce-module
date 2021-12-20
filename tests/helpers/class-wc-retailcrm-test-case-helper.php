@@ -12,14 +12,15 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
     {
         $options = array(
             'api_url' => 'https://example.retailcrm.ru',
-            'api_key' => 'dhsHJGYdjkHHJKJSGjhasjhgajsgJGHsg',
-            'api_version' => 'v5',
+            'api_key' => 'test_key',
+            'corporate_enabled' => 'yes',
+            'online_assistant' => 'code',
             'p_draft' => 'no',
             'p_pending' => 'no',
             'p_private' => 'no',
             'p_publish' => 'no',
-            'send_payment_amount' => 'yes',
-            'order_methods' => '',
+            'catalog_options' => 'no',
+            'order_methods' => array(0 => 'phone'),
             'flat_rate_shipping' => 'delivery',
             'free_shipping' => 'delivery2',
             'local_pickup' => 'delivery3',
@@ -35,11 +36,23 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'cancelled' => 'status5',
             'refunded' => 'status6',
             'failed' => 'status7',
-            'sync' => 'no',
+            'sync' => 'yes',
             'ua' => 'yes',
             'ua_code' => 'UA-XXXXXXX-XX',
             'ua_custom' => '1',
-            'upload-button' => ''
+            'daemon_collector' => 'yes',
+            'upload-button' => '',
+            'whatsapp_active' => 'yes',
+            'whatsapp_location_icon' => 'yes',
+            'whatsapp_number' => '+79184567234',
+            'icml' => 'yes',
+            'single_order' => '123',
+            'history' => 'yes',
+            'deactivate_update_order' => 'no',
+            'bind_by_sku' => 'no',
+            'update_number' => 'yes',
+            'debug_mode' => 'yes',
+            'debug-info' => ''
         );
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
@@ -90,5 +103,20 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
     protected function getOptions()
     {
         return get_option(WC_Retailcrm_Base::$option_key);
+    }
+
+
+    /**
+     * @param $mock
+     * @param $method
+     * @param $response
+     *
+     * @return void
+     */
+    protected function setMockResponse($mock, $method, $response)
+    {
+        $mock->expects($this->any())
+             ->method($method)
+             ->willReturn($response);
     }
 }

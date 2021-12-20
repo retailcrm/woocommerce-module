@@ -84,7 +84,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             try {
                 $response = $this->retailcrm->ordersCreate($this->order);
 
-                if ($response instanceof WC_Retailcrm_Response) {
+                if ($response instanceof WC_Retailcrm_Proxy) {
                     if ($response->isSuccessful()) {
                         return $wcOrder;
                     }
@@ -138,6 +138,8 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 }
             }
 
+            // @codeCoverageIgnoreStart
+            // TODO: There is a task for analysis
             if ($update && $customerWasChanged) {
                 $firstName = $wcOrder->get_shipping_first_name();
                 $lastName = $wcOrder->get_shipping_last_name();
@@ -145,6 +147,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                 $this->order['firstName'] = $firstName;
                 $this->order['lastName'] = $lastName;
             }
+            // @codeCoverageIgnoreEnd
 
             return true;
         }
@@ -203,12 +206,27 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     );
                     $this->order['customer']['id'] = $corporateId;
                 } else {
-                    $this->customers->fillCorporateAddress(
+                    // Testing of this method occurs in customers tests.
+                    // @codeCoverageIgnoreStart
+                    $addressFound = $this->customers->fillCorporateAddress(
                         $crmCorporate['id'],
                         new WC_Customer($wcCustomerId),
                         $wcOrder
                     );
+
+                    // If address not found create new address.
+                    if (!$addressFound) {
+                        WC_Retailcrm_Logger::add(
+                            sprintf(
+                                '[%d] => %s',
+                                $this->order['customer']['id'],
+                                'Notification: Create new address for corporate customer'
+                            )
+                        );
+                    }
+
                     $this->order['customer']['id'] = $crmCorporate['id'];
+                    // @codeCoverageIgnoreEnd
                 }
 
                 $companiesResponse = $this->retailcrm->customersCorporateCompanies(
@@ -511,7 +529,7 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
             }
 
             $customerWasChanged = self::isCorporateOrder($wcOrder) != self::isCorporateCrmOrder($crmOrder);
-            $synchronizableUserData = self::isCorporateCrmOrder($crmOrder)
+            $synchronizableUserData = (self::isCorporateCrmOrder($crmOrder) && isset($crmOrder['contact']))
                 ? $crmOrder['contact'] : $crmOrder['customer'];
 
             if (!$customerWasChanged) {
@@ -523,11 +541,13 @@ if ( ! class_exists( 'WC_Retailcrm_Orders' ) ) :
                     }
                 }
 
-                if (isset($synchronizableUserData['externalId'])
+                if (
+                    isset($synchronizableUserData['externalId'])
                     && $synchronizableUserData['externalId'] != $wcOrder->get_customer_id()
                 ) {
                     $customerWasChanged = true;
-                } elseif (isset($synchronizableUserData['email'])
+                } elseif (
+                    isset($synchronizableUserData['email'])
                     && $synchronizableUserData['email'] != $wcOrder->get_billing_email()
                 ) {
                     $customerWasChanged = true;

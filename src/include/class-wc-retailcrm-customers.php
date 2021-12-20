@@ -51,19 +51,13 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * setCustomerAddress
+         * Return corporate customer
          *
-         * @param $address
-         *
-         * @return $this
+         * @return array
          */
-        public function setCustomerAddress($address)
+        public function getCorporateCustomer()
         {
-            if ($address instanceof WC_Retailcrm_Customer_Address) {
-                $this->customer_address = $address;
-            }
-
-            return $this;
+            return $this->customerCorporate;
         }
 
         /**
@@ -201,11 +195,13 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
-         * Create new address in corporate customer (if needed)
+         * Create new address in corporate customer (if needed).
          *
          * @param int $corporateId
          * @param \WC_Customer $customer
          * @param \WC_Order|null $order
+         *
+         * @return bool
          */
         public function fillCorporateAddress($corporateId, $customer, $order = null)
         {
@@ -213,7 +209,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $builder = new WC_Retailcrm_Customer_Corporate_Address();
             $newAddress = $builder
                 ->setIsMain(false)
-                ->setExplicitIsMain(false)
                 ->build($customer, $order)
                 ->get_data();
 
@@ -225,7 +220,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 'id'
             );
 
-            if ($addresses && $addresses->isSuccessful() && $addresses->offsetExists('addresses')) {
+            if (!empty($addresses['addresses']) && $addresses->isSuccessful()) {
                 foreach ($addresses['addresses'] as $address) {
                     foreach ($newAddress as $field => $value) {
                         if (isset($address[$field]) && $address[$field] != $value) {
@@ -249,6 +244,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     $this->retailcrm->getSingleSiteForKey()
                 );
             }
+
+            return $found;
         }
 
         /**
@@ -261,7 +258,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         protected function fillCorporateCustomer($response)
         {
-            if (!$response->isSuccessful() || $response->isSuccessful() && !$response->offsetExists('id')) {
+            if ((empty($response) || !$response->isSuccessful()) && !$response->offsetExists('id')) {
                 return null;
             }
 
