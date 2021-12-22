@@ -80,7 +80,8 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayHasKey('whatsapp_location_icon', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('whatsapp_number', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('icml', $this->baseRetailcrm->form_fields);
-        $this->assertArrayHasKey('single_order', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('export_selected_orders_ids', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('export_selected_orders_btn', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('history', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('deactivate_update_order', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('bind_by_sku', $this->baseRetailcrm->form_fields);

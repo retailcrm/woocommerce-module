@@ -59,12 +59,10 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         public function uploadSelectedOrders()
         {
-            $response = filter_input(INPUT_GET, 'order_ids_retailcrm');
-
-            if (false === empty($response)) {
-                $ids = array_unique(explode(',', $response));
-
-                if (false === empty($ids)) {
+            if (!empty($_GET['order_ids_retailcrm'])) {
+                $ids = array_unique(explode(',', $_GET['order_ids_retailcrm']));
+                
+                if (!empty($ids)) {
                     $this->uploadArchiveOrders(0, $ids);
                 }
             }
@@ -76,7 +74,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          * @param int     $page Number page uploads.
          * @param array   $ids  Ids orders upload.
          *
-         * @return array|null
+         * @return void|null
          * @throws Exception Invalid argument exception.
          */
         public function uploadArchiveOrders($page, $ids = array())
@@ -101,8 +99,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             }
 
             $this->logOrdersUploadErrors($uploadErrors);
-
-            return array();
         }
 
         /**

@@ -2,6 +2,7 @@ jQuery(function () {
     function RetailcrmExportForm()
     {
         this.submitButton = jQuery('button[id="export-orders-submit"]').get(0);
+        this.selectedOrdersButton = jQuery('button[id="export_selected_orders_btn"]').get(0);
 
         jQuery(this.submitButton).after('<div id="export-orders-progress" class="retail-progress retail-hidden"></div');
         jQuery(this.submitButton).before('<div id="export-orders-count" class="retail-count-data-upload"></div');
@@ -9,6 +10,10 @@ jQuery(function () {
         this.progressBar = jQuery('div[id="export-orders-progress"]').get(0);
 
         if (typeof this.submitButton === 'undefined') {
+            return false;
+        }
+
+        if (typeof this.selectedOrdersButton === 'undefined') {
             return false;
         }
 
@@ -34,7 +39,10 @@ jQuery(function () {
                 _this.customersCount = Number(response.count_users);
                 jQuery(_this.submitButton).removeClass('retail-hidden');
 
-                _this.displayCountUploadData();
+                _this.messageEmtyField = response.translate.tr_empty_field;
+                _this.messageSuccessful = response.translate.tr_successful;
+
+                _this.displayCountUploadData(response.translate.tr_order, response.translate.tr_customer);
             })
 
         this.isDone = false;
@@ -44,17 +52,20 @@ jQuery(function () {
         this.customersStep = 0;
         this.displayCountUploadData = this.displayCountUploadData.bind(this);
         this.submitAction = this.submitAction.bind(this);
+        this.actionExportSelectedOrders = this.actionExportSelectedOrders.bind(this);
         this.exportAction = this.exportAction.bind(this);
         this.exportDone = this.exportDone.bind(this);
         this.initializeProgressBar = this.initializeProgressBar.bind(this);
         this.updateProgressBar = this.updateProgressBar.bind(this);
 
         jQuery(this.submitButton).click(this.submitAction);
+        jQuery(this.selectedOrdersButton).click(this.actionExportSelectedOrders);
     }
 
-    RetailcrmExportForm.prototype.displayCountUploadData = function () {
+    RetailcrmExportForm.prototype.displayCountUploadData = function (order, customer) {
         this.counter = jQuery('div[id="export-orders-count"]').get(0);
-        jQuery(this.counter).text('Customers: ' + this.customersCount + ' Orders: ' + this.ordersCount);
+
+        jQuery(this.counter).text(`${customer}: ${this.customersCount} ${order}: ${this.ordersCount}`);
     }
 
     RetailcrmExportForm.prototype.submitAction = function (event) {
@@ -141,8 +152,26 @@ jQuery(function () {
 
     RetailcrmExportForm.prototype.exportDone = function () {
         window.removeEventListener('beforeunload', this.confirmLeave);
-        alert('Done');
+        alert(this.messageSuccessful);
     }
+
+    RetailcrmExportForm.prototype.actionExportSelectedOrders = function () {
+        let ids = jQuery('#woocommerce_integration-retailcrm_export_selected_orders_ids').val();
+
+        if (ids === '') {
+            alert(this.messageEmtyField);
+        } else {
+            let _this = this;
+
+            jQuery.ajax({
+                type: "POST",
+                url: window.location.origin + '/wp-admin/admin-ajax.php?action=upload_selected_orders&order_ids_retailcrm=' + ids,
+                success: function (response) {
+                    alert(_this.messageSuccessful);
+                }
+            });
+        }
+    };
 
     window.RetailcrmExportForm = RetailcrmExportForm;
 
