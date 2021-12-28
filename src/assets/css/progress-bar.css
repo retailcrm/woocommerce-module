@@ -10,7 +10,7 @@
 .retail-progress__loader {
     width: 0;
     border-radius: 18px;
-    background: #6427D6;
+    background: #4169e1;
     color: white;
     text-align: center;
     padding: 0 30px;
@@ -28,6 +28,6 @@
 .retail-count-data-upload {
     margin-bottom: 20px;
     size: 30px;
-    color: #6427D6;
+    color: #4169e1;
     font-weight: bold;
 }

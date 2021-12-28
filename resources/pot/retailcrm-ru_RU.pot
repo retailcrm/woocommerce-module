@@ -31,6 +31,12 @@ msgstr "https://wordpress.org/plugins/woo-retailcrm/"
 msgid "WooCommerce Simla.com"
 msgstr "WooCommerce Simla.com"
 
+msgid "Orders"
+msgstr "Заказы"
+
+msgid "Customers"
+msgstr "Клиенты"
+
 msgid "Activate history uploads"
 msgstr "Активировать загрузку истории изменений"
 
@@ -40,23 +46,17 @@ msgstr "Загрузка данных из Simla.com"
 msgid "Generating ICML catalog by wp-cron"
 msgstr "Генерация ICML каталога товаров с помощью wp-cron"
 
-msgid "This functionality allows to upload orders to Simla.com differentially."
+msgid "This functionality allows to upload orders to Simla.com differentially"
 msgstr "Эта функция позволяет производить выборочную выгрузку заказов в Simla.com"
 
-msgid "Uploading orders by identifiers."
+msgid "Uploading orders by identifiers"
 msgstr "Выгрузка заказов по идентификаторам"
 
-msgid "Enter orders identifiers separated by a comma."
-msgstr "Введите идентификаторы заказов через запятую"
+msgid "Enter orders identifiers separated by a comma, but no more than 50"
+msgstr "Введите идентификаторы заказов через запятую, но не более 50"
 
 msgid "Orders identifiers"
 msgstr "Идентификаторы заказов"
-
-msgid "Order identifier"
-msgstr "Идентификатор заказа"
-
-msgid "Upload the order by ID"
-msgstr "Выгрузить заказ по идентификатору"
 
 msgid "Orders were uploaded"
 msgstr "Заказы были выгружены"
@@ -79,7 +79,7 @@ msgstr "Введите корректный адрес Simla.com"
 msgid "The selected API version is unavailable"
 msgstr "Выбранная версия API недоступна"
 
-msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com."
+msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com"
 msgstr "Эта функция позволяет сгенерировать ICML каталог товаров для выгрузки в Simla.com"
 
 msgid "Generating ICML"
@@ -124,8 +124,8 @@ msgstr "Активировать UA"
 msgid "UA settings"
 msgstr "Настройки UA"
 
-msgid "Enable this setting if you would like to get information on leftover stocks from Simla.com to the website."
-msgstr "Активируйте данную настройку, если хотите получать остатки по товарам из Simla.com на сайт."
+msgid "Enable this setting if you would like to get information on leftover stocks from Simla.com to the website"
+msgstr "Активируйте данную настройку, если хотите получать остатки по товарам из Simla.com на сайт"
 
 msgid "Stock balance"
 msgstr "Остатки"
@@ -173,12 +173,12 @@ msgid "API settings"
 msgstr "Настройки API"
 
 msgid "Enter your API key. You can find it in the administration section of Simla.com"
-msgstr "Введите API ключ. Вы можете найти его в административном разделе Simla.com."
+msgstr "Введите API ключ. Вы можете найти его в административном разделе Simla.com"
 
-msgid "Enter API of URL (https://yourdomain.simla.com)."
-msgstr "Введите API URL (https://yourdomain.simla.com)."
+msgid "Enter API of URL (https://yourdomain.simla.com)"
+msgstr "Введите API URL (https://yourdomain.simla.com)"
 
-msgid "Integration with Simla.com management system."
+msgid "Integration with Simla.com management system"
 msgstr "Интеграция с системой управления Simla.com"
 
 msgid "Every 15 minutes"
@@ -268,8 +268,8 @@ msgstr "Будет открыт чат в WhatsApp с данным контак�
 msgid "Introduce the correct phone number"
 msgstr "Введите корректный номер телефона"
 
-msgid "You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open."
-msgstr "Вы можете экспортировать все заказы и клиентов из CMS в Simla.com, нажав кнопку «Выгрузить». Этот процесс может занять много времени, и до его завершения необходимо держать вкладку открытой."
+msgid "You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open"
+msgstr "Вы можете экспортировать все заказы и клиентов из CMS в Simla.com, нажав кнопку «Выгрузить». Этот процесс может занять много времени, и до его завершения необходимо держать вкладку открытой"
 
 msgid "Debug information"
 msgstr "Отладочная информация"

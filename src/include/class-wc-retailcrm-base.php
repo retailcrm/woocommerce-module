@@ -79,7 +79,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_cron_info', array($this, 'get_cron_info'), 99);
             add_action('wp_ajax_content_upload', array($this, 'count_upload_data'), 99);
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
-            add_action('wp_ajax_order_upload', array($this, 'order_upload'));
+            add_action('wp_ajax_upload_selected_orders', array($this, 'upload_selected_orders'));
             add_action('admin_print_footer_scripts', array($this, 'ajax_generate_icml'), 99);
             add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
@@ -241,7 +241,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @return void
          */
-        public function order_upload()
+        public function upload_selected_orders()
         {
             $this->uploader->uploadSelectedOrders();
         }
@@ -523,10 +523,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function count_upload_data()
         {
+            $translate = array(
+                'tr_order'          => __('Orders', 'retailcrm'),
+                'tr_customer'       => __('Customers', 'retailcrm'),
+                'tr_empty_field'    => __('The field cannot be empty, enter the order ID', 'retailcrm'),
+                'tr_successful'     => __('Orders were uploaded', 'retailcrm'),
+            );
+
             echo json_encode(
                 array(
                     'count_orders' => $this->uploader->getCountOrders(),
-                    'count_users'  => $this->uploader->getCountUsers()
+                    'count_users'  => $this->uploader->getCountUsers(),
+                    'translate'    => $translate,
                 )
             );
 

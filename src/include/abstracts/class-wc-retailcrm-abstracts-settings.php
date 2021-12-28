@@ -1,6 +1,6 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -27,7 +27,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     {
         $this->id                 = 'integration-retailcrm';
         $this->method_title       = __('Simla.com', 'retailcrm');
-        $this->method_description = __('Integration with Simla.com management system.', 'retailcrm');
+        $this->method_description = __('Integration with Simla.com management system', 'retailcrm');
 
         static::$option_key = $this->get_option_key();
 
@@ -37,7 +37,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             add_action('init', array($this, 'init_settings_fields'), 99);
         }
     }
-
 
     /**
      * @codeCoverageIgnore
@@ -61,34 +60,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <?php
     }
 
-
-    /**
-     * @codeCoverageIgnore
-     */
-    public function ajax_selected_order()
-    {
-        $ajax_url = admin_url('admin-ajax.php');
-        $ids = $this->plugin_id . $this->id . '_single_order';
-        ?>
-        <script type="text/javascript">
-        jQuery('#single_order_btn').bind('click', function() {
-            if (jQuery('#<?php echo $ids; ?>').val() == '') {
-                alert('<?php echo __('The field cannot be empty, enter the order ID', 'retailcrm'); ?>');
-            } else {
-                jQuery.ajax({
-                    type: "POST",
-                    url: '<?php echo $ajax_url; ?>?action=order_upload&order_ids_retailcrm=' + jQuery('#<?php echo $ids; ?>').val(),
-                    success: function (response) {
-                        alert('<?php echo __('Orders were uploaded', 'retailcrm'); ?>');
-                    }
-                });
-            }
-        });
-        </script>
-        <?php
-    }
-
-
     /**
      * Initialize integration settings form fields.
      */
@@ -100,7 +71,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'api_url' => array(
                 'title'             => __( 'API of URL', 'retailcrm' ),
                 'type'              => 'text',
-                'description'       => __( 'Enter API of URL (https://yourdomain.simla.com).', 'retailcrm' ),
+                'description'       => __( 'Enter API of URL (https://yourdomain.simla.com)', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             ),
@@ -326,7 +297,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'title'       => __('Stock balance', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website.', 'retailcrm')
+                    'description' => __('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website', 'retailcrm')
                 );
 
                 /**
@@ -397,9 +368,27 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'label'       => __('Upload', 'retailcrm'),
                     'title'       => __('Uploading all customers and orders', 'retailcrm'),
                     'type'        => 'button',
-                    'description' => __('You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open.', 'retailcrm'),
+                    'description' => __('You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open', 'retailcrm'),
                     'desc_tip'    => true,
                     'id'          => 'export-orders-submit'
+                );
+
+                $this->form_fields['export_selected_orders_ids'] = array(
+                    'label'             => __('Orders identifiers', 'retailcrm'),
+                    'title'             => __('Orders identifiers', 'retailcrm'),
+                    'type'              => 'text',
+                    'description'       => __('Enter orders identifiers separated by a comma, but no more than 50', 'retailcrm'),
+                    'desc_tip'          => true,
+                    'id'                => 'export_selected_orders_ids'
+                );
+
+                $this->form_fields['export_selected_orders_btn'] = array(
+                    'label'             => __('Upload', 'retailcrm'),
+                    'title'             => __('Uploading orders by identifiers', 'retailcrm'),
+                    'type'              => 'button',
+                    'description'       => __('This functionality allows to upload orders to Simla.com differentially', 'retailcrm'),
+                    'desc_tip'          => true,
+                    'id'                => 'export_selected_orders_btn'
                 );
 
                 /**
@@ -449,7 +438,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'label'             => __('Generate now', 'retailcrm'),
                     'title'             => __('Generating ICML', 'retailcrm'),
                     'type'              => 'button',
-                    'description'       => __('This functionality allows to generate ICML products catalog for uploading to Simla.com.', 'retailcrm'),
+                    'description'       => __('This functionality allows to generate ICML products catalog for uploading to Simla.com', 'retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'icml-retailcrm'
                 );
@@ -461,32 +450,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'type'        => 'checkbox'
                 );
 
-                /**
-                 * Upload single order
-                 */
-                $this->form_field[] = array(
-                    'title'       => __('Upload the order by ID', 'retailcrm'),
-                    'type'        => 'title',
-                    'description' => '',
-                    'id'          => 'order_options'
-                );
-
-                $this->form_fields['single_order'] = array(
-                    'label'             => __('Order identifier', 'retailcrm'),
-                    'title'             => __('Orders identifiers', 'retailcrm'),
-                    'type'              => 'input',
-                    'description'       => __('Enter orders identifiers separated by a comma.', 'retailcrm'),
-                    'desc_tip'          => true
-                );
-
-                $this->form_fields[] = array(
-                    'label'             => __('Upload', 'retailcrm'),
-                    'title'             => __('Uploading orders by identifiers.', 'retailcrm'),
-                    'type'              => 'button',
-                    'description'       => __('This functionality allows to upload orders to CRM differentially.', 'retailcrm'),
-                    'desc_tip'          => true,
-                    'id'                => 'single_order_btn'
-                );
 
                 $this->form_fields['history'] = array(
                     'label'       => __('Activate history uploads', 'retailcrm'),

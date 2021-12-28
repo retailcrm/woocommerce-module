@@ -78,11 +78,20 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_uploader = $this->getRetailcrmUploader($retailcrm);
         $data = $retailcrm_uploader->uploadArchiveOrders(0);
 
-        if ($retailcrm) {
-            $this->assertInternalType('array', $data);
-        } else {
-            $this->assertEquals(null, $data);
-        }
+        $this->assertEquals(null, $data);
+    }
+
+    /**
+     * @param $retailcrm
+     * @dataProvider dataProviderApiClient
+     */
+    public function test_upload_selected_orders()
+    {
+        $_GET['order_ids_retailcrm'] = '123, 345, 456';
+        $retailcrm_uploader = $this->getRetailcrmUploader($this->apiMock);
+        $uploadSelectedOrders = $retailcrm_uploader->uploadSelectedOrders();
+
+        $this->assertEquals(null, $uploadSelectedOrders);
     }
 
     public function test_get_count_orders_upload()
