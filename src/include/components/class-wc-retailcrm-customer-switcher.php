@@ -1,9 +1,15 @@
 <?php
-
 /**
- * Class WC_Retailcrm_Customer_Switcher
- * This component provides builder-like interface in order to make it easier to change customer & customer data
- * in the order via retailCRM history.
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Customer_Switcher - This component provides builder-like interface in order to make it easier to
+ * change customer & customer data in the order via retailCRM history.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
 {

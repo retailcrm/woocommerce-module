@@ -1,16 +1,14 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Order_Address_Test - Testing WC_Retailcrm_Order_Address.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
  * @license  http://retailcrm.ru Proprietary
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
- */
-
-/**
- * Class WC_Retailcrm_Order_Address_Test
  */
 class WC_Retailcrm_Order_Address_Test extends WC_Retailcrm_Test_Case_Helper
 {

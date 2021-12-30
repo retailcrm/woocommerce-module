@@ -1,7 +1,14 @@
 <?php
-
 /**
- * Class WC_Retailcrm_Abstract_Builder.
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Abstract_Builder - Builds data for CRM.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 abstract class WC_Retailcrm_Abstract_Builder implements WC_Retailcrm_Builder_Interface
 {

@@ -1,16 +1,14 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Customer_Corporate_Address - Builds a billing address for a corporate customer.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
  * @license  http://retailcrm.ru Proprietary
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
- */
-
-/**
- * Class WC_Retailcrm_Customer_Address
  */
 class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Address
 {

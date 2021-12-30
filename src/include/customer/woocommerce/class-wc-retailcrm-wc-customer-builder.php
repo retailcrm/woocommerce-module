@@ -1,8 +1,14 @@
 <?php
-
 /**
- * Class WC_Retailcrm_WC_Customer_Builder
- * It converts retailCRM customer data (array) into WC_Customer
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_WC_Customer_Builder - It converts retailCRM customer data (array) into WC_Customer.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
 {

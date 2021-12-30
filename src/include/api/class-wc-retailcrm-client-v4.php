@@ -1,9 +1,8 @@
 <?php
-
 /**
- * PHP version 5.3
+ * PHP version 5.6
  *
- * Request class
+ * Class WC_Retailcrm_Client_V4 - Api Client V4 class.
  *
  * @category Integration
  * @package  WC_Retailcrm_Client
@@ -12,11 +11,11 @@
  * @link     http://retailcrm.ru/docs/Developers/ApiVersion4
  */
 
-if ( ! class_exists( 'WC_Retailcrm_Request' ) ) {
+if (!class_exists('WC_Retailcrm_Request')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-request.php'));
 }
 
-if ( ! class_exists( 'WC_Retailcrm_Response' ) ) {
+if (!class_exists('WC_Retailcrm_Response')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
 }
 
@@ -52,7 +51,7 @@ class WC_Retailcrm_Client_V4
 
     /**
      * Returns api versions list
-     * 
+     *
      * @return WC_Retailcrm_Response
      */
     public function apiVersions()

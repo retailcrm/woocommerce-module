@@ -1,16 +1,14 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Order_Payment - Build payments for CRM order.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
  * @license  http://retailcrm.ru Proprietary
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
- */
-
-/**
- * Class WC_Retailcrm_Order_Payment
  */
 class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
 {

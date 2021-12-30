@@ -1,17 +1,17 @@
 <?php
 /**
- * RetailCRM Integration.
+ * PHP version 5.6
  *
- * @package  WC_Retailcrm_History
+ * Class WC_Retailcrm_History - Allows transfer data orders/customers with CRM.
+ *
  * @category Integration
- * @author   RetailCRM
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 
-if ( ! class_exists( 'WC_Retailcrm_History' ) ) :
-
-    /**
-     * Class WC_Retailcrm_History
-     */
+if (!class_exists('WC_Retailcrm_History')) :
     class WC_Retailcrm_History
     {
         /** @var \DateTime */

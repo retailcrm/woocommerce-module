@@ -1,16 +1,18 @@
 <?php
 /**
- * RetailCRM Integration.
+ * PHP version 5.6
  *
- * @package  WC_Retailcrm_Customers
+ * Class WC_Retailcrm_Logger - Allows display important debug information.
+ *
  * @category Integration
- * @author   RetailCRM
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 
-if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')):
+if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
     /**
-     * Class WC_Retailcrm_Logger
-     *
      * @codeCoverageIgnore
      */
     class WC_Retailcrm_Logger

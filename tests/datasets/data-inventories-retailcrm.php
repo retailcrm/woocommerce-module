@@ -2,6 +2,17 @@
 
 namespace datasets;
 
+/**
+ * PHP version 5.6
+ *
+ * Class DataInventoriesRetailCrm - Data set for WC_Retailcrm_Inventories.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 class DataInventoriesRetailCrm {
     public static function getResponseData()
     {

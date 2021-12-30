@@ -1,21 +1,21 @@
 <?php
-
 /**
- * PHP version 5.3
+ * PHP version 5.6
  *
- * Request class
+ * Class WC_Retailcrm_Request - Request class.
  *
  * @category Integration
  * @package  WC_Retailcrm_Request
  * @author   RetailCRM <dev@retailcrm.ru>
  * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
  */
 
-if ( ! class_exists( 'WC_Retailcrm_Exception_Curl' ) ) {
+if (!class_exists('WC_Retailcrm_Exception_Curl')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-exception-curl.php'));
 }
 
-if ( ! class_exists( 'WC_Retailcrm_Response' ) ) {
+if (!class_exists('WC_Retailcrm_Response')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
 }
 

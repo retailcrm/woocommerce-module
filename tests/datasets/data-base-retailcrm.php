@@ -2,6 +2,17 @@
 
 namespace datasets;
 
+/**
+ * PHP version 5.6
+ *
+ * Class DataBaseRetailCrm - Data set for WC_Retailcrm_Base.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 class DataBaseRetailCrm
 {
     public static function getResponseStatuses()

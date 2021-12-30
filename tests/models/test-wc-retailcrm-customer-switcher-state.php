@@ -1,6 +1,8 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Customer_Switcher_State_Test - Testing WC_Retailcrm_Customer_Switcher_State.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -8,7 +10,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
 class WC_Retailcrm_Customer_Switcher_State_Test extends WC_Retailcrm_Test_Case_Helper
 {
     public function test_feasible()

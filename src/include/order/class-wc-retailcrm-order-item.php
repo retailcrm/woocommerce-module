@@ -1,6 +1,8 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Order_Item - Build items for CRM order.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -8,14 +10,8 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
-/**
- * Class WC_Retailcrm_Order_Item
- */
 class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 {
-    protected $filter_name = 'order_item';
-
     /**
      * @var array order item
      */

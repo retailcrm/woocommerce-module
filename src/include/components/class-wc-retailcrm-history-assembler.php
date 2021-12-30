@@ -1,8 +1,15 @@
 <?php
-
 /**
- * Class WC_Retailcrm_History_Assembler
- * Assembles history records into list which closely resembles orders & customers list output from API.
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_History_Assembler - Assembles history records into list which closely resembles
+ * orders & customers list output from API.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_History_Assembler
 {

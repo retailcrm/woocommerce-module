@@ -1,21 +1,28 @@
 <?php
-
 /**
- * Class WC_Retailcrm_Customer_Switcher_State
- * Holds WC_Retailcrm_Customer_Switcher state. It exists only because we need to comply with builder interface.
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Customer_Switcher_State - Holds WC_Retailcrm_Customer_Switcher state.
+ * It exists only because we need to comply with builder interface.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_Customer_Switcher_State
 {
     /** @var \WC_Order $wcOrder */
    private $wcOrder;
 
-   /** @var array */
+    /** @var array */
    private $newCustomer;
 
-   /** @var array */
+    /** @var array */
    private $newContact;
 
-   /** @var string $newCompanyName */
+    /** @var string $newCompanyName */
     private $newCompanyName;
 
     /** @var array $companyAddress */

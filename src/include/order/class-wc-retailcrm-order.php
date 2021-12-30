@@ -1,6 +1,8 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Order - Build main data for CRM order.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -8,7 +10,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
 class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
 {
     /** @var bool */
