@@ -283,5 +283,38 @@ msgstr "Активировать режим отладки в модуле"
 msgid "Is required to enable debug mode for advanced logs"
 msgstr "Требуется включить режим отладки для расширенного логирования"
 
+msgid "Custom fields"
+msgstr "Пользовательские поля"
+
+msgid "Select value"
+msgstr "Выберите значение"
+
+msgid "Custom fields for order"
+msgstr "Пользовательские поля для заказа"
+
+msgid "Custom fields for customer"
+msgstr "Пользовательские поля для клиента"
+
+msgid "Add new select for order"
+msgstr "Добавить"
+
+msgid "Add new select for customer"
+msgstr "Добавить"
+
+msgid "This option is disabled"
+msgstr "Опция отключена"
+
+msgid "Cron launches"
+msgstr "Работающие крон задачи"
+
+msgid "Generation ICML"
+msgstr "Генерация каталога"
+
+msgid "Syncing history"
+msgstr "Синхронизация истории"
+
+msgid "Syncing inventories"
+msgstr "Синхронизация запасов"
+
 
 

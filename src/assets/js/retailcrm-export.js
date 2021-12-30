@@ -4,7 +4,7 @@ jQuery(function () {
         this.submitButton = jQuery('button[id="export-orders-submit"]').get(0);
         this.selectedOrdersButton = jQuery('button[id="export_selected_orders_btn"]').get(0);
 
-        jQuery(this.submitButton).after('<div id="export-orders-progress" class="retail-progress retail-hidden"></div');
+        jQuery(this.submitButton).after('<div id="export-orders-progress" class="retail-progress retailcrm-hidden"></div');
         jQuery(this.submitButton).before('<div id="export-orders-count" class="retail-count-data-upload"></div');
 
         this.progressBar = jQuery('div[id="export-orders-progress"]').get(0);
@@ -21,7 +21,7 @@ jQuery(function () {
             return false;
         }
 
-        jQuery(this.submitButton).addClass('retail-hidden');
+        jQuery(this.submitButton).addClass('retailcrm-hidden');
 
         this.ordersCount = 0;
         this.customersCount = 0;
@@ -37,7 +37,8 @@ jQuery(function () {
             .done(function (response) {
                 _this.ordersCount = Number(response.count_orders);
                 _this.customersCount = Number(response.count_users);
-                jQuery(_this.submitButton).removeClass('retail-hidden');
+                jQuery(_this.submitButton).removeClass('retailcrm-hidden');
+
 
                 _this.messageEmtyField = response.translate.tr_empty_field;
                 _this.messageSuccessful = response.translate.tr_successful;
@@ -64,6 +65,7 @@ jQuery(function () {
 
     RetailcrmExportForm.prototype.displayCountUploadData = function (order, customer) {
         this.counter = jQuery('div[id="export-orders-count"]').get(0);
+
 
         jQuery(this.counter).text(`${customer}: ${this.customersCount} ${order}: ${this.ordersCount}`);
     }
@@ -115,9 +117,9 @@ jQuery(function () {
     };
 
     RetailcrmExportForm.prototype.initializeProgressBar = function () {
-        jQuery(this.submitButton).addClass('retail-hidden');
+        jQuery(this.submitButton).addClass('retailcrm-hidden');
         jQuery(this.progressBar)
-            .removeClass('retail-hidden')
+            .removeClass('retailcrm-hidden')
             .append(jQuery('<div/>', {class: 'retail-progress__loader', text: '0%'}))
 
         window.addEventListener('beforeunload', this.confirmLeave);

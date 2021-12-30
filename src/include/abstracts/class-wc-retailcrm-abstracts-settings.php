@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -31,7 +32,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         static::$option_key = $this->get_option_key();
 
-        if (isset($_GET['page']) && $_GET['page'] == 'wc-settings'
+        if (
+            isset($_GET['page']) && $_GET['page'] == 'wc-settings'
             && isset($_GET['tab']) && $_GET['tab'] == 'integration'
         ) {
             add_action('init', array($this, 'init_settings_fields'), 99);
@@ -66,19 +68,19 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function init_form_fields()
     {
         $this->form_fields = array(
-            array( 'title' => __( 'Main settings', 'retailcrm' ), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
+            array( 'title' => __('Main settings', 'retailcrm'), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
 
             'api_url' => array(
-                'title'             => __( 'API of URL', 'retailcrm' ),
+                'title'             => __('API of URL', 'retailcrm'),
                 'type'              => 'text',
                 'description'       => __( 'Enter API of URL (https://yourdomain.simla.com)', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
             ),
             'api_key' => array(
-                'title'             => __( 'API key', 'retailcrm' ),
+                'title'             => __('API key', 'retailcrm'),
                 'type'              => 'text',
-                'description'       => __( 'Enter your API key. You can find it in the administration section of Simla.com', 'retailcrm' ),
+                'description'       => __('Enter your API key. You can find it in the administration section of Simla.com', 'retailcrm'),
                 'desc_tip'          => true,
                 'default'           => ''
             )
@@ -89,13 +91,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $apiKey = !empty($post[$this->plugin_id . $this->id . '_api_key']) ? $post[$this->plugin_id . $this->id . '_api_key'] : null;
 
         if ($this->apiClient) {
-            if (isset($_GET['page']) && $_GET['page'] == 'wc-settings'
+            if (
+                isset($_GET['page']) && $_GET['page'] == 'wc-settings'
                 && isset($_GET['tab']) && $_GET['tab'] == 'integration'
             ) {
                 add_action('admin_print_footer_scripts', array($this, 'show_blocks'), 99);
 
                 $this->form_fields[] = array(
-                    'title'       => __( 'API settings', 'retailcrm' ),
+                    'title'       => __('API settings', 'retailcrm'),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'api_options'
@@ -111,14 +114,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 );
 
                 $this->form_fields['online_assistant'] = array(
-                    'title'       => __( 'Online assistant', 'retailcrm' ),
+                    'title'       => __('Online assistant', 'retailcrm'),
                     'type'        => 'textarea',
                     'id'          => 'online_assistant',
-                    'placeholder' => __( 'Insert the Online consultant code here', 'retailcrm' )
+                    'placeholder' => __('Insert the Online consultant code here', 'retailcrm')
                 );
 
-                $this->form_fields['catalog_options'] = array(
-                    'title'       => __( 'Catalog settings', 'retailcrm' ),
+                $this->form_fields[] = array(
+                    'title'       => __('Catalog settings', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'catalog_options'
@@ -193,7 +196,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'id' => 'shipping_options'
                     );
 
-                    foreach ($wc_shipping_list as  $shipping_code => $shipping) {
+                    foreach ($wc_shipping_list as $shipping_code => $shipping) {
                         if (isset($shipping['enabled']) && $shipping['enabled'] == static::YES) {
                             $this->form_fields[$shipping_code] = array(
                                 'title'          => __($shipping['title'], 'woocommerce'),
@@ -281,6 +284,26 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         );
                     }
                 }
+
+                /**
+                 * Meta data options
+                 */
+                $this->form_fields[] = array(
+                     'title'       => __('Custom fields', 'retailcrm'),
+                     'type'        => 'heading',
+                     'description' => '',
+                     'class'       => 'meta-fields'
+                );
+
+                $this->form_fields['order-meta-data-retailcrm'] = array(
+                    'type'        => 'textarea',
+                    'class'       => 'order-meta-data-retailcrm',
+                );
+
+                $this->form_fields['customer-meta-data-retailcrm'] = array(
+                    'type'        => 'textarea',
+                    'class'       => 'customer-meta-data-retailcrm',
+                );
 
                 /**
                  * Inventories options
@@ -506,7 +529,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             $response = $api->apiVersions();
 
             if ($response->isSuccessful()) {
-               header("Refresh:0");
+                header("Refresh:0");
             }
         }
     }
@@ -533,20 +556,20 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'title'             => '',
         );
 
-        $data = wp_parse_args( $data, $defaults );
+        $data = wp_parse_args($data, $defaults);
 
         ob_start();
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
-                <label for="<?php echo esc_attr( $field ); ?>"><?php echo wp_kses_post( $data['title'] ); ?></label>
-                <?php echo $this->get_tooltip_html( $data ); ?>
+                <label for="<?php echo esc_attr($field); ?>"><?php echo wp_kses_post($data['title']); ?></label>
+                <?php echo $this->get_tooltip_html($data); ?>
             </th>
             <td class="forminp">
                 <fieldset>
-                    <legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['label'] ); ?></span></legend>
-                    <button id="<?php echo $data['id']; ?>" class="<?php echo esc_attr( $data['class'] ); ?>" type="button" name="<?php echo esc_attr( $field ); ?>" id="<?php echo esc_attr( $field ); ?>" style="<?php echo esc_attr( $data['css'] ); ?>" <?php echo $this->get_custom_attribute_html( $data ); ?>><?php echo wp_kses_post( $data['label'] ); ?></button>
-                    <?php echo $this->get_description_html( $data ); ?>
+                    <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['label']); ?></span></legend>
+                    <button id="<?php echo $data['id']; ?>" class="<?php echo esc_attr($data['class']); ?>" type="button" name="<?php echo esc_attr($field); ?>" id="<?php echo esc_attr($field); ?>" style="<?php echo esc_attr($data['css']); ?>" <?php echo $this->get_custom_attribute_html($data); ?>><?php echo wp_kses_post($data['label']); ?></button>
+                    <?php echo $this->get_description_html($data); ?>
                 </fieldset>
             </td>
         </tr>
@@ -566,20 +589,20 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function generate_heading_html($key, $data)
     {
-        $field_key = $this->get_field_key( $key );
+        $field_key = $this->get_field_key($key);
         $defaults  = array(
             'title' => '',
             'class' => '',
         );
 
-        $data = wp_parse_args( $data, $defaults );
+        $data = wp_parse_args($data, $defaults);
 
         ob_start();
         ?>
             </table>
-            <h2 class="wc-settings-sub-title retailcrm_hidden <?php echo esc_attr( $data['class'] ); ?>" id="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <span style="opacity:0.5;float: right;">&#11015;</span></h2>
-            <?php if ( ! empty( $data['description'] ) ) : ?>
-                <p><?php echo wp_kses_post( $data['description'] ); ?></p>
+            <h2 class="wc-settings-sub-title retailcrm_hidden <?php echo esc_attr($data['class']); ?>" id="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <span style="opacity:0.5;float: right;">&#11015;</span></h2>
+            <?php if (! empty($data['description'])) : ?>
+                <p><?php echo wp_kses_post($data['description']); ?></p>
             <?php endif; ?>
             <table class="form-table" style="display: none;">
         <?php
@@ -597,13 +620,13 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     */
     public function validate_online_assistant_field($key, $value)
     {
-    	$onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
+        $onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
 
-    	if (!empty($onlineAssistant) && is_string($onlineAssistant)) {
-    	    return wp_unslash($onlineAssistant);
-    	}
+        if (!empty($onlineAssistant) && is_string($onlineAssistant)) {
+            return wp_unslash($onlineAssistant);
+        }
 
-    	return '';
+        return '';
     }
 
     /**
@@ -628,7 +651,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $response = $api->apiVersions();
 
         if ($response == null) {
-            WC_Admin_Settings::add_error(esc_html__( 'Enter the correct URL of CRM', 'retailcrm'));
+            WC_Admin_Settings::add_error(esc_html__('Enter the correct URL of CRM', 'retailcrm'));
             $value = '';
         }
 
@@ -661,7 +684,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         }
 
         if (empty($response) || !$response->isSuccessful()) {
-            WC_Admin_Settings::add_error( esc_html__( 'Enter the correct API key', 'retailcrm' ) );
+            WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
             $value = '';
         }
 
@@ -730,10 +753,12 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      *
      * @codeCoverageIgnore
      */
-    function add_retailcrm_button() {
+    function add_retailcrm_button()
+    {
         global $wp_admin_bar;
-        if ( !is_super_admin() || !is_admin_bar_showing() || !is_admin())
+        if (!is_super_admin() || !is_admin_bar_showing() || !is_admin()) {
             return;
+        }
 
         $wp_admin_bar->add_menu(
             array(
@@ -756,7 +781,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             array(
                 'id' => 'retailcrm_ajax_generate_setings',
                 'title' => __('Settings', 'retailcrm'),
-                'href'=> get_site_url().'/wp-admin/admin.php?page=wc-settings&tab=integration&section=integration-retailcrm',
+                'href' => get_site_url() . '/wp-admin/admin.php?page=wc-settings&tab=integration&section=integration-retailcrm',
                 'parent' => 'retailcrm_top_menu',
                 'class' => 'retailcrm_ajax_settings'
             )

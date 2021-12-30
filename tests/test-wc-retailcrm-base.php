@@ -17,12 +17,13 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
                               ->disableOriginalConstructor()
                               ->setMethods(
-                                  array(
+                                  [
                                       'orderMethodsList',
                                       'deliveryTypesList',
                                       'paymentTypesList',
-                                      'statusesList'
-                                  )
+                                      'statusesList',
+                                      'customFieldsList',
+                                  ]
                               )
                               ->getMock();
 
@@ -71,7 +72,6 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->assertArrayHasKey('corporate_enabled', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('online_assistant', $this->baseRetailcrm->form_fields);
-        $this->assertArrayHasKey('catalog_options', $this->baseRetailcrm->form_fields);
 
         $this->assertArrayHasKey('order_methods', $this->baseRetailcrm->form_fields);
         $this->assertInternalType('array', $this->baseRetailcrm->form_fields['order_methods']);
@@ -278,6 +278,73 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_end_clean();
     }
 
+    public function test_set_meta_fields()
+    {
+        $responseApiMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
+                                ->disableOriginalConstructor()
+                                ->setMethods(['isSuccessful'])
+                                ->getMock();
+
+        $this->setMockResponse($responseApiMock, 'isSuccessful', true);
+
+        $responseApiMock->setResponse(
+            [
+                'success' => true,
+                'customFields' => [
+                    [
+                        'name' => 'Test_Upload',
+                        'code' => 'test_upload',
+                    ],
+                    [
+                        'name' => 'test123',
+                        'code' => 'test',
+                    ],
+                ]
+            ]
+        );
+
+        $this->setMockResponse($this->apiMock, 'customFieldsList', $responseApiMock);
+
+        ob_start();
+
+        $this->baseRetailcrm->set_meta_fields();
+
+        $jsonData = $this->getJsonData(ob_get_contents());
+
+        $this->assertArrayHasKey('order', $jsonData);
+        $this->assertArrayHasKey('customer', $jsonData);
+        $this->assertArrayHasKey('translate', $jsonData);
+
+        $this->assertArrayHasKey('custom', $jsonData['order']);
+        $this->assertArrayHasKey('meta', $jsonData['order']);
+        $this->assertArrayHasKey('custom', $jsonData['customer']);
+        $this->assertArrayHasKey('meta', $jsonData['customer']);
+        $this->assertArrayHasKey('tr_lb_order', $jsonData['translate']);
+        $this->assertArrayHasKey('tr_lb_customer', $jsonData['translate']);
+        $this->assertArrayHasKey('tr_btn', $jsonData['translate']);
+
+        $this->assertArrayHasKey('default_retailcrm', $jsonData['order']['meta']);
+        $this->assertArrayHasKey('default_retailcrm', $jsonData['order']['custom']);
+        $this->assertArrayHasKey('test_upload', $jsonData['order']['custom']);
+        $this->assertArrayHasKey('test', $jsonData['order']['custom']);
+
+        $this->assertArrayHasKey('default_retailcrm', $jsonData['customer']['meta']);
+        $this->assertArrayHasKey('default_retailcrm', $jsonData['customer']['custom']);
+        $this->assertArrayHasKey('test_upload', $jsonData['customer']['custom']);
+        $this->assertArrayHasKey('test', $jsonData['customer']['custom']);
+
+        $this->assertEquals('Select value', $jsonData['order']['meta']['default_retailcrm']);
+        $this->assertEquals('Select value', $jsonData['order']['custom']['default_retailcrm']);
+        $this->assertEquals('Test_Upload', $jsonData['order']['custom']['test_upload']);
+        $this->assertEquals('test123', $jsonData['order']['custom']['test']);
+
+        $this->assertEquals('Select value', $jsonData['customer']['meta']['default_retailcrm']);
+        $this->assertEquals('Select value', $jsonData['customer']['custom']['default_retailcrm']);
+        $this->assertEquals('Test_Upload', $jsonData['customer']['custom']['test_upload']);
+        $this->assertEquals('test123', $jsonData['customer']['custom']['test']);
+
+        ob_end_clean();
+    }
 
     private function getJsonData($text)
     {
