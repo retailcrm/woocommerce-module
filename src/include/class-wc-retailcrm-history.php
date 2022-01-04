@@ -487,17 +487,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                 }
             }
 
-            if (isset($order['paymentType'])) {
-                if (!empty($options[$order['paymentType']])) {
-                    $payment = WC_Payment_Gateways::instance();
-                    $paymentTypes = $payment->payment_gateways();
-
-                    if (isset($paymentTypes[$options[$order['paymentType']]])) {
-                        $wcOrder->set_payment_method($paymentTypes[$options[$order['paymentType']]]);
-                    }
-                }
-            }
-
             if (isset($order['payments']) && !empty($order['payments'])) {
                 $payment = WC_Payment_Gateways::instance();
                 $paymentTypes = $payment->payment_gateways();
@@ -742,6 +731,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $paymentTypes = $payment->payment_gateways();
                     $payments = $order['payments'];
                     $paymentType = end($payments);
+
                     if (isset($options[$paymentType['type']]) && isset($paymentTypes[$options[$paymentType['type']]])) {
                         $wcOrder->set_payment_method($paymentTypes[$options[$paymentType['type']]]);
                     }

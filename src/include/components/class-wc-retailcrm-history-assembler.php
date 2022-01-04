@@ -82,7 +82,7 @@ class WC_Retailcrm_History_Assembler
 
             if ($change['field'] == 'payments.status') {
                 if ($change['newValue'] !== null) {
-                    $orders[$change['order']['id']]['payment']['id']['status'] = self::newValue($change['newValue']);
+                    $orders[$change['order']['id']]['payments']['id']['status'] = self::newValue($change['newValue']);
                 }
             } else {
                 if (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service') {
