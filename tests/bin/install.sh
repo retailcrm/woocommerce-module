@@ -1,29 +1,15 @@
 #!/usr/bin/env bash
-# See https://raw.githubusercontent.com/wp-cli/scaffold-command/master/templates/install-wp-tests.sh
-
-if [ $# -lt 3 ]; then
-	echo "usage: $0 <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]"
-	exit 1
-fi
+# Example https://raw.githubusercontent.com/wp-cli/scaffold-command/master/templates/install-wp-tests.sh
 
 DB_NAME=$1
 DB_USER=$2
-DB_HOST=${3-localhost}
-WP_VERSION=${4-latest}
-WC_VERSION=${5-3.9.0}
-DB_PASS=${6-''}
-SKIP_DB_CREATE=${7-false}
+DB_HOST=$3
+DB_PASS=$4
+WP_VERSION=$5
+WC_VERSION=$6
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress-tests-lib}
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
-
-download() {
-    if [ `which curl` ]; then
-        curl -s "$1" > "$2";
-    elif [ `which wget` ]; then
-        wget -nv -O "$2" "$1"
-    fi
-}
 
 if [[ $WP_VERSION =~ [0-9]+\.[0-9]+(\.[0-9]+)? ]]; then
 	WP_TESTS_TAG="tags/$WP_VERSION"
@@ -43,35 +29,30 @@ fi
 
 set -ex
 
-install_wp() {
+download() {
+    if [ `which curl` ]; then
+        curl -s "$1" > "$2";
+    elif [ `which wget` ]; then
+        wget -nv -O "$2" "$1"
+    fi
+}
 
+install_wp() {
 	if [ -d $WP_CORE_DIR ]; then
 		return;
 	fi
 
 	mkdir -p $WP_CORE_DIR
-
-	if [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
-		mkdir -p /tmp/wordpress-nightly
-		download https://wordpress.org/nightly-builds/wordpress-latest.zip  /tmp/wordpress-nightly/wordpress-nightly.zip
-		unzip -q /tmp/wordpress-nightly/wordpress-nightly.zip -d /tmp/wordpress-nightly/
-		mv /tmp/wordpress-nightly/wordpress/* $WP_CORE_DIR
-	else
-		if [ $WP_VERSION == 'latest' ]; then
-			local ARCHIVE_NAME='latest'
-		else
-			local ARCHIVE_NAME="wordpress-$WP_VERSION"
-		fi
-		download https://wordpress.org/${ARCHIVE_NAME}.tar.gz  /tmp/wordpress.tar.gz
-		tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
-	fi
-
+	local ARCHIVE_NAME="wordpress-$WP_VERSION"
+	download https://wordpress.org/${ARCHIVE_NAME}.tar.gz  /tmp/wordpress.tar.gz
+	tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
 	download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
 }
 
 install_woocommerce() {
   if [[ ! -d "/tmp/woocommerce" ]]
   then
+    echo  $WC_VERSION;
     cd /tmp
     git clone https://github.com/woocommerce/woocommerce.git
     cd woocommerce
@@ -107,34 +88,11 @@ install_test_suite() {
 		sed $ioption "s/yourpasswordhere/$DB_PASS/" "$WP_TESTS_DIR"/wp-tests-config.php
 		sed $ioption "s|localhost|${DB_HOST}|" "$WP_TESTS_DIR"/wp-tests-config.php
 	fi
-
 }
 
 install_db() {
-
-	if [ ${SKIP_DB_CREATE} = "true" ]; then
-		return 0
-	fi
-
-	# parse DB_HOST for port or socket references
-	local PARTS=(${DB_HOST//\:/ })
-	local DB_HOSTNAME=${PARTS[0]};
-	local DB_SOCK_OR_PORT=${PARTS[1]};
-	local EXTRA=""
-
-	if ! [ -z $DB_HOSTNAME ] ; then
-		if [ $(echo $DB_SOCK_OR_PORT | grep -e '^[0-9]\{1,\}$') ]; then
-			EXTRA=" --host=$DB_HOSTNAME --port=$DB_SOCK_OR_PORT --protocol=tcp"
-		elif ! [ -z $DB_SOCK_OR_PORT ] ; then
-			EXTRA=" --socket=$DB_SOCK_OR_PORT"
-		elif ! [ -z $DB_HOSTNAME ] ; then
-			EXTRA=" --host=$DB_HOSTNAME --protocol=tcp"
-		fi
-	fi
-
   if [ ${DB_HOST} == "localhost" ]; then
-    # create database
-    mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA --host=$DB_HOST
+    mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS" --host=$DB_HOST
   fi
 }
 

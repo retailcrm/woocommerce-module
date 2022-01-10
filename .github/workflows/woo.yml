@@ -424,21 +424,6 @@ jobs:
             wp: '5.8'
             wc: '5.8.0'
 
-          ## WordPress 5.8 and last WooCommerce  NEED DELETE , TEST WC 5.9.0 !!!
-
-          - php-version: '7.0'
-            wp: '5.8'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.8'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.8'
-            wc: '5.8.0'
-          - php-version: '7.3'
-            wp: '5.8'
-            wc: '5.8.0'
-
     services:
       mysql:
         image: mysql:5.7

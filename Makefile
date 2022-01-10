@@ -28,13 +28,13 @@ compile_pot:
 
 install:
 	mkdir coverage
-	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(WP_VERSION) $(WC_VERSION) $(DB_PASS) $(SKIP_DB_CREATE)
+	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(DB_PASS) $(WP_VERSION) $(WC_VERSION)
 
 test:
 	phpunit -c phpunit.xml.dist
 
 local_test:
-	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(WP_VERSION) $(WC_VERSION) $(DB_PASS) $(SKIP_DB_CREATE)
+	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(DB_PASS) $(WP_VERSION) $(WC_VERSION)
 	phpunit -c phpunit.xml.dist
 
 run_tests:
