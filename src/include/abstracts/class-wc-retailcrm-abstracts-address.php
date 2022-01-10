@@ -1,6 +1,8 @@
 <?php
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Abstracts_Address - Builds data for addresses orders/customers.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -8,7 +10,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
 abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Data
 {
     /** @var array $data */

@@ -1,17 +1,17 @@
 <?php
-
 /**
- * RetailCRM Integration.
+ * PHP version 5.6
  *
- * @package  WC_Retailcrm_Uploader
+ * Class WC_Retailcrm_Uploader - Allows upload archival orders/customers in CRM.
+ *
  * @category Integration
- * @author   RetailCRM
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 
 if (class_exists('WC_Retailcrm_Uploader') === false) {
-    /**
-     * Class WC_Retailcrm_Uploader
-     */
     class WC_Retailcrm_Uploader
     {
         const RETAILCRM_COUNT_OBJECT_UPLOAD = 50;

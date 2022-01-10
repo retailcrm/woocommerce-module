@@ -1,7 +1,14 @@
 <?php
-
 /**
- * Class WC_Retailcrm_Test_Case_Helper
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Test_Case_Helper - Helper for testing.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
 {

@@ -1,7 +1,18 @@
 <?php
+/**
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Daemon_Collector - Integration with Daemon Collector.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 
 if (!defined('ABSPATH')) {
-	exit;
+    exit;
 }
 
 class WC_Retailcrm_Daemon_Collector {

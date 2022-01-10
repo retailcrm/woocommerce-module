@@ -1,9 +1,8 @@
 <?php
-
 /**
- * PHP version 5.3
+ * PHP version 5.6
  *
- * Request class
+ * Class WC_Retailcrm_Client_V5 - Api Client V5 class.
  *
  * @category Integration
  * @package  WC_Retailcrm_Client

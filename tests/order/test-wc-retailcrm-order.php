@@ -1,7 +1,8 @@
 <?php
-
 /**
- * PHP version 5.3
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Order_Test - Testing WC_Retailcrm_Order.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -9,7 +10,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
 class WC_Retailcrm_Order_Test extends WC_Retailcrm_Test_Case_Helper {
     /** @var WC_Order */
     protected $order;

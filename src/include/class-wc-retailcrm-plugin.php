@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Plugin - Internal plugin settings.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 class WC_Retailcrm_Plugin
 {
 

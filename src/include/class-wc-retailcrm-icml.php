@@ -1,17 +1,17 @@
 <?php
 /**
- * RetailCRM Integration.
+ * PHP version 5.6
  *
- * @package  WC_Retailcrm_Icml
+ * Class WC_Retailcrm_Icml - Generate ICML file (catalog).
+ *
  * @category Integration
- * @author   RetailCRM
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 
-if ( ! class_exists( 'WC_Retailcrm_Icml' ) ) :
-
-    /**
-     * Class WC_Retailcrm_Icml
-     */
+if (!class_exists('WC_Retailcrm_Icml')) :
     class WC_Retailcrm_Icml
     {
         protected $shop;

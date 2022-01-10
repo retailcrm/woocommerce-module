@@ -2,6 +2,17 @@
 
 use datasets\DataHistoryRetailCrm;
 
+/**
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_History_Test - Testing WC_Retailcrm_History.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 {
     /** @var WC_Retailcrm_Proxy */

@@ -1,14 +1,20 @@
 <?php
+/**
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Log_Handler_Stdout - Handles log entries by writing to a stdout.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 
-if (!defined( 'ABSPATH' ) ) {
+if (!defined( 'ABSPATH')) {
     exit;
 }
 
-/**
- * Handles log entries by writing to a stdout
- *
- * @class WC_Retailcrm_Log_Handler_Stdout
- */
 class WC_Retailcrm_Log_Handler_Stdout extends WC_Log_Handler
 {
     /**

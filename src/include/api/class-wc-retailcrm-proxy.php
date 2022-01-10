@@ -1,17 +1,17 @@
 <?php
 /**
- * RetailCRM Integration.
+ * PHP version 5.6
  *
- * @package  WC_Retailcrm_Proxy
+ * Class WC_Retailcrm_Proxy - RetailCRM Integration.
+ *
  * @category Integration
- * @author   RetailCRM
+ * @package  WC_Retailcrm_Proxy
+ * @author   RetailCRM <dev@retailcrm.ru>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
  */
 
-if ( ! class_exists( 'WC_Retailcrm_Proxy' ) ) :
-
-    /**
-     * Class WC_Retailcrm_Proxy
-     */
+if (!class_exists('WC_Retailcrm_Proxy')) :
     class WC_Retailcrm_Proxy
     {
         protected $retailcrm;

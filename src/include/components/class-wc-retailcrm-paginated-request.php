@@ -1,9 +1,15 @@
 <?php
-
 /**
- * Class WC_Retailcrm_Paginated_Request
- * It will merge request with pagination data into one big monstrous array.
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Paginated_Request - It will merge request with pagination data into one big monstrous array.
  * Use with caution, it can cause problems with very large data sets (due to memory exhaustion, obviously).
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_Paginated_Request
 {

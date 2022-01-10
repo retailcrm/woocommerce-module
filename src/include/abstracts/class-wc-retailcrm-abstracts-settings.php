@@ -1,7 +1,8 @@
 <?php
-
 /**
  * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Abstracts_Settings - Settings plugin Simla.
  *
  * @category Integration
  * @author   RetailCRM <integration@retailcrm.ru>
@@ -9,7 +10,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
 abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 {
     /** @var string */

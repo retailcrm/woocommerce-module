@@ -1,8 +1,14 @@
 <?php
-
 /**
- * Interface WC_Retailcrm_Builder_Interface.
- * Main interface for builders. All builders
+ * PHP version 5.6
+ *
+ * Interface WC_Retailcrm_Builder_Interface - Main interface for builders. All builders.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 interface WC_Retailcrm_Builder_Interface {
     /**

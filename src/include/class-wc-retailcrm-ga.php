@@ -1,7 +1,17 @@
 <?php
+/**
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Google_Analytics - Integration with Google Analytics.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 
 if (!class_exists('WC_Retailcrm_Google_Analytics')) {
-
     class WC_Retailcrm_Google_Analytics {
         private static $instance;
         private $options;

@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Daemon_Collector_Test - Testing WC_Retailcrm_Daemon_Collector.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
+ */
 class WC_Retailcrm_Daemon_Collector_Test extends WC_Retailcrm_Test_Case_Helper
 {
     private $daemonCollector;

@@ -1,10 +1,16 @@
 <?php
-
 /**
- * Class WC_Retailcrm_Customer_Switcher_Result
- * Holds modified order and customer which was set in the order.
+ * PHP version 5.6
+ *
+ * Class WC_Retailcrm_Customer_Switcher_Result - Holds modified order and customer which was set in the order.
  * If customer is null, then only order props was updated. Previous customer (if it was registered)
  * will be detached from this order.
+ *
+ * @category Integration
+ * @author   RetailCRM <integration@retailcrm.ru>
+ * @license  http://retailcrm.ru Proprietary
+ * @link     http://retailcrm.ru
+ * @see      http://help.retailcrm.ru
  */
 class WC_Retailcrm_Customer_Switcher_Result
 {
