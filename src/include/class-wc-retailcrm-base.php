@@ -83,7 +83,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
             add_action('wp_ajax_upload_selected_orders', array($this, 'upload_selected_orders'));
             add_action('admin_print_footer_scripts', array($this, 'ajax_generate_icml'), 99);
-            add_action('admin_print_footer_scripts', array($this, 'ajax_selected_order'), 99);
             add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
             add_action('user_register', array($this, 'create_customer'), 10, 2);
