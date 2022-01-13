@@ -83,7 +83,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
             add_action('wp_ajax_upload_selected_orders', array($this, 'upload_selected_orders'));
             add_action('admin_print_footer_scripts', array($this, 'ajax_generate_icml'), 99);
-            add_action('woocommerce_created_customer', array($this, 'create_customer'), 10, 1);
             add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
             add_action('user_register', array($this, 'create_customer'), 10, 2);
             add_action('profile_update', array($this, 'update_customer'), 10, 2);
@@ -267,63 +266,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Create customer in retailCRM
          *
-         * @param int $customer_id
-         *
          * @codeCoverageIgnore There is a task for analysis
+         *
+         * @param int $customerId
+         *
          * @return void
-         * @throws \Exception
+         * @throws Exception
          */
-        public function create_customer($customer_id)
+        public function create_customer($customerId)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
                 return;
             }
 
-            $client = $this->getApiClient();
+            if (empty($customerId)) {
+                WC_Retailcrm_Logger::add('Error: Customer externalId is empty');
 
-            if (empty($client)) {
                 return;
             }
 
-            $wcCustomer = new WC_Customer($customer_id);
-            $email = $wcCustomer->get_billing_email();
-
-            if (empty($email)) {
-                $email = $wcCustomer->get_email();
-            }
-
-            if (empty($email)) {
-                return;
-            } else {
-                $wcCustomer->set_billing_email($email);
-                $wcCustomer->save();
-            }
-
-            $response = $client->customersList(array('email' => $email));
-
-            if (
-                !empty($response)
-                && $response->isSuccessful()
-                && isset($response['customers'])
-                && count($response['customers']) > 0
-            ) {
-                $customers = $response['customers'];
-                $customer = reset($customers);
-
-                if (isset($customer['id'])) {
-                    $this->customers->updateCustomerById($customer_id, $customer['id']);
-                    $builder = new WC_Retailcrm_WC_Customer_Builder();
-                    $builder
-                        ->setWcCustomer($wcCustomer)
-                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : array())
-                        ->setAddress(isset($customer['address']) ? $customer['address'] : false)
-                        ->build()
-                        ->getResult()
-                        ->save();
-                }
-            } else {
-                $this->customers->createCustomer($customer_id);
-            }
+            $this->customers->registerCustomer($customerId);
         }
 
         /**
@@ -331,23 +293,28 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @codeCoverageIgnore Check in another tests
          *
-         * @param int $customer_id
+         * @param int $customerId
+         *
+         * @return void
+         * @throws Exception
          */
-        public function update_customer($customer_id)
+        public function update_customer($customerId)
         {
             if (WC_Retailcrm_Plugin::history_running() === true) {
                 return;
             }
 
-            if (empty($customer_id)) {
+            if (empty($customerId)) {
+                WC_Retailcrm_Logger::add('Error: Customer externalId is empty');
+
                 return;
             }
 
-            $this->customers->updateCustomer($customer_id);
+            $this->customers->updateCustomer($customerId);
         }
 
         /**
-         * Create order in retailCRM from admin panel
+         * Create order in RetailCRM from admin panel
          *
          * @codeCoverageIgnore Check in another tests
          *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -173,23 +174,23 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
             $this->customer->set_billing_state(self::arrayValue(
                 $address,
                 'region',
-                $this->customer->get_billing_state())
-            );
+                $this->customer->get_billing_state()
+            ));
             $this->customer->set_billing_postcode(self::arrayValue(
                 $address,
                 'index',
-                $this->customer->get_billing_postcode())
-            );
+                $this->customer->get_billing_postcode()
+            ));
             $this->customer->set_billing_country(self::arrayValue(
                 $address,
                 'country',
-                $this->customer->get_billing_country())
-            );
+                $this->customer->get_billing_country()
+            ));
             $this->customer->set_billing_city(self::arrayValue(
                 $address,
                 'city',
-                $this->customer->get_billing_city())
-            );
+                $this->customer->get_billing_city()
+            ));
         }
 
         return $this;
@@ -206,7 +207,7 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
     /**
      * Throws an exception if internal state is not ready for data building.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function checkBuilderValidity()
     {

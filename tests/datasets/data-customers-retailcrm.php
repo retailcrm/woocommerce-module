@@ -15,19 +15,63 @@ namespace datasets;
  */
 class DataCustomersRetailCrm
 {
-    public static function getCustomerAddress()
-    {
-        return array(
-            'success' => true,
-            'addresses' => array (
-                'id' => 3503,
-                'index' => 144566,
+    public static function getCustomerAddress() {
+        return [
+            'success'   => true,
+            'addresses' => [
+                'id'         => 3503,
+                'index'      => 144566,
                 'countryIso' => 'ES',
-                'region' => 'Region',
-                'city' => 'City',
-                'text' => 'street Test 777',
-            )
-        );
+                'region'     => 'Region',
+                'city'       => 'City',
+                'text'       => 'street Test 777',
+            ]
+        ];
+    }
+
+
+    public static function getEmptyCustomersList() {
+        return [
+            'success'    => true,
+            'pagination' => [
+                'limit'          => 20,
+                'totalCount'     => 0,
+                'currentPage'    => 1,
+                'totalPageCount' => 0
+            ],
+            'customers'  => [],
+        ];
+    }
+
+    public static function getCustomersList() {
+        return [
+            'success'    => true,
+            'pagination' => [
+                'limit'          => 20,
+                'totalCount'     => 0,
+                'currentPage'    => 1,
+                'totalPageCount' => 0
+            ],
+            'customers'  => [
+                [
+                    'type'       => 'customer',
+                    'id'         => 4228,
+                    'externalId' => 2,
+                    'isContact'  => false,
+                    'email'      => 'madrid@mail.es',
+                    'phones'     => [['number' => '+3456234235']],
+                    'addresses'  => [
+                        'id'         => 3503,
+                        'index'      => 144566,
+                        'countryIso' => 'ES',
+                        'region'     => 'Region',
+                        'city'       => 'City',
+                        'text'       => 'street Test 777',
+                    ]
+                ]
+
+            ]
+        ];
     }
 }
 
