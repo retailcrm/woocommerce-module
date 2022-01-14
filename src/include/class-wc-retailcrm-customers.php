@@ -18,25 +18,25 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         protected $retailcrm;
 
         /** @var array */
-        protected $retailcrm_settings = array();
+        protected $retailcrm_settings = [];
 
         /** @var WC_Retailcrm_Customer_Address */
         protected $customer_address;
 
         /** @var array */
-        private $customer = array();
+        private $customer = [];
 
         /** @var array */
-        private $customerCorporate = array();
+        private $customerCorporate = [];
 
         /** @var array */
-        private $customerCorporateCompany = array();
+        private $customerCorporateCompany = [];
 
         /** @var array */
-        private $customerCorporateAddress = array();
+        private $customerCorporateAddress = [];
 
         /**@var array */
-        private $customFields = array();
+        private $customFields = [];
 
         /**
          * WC_Retailcrm_Customers constructor.
@@ -81,6 +81,64 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         }
 
         /**
+         * Customer can registration on site, we need:
+         * 1. Check by email if the customer already exists in CRM - then update the customer details.
+         * 2. If the customer is not in CRM, then create a new customer.
+         *
+         * @param int $customerId
+         *
+         * @return void|null
+         * @throws Exception
+         */
+        public function registerCustomer($customerId)
+        {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+            $wcCustomer = new WC_Customer($customerId);
+            $email      = $wcCustomer->get_billing_email();
+
+            if (empty($email)) {
+                $email = $wcCustomer->get_email();
+            }
+
+            if (empty($email)) {
+                WC_Retailcrm_Logger::add('Error: Customer email is empty, externalId: ' . $wcCustomer->get_id());
+
+                return null;
+            } else {
+                $wcCustomer->set_billing_email($email);
+                $wcCustomer->save();
+            }
+
+            $response = $this->retailcrm->customersList(['email' => $email]);
+
+            if ($response->isSuccessful() && !empty($response['customers'])) {
+                $customers = $response['customers'];
+                $customer = reset($customers);
+
+                if (isset($customer['id'])) {
+                    $this->updateCustomerById($customerId, $customer['id']);
+
+                    $builder = new WC_Retailcrm_WC_Customer_Builder();
+                    $builder
+                        ->setWcCustomer($wcCustomer)
+                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : array())
+                        ->setAddress(isset($customer['address']) ? $customer['address'] : false)
+                        ->build()
+                        ->getResult()
+                        ->save();
+
+                    WC_Retailcrm_Logger::add('Customer was edited, externalId: ' . $wcCustomer->get_id());
+                }
+            } else {
+                $this->createCustomer($customerId);
+
+                WC_Retailcrm_Logger::add('Customer was created, externalId: ' . $wcCustomer->get_id());
+            }
+        }
+
+        /**
          * Create customer in CRM
          *
          * @param int | WC_Customer $customer
@@ -119,18 +177,18 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * Update customer in CRM
          *
-         * @param $customer_id
+         * @param $customerId
          *
          * @return void|\WC_Customer
          * @throws \Exception
          */
-        public function updateCustomer($customer_id)
+        public function updateCustomer($customerId)
         {
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return;
             }
 
-            $customer = $this->wcCustomerGet($customer_id);
+            $customer = $this->wcCustomerGet($customerId);
 
             if ($this->isCustomer($customer)) {
                 $this->processCustomer($customer);
@@ -143,19 +201,19 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**
          * Update customer in CRM by ID
          *
-         * @param int        $customer_id
+         * @param int        $customerId
          * @param int|string $crmCustomerId
          *
          * @return void|\WC_Customer
          * @throws \Exception
          */
-        public function updateCustomerById($customer_id, $crmCustomerId)
+        public function updateCustomerById($customerId, $crmCustomerId)
         {
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return;
             }
 
-            $customer = $this->wcCustomerGet($customer_id);
+            $customer = $this->wcCustomerGet($customerId);
 
             if ($this->isCustomer($customer)) {
                 $this->processCustomer($customer);
