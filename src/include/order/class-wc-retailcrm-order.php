@@ -81,7 +81,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
         $this->set_data_fields($data);
         $this->set_number($order);
 
-        if (isset($this->settings[$order->get_status()])) {
+        if (isset($this->settings[$order->get_status()]) && 'not-upload' !== $this->settings[$order->get_status()]) {
             $this->set_data_field('status', $this->settings[$order->get_status()]);
         }
 

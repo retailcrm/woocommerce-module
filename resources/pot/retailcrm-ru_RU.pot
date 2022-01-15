@@ -316,5 +316,9 @@ msgstr "Синхронизация истории"
 msgid "Syncing inventories"
 msgstr "Синхронизация запасов"
 
+msgid "Don't send to CRM"
+msgstr "Не отправлять в CRM"
+
+
 
 
