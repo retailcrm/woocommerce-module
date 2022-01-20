@@ -1,3 +1,9 @@
+## 2022-01-17 4.4.1
+* Added functionality to skip some orders statuses
+* Improved the create/update method when registering customers
+* Add mapping metadata fields in settings
+* Improvement of the user interface, plugin operation, fix bugs
+
 ## 2021-12-15 4.4.0
 * Migrating to PHP 5.6. We tested the module, improved performance, security and test coverage.
 * Add validate countryIso. Fix bug with duplicate customer address

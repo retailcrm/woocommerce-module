@@ -307,3 +307,7 @@ msgstr "Sincronización del historial"
 msgid "Syncing inventories"
 msgstr "Sincronización de inventario"
 
+msgid "Don't send to CRM"
+msgstr "No enviar al CRM"
+
+

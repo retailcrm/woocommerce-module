@@ -618,15 +618,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $customerId = isset($order['contact']['externalId']) ? $order['contact']['externalId'] : null;
             }
 
-            $args = array(
-                'status' => isset($options[$order['status']])
-                    ? $options[$order['status']]
-                    : 'processing',
-                'customer_id' => $customerId
-            );
+            $orderStatus = isset($options[$order['status']]) ? $options[$order['status']] : 'pending';
 
-            /** @var WC_Order|WP_Error wcOrder */
-            $wcOrder = wc_create_order($args);
+            $wcOrder = wc_create_order(['status' => $orderStatus, 'customer_id' => $customerId]);
             $wcOrder->set_date_created($order['createdAt']);
             $customer = $order['customer'];
             $contactOrCustomer = array();

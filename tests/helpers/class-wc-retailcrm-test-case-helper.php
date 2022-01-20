@@ -17,7 +17,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
      */
     protected function setOptions()
     {
-        $options = array(
+        $options = [
             'api_url' => 'https://example.retailcrm.ru',
             'api_key' => 'test_key',
             'corporate_enabled' => 'yes',
@@ -26,7 +26,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'p_pending' => 'no',
             'p_private' => 'no',
             'p_publish' => 'no',
-            'order_methods' => array(0 => 'phone'),
+            'order_methods' => [ 0 => 'phone' ],
             'flat_rate_shipping' => 'delivery',
             'free_shipping' => 'delivery2',
             'local_pickup' => 'delivery3',
@@ -39,9 +39,9 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'processing' => 'status2',
             'on-hold' => 'status3',
             'completed' => 'status4',
-            'cancelled' => 'status5',
-            'refunded' => 'status6',
-            'failed' => 'status7',
+            'refunded' => 'status5',
+            'failed' => 'status6',
+            'cancelled' => 'not-upload',
             'sync' => 'yes',
             'ua' => 'yes',
             'ua_code' => 'UA-XXXXXXX-XX',
@@ -59,7 +59,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'update_number' => 'yes',
             'debug_mode' => 'yes',
             'debug-info' => ''
-        );
+        ];
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
 
@@ -76,30 +76,27 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         } else {
             global $wpdb;
 
-            foreach ( array(
+            foreach ([
                           $wpdb->posts,
                           $wpdb->postmeta,
                           $wpdb->comments,
                           $wpdb->commentmeta,
                           $wpdb->term_relationships,
                           $wpdb->termmeta,
-                      ) as $table ) {
+            ] as $table ) {
                 //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $wpdb->query( "DELETE FROM {$table}" );
             }
 
-            foreach ( array(
-                          $wpdb->terms,
-                          $wpdb->term_taxonomy,
-                      ) as $table ) {
+            foreach ([$wpdb->terms, $wpdb->term_taxonomy] as $table) {
                 //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                $wpdb->query( "DELETE FROM {$table} WHERE term_id != 1" );
+                $wpdb->query("DELETE FROM {$table} WHERE term_id != 1");
             }
 
-            $wpdb->query( "UPDATE {$wpdb->term_taxonomy} SET count = 0" );
+            $wpdb->query("UPDATE {$wpdb->term_taxonomy} SET count = 0");
 
-            $wpdb->query( "DELETE FROM {$wpdb->users} WHERE ID != 1" );
-            $wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE user_id != 1" );
+            $wpdb->query("DELETE FROM {$wpdb->users} WHERE ID != 1");
+            $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE user_id != 1");
         }
     }
 

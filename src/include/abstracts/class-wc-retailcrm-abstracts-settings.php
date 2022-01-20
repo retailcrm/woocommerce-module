@@ -251,7 +251,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Statuses options
                  */
-                $statuses_option_list = array();
+                $statuses_option_list = ['not-upload' => __("Don't send to CRM", 'retailcrm')];
                 $retailcrm_statuses_list = $this->apiClient->statusesList();
 
                 if (!empty($retailcrm_statuses_list) && $retailcrm_statuses_list->isSuccessful()) {
@@ -265,23 +265,23 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $wc_statuses = wc_get_order_statuses();
 
-                    $this->form_fields[] = array(
+                    $this->form_fields[] = [
                         'title'       => __('Statuses', 'retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
                         'id'          => 'statuses_options'
-                    );
+                    ];
 
                     foreach ($wc_statuses as $idx => $name) {
                         $uid = str_replace('wc-', '', $idx);
-                        $this->form_fields[$uid] = array(
+                        $this->form_fields[$uid] = [
                             'title'    => __($name, 'woocommerce'),
                             'css'      => 'min-width:350px;',
                             'class'    => 'select',
                             'type'     => 'select',
                             'options'  => $statuses_option_list,
                             'desc_tip' =>  true,
-                        );
+                        ];
                     }
                 }
 

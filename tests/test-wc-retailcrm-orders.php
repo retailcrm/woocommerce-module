@@ -48,7 +48,9 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
 
     /**
      * @param $retailcrm
+     *
      * @dataProvider dataProviderRetailcrm
+     * @throws Exception
      */
     public function test_order_create($retailcrm)
     {
@@ -57,12 +59,12 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $responseMockCustomers = $this->createResponseMock();
 
             $responseMockCustomers->setResponse(
-                array(
+                [
                     'success' => true,
-                    'customers' => array(
-                        array('externalId' => 1)
-                    )
-                )
+                    'customers' => [
+                        ['externalId' => 1]
+                    ]
+                ]
             );
 
             $this->setMockResponse($retailcrm, 'ordersCreate', $responseMock);
@@ -191,7 +193,8 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
     /**
      * @param $isSuccessful
      * @param $retailcrm
-
+     *
+     * @throws Exception
      * @dataProvider dataProviderUpdateOrder
      */
     public function test_update_order($isSuccessful, $retailcrm)
@@ -259,6 +262,59 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             } else {
                 $this->assertEquals(array(), $payment);
             }
+        } else {
+            $this->assertEquals(null, $order);
+        }
+    }
+
+    /**
+     * @param $isSuccessful
+     * @param $retailcrm
+     *
+     * @throws Exception
+     * @dataProvider dataProviderUpdateOrder
+     */
+    public function test_update_order_statuses($isSuccessful, $retailcrm)
+    {
+        $this->createTestOrder();
+
+        if ($retailcrm) {
+            $responseMock = $this->createResponseMock();
+
+            $this->setMockResponse($responseMock, 'isSuccessful', $isSuccessful);
+            $this->setMockResponse($retailcrm, 'ordersEdit', $responseMock);
+            $this->setMockResponse($retailcrm, 'ordersPaymentDelete', $responseMock);
+
+            $response = $this->getResponseData($this->order->get_id());
+            $responseMock->setResponse($response);
+
+            $this->setMockResponse($retailcrm, 'ordersGet', $responseMock);
+        }
+
+        //Check change status to not-uploaded in CRM
+        $this->order->set_status('cancelled');
+        $this->order->save();
+
+        $retailcrmOrders = $this->getRetailcrmOrders($retailcrm);
+        $order = $retailcrmOrders->updateOrder($this->order->get_id());
+        $orderData = $retailcrmOrders->getOrder();
+
+        if ($retailcrm) {
+            $this->assertInstanceOf('WC_Order', $order);
+            $this->assertInternalType('array', $orderData);
+            $this->assertArrayNotHasKey('status', $orderData);
+
+            //Check change status to uploaded in CRM
+            $this->order->set_status('completed');
+            $this->order->save();
+
+            $order = $retailcrmOrders->updateOrder($this->order->get_id());
+            $orderData = $retailcrmOrders->getOrder();
+
+            $this->assertInstanceOf('WC_Order', $order);
+            $this->assertInternalType('array', $orderData);
+            $this->assertArrayHasKey('status', $orderData);
+            $this->assertEquals('status4', $orderData['status']);
         } else {
             $this->assertEquals(null, $order);
         }

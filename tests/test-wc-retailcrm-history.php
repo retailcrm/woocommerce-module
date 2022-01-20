@@ -40,26 +40,26 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $orders = wc_get_orders(array('numberposts' => -1));
-        $order_added = end($orders);
+        $orders  = wc_get_orders(array('numberposts' => -1));
+        $wcOrder = end($orders);
 
-        if (!$order_added) {
+        if (!$wcOrder) {
             $this->fail('$order_added is null - no orders were added after receiving history');
         }
 
-        $order_added_items = $order_added->get_items();
+        $order_added_items = $wcOrder->get_items();
         $order_added_item = reset($order_added_items);
-        $shipping_address = $order_added->get_address('shipping');
-        $billing_address = $order_added->get_address('billing');
+        $shipping_address = $wcOrder->get_address('shipping');
+        $billing_address = $wcOrder->get_address('billing');
         $options = get_option(\WC_Retailcrm_Base::$option_key);
 
-        $this->assertEquals('status1', $options[$order_added->get_status()]);
+        $this->assertEquals('status1', $options[$wcOrder->get_status()]);
 
         if (is_object($order_added_item)) {
             $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
         }
 
-        $this->assertNotEmpty($order_added->get_date_created());
+        $this->assertNotEmpty($wcOrder->get_date_created());
         $this->assertEquals("2018-01-01 00:00:00", $order['history'][0]['createdAt']);
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
@@ -83,9 +83,27 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertNotEmpty($billing_address['country']);
         $this->assertNotEmpty($billing_address['state']);
 
-        if ($order_added->get_payment_method()) {
-            $this->assertEquals('payment4', $options[$order_added->get_payment_method()]);
+        if ($wcOrder->get_payment_method()) {
+            $this->assertEquals('payment4', $options[$wcOrder->get_payment_method()]);
         }
+    }
+
+    public function test_history_order_create_statuses()
+    {
+        $product = WC_Helper_Product::create_simple_product();
+        $order   = DataHistoryRetailCrm::get_history_data_new_order($product->get_id());
+
+        $this->mockHistory(true, DataHistoryRetailCrm::empty_history(), $order);
+
+        $retailcrm_history = new WC_Retailcrm_History($this->apiMock);
+
+        $retailcrm_history->getHistory();
+
+        $orders   = wc_get_orders(array( 'numberposts' => - 1 ));
+        $wcOrder = end($orders);
+        $options  = get_option(\WC_Retailcrm_Base::$option_key);
+
+        $this->assertEquals('status1', $options[$wcOrder->get_status()]);
     }
 
     public function test_history_order_create_deleted_items()
@@ -166,13 +184,13 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $order_updated = wc_get_order($order->get_id());
-        $order_updated_items = $order_updated->get_items();
-        $order_updated_item = end($order_updated_items);
+        $wcOrder = wc_get_order($order->get_id());
+        $wcOrderItems = $wcOrder->get_items();
+        $wcOrderItem = end($wcOrderItems);
 
-        $this->assertEquals(2, count($order_updated_items));
-        $this->assertEquals(2, $order_updated_item->get_quantity());
-        $this->assertEquals($product->get_id(), $order_updated_item->get_product()->get_id());
+        $this->assertEquals(2, count($wcOrderItems));
+        $this->assertEquals(2, $wcOrderItem->get_quantity());
+        $this->assertEquals($product->get_id(), $wcOrderItem->get_product()->get_id());
     }
 
     public function test_history_order_update()
