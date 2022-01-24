@@ -145,17 +145,6 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
             }
 
-            // @codeCoverageIgnoreStart
-            // TODO: There is a task for analysis
-            if ($update && $customerWasChanged) {
-                $firstName = $wcOrder->get_shipping_first_name();
-                $lastName = $wcOrder->get_shipping_last_name();
-
-                $this->order['firstName'] = $firstName;
-                $this->order['lastName'] = $lastName;
-            }
-            // @codeCoverageIgnoreEnd
-
             return true;
         }
 
@@ -353,7 +342,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->orders->is_new = false;
             }
 
-            $order_data = $this->orders->build($order)->get_data();
+            $orderData = $this->orders->build($order)->get_data();
 
             if ($order->get_items('shipping')) {
                 $shippings = $order->get_items('shipping');
@@ -369,11 +358,11 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 if (!empty($shipping_method) && !empty($this->retailcrm_settings[$shipping_method])) {
-                    $order_data['delivery']['code'] = $this->retailcrm_settings[$shipping_method];
+                    $orderData['delivery']['code'] = $this->retailcrm_settings[$shipping_method];
                     $service = retailcrm_get_delivery_service($shipping['method_id'], $shipping['instance_id']);
 
                     if ($service) {
-                        $order_data['delivery']['service'] = array(
+                        $orderData['delivery']['service'] = array(
                             'name' => $service['title'],
                             'code' => $service['instance_id'],
                             'active' => true
@@ -382,15 +371,15 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 if (isset($shipping['total'])) {
-                    $order_data['delivery']['netCost'] = $shipping['total'];
+                    $orderData['delivery']['netCost'] = $shipping['total'];
 
                     if (isset($shipping['total_tax'])) {
-                        $order_data['delivery']['cost'] = $shipping['total'] + $shipping['total_tax'];
+                        $orderData['delivery']['cost'] = $shipping['total'] + $shipping['total_tax'];
                     }
                 }
             }
 
-            $order_data['delivery']['address'] = $this->order_address->build($order)->get_data();
+            $orderData['delivery']['address'] = $this->order_address->build($order)->get_data();
             $order_items = array();
 
             /** @var WC_Order_Item_Product $item */
@@ -399,14 +388,14 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->order_item->reset_data();
             }
 
-            $order_data['items'] = $order_items;
+            $orderData['items'] = $order_items;
 
-            $order_data['discountManualAmount'] = 0;
-            $order_data['discountManualPercent'] = 0;
+            $orderData['discountManualAmount'] = 0;
+            $orderData['discountManualPercent'] = 0;
 
             if (!$update && $order->get_total() > 0) {
                 $this->order_payment->is_new = true;
-                $order_data['payments'][] = $this->order_payment->build($order)->get_data();
+                $orderData['payments'][] = $this->order_payment->build($order)->get_data();
             }
 
             if (!empty($this->customFields)) {
@@ -414,12 +403,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $metaValue = $order->get_meta($metaKey);
 
                     if (!empty($metaValue)) {
-                        $order_data['customFields'][$customKey] = $metaValue;
+                        $orderData['customFields'][$customKey] = $metaValue;
                     }
                 }
             }
 
-            $this->order = WC_Retailcrm_Plugin::clearArray($order_data);
+            $this->order = WC_Retailcrm_Plugin::clearArray($orderData);
             $this->processOrderCustomerInfo($order, $update);
 
             $this->order = apply_filters(
