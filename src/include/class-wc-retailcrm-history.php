@@ -375,7 +375,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                 }
 
                 if (isset($order['contact']['address'])) {
-                    var_dump('test');
                     $billingAddress = $order['contact']['address'];
 
                     // @codeCoverageIgnoreStart

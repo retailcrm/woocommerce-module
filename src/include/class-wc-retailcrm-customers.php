@@ -115,7 +115,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             if ($response->isSuccessful() && !empty($response['customers'])) {
                 $customers = $response['customers'];
-                $customer = reset($customers);
+                $customer  = reset($customers);
 
                 if (isset($customer['id'])) {
                     $this->updateCustomerById($customerId, $customer['id']);
@@ -123,7 +123,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     $builder = new WC_Retailcrm_WC_Customer_Builder();
                     $builder
                         ->setWcCustomer($wcCustomer)
-                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : array())
+                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : [])
                         ->setAddress(isset($customer['address']) ? $customer['address'] : false)
                         ->build()
                         ->getResult()
