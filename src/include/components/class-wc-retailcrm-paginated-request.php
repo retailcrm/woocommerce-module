@@ -44,6 +44,11 @@ class WC_Retailcrm_Paginated_Request
     private $data;
 
     /**
+     * @var int|null
+     */
+    private $pageLimit;
+
+    /**
      * WC_Retailcrm_Paginated_Request constructor.
      */
     public function __construct()
@@ -61,6 +66,7 @@ class WC_Retailcrm_Paginated_Request
     public function setApi($api)
     {
         $this->api = $api;
+
         return $this;
     }
 
@@ -74,6 +80,7 @@ class WC_Retailcrm_Paginated_Request
     public function setMethod($method)
     {
         $this->method = $method;
+
         return $this;
     }
 
@@ -87,6 +94,7 @@ class WC_Retailcrm_Paginated_Request
     public function setParams($params)
     {
         $this->params = $params;
+
         return $this;
     }
 
@@ -100,6 +108,7 @@ class WC_Retailcrm_Paginated_Request
     public function setDataKey($dataKey)
     {
         $this->dataKey = $dataKey;
+
         return $this;
     }
 
@@ -113,6 +122,21 @@ class WC_Retailcrm_Paginated_Request
     public function setLimit($limit)
     {
         $this->limit = $limit;
+
+        return $this;
+    }
+
+    /**
+     * Sets page limit per call
+     *
+     * @param int $pageLimit
+     *
+     * @return self
+     */
+    public function setPageLimit($pageLimit)
+    {
+        $this->pageLimit = $pageLimit;
+
         return $this;
     }
 
@@ -129,13 +153,17 @@ class WC_Retailcrm_Paginated_Request
 
         do {
             $response = call_user_func_array(
-                array($this->api, $this->method),
+                [$this->api, $this->method],
                 $this->buildParams($this->params, $page)
             );
 
             if ($response instanceof WC_Retailcrm_Response && $response->offsetExists($this->dataKey)) {
                 $this->data = array_merge($this->data, $response[$this->dataKey]);
                 $page = $response['pagination']['currentPage'] + 1;
+            }
+
+            if ($this->pageLimit !== null && $page > $this->pageLimit) {
+                break;
             }
 
             time_nanosleep(0, 300000000);
@@ -164,6 +192,7 @@ class WC_Retailcrm_Paginated_Request
     {
         $this->method = '';
         $this->limit = 100;
+        $this->pageLimit = null;
         $this->data = array();
 
         return $this;

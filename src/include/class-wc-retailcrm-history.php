@@ -112,19 +112,20 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function customersHistory($date, $sinceId)
         {
-            $filter = array('startDate' => $date);
+            $filter = ['startDate' => $date];
 
             if ($sinceId) {
-                $filter = array('sinceId' => $sinceId);
+                $filter = ['sinceId' => $sinceId];
             }
 
             $request = new WC_Retailcrm_Paginated_Request();
             $history = $request
                 ->setApi($this->retailcrm)
                 ->setMethod('customersHistory')
-                ->setParams(array($filter, '{{page}}'))
+                ->setParams([$filter, '{{page}}'])
                 ->setDataKey('history')
                 ->setLimit(100)
+                ->setPageLimit(25)
                 ->execute()
                 ->getData();
 
@@ -200,20 +201,21 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function ordersHistory($date, $sinceId)
         {
-            $filter = array('startDate' => $date);
+            $filter  = ['startDate' => $date];
             $options = array_flip(array_filter($this->retailcrmSettings));
 
             if ($sinceId) {
-                $filter = array('sinceId' => $sinceId);
+                $filter = ['sinceId' => $sinceId];
             }
 
             $request = new WC_Retailcrm_Paginated_Request();
             $history = $request
                 ->setApi($this->retailcrm)
                 ->setMethod('ordersHistory')
-                ->setParams(array($filter, '{{page}}'))
+                ->setParams([$filter, '{{page}}'])
                 ->setDataKey('history')
                 ->setLimit(100)
+                ->setPageLimit(25)
                 ->execute()
                 ->getData();
 
