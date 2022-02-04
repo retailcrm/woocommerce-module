@@ -15,6 +15,8 @@
 if (!class_exists('WC_Retailcrm_History')) :
     class WC_Retailcrm_History
     {
+        const PAGE_LIMIT = 25;
+
         /** @var \DateTime */
         protected $startDate;
 
@@ -62,16 +64,12 @@ if (!class_exists('WC_Retailcrm_History')) :
          * Get history method.
          *
          * @return void
-         * @throws \Exception
          */
         public function getHistory()
         {
-            $ordersSinceId    = get_option('retailcrm_orders_history_since_id');
-            $customersSinceId = get_option('retailcrm_customers_history_since_id');
-
             try {
-                $this->customersHistory($this->startDate->format('Y-m-d H:i:s'), $customersSinceId);
-                $this->ordersHistory($this->startDate->format('Y-m-d H:i:s'), $ordersSinceId);
+                $this->customersHistory();
+                $this->ordersHistory();
             // @codeCoverageIgnoreStart
             } catch (\Exception $exception) {
                 WC_Retailcrm_Logger::add(
@@ -88,174 +86,192 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * History customers
          *
-         * @param string $date
-         * @param int    $sinceId
-         *
          * @return void
          * @throws \Exception
          */
-        protected function customersHistory($date, $sinceId)
+        protected function customersHistory()
         {
-            $filter = ['startDate' => $date];
+            $sinceId    = get_option('retailcrm_customers_history_since_id');
+            $request    = new WC_Retailcrm_Paginated_Request();
+            $pagination = 1;
 
-            if ($sinceId) {
-                $filter = ['sinceId' => $sinceId];
-            }
+            $filter = !empty($sinceId)
+                ? ['sinceId' => $sinceId]
+                : ['startDate' => $this->startDate->format('Y-m-d H:i:s')];
 
-            $request = new WC_Retailcrm_Paginated_Request();
-            $history = $request
-                ->setApi($this->retailcrm)
-                ->setMethod('customersHistory')
-                ->setParams([$filter, '{{page}}'])
-                ->setDataKey('history')
-                ->setLimit(100)
-                ->setPageLimit(25)
-                ->execute()
-                ->getData();
+            do {
+                $history = $request
+                    ->reset()
+                    ->setApi($this->retailcrm)
+                    ->setMethod('customersHistory')
+                    ->setParams([$filter])
+                    ->execute()
+                    ->getData();
 
-            if (!empty($history)) {
-                $builder = new WC_Retailcrm_WC_Customer_Builder();
-                $lastChange = end($history);
-                $customers = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
-                WC_Retailcrm_Plugin::$history_run = true;
-                WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
+                if (!empty($history)) {
+                    $builder    = new WC_Retailcrm_WC_Customer_Builder();
+                    $lastChange = end($history);
+                    $customers  = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
 
-                foreach ($customers as $crmCustomer) {
-                    // Only update customers, if customer not exist in WP - skip this customer !
-                    if (!isset($crmCustomer['externalId'])) {
-                        continue;
-                    }
+                    WC_Retailcrm_Plugin::$history_run = true;
+                    WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
 
-                    try {
-                        $builder->reset();
+                    foreach ($customers as $crmCustomer) {
+                         /*
+                         * Only update customers, if customer not exist in WP - skip this customer !
+                         * Update sinceId, because we must process history data.
+                         */
+                        if (!isset($crmCustomer['externalId'])) {
+                            $filter['sinceId'] = $lastChange['id'];
 
-                        // @codeCoverageIgnoreStart
-                        if (!$builder->loadExternalId($crmCustomer['externalId'])) {
-                            WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
-                                'Customer with id=%s is not found in the DB, skipping...',
-                                $crmCustomer['externalId']
-                            ));
                             continue;
+                        }
+
+                        try {
+                            $builder->reset();
+
+                            // @codeCoverageIgnoreStart
+                            if (!$builder->loadExternalId($crmCustomer['externalId'])) {
+                                WC_Retailcrm_Logger::addCaller(__METHOD__, sprintf(
+                                    'Customer with id=%s is not found in the DB, skipping...',
+                                    $crmCustomer['externalId']
+                                ));
+
+                                // If customer not found in the DB, update sinceId
+                                $filter['sinceId'] = $lastChange['id'];
+
+                                continue;
+                            }
+                            // @codeCoverageIgnoreEnd
+
+                            $wcCustomer = $builder
+                                ->setData($crmCustomer)
+                                ->build()
+                                ->getResult();
+
+                            if ($wcCustomer instanceof WC_Customer) {
+                                $wcCustomer->save();
+
+                                $customerCustomFields = $this->getCustomData('customer');
+
+                                $this->updateMetaData($customerCustomFields, $crmCustomer, $wcCustomer->get_id());
+                            }
+
+                            WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
+
+                            // @codeCoverageIgnoreStart
+                        } catch (Exception $exception) {
+                            WC_Retailcrm_Logger::error(sprintf(
+                                'Error while trying to process history: %s',
+                                $exception->getMessage()
+                            ));
+                            WC_Retailcrm_Logger::error(sprintf(
+                                '%s:%d',
+                                $exception->getFile(),
+                                $exception->getLine()
+                            ));
+                            WC_Retailcrm_Logger::error($exception->getTraceAsString());
                         }
                         // @codeCoverageIgnoreEnd
 
-                        $wcCustomer = $builder
-                            ->setData($crmCustomer)
-                            ->build()
-                            ->getResult();
+                        update_option('retailcrm_customers_history_since_id', $lastChange['id']);
 
-                        if ($wcCustomer instanceof WC_Customer) {
-                            $wcCustomer->save();
-
-                            $customerCustomFields = $this->getCustomData('customer');
-
-                            $this->updateMetaData($customerCustomFields, $crmCustomer, $wcCustomer->get_id());
-                        }
-
-                        WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
-
-                    // @codeCoverageIgnoreStart
-                    } catch (\Exception $exception) {
-                        WC_Retailcrm_Logger::error(sprintf(
-                            'Error while trying to process history: %s',
-                            $exception->getMessage()
-                        ));
-                        WC_Retailcrm_Logger::error(sprintf(
-                            '%s:%d',
-                            $exception->getFile(),
-                            $exception->getLine()
-                        ));
-                        WC_Retailcrm_Logger::error($exception->getTraceAsString());
+                        $filter['sinceId'] = $lastChange['id'];
                     }
-                    // @codeCoverageIgnoreEnd
+                } else {
+                    break;
                 }
 
-                update_option('retailcrm_customers_history_since_id', $lastChange['id']);
-                WC_Retailcrm_Plugin::$history_run = false;
-            }
+                $pagination++;
+            } while ($pagination !== self::PAGE_LIMIT);
         }
 
         /**
          * History orders
          *
-         * @param string $date
-         * @param int $sinceId
-         *
-         * @return boolean
+         * @return bool
          */
-        protected function ordersHistory($date, $sinceId)
+        protected function ordersHistory()
         {
-            $filter  = ['startDate' => $date];
-            $options = array_flip(array_filter($this->retailcrmSettings));
+            $options    = array_flip(array_filter($this->retailcrmSettings));
+            $sinceId    = get_option('retailcrm_orders_history_since_id');
+            $request    = new WC_Retailcrm_Paginated_Request();
+            $pagination = 1;
 
-            if ($sinceId) {
-                $filter = ['sinceId' => $sinceId];
-            }
+            $filter = !empty($sinceId)
+                ? ['sinceId' => $sinceId]
+                : ['startDate' => $this->startDate->format('Y-m-d H:i:s')];
 
-            $request = new WC_Retailcrm_Paginated_Request();
-            $history = $request
-                ->setApi($this->retailcrm)
-                ->setMethod('ordersHistory')
-                ->setParams([$filter, '{{page}}'])
-                ->setDataKey('history')
-                ->setLimit(100)
-                ->setPageLimit(25)
-                ->execute()
-                ->getData();
+            do {
+                $history = $request
+                    ->reset()
+                    ->setApi($this->retailcrm)
+                    ->setMethod('ordersHistory')
+                    ->setParams([$filter])
+                    ->execute()
+                    ->getData();
 
-            if (!empty($history)) {
-                $lastChange = end($history);
-                $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
+                if (!empty($history)) {
+                    $lastChange      = end($history);
+                    $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
 
-                WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled orders history:', $historyAssembly));
-                WC_Retailcrm_Plugin::$history_run = true;
+                    WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled orders history:', $historyAssembly));
+                    WC_Retailcrm_Plugin::$history_run = true;
 
-                foreach ($historyAssembly as $orderHistory) {
-                    $order = WC_Retailcrm_Plugin::clearArray(
-                        apply_filters(
-                            'retailcrm_history_before_save',
-                            $orderHistory
-                        )
-                    );
-
-                    if (isset($order['deleted']) && $order['deleted'] == true) {
-                        continue;
-                    }
-
-                    try {
-                        if (isset($order['externalId'])) {
-                            $wcOrderId = $this->orderUpdate($order, $options);
-                        } else {
-                            $wcOrderId = $this->orderCreate($order, $options);
-                        }
-
-                        $wcOrder           = wc_get_order($wcOrderId);
-                        $orderCustomFields = $this->getCustomData('order');
-
-                        $this->updateMetaData($orderCustomFields, $order, $wcOrderId, 'order');
-
-                        if ($wcOrder instanceof WC_Order) {
-                            $wcOrder->calculate_totals();
-                        }
-
-                    // @codeCoverageIgnoreStart
-                    } catch (Exception $exception) {
-                        WC_Retailcrm_Logger::add(
-                            sprintf(
-                                "[%s] - %s",
-                                $exception->getMessage(),
-                                'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine()
+                    foreach ($historyAssembly as $orderHistory) {
+                        $order = WC_Retailcrm_Plugin::clearArray(
+                            apply_filters(
+                                'retailcrm_history_before_save',
+                                $orderHistory
                             )
                         );
 
-                        continue;
+                        if (isset($order['deleted']) && $order['deleted'] == true) {
+                            continue;
+                        }
+
+                        try {
+                            if (isset($order['externalId'])) {
+                                $wcOrderId = $this->orderUpdate($order, $options);
+                            } else {
+                                $wcOrderId = $this->orderCreate($order, $options);
+                            }
+
+                            $wcOrder           = wc_get_order($wcOrderId);
+                            $orderCustomFields = $this->getCustomData('order');
+
+                            $this->updateMetaData($orderCustomFields, $order, $wcOrderId, 'order');
+
+                            if ($wcOrder instanceof WC_Order) {
+                                $wcOrder->calculate_totals();
+                            }
+
+                        // @codeCoverageIgnoreStart
+                        } catch (Exception $exception) {
+                            WC_Retailcrm_Logger::add(
+                                sprintf(
+                                    "[%s] - %s",
+                                    $exception->getMessage(),
+                                    'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine()
+                                )
+                            );
+
+                            continue;
+                        }
+                        // @codeCoverageIgnoreEnd
                     }
-                    // @codeCoverageIgnoreEnd
+
+                    update_option('retailcrm_orders_history_since_id', $lastChange['id']);
+
+                    $filter['sinceId'] = $lastChange['id'];
+                } else {
+                    break;
                 }
 
-                update_option('retailcrm_orders_history_since_id', $lastChange['id']);
-                WC_Retailcrm_Plugin::$history_run = false;
-            }
+                $pagination++;
+            } while ($pagination !== self::PAGE_LIMIT);
+
+            WC_Retailcrm_Plugin::$history_run = false;
 
             return true;
         }
