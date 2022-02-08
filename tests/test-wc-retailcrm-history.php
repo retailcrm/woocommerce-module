@@ -100,7 +100,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history->getHistory();
 
         $orders   = wc_get_orders(array( 'numberposts' => - 1 ));
-        $wcOrder = end($orders);
+        $wcOrder  = end($orders);
         $options  = get_option(\WC_Retailcrm_Base::$option_key);
 
         $this->assertEquals('status1', $options[$wcOrder->get_status()]);
@@ -181,14 +181,19 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
             DataHistoryRetailCrm::get_history_data_product_add($product->get_id(), $order->get_id())
         );
 
+        $oldSinceId        = get_option('retailcrm_orders_history_since_id');
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $wcOrder = wc_get_order($order->get_id());
+        $sinceId      = get_option('retailcrm_orders_history_since_id');
+        $wcOrder      = wc_get_order($order->get_id());
         $wcOrderItems = $wcOrder->get_items();
-        $wcOrderItem = end($wcOrderItems);
+        $wcOrderItem  = end($wcOrderItems);
 
-        $this->assertEquals(2, count($wcOrderItems));
+        $this->assertNotEquals($sinceId, $oldSinceId);
+        $this->assertEquals(0, get_option('retailcrm_customers_history_since_id'));
+
+        // Check added products
         $this->assertEquals(2, $wcOrderItem->get_quantity());
         $this->assertEquals($product->get_id(), $wcOrderItem->get_product()->get_id());
     }
@@ -246,7 +251,6 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertNotEquals('status4', $order_updated->get_status());
     }
 
-
     public function test_history_customer_create()
     {
         $this->mockHistory(
@@ -258,9 +262,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $sinceId = get_option('retailcrm_orders_history_since_id');
-
-        $this->assertEquals(0, $sinceId);
+        $this->assertEquals(0, get_option('retailcrm_orders_history_since_id'));
     }
 
     public function test_history_customer_update()

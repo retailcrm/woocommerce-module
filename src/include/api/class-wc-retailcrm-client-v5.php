@@ -161,28 +161,25 @@ class WC_Retailcrm_Client_V5
 
     /**
      * Get corporate customers history
+     *
      * @param array $filter
-     * @param null $page
-     * @param null $limit
+     * @param int   $page
+     * @param int   $limit
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateHistory(array $filter= array(), $page = null, $limit = null)
+    public function customersCorporateHistory(array $filter = [], int $page = 1, int $limit = 100)
     {
-        $parameters= array();
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = [
+            'page'    => $page,
+            'limit'   => $limit,
+            'filter'  => $filter,
+        ];
+
         /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             '/customers-corporate/history',
-            "GET",
+            WC_Retailcrm_Request::METHOD_GET,
             $parameters
         );
     }
@@ -1218,25 +1215,20 @@ class WC_Retailcrm_Client_V5
 
     /**
      * Get orders history
+     *
      * @param array $filter
-     * @param null $page
-     * @param null $limit
+     * @param int   $page
+     * @param int   $limit
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersHistory(array $filter = array(), $page = null, $limit = null)
+    public function ordersHistory(array $filter = [], int $page = 1, int $limit = 100)
     {
-        $parameters = array();
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = [
+            'page'    => $page,
+            'limit'   => $limit,
+            'filter'  => $filter,
+        ];
 
         return $this->client->makeRequest(
             '/orders/history',
@@ -1542,25 +1534,20 @@ class WC_Retailcrm_Client_V5
 
     /**
      * Get customers history
+     *
      * @param array $filter
-     * @param null $page
-     * @param null $limit
+     * @param int   $page
+     * @param int   $limit
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersHistory(array $filter = array(), $page = null, $limit = null)
+    public function customersHistory(array $filter = [], int $page = 1, int $limit = 100)
     {
-        $parameters = array();
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = [
+            'page'    => $page,
+            'limit'   => $limit,
+            'filter'  => $filter,
+        ];
 
         return $this->client->makeRequest(
             '/customers/history',
@@ -1743,28 +1730,22 @@ class WC_Retailcrm_Client_V5
      * Get orders assembly history
      *
      * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param int $page   (default: int)
+     * @param int $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersPacksHistory(array $filter = array(), $page = null, $limit = null)
+    public function ordersPacksHistory(array $filter = [], int $page = 1, int $limit = 100)
     {
-        $parameters = array();
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = [
+            'page'    => $page,
+            'limit'   => $limit,
+            'filter'  => $filter,
+        ];
 
         return $this->client->makeRequest(
             '/orders/packs/history',
