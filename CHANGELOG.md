@@ -1,3 +1,10 @@
+## 2022-02-24 4.4.2
+* Delete deprecated API V4. Refactoring API V5 and history getting method
+* Fix bug with use xmlId
+* Add order number transfer CMS -> CRM by history
+* Add documentation for registering client functionality
+* Delete legacy code for update customer name and surname
+
 ## 2022-01-17 4.4.1
 * Added functionality to skip some orders statuses
 * Improved the create/update method when registering customers

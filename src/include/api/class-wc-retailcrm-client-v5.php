@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -11,11 +12,11 @@
  * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
  */
 
-if ( ! class_exists( 'WC_Retailcrm_Request' ) ) {
+if (!class_exists('WC_Retailcrm_Request')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-request.php'));
 }
 
-if ( ! class_exists( 'WC_Retailcrm_Response' ) ) {
+if (!class_exists('WC_Retailcrm_Response')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
 }
 
@@ -48,8 +49,8 @@ class WC_Retailcrm_Client_V5
         $unversionedUrl = $url . 'api';
         $url = $version == null ? $url . 'api' : $url . 'api/' . $version;
 
-        $this->client = new WC_Retailcrm_Request($url, array('apiKey' => $apiKey));
-        $this->unversionedClient = new WC_Retailcrm_Request($unversionedUrl, array('apiKey' => $apiKey));
+        $this->client = new WC_Retailcrm_Request($url, ['apiKey' => $apiKey]);
+        $this->unversionedClient = new WC_Retailcrm_Request($unversionedUrl, ['apiKey' => $apiKey]);
         $this->siteCode = $site;
     }
 
@@ -86,9 +87,10 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateList(array $filter= array(), $page = null, $limit = null)
+    public function customersCorporateList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters= array();
+        $parameters = [];
+
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -98,10 +100,10 @@ class WC_Retailcrm_Client_V5
         if (null !== $limit) {
             $parameters['limit'] = (int) $limit;
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             '/customers-corporate',
-            "GET",
+            'GET',
             $parameters
         );
     }
@@ -125,11 +127,11 @@ class WC_Retailcrm_Client_V5
                 'Parameter `customerCorporate` must contains a data'
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             '/customers-corporate/create',
-            "POST",
-            $this->fillSite($site, array('customerCorporate' => json_encode($customerCorporate)))
+            'POST',
+            $this->fillSite($site, ['customerCorporate' => json_encode($customerCorporate)])
         );
     }
 
@@ -151,11 +153,11 @@ class WC_Retailcrm_Client_V5
                 'Method parameter must contains at least one IDs pair'
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             '/customers-corporate/fix-external-ids',
-            "POST",
-            array('customersCorporate' => json_encode($ids))
+            'POST',
+            ['customersCorporate' => json_encode($ids)]
         );
     }
 
@@ -176,7 +178,6 @@ class WC_Retailcrm_Client_V5
             'filter'  => $filter,
         ];
 
-        /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             '/customers-corporate/history',
             WC_Retailcrm_Request::METHOD_GET,
@@ -197,9 +198,10 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateNotesList(array $filter= array(), $page = null, $limit = null)
+    public function customersCorporateNotesList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters= array();
+        $parameters = [];
+
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -209,10 +211,10 @@ class WC_Retailcrm_Client_V5
         if (null !== $limit) {
             $parameters['limit'] = (int) $limit;
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             '/customers-corporate/notes',
-            "GET",
+            'GET',
             $parameters
         );
     }
@@ -236,18 +238,18 @@ class WC_Retailcrm_Client_V5
                 'Customer identifier must be set'
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             '/customers-corporate/notes/create',
-            "POST",
-            $this->fillSite($site, array('note' => json_encode($note)))
+            'POST',
+            $this->fillSite($site, ['note' => json_encode($note)])
         );
     }
 
     /**
      * Delete corporate customer note
      *
-     * @param integer $id
+     * @param int $id
      *
      * @throws InvalidArgumentException
      * @throws WC_Retailcrm_Exception_Curl
@@ -262,10 +264,10 @@ class WC_Retailcrm_Client_V5
                 'Note id must be set'
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             "/customers-corporate/notes/$id/delete",
-            "POST"
+            'POST'
         );
     }
 
@@ -288,11 +290,11 @@ class WC_Retailcrm_Client_V5
                 'Parameter `customersCorporate` must contains array of the corporate customers'
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             '/customers-corporate/upload',
-            "POST",
-            $this->fillSite($site, array('customersCorporate' => json_encode($customersCorporate)))
+            'POST',
+            $this->fillSite($site, ['customersCorporate' => json_encode($customersCorporate)])
         );
     }
 
@@ -312,11 +314,11 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateGet($id, $by = 'externalId', $site = null)
     {
         $this->checkIdParameter($by);
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             "/customers-corporate/$id",
-            "GET",
-            $this->fillSite($site, array('by' => $by))
+            'GET',
+            $this->fillSite($site, ['by' => $by ])
         );
     }
 
@@ -338,14 +340,16 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateAddresses(
         $id,
-        array $filter= array(),
+        array $filter = [],
         $page = null,
         $limit = null,
         $by = 'externalId',
         $site = null
     ) {
         $this->checkIdParameter($by);
-        $parameters = array('by' => $by);
+
+        $parameters = ['by' => $by];
+
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -355,10 +359,10 @@ class WC_Retailcrm_Client_V5
         if (null !== $limit) {
             $parameters['limit'] = (int) $limit;
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             "/customers-corporate/$id/addresses",
-            "GET",
+            'GET',
             $this->fillSite($site, $parameters)
         );
     }
@@ -377,13 +381,12 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateAddressesCreate($id, array $address= array(), $by = 'externalId', $site = null)
+    public function customersCorporateAddressesCreate($id, array $address = [], $by = 'externalId', $site = null)
     {
-        /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$id/addresses/create",
-            "POST",
-            $this->fillSite($site, array('address' => json_encode($address), 'by' => $by))
+            'POST',
+            $this->fillSite($site, ['address' => json_encode($address), 'by' => $by ])
         );
     }
 
@@ -406,13 +409,15 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateAddressesEdit(
         $customerId,
         $addressId,
-        array $address= array(),
+        array $address = [],
         $customerBy = 'externalId',
         $addressBy = 'externalId',
         $site = null
     ) {
         $addressFiltered = array_filter($address);
-        if ((count(array_keys($addressFiltered)) <= 1)
+
+        if (
+            (count(array_keys($addressFiltered)) <= 1)
             && (!isset($addressFiltered['text'])
                 || (isset($addressFiltered['text']) && empty($addressFiltered['text']))
             )
@@ -421,15 +426,15 @@ class WC_Retailcrm_Client_V5
                 'Parameter `address` must contain address text or all other address field'
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/addresses/$addressId/edit",
-            "POST",
-            $this->fillSite($site, array(
+            'POST',
+            $this->fillSite($site, [
                 'address' => json_encode($address),
                 'by' => $customerBy,
                 'entityBy' => $addressBy
-            ))
+            ])
         );
     }
 
@@ -451,14 +456,16 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateCompanies(
         $id,
-        array $filter= array(),
+        array $filter = [],
         $page = null,
         $limit = null,
         $by = 'externalId',
         $site = null
     ) {
         $this->checkIdParameter($by);
-        $parameters = array('by' => $by);
+
+        $parameters = ['by' => $by];
+
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -468,10 +475,10 @@ class WC_Retailcrm_Client_V5
         if (null !== $limit) {
             $parameters['limit'] = (int) $limit;
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             "/customers-corporate/$id/companies",
-            "GET",
+            'GET',
             $this->fillSite($site, $parameters)
         );
     }
@@ -490,13 +497,12 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateCompaniesCreate($id, array $company= array(), $by = 'externalId', $site = null)
+    public function customersCorporateCompaniesCreate($id, array $company = [], $by = 'externalId', $site = null)
     {
-        /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$id/companies/create",
-            "POST",
-            $this->fillSite($site, array('company' => json_encode($company), 'by' => $by))
+            'POST',
+            $this->fillSite($site, ['company' => json_encode($company), 'by' => $by])
         );
     }
 
@@ -519,20 +525,19 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateCompaniesEdit(
         $customerId,
         $companyId,
-        array $company= array(),
+        array $company = [],
         $customerBy = 'externalId',
         $companyBy = 'externalId',
         $site = null
     ) {
-        /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/companies/$companyId/edit",
-            "POST",
-            $this->fillSite($site, array(
+            'POST',
+            $this->fillSite($site, [
                 'company' => json_encode($company),
                 'by' => $customerBy,
                 'entityBy' => $companyBy
-            ))
+            ])
         );
     }
 
@@ -554,14 +559,16 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateContacts(
         $id,
-        array $filter= array(),
+        array $filter = [],
         $page = null,
         $limit = null,
         $by = 'externalId',
         $site = null
     ) {
         $this->checkIdParameter($by);
-        $parameters = array('by' => $by);
+
+        $parameters = ['by' => $by];
+
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -571,10 +578,10 @@ class WC_Retailcrm_Client_V5
         if (null !== $limit) {
             $parameters['limit'] = (int) $limit;
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             "/customers-corporate/$id/contacts",
-            "GET",
+            'GET',
             $this->fillSite($site, $parameters)
         );
     }
@@ -593,13 +600,12 @@ class WC_Retailcrm_Client_V5
      *
      * @throws InvalidArgumentException
      */
-    public function customersCorporateContactsCreate($id, array $contact= array(), $by = 'externalId', $site = null)
+    public function customersCorporateContactsCreate($id, array $contact = [], $by = 'externalId', $site = null)
     {
-        /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$id/contacts/create",
-            "POST",
-            $this->fillSite($site, array('contact' => json_encode($contact), 'by' => $by))
+            'POST',
+            $this->fillSite($site, ['contact' => json_encode($contact), 'by' => $by])
         );
     }
 
@@ -622,20 +628,19 @@ class WC_Retailcrm_Client_V5
     public function customersCorporateContactsEdit(
         $customerId,
         $contactId,
-        array $contact= array(),
+        array $contact = [],
         $customerBy = 'externalId',
         $contactBy = 'externalId',
         $site = null
     ) {
-        /* @noinspection PhpUndefinedMethodInspection */
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/contacts/$contactId/edit",
-            "POST",
-            $this->fillSite($site, array(
+            'POST',
+            $this->fillSite($site, [
                 'contact' => json_encode($contact),
                 'by' => $customerBy,
                 'entityBy' => $contactBy
-            ))
+            ])
         );
     }
 
@@ -665,13 +670,13 @@ class WC_Retailcrm_Client_V5
                 sprintf('Corporate customer array must contain the "%s" parameter.', $by)
             );
         }
-        /* @noinspection PhpUndefinedMethodInspection */
+
         return $this->client->makeRequest(
             sprintf('/customers-corporate/%s/edit', $customerCorporate[$by]),
-            "POST",
+            'POST',
             $this->fillSite(
                 $site,
-                array('customerCorporate' => json_encode($customerCorporate), 'by' => $by)
+                ['customerCorporate' => json_encode($customerCorporate), 'by' => $by]
             )
         );
     }
@@ -689,9 +694,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function usersList(array $filter = array(), $page = null, $limit = null)
+    public function usersList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -713,7 +718,7 @@ class WC_Retailcrm_Client_V5
     /**
      * Returns user data
      *
-     * @param integer $id user ID
+     * @param int $id user ID
      *
      * @throws WC_Retailcrm_Exception_Json
      * @throws WC_Retailcrm_Exception_Curl
@@ -729,14 +734,14 @@ class WC_Retailcrm_Client_V5
     /**
      * Change user status
      *
-     * @param integer $id     user ID
+     * @param int $id     user ID
      * @param string  $status user status
      *
      * @return WC_Retailcrm_Response
      */
     public function usersStatus($id, $status)
     {
-        $statuses = array("free", "busy", "dinner", "break");
+        $statuses = ['free', 'busy', 'dinner', 'break'];
 
         if (empty($status) || !in_array($status, $statuses)) {
             throw new InvalidArgumentException(
@@ -747,7 +752,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/users/$id/status",
             WC_Retailcrm_Request::METHOD_POST,
-            array('status' => $status)
+            ['status' => $status]
         );
     }
 
@@ -760,9 +765,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function segmentsList(array $filter = array(), $limit = null, $page = null)
+    public function segmentsList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -790,9 +795,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customFieldsList(array $filter = array(), $limit = null, $page = null)
+    public function customFieldsList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -821,7 +826,8 @@ class WC_Retailcrm_Client_V5
      */
     public function customFieldsCreate($entity, $customField)
     {
-        if (!count($customField) ||
+        if (
+            !count($customField) ||
             empty($customField['code']) ||
             empty($customField['name']) ||
             empty($customField['type'])
@@ -840,7 +846,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/custom-fields/$entity/create",
             WC_Retailcrm_Request::METHOD_POST,
-            array('customField' => json_encode($customField))
+            ['customField' => json_encode($customField)]
         );
     }
 
@@ -869,7 +875,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/custom-fields/$entity/edit/{$customField['code']}",
             WC_Retailcrm_Request::METHOD_POST,
-            array('customField' => json_encode($customField))
+            ['customField' => json_encode($customField)]
         );
     }
 
@@ -888,9 +894,9 @@ class WC_Retailcrm_Client_V5
                 'Parameter `code` must be not empty'
             );
         }
-            
-        if (empty($entity) || !in_array($entity, array('customer', 'order', 'customer_corporate', 'company'))) {
-            throw new \InvalidArgumentException(
+
+        if (empty($entity) || !in_array($entity, ['customer', 'order', 'customer_corporate', 'company'])) {
+            throw new InvalidArgumentException(
                 sprintf(
                     'Parameter `entity` must contain a data & value must be %s',
                     '`order`, `customer`, `customer_corporate` or `company`'
@@ -913,9 +919,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customDictionariesList(array $filter = array(), $limit = null, $page = null)
+    public function customDictionariesList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -943,7 +949,8 @@ class WC_Retailcrm_Client_V5
      */
     public function customDictionariesCreate($customDictionary)
     {
-        if (!count($customDictionary) ||
+        if (
+            !count($customDictionary) ||
             empty($customDictionary['code']) ||
             empty($customDictionary['elements'])
         ) {
@@ -955,7 +962,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/custom-fields/dictionaries/{$customDictionary['code']}/create",
             WC_Retailcrm_Request::METHOD_POST,
-            array('customDictionary' => json_encode($customDictionary))
+            ['customDictionary' => json_encode($customDictionary)]
         );
     }
 
@@ -968,7 +975,8 @@ class WC_Retailcrm_Client_V5
      */
     public function customDictionariesEdit($customDictionary)
     {
-        if (!count($customDictionary) ||
+        if (
+            !count($customDictionary) ||
             empty($customDictionary['code']) ||
             empty($customDictionary['elements'])
         ) {
@@ -980,7 +988,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/custom-fields/dictionaries/{$customDictionary['code']}/edit",
             WC_Retailcrm_Request::METHOD_POST,
-            array('customDictionary' => json_encode($customDictionary))
+            ['customDictionary' => json_encode($customDictionary)]
         );
     }
 
@@ -1018,9 +1026,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersList(array $filter = array(), $page = null, $limit = null)
+    public function ordersList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -1040,7 +1048,7 @@ class WC_Retailcrm_Client_V5
     }
 
     /**
-     * Create a order
+     * Create an order
      *
      * @param array  $order order data
      * @param string $site  (default: null)
@@ -1062,7 +1070,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/orders/create',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('order' => json_encode($order)))
+            $this->fillSite($site, ['order' => json_encode($order)])
         );
     }
 
@@ -1088,8 +1096,9 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/orders/fix-external-ids',
             WC_Retailcrm_Request::METHOD_POST,
-            array('orders' => json_encode($ids)
-            )
+            [
+                'orders' => json_encode($ids)
+            ]
         );
     }
 
@@ -1105,9 +1114,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersStatuses(array $ids = array(), array $externalIds = array())
+    public function ordersStatuses(array $ids = [], array $externalIds = [])
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($ids)) {
             $parameters['ids'] = $ids;
@@ -1146,7 +1155,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/orders/upload',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('orders' => json_encode($orders)))
+            $this->fillSite($site, ['orders' => json_encode($orders)])
         );
     }
 
@@ -1170,7 +1179,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/orders/$id",
             WC_Retailcrm_Request::METHOD_GET,
-            $this->fillSite($site, array('by' => $by))
+            $this->fillSite($site, ['by' => $by])
         );
     }
 
@@ -1208,7 +1217,7 @@ class WC_Retailcrm_Client_V5
             WC_Retailcrm_Request::METHOD_POST,
             $this->fillSite(
                 $site,
-                array('order' => json_encode($order), 'by' => $by)
+                ['order' => json_encode($order), 'by' => $by]
             )
         );
     }
@@ -1248,7 +1257,7 @@ class WC_Retailcrm_Client_V5
      */
     public function ordersCombine($order, $resultOrder, $technique = 'ours')
     {
-        $techniques = array('ours', 'summ', 'theirs');
+        $techniques = ['ours', 'summ', 'theirs'];
 
         if (!count($order) || !count($resultOrder)) {
             throw new InvalidArgumentException(
@@ -1265,11 +1274,11 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/orders/combine',
             WC_Retailcrm_Request::METHOD_POST,
-            array(
+            [
                 'technique' => $technique,
                 'order' => json_encode($order),
                 'resultOrder' => json_encode($resultOrder)
-            )
+            ]
         );
     }
 
@@ -1295,7 +1304,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/orders/payments/create',
             WC_Retailcrm_Request::METHOD_POST,
-            array('payment' => json_encode($payment))
+            ['payment' => json_encode($payment)]
         );
     }
 
@@ -1329,7 +1338,7 @@ class WC_Retailcrm_Client_V5
             WC_Retailcrm_Request::METHOD_POST,
             $this->fillSite(
                 $site,
-                array('payment' => json_encode($payment), 'by' => $by)
+                ['payment' => json_encode($payment), 'by' => $by]
             )
         );
     }
@@ -1368,9 +1377,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersList(array $filter = array(), $page = null, $limit = null)
+    public function customersList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -1412,7 +1421,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers/create',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('customer' => json_encode($customer)))
+            $this->fillSite($site, ['customer' => json_encode($customer)])
         );
     }
 
@@ -1438,7 +1447,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers/fix-external-ids',
             WC_Retailcrm_Request::METHOD_POST,
-            array('customers' => json_encode($ids))
+            ['customers' => json_encode($ids)]
         );
     }
 
@@ -1465,7 +1474,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers/upload',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('customers' => json_encode($customers)))
+            $this->fillSite($site, ['customers' => json_encode($customers)])
         );
     }
 
@@ -1489,7 +1498,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/customers/$id",
             WC_Retailcrm_Request::METHOD_GET,
-            $this->fillSite($site, array('by' => $by))
+            $this->fillSite($site, ['by' => $by])
         );
     }
 
@@ -1527,7 +1536,7 @@ class WC_Retailcrm_Client_V5
             WC_Retailcrm_Request::METHOD_POST,
             $this->fillSite(
                 $site,
-                array('customer' => json_encode($customer), 'by' => $by)
+                ['customer' => json_encode($customer), 'by' => $by]
             )
         );
     }
@@ -1576,10 +1585,10 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers/combine',
             WC_Retailcrm_Request::METHOD_POST,
-            array(
+            [
                 'customers' => json_encode($customers),
                 'resultCustomer' => json_encode($resultCustomer)
-            )
+            ]
         );
     }
 
@@ -1596,9 +1605,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersNotesList(array $filter = array(), $page = null, $limit = null)
+    public function customersNotesList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
         if (count($filter)) {
             $parameters['filter'] = $filter;
         }
@@ -1637,14 +1646,14 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/customers/notes/create',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('note' => json_encode($note)))
+            $this->fillSite($site, ['note' => json_encode($note)])
         );
     }
 
     /**
      * Delete customer note
      *
-     * @param integer $id
+     * @param int $id
      *
      * @throws InvalidArgumentException
      * @throws WC_Retailcrm_Exception_Curl
@@ -1678,9 +1687,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersPacksList(array $filter = array(), $page = null, $limit = null)
+    public function ordersPacksList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -1722,7 +1731,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/orders/packs/create',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('pack' => json_encode($pack)))
+            $this->fillSite($site, ['pack' => json_encode($pack)])
         );
     }
 
@@ -1823,7 +1832,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/orders/packs/%s/edit', $pack['id']),
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('pack' => json_encode($pack)))
+            $this->fillSite($site, ['pack' => json_encode($pack)])
         );
     }
 
@@ -1836,9 +1845,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function tasksList(array $filter = array(), $limit = null, $page = null)
+    public function tasksList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -1875,11 +1884,11 @@ class WC_Retailcrm_Client_V5
         }
 
         return $this->client->makeRequest(
-            "/tasks/create",
+            '/tasks/create',
             WC_Retailcrm_Request::METHOD_POST,
             $this->fillSite(
                 $site,
-                array('task' => json_encode($task))
+                ['task' => json_encode($task)]
             )
         );
     }
@@ -1906,7 +1915,7 @@ class WC_Retailcrm_Client_V5
             WC_Retailcrm_Request::METHOD_POST,
             $this->fillSite(
                 $site,
-                array('task' => json_encode($task))
+                ['task' => json_encode($task)]
             )
         );
     }
@@ -1945,9 +1954,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function storeProductsGroups(array $filter = array(), $page = null, $limit = null)
+    public function storeProductsGroups(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -1979,9 +1988,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function storeInventories(array $filter = array(), $page = null, $limit = null)
+    public function storeInventories(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -2073,7 +2082,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/store/inventories/upload',
             WC_Retailcrm_Request::METHOD_POST,
-            $this->fillSite($site, array('offers' => json_encode($offers)))
+            $this->fillSite($site, ['offers' => json_encode($offers)])
         );
     }
 
@@ -2090,9 +2099,9 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function storeProducts(array $filter = array(), $page = null, $limit = null)
+    public function storeProducts(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = array();
+        $parameters = [];
 
         if (count($filter)) {
             $parameters['filter'] = $filter;
@@ -2156,7 +2165,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/delivery/generic/setting/%s/edit', $configuration['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('configuration' => json_encode($configuration))
+            ['configuration' => json_encode($configuration)]
         );
     }
 
@@ -2247,7 +2256,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/delivery-services/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('deliveryService' => json_encode($data))
+            ['deliveryService' => json_encode($data)]
         );
     }
 
@@ -2290,7 +2299,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/delivery-types/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('deliveryType' => json_encode($data))
+            ['deliveryType' => json_encode($data)]
         );
     }
 
@@ -2333,7 +2342,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/order-methods/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('orderMethod' => json_encode($data))
+            ['orderMethod' => json_encode($data)]
         );
     }
 
@@ -2376,7 +2385,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/order-types/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('orderType' => json_encode($data))
+            ['orderType' => json_encode($data)]
         );
     }
 
@@ -2419,7 +2428,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/payment-statuses/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('paymentStatus' => json_encode($data))
+            ['paymentStatus' => json_encode($data)]
         );
     }
 
@@ -2462,7 +2471,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/payment-types/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('paymentType' => json_encode($data))
+            ['paymentType' => json_encode($data)]
         );
     }
 
@@ -2505,7 +2514,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/product-statuses/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('productStatus' => json_encode($data))
+            ['productStatus' => json_encode($data)]
         );
     }
 
@@ -2548,7 +2557,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/sites/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('site' => json_encode($data))
+            ['site' => json_encode($data)]
         );
     }
 
@@ -2608,7 +2617,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/statuses/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('status' => json_encode($data))
+            ['status' => json_encode($data)]
         );
     }
 
@@ -2657,7 +2666,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             sprintf('/reference/stores/%s/edit', $data['code']),
             WC_Retailcrm_Request::METHOD_POST,
-            array('store' => json_encode($data))
+            ['store' => json_encode($data)]
         );
     }
 
@@ -2689,7 +2698,7 @@ class WC_Retailcrm_Client_V5
      *
      * @param string  $code        symbolic code
      * @param string  $clientId    client id
-     * @param boolean $active      telephony activity
+     * @param bool    $active      telephony activity
      * @param mixed   $name        service name
      * @param mixed   $makeCallUrl service init url
      * @param mixed   $image       service logo url(svg file)
@@ -2711,15 +2720,14 @@ class WC_Retailcrm_Client_V5
         $name = false,
         $makeCallUrl = false,
         $image = false,
-        $additionalCodes = array(),
-        $externalPhones = array(),
+        $additionalCodes = [],
+        $externalPhones = [],
         $allowEdit = false,
         $inputEventSupported = false,
         $outputEventSupported = false,
         $hangupEventSupported = false,
         $changeUserStatusUrl = false
-    )
-    {
+    ) {
         if (!isset($code)) {
             throw new InvalidArgumentException('Code must be set');
         }
@@ -2785,7 +2793,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/telephony/setting/$code/edit",
             WC_Retailcrm_Request::METHOD_POST,
-            array('configuration' => json_encode($parameters))
+            ['configuration' => json_encode($parameters)]
         );
     }
 
@@ -2810,9 +2818,8 @@ class WC_Retailcrm_Client_V5
         $codes,
         $hangupStatus,
         $externalPhone = null,
-        $webAnalyticsData = array()
-    )
-    {
+        $webAnalyticsData = []
+    ) {
         if (!isset($phone)) {
             throw new InvalidArgumentException('Phone number must be set');
         }
@@ -2836,7 +2843,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/telephony/call/event',
             WC_Retailcrm_Request::METHOD_POST,
-            array('event' => json_encode($parameters))
+            ['event' => json_encode($parameters)]
         );
     }
 
@@ -2862,7 +2869,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             '/telephony/calls/upload',
             WC_Retailcrm_Request::METHOD_POST,
-            array('calls' => json_encode($calls))
+            ['calls' => json_encode($calls)]
         );
     }
 
@@ -2918,7 +2925,7 @@ class WC_Retailcrm_Client_V5
         return $this->client->makeRequest(
             "/integration-modules/$code/edit",
             WC_Retailcrm_Request::METHOD_POST,
-            array('integrationModule' => json_encode($configuration))
+            ['integrationModule' => json_encode($configuration)]
         );
     }
 
@@ -2964,7 +2971,8 @@ class WC_Retailcrm_Client_V5
 
         $response = $this->credentials();
 
-        if ($response instanceof WC_Retailcrm_Response
+        if (
+            $response instanceof WC_Retailcrm_Response
             && $response->offsetExists('sitesAvailable')
             && is_array($response['sitesAvailable'])
             && !empty($response['sitesAvailable'])
@@ -2998,10 +3006,10 @@ class WC_Retailcrm_Client_V5
      */
     protected function checkIdParameter($by)
     {
-        $allowedForBy = array(
+        $allowedForBy = [
             'externalId',
             'id'
-        );
+        ];
 
         if (!in_array($by, $allowedForBy, false)) {
             throw new InvalidArgumentException(
