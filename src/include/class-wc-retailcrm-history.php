@@ -246,6 +246,16 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $wcOrder->calculate_totals();
                             }
 
+                            if (
+                                $order['number'] != $wcOrderId
+                                && isset($this->retailcrmSettings['update_number'])
+                                && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
+                            ) {
+                                $order['number'] = $wcOrderId;
+
+                                $this->retailcrm->ordersEdit($order, 'id');
+                            }
+
                         // @codeCoverageIgnoreStart
                         } catch (Exception $exception) {
                             WC_Retailcrm_Logger::add(
