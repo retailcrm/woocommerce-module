@@ -405,8 +405,8 @@ if (!class_exists('WC_Retailcrm_History')) :
                     }
 
                     if (isset($item['create']) && $item['create'] == true) {
-                        $arItemsNew = array();
-                        $arItemsOld = array();
+                        $arItemsNew = [];
+                        $arItemsOld = [];
                         $product = retailcrm_get_wc_product(
                             $item['offer'][$this->bindField],
                             $this->retailcrmSettings
@@ -562,15 +562,21 @@ if (!class_exists('WC_Retailcrm_History')) :
             } else {
                 if (isset($item['quantity']) && $item['quantity']) {
                     $orderItem->set_quantity($item['quantity']);
+
                     $product = retailcrm_get_wc_product($item['offer'][$this->bindField], $this->retailcrmSettings);
+
                     $orderItem->set_subtotal($product->get_price());
+
                     $dataStore = $orderItem->get_data_store();
+
                     $dataStore->update($orderItem);
                 }
 
                 if (isset($item['summ']) && $item['summ']) {
                     $orderItem->set_total($item['summ']);
+
                     $dataStore = $orderItem->get_data_store();
+
                     $dataStore->update($orderItem);
                 }
             }
