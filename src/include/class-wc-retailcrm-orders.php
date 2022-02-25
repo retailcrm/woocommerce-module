@@ -14,7 +14,7 @@
 if (!class_exists('WC_Retailcrm_Orders')) :
     class WC_Retailcrm_Orders
     {
-        /** @var bool|WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V5|\WC_Retailcrm_Client_V4 */
+        /** @var bool|WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
         /** @var array */

@@ -18,7 +18,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
-        /** @var \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool */
+        /** @var WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5|bool */
         protected $apiClient;
 
         /** @var \WC_Retailcrm_Customers */
@@ -33,7 +33,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Init and hook in the integration.
          *
-         * @param \WC_Retailcrm_Proxy|WC_Retailcrm_Client_V4|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
+         * @param WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
          */
         public function __construct($retailcrm = false)
         {
@@ -631,7 +631,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Get retailcrm api client
          *
-         * @return bool|WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5
+         * @return bool|WC_Retailcrm_Proxy
          */
         public function getApiClient()
         {

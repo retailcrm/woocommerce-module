@@ -23,7 +23,7 @@ if (!class_exists('WC_Retailcrm_History')) :
         /** @var array|mixed|void */
         protected $retailcrmSettings;
 
-        /** @var bool|\WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5 */
+        /** @var bool|WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
         /** @var array|mixed */
@@ -35,7 +35,7 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * WC_Retailcrm_History constructor.
          *
-         * @param \WC_Retailcrm_Proxy|\WC_Retailcrm_Client_V4|\WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
+         * @param WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5|bool $retailcrm (default = false)
          *
          * @throws \Exception
          */
@@ -92,7 +92,6 @@ if (!class_exists('WC_Retailcrm_History')) :
         protected function customersHistory()
         {
             $sinceId    = get_option('retailcrm_customers_history_since_id');
-            $request    = new WC_Retailcrm_Paginated_Request();
             $pagination = 1;
 
             $filter = !empty($sinceId)
@@ -100,13 +99,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                 : ['startDate' => $this->startDate->format('Y-m-d H:i:s')];
 
             do {
-                $history = $request
-                    ->reset()
-                    ->setApi($this->retailcrm)
-                    ->setMethod('customersHistory')
-                    ->setParams([$filter])
-                    ->execute()
-                    ->getData();
+                $historyResponse = $this->retailcrm->customersHistory($filter);
+
+                $history = $this->getHistoryData($historyResponse);
 
                 if (!empty($history)) {
                     $builder    = new WC_Retailcrm_WC_Customer_Builder();
@@ -195,7 +190,6 @@ if (!class_exists('WC_Retailcrm_History')) :
         {
             $options    = array_flip(array_filter($this->retailcrmSettings));
             $sinceId    = get_option('retailcrm_orders_history_since_id');
-            $request    = new WC_Retailcrm_Paginated_Request();
             $pagination = 1;
 
             $filter = !empty($sinceId)
@@ -203,13 +197,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                 : ['startDate' => $this->startDate->format('Y-m-d H:i:s')];
 
             do {
-                $history = $request
-                    ->reset()
-                    ->setApi($this->retailcrm)
-                    ->setMethod('ordersHistory')
-                    ->setParams([$filter])
-                    ->execute()
-                    ->getData();
+                $historyResponse = $this->retailcrm->OrdersHistory($filter);
+
+                $history = $this->getHistoryData($historyResponse);
 
                 if (!empty($history)) {
                     $lastChange      = end($history);
@@ -1294,6 +1284,25 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             return isset($arr[$key]) ? $arr[$key] : $def;
+        }
+
+        /**
+         *
+         * Get history data.
+         *
+         * @param $historyResponse
+         *
+         * @return array
+         */
+        private function getHistoryData($historyResponse)
+        {
+            if (!$historyResponse->isSuccessful() || empty($historyResponse['history'])) {
+                return [];
+            }
+
+            time_nanosleep(0, 300000000);
+
+            return $historyResponse['history'];
         }
     }
 
