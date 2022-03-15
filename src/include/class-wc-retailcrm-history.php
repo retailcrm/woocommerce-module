@@ -236,12 +236,14 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $wcOrder->calculate_totals();
                             }
 
+                            $wcOrderNumber = $wcOrder->get_order_number();
+
                             if (
-                                $order['number'] != $wcOrderId
+                                $order['number'] != $wcOrderNumber
                                 && isset($this->retailcrmSettings['update_number'])
                                 && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
                             ) {
-                                $order['number'] = $wcOrderId;
+                                $order['number'] = $wcOrderNumber;
 
                                 $this->retailcrm->ordersEdit($order, 'id');
                             }
