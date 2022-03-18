@@ -632,7 +632,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $new_customer = new WC_Customer();
 
             foreach ($order->get_address('billing') as $prop => $value) {
-                $new_customer->{'set_billing_' . $prop}($value);
+                if (method_exists($new_customer, 'set_billing_' . $prop)) {
+                    $new_customer->{'set_billing_' . $prop}($value);
+                }
             }
 
             $new_customer->set_first_name($order->get_billing_first_name());
