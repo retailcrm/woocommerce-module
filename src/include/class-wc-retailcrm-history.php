@@ -147,9 +147,14 @@ if (!class_exists('WC_Retailcrm_History')) :
                             if ($wcCustomer instanceof WC_Customer) {
                                 $wcCustomer->save();
 
-                                $customerCustomFields = $this->getCustomData('customer');
+                                $customFields = apply_filters(
+                                    'retailcrm_process_customer_custom_fields',
+                                    $this->getCustomData('customer'),
+                                    $crmCustomer,
+                                    $wcCustomer
+                                );
 
-                                $this->updateMetaData($customerCustomFields, $crmCustomer, $wcCustomer->get_id());
+                                $this->updateMetaData($customFields, $crmCustomer, $wcCustomer);
                             }
 
                             WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
@@ -227,13 +232,19 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $wcOrderId = $this->orderCreate($order, $options);
                             }
 
-                            $wcOrder           = wc_get_order($wcOrderId);
-                            $orderCustomFields = $this->getCustomData('order');
-
-                            $this->updateMetaData($orderCustomFields, $order, $wcOrderId, 'order');
+                            $wcOrder = wc_get_order($wcOrderId);
 
                             if ($wcOrder instanceof WC_Order) {
                                 $wcOrder->calculate_totals();
+
+                                $customFields = apply_filters(
+                                    'retailcrm_process_order_custom_fields',
+                                    $this->getCustomData('order'),
+                                    $order,
+                                    $wcOrder
+                                );
+
+                                $this->updateMetaData($customFields, $order, $wcOrder);
                             }
 
                             $wcOrderNumber = $wcOrder->get_order_number();
@@ -1106,23 +1117,26 @@ if (!class_exists('WC_Retailcrm_History')) :
          * Update meta data in CMS.
          *
          * @param array  $customFields Custom fields witch settings mapping.
-         * @param array  $data         Data witch CRM.
-         * @param int    $idPost       ID post in which we update the metadata.
-         * @param string $dataType     Data type which to update the metadata.
+         * @param array  $crmData Data witch CRM.
+         * @param object $wcObject Object witch WC.
          *
          * @return void
          */
-        private function updateMetaData($customFields, $data, $idPost, $dataType = 'customer')
+        private function updateMetaData($customFields, $crmData, $wcObject)
         {
-            if (!empty($customFields)) {
-                foreach ($customFields as $metaKey => $customKey) {
-                    if (!empty($data['customFields'][$customKey])) {
-                        if ($dataType === 'order') {
-                            update_post_meta($idPost, $metaKey, $data['customFields'][$customKey]);
-                        } else {
-                            update_user_meta($idPost, $metaKey, $data['customFields'][$customKey]);
-                        }
-                    }
+            if (empty($customFields)) {
+                return;
+            }
+
+            foreach ($customFields as $metaKey => $customKey) {
+                if (empty($crmData['customFields'][$customKey])) {
+                    continue;
+                }
+
+                if ($wcObject instanceof WC_Order) {
+                    update_post_meta($wcObject->get_id(), $metaKey, $crmData['customFields'][$customKey]);
+                } else {
+                    update_user_meta($wcObject->get_id(), $metaKey, $crmData['customFields'][$customKey]);
                 }
             }
         }
