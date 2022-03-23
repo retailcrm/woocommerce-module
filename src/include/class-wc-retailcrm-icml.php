@@ -205,7 +205,6 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $offers = self::filterRecursive($offers);
 
             foreach ($offers as $key => $offer) {
-
                 if (!array_key_exists('id', $offer)) {
                     continue;
                 }
@@ -243,11 +242,17 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                     $offer['productName'] = $offer['name'];
                 }
 
-                unset($offer['id'], $offer['productId'], $offer['categoryId'], $offer['quantity']);
-                array_walk($offer, array($this, 'setOffersProperties'), $e);
+                if (array_key_exists('picture', $offer) && !empty($offer['picture'])) {
+                    foreach ($offer['picture'] as $urlImage) {
+                        $e->addChild('picture', $urlImage);
+                    }
+                }
+
+                unset($offer['id'], $offer['productId'], $offer['categoryId'], $offer['quantity'], $offer['picture']);
+                array_walk($offer, [$this, 'setOffersProperties'], $e);
 
                 if (array_key_exists('params', $offer) && !empty($offer['params'])) {
-                    array_walk($offer['params'], array($this, 'setOffersParams'), $e);
+                    array_walk($offer['params'], [$this, 'setOffersParams'], $e);
                 }
 
                 if (array_key_exists('dimensions', $offer)) {
@@ -440,35 +445,42 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          *
          * @return void
          */
-        private function setOffer(&$full_product_list, $product_attributes, $product, $parent = false) {
-            if ($parent) {
-                $image = wp_get_attachment_image_src($product->get_image_id(), 'full');
+        private function setOffer(&$full_product_list, $product_attributes, $product, $parent = false)
+        {
+            $idImages = array_merge([$product->get_image_id()], $product->get_gallery_image_ids());
 
-                if (!$image) {
-                    $image = wp_get_attachment_image_src($parent->get_image_id(), 'full');
-                }
-
-                $term_list = $parent->get_category_ids();
-                $attributes = get_post_meta($parent->get_id(), '_product_attributes');
-            } else {
-                $image = wp_get_attachment_image_src($product->get_image_id(), 'full');
-                $term_list = $product->get_category_ids();
-                $attributes = get_post_meta($product->get_id(), '_product_attributes');
+            if ($parent !== false && empty(get_the_post_thumbnail_url($product->get_id()))) {
+                $idImages = array_merge([$parent->get_image_id()], $parent->get_gallery_image_ids());
             }
 
+            $images = [];
+
+            foreach ($idImages as $id) {
+                $images[] = wp_get_attachment_image_src($id, 'full')[0];
+            }
+
+            $termList = $parent !== false
+                ? $parent->get_category_ids()
+                : $product->get_category_ids();
+
+            $attributes = $parent !== false
+                ? get_post_meta($parent->get_id(), '_product_attributes')
+                : get_post_meta($product->get_id(), '_product_attributes');
+
+            // All attributes are in the first element of the array
             $attributes = (isset($attributes[0])) ? $attributes[0] : $attributes;
 
-            $params = array();
+            $params = [];
 
             if (!empty($attributes)) {
                 foreach ($attributes as $attribute_name => $attribute) {
                     $attributeValue = $product->get_attribute($attribute_name);
                     if ($attribute['is_visible'] == 1 && !empty($attributeValue)) {
-                        $params[] = array(
+                        $params[] = [
                             'code' => $attribute_name,
                             'name' => $product_attributes[$attribute_name],
                             'value' => $attributeValue
-                        );
+                        ];
                     }
                 }
             }
@@ -505,20 +517,20 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $quantity = $product->get_stock_status() === 'instock' ? 1 : 0;
             }
 
-            $product_data = array(
+            $product_data = [
                 'id' => $product->get_id(),
                 'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
                 'name' => $product->get_name(),
                 'productName' => ($product->get_parent_id() > 0) ? $parent->get_title() : $product->get_title(),
                 'price' => wc_get_price_including_tax($product),
-                'picture' => $image[0],
+                'picture' => $images,
                 'url' => ($product->get_parent_id() > 0) ? $parent->get_permalink() : $product->get_permalink(),
                 'quantity' => $quantity,
-                'categoryId' => $term_list,
+                'categoryId' => $termList,
                 'dimensions' => $dimensions,
                 'weight' => $weight,
                 'tax' => isset($tax) ? $tax['rate'] : 'none'
-            );
+            ];
 
             if ($product->get_sku() != '') {
                 $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
