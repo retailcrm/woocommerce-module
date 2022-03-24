@@ -245,20 +245,20 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 );
 
                                 $this->updateMetaData($customFields, $order, $wcOrder);
+
+                                $wcOrderNumber = $wcOrder->get_order_number();
+
+                                if (
+                                    $order['number'] != $wcOrderNumber
+                                    && isset($this->retailcrmSettings['update_number'])
+                                    && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
+                                ) {
+                                    $this->retailcrm->ordersEdit(
+                                        ['id' => $order['id'], 'number' => $wcOrderNumber],
+                                        'id'
+                                    );
+                                }
                             }
-
-                            $wcOrderNumber = $wcOrder->get_order_number();
-
-                            if (
-                                $order['number'] != $wcOrderNumber
-                                && isset($this->retailcrmSettings['update_number'])
-                                && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
-                            ) {
-                                $order['number'] = $wcOrderNumber;
-
-                                $this->retailcrm->ordersEdit($order, 'id');
-                            }
-
                         // @codeCoverageIgnoreStart
                         } catch (Exception $exception) {
                             WC_Retailcrm_Logger::add(
