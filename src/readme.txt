@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 5.6
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 4.4.2
+Stable tag: 4.4.3
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,12 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.4.3 =
+* Fix bug in updating order number by history
+* Add multiple image transfer in ICML
+* Add filters for custom fields
+* Fix bug with create/update customer
+
 = 4.4.2 =
 * Delete deprecated API V4. Refactoring API V5 and history getting method
 * Fix bug with use xmlId
