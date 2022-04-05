@@ -103,7 +103,9 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $wcOrder  = end($orders);
         $options  = get_option(\WC_Retailcrm_Base::$option_key);
 
-        $this->assertEquals('status1', $options[$wcOrder->get_status()]);
+        if ($wcOrder instanceof WC_Order) {
+            $this->assertEquals('status1', $options[$wcOrder->get_status()]);
+        }
     }
 
     public function test_history_order_create_deleted_items()
@@ -216,7 +218,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->assertEquals('status4', $options[$order_updated->get_status()]);
         $this->assertEquals('payment2', $options[$order_updated->get_payment_method()]);
-        $this->assertEquals('customerComment', $order_updated->get_customer_note());
+        $this->assertEquals('customerCommentTest', $order_updated->get_customer_note());
         $this->assertEquals(12345678, $order_updated->get_billing_phone());
         $this->assertEquals('tester001@example.com', $order_updated->get_billing_email());
 
@@ -225,11 +227,9 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         foreach ($notes as $note) {
             if ($note->content === 'managerComment') {
-                $managerComment = $note->content;
+                $this->assertEquals('managerCommentTest', $note->content);
             }
         }
-
-        $this->assertEquals('managerComment', $managerComment);
     }
 
     public function test_history_order_update_empty_order()
@@ -328,7 +328,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $orders = wc_get_orders(array('numberposts' => -1));
+        $orders = wc_get_orders(['numberposts' => -1]);
         $order_added = end($orders);
 
         if (!$order_added) {

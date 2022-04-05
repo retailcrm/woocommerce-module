@@ -460,14 +460,14 @@ class DataHistoryRetailCrm
                         'offer' => [
                             'id' => 2,
                             'externalId' => $product_add_id,
-                            'xmlId' => 'xmlId'
                         ]
                     ],
                     'order' => [
                         'id' => 2,
                         'externalId' => $order_id,
+                        'managerId' => 6,
                         'site' => 'test-com',
-                        'status' => 'status1'
+                        'status' => 'status4',
                     ],
                     'item' => [
                         'id' => 2,
@@ -484,7 +484,6 @@ class DataHistoryRetailCrm
                         'offer' => [
                             'id' => 2,
                             'externalId' => $product_add_id,
-                            'xmlId' => 'xmlId',
                             'name' => 'Test name 2'
                         ],
                         'properties' => [],
@@ -535,20 +534,17 @@ class DataHistoryRetailCrm
                     'user' => [
                         'id' => 1
                     ],
-                    'field' => 'managerComment',
-                    'oldValue' => [
-                        'code' => ''
-                    ],
-                    'newValue' => [
-                        'code' => 'managerComment'
-                    ],
+                    'field' => 'manager_comment',
+                    'oldValue' => '',
+                    'newValue' =>  'managerCommentTest'
+                    ,
                     'order' => [
                         'id' => 2,
                         'externalId' => $order_id,
                         'managerId' => 6,
                         'site' => 'test-com',
                         'status' => 'status4',
-                        'managerComment' => 'managerComment'
+                        'managerComment' => 'managerCommentTest'
                     ]
                 ],
                 [
@@ -558,21 +554,17 @@ class DataHistoryRetailCrm
                     'user' => [
                         'id' => 1
                     ],
-                    'field' => 'customerComment',
-                    'oldValue' => [
-                        'code' => ''
-                    ],
-                    'newValue' => [
-                        'code' => 'customerComment'
-                    ],
+                    'field' => 'customer_comment',
+                    'oldValue' => '',
+                    'newValue' => 'customerCommentTest',
                     'order' => [
                         'id' => 2,
                         'externalId' => $order_id,
                         'managerId' => 6,
                         'site' => 'test-com',
                         'status' => 'status4',
-                        'managerComment' => 'managerComment',
-                        'customerComment' => 'customerComment'
+                        'managerComment' => 'managerCommentTest',
+                        'customerComment' => 'customerCommentTest'
                     ]
                 ],
                 [
@@ -595,8 +587,8 @@ class DataHistoryRetailCrm
                         'managerId' => 6,
                         'site' => 'test-com',
                         'status' => 'status4',
-                        'managerComment' => 'managerComment',
-                        'customerComment' => 'customerComment',
+                        'managerComment' => 'managerCommentTest',
+                        'customerComment' => 'customerCommentTest',
                         'phone' => '12345678'
                     ]
                 ],
@@ -620,8 +612,8 @@ class DataHistoryRetailCrm
                         'managerId' => 6,
                         'site' => 'test-com',
                         'status' => 'status4',
-                        'managerComment' => 'managerComment',
-                        'customerComment' => 'customerComment',
+                        'managerComment' => 'managerCommentTest',
+                        'customerComment' => 'customerCommentTest',
                         'phone' => '12345678',
                         'email' => 'tester001@example.com'
                     ]
@@ -635,31 +627,31 @@ class DataHistoryRetailCrm
             ]
         ];
 
-        $payment_v5 = array(
+        $payment_v5 = [
             'id' => 4,
             'createdAt' => '2018-01-01 00:03:00',
             'source' => 'user',
-            'user' => array(
+            'user' => [
                 'id' => 1
-            ),
+            ],
             'field' => 'payments',
             'oldValue' => null,
-            'newValue' => array(
+            'newValue' => [
                 'code' => 'payment2'
-            ),
-            'order' => array(
+            ],
+            'order' => [
                 'id' => 2,
                 'externalId' => $order_id,
                 'managerId' => 6,
                 'site' => 'test-com',
                 'status' => 'status4'
-            ),
-            'payment' => array(
+            ],
+            'payment' => [
                 'id' => 1,
                 'type' => 'payment2',
                 'amount' => 100
-            )
-        );
+            ]
+        ];
 
         array_push($history['history'], $payment_v5);
 

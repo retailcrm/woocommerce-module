@@ -368,7 +368,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 return false;
             }
 
-            if (isset($options[$order['status']])) {
+            if (isset($order['status']) && isset($options[$order['status']])) {
                 $wcOrder->update_status($options[$order['status']]);
             }
 
