@@ -44,14 +44,27 @@ class WC_Retailcrm_History_Assembler
 
             if (isset($change['order']['contragent']['contragentType']) && $change['order']['contragent']['contragentType']) {
                 $change['order']['contragentType'] = $change['order']['contragent']['contragentType'];
-                
+
                 unset($change['order']['contragent']);
             }
 
+            $orderMainInfo = WC_Retailcrm_Plugin::clearArray(
+                [
+                    'id'         => $change['order']['id'] ?? '',
+                    'externalId' => $change['order']['externalId'] ?? '',
+                    'managerId'  => $change['order']['managerId'] ?? '',
+                    'site'       => $change['order']['site'] ?? '',
+                ]
+            );
+
             if (!empty($orders) && isset($orders[$change['order']['id']])) {
-                $orders[$change['order']['id']] = array_merge($orders[$change['order']['id']], $change['order']);
+                $orders[$change['order']['id']] = array_merge($orders[$change['order']['id']], $orderMainInfo);
             } else {
-                $orders[$change['order']['id']] = $change['order'];
+                $orders[$change['order']['id']] = !empty($change['created']) ? $change['order'] : $orderMainInfo;
+            }
+
+            if ($change['field'] === 'status') {
+                $orders[$change['order']['id']]['status'] = $change['order']['status'];
             }
 
             if (isset($change['item']) && $change['item']) {
@@ -74,16 +87,14 @@ class WC_Retailcrm_History_Assembler
                 }
             }
 
-            if ($change['field'] == 'payments' && isset($change['payment'])) {
+            if (isset($change['payment']) && $change['field'] == 'payments') {
                 if ($change['newValue'] !== null) {
                     $orders[$change['order']['id']]['payments'][] = self::newValue($change['payment']);
                 }
             }
 
-            if ($change['field'] == 'payments.status') {
-                if ($change['newValue'] !== null) {
-                    $orders[$change['order']['id']]['payments']['id']['status'] = self::newValue($change['newValue']);
-                }
+            if ($change['field'] == 'payments.status' && $change['newValue'] !== null) {
+                $orders[$change['order']['id']]['payments']['id']['status'] = self::newValue($change['newValue']);
             } else {
                 if (isset($fields['delivery'][$change['field']]) && $fields['delivery'][$change['field']] == 'service') {
                     $orders[$change['order']['id']]['delivery']['service']['code'] = self::newValue($change['newValue']);
@@ -155,9 +166,9 @@ class WC_Retailcrm_History_Assembler
                 && $fields['customer'][$change['field']]
             ) {
                 $customers[
-                    $change['customer']['id']
+                $change['customer']['id']
                 ][
-                    $fields['customer'][$change['field']]
+                $fields['customer'][$change['field']]
                 ] = self::newValue($change['newValue']);
             }
 
@@ -170,11 +181,11 @@ class WC_Retailcrm_History_Assembler
                 }
 
                 $customers[
-                    $change['customer']['id']
+                $change['customer']['id']
                 ][
-                    'address'
+                'address'
                 ][
-                    $fieldsAddress['customerAddress'][$change['field']]
+                $fieldsAddress['customerAddress'][$change['field']]
                 ] = self::newValue($change['newValue']);
             }
 
@@ -241,9 +252,9 @@ class WC_Retailcrm_History_Assembler
                 && $fields['customerCorporate'][$change['field']]
             ) {
                 $customersCorporate[
-                    $change['customer']['id']
+                $change['customer']['id']
                 ][
-                    $fields['customerCorporate'][$change['field']]
+                $fields['customerCorporate'][$change['field']]
                 ] = self::newValue($change['newValue']);
             }
 
@@ -253,17 +264,17 @@ class WC_Retailcrm_History_Assembler
                 }
 
                 $customersCorporate[
-                    $change['customer']['id']
+                $change['customer']['id']
                 ][
-                    'address'
+                'address'
                 ][
-                    $fields['customerAddress'][$change['field']]
+                $fields['customerAddress'][$change['field']]
                 ] = self::newValue($change['newValue']);
             }
 
             if ($change['field'] == 'address') {
                 $customersCorporate[
-                    $change['customer']['id']
+                $change['customer']['id']
                 ]['address'] = array_merge($change['address'], self::newValue($change['newValue']));
             }
         }
