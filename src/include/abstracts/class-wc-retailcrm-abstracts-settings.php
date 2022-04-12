@@ -175,7 +175,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Shipping options
                  */
-                $shipping_option_list = array();
+                $shipping_option_list = [];
                 $retailcrm_shipping_list = $this->apiClient->deliveryTypesList();
 
                 if (!empty($retailcrm_shipping_list) && $retailcrm_shipping_list->isSuccessful()) {
@@ -189,12 +189,12 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $wc_shipping_list = get_wc_shipping_methods();
 
-                    $this->form_fields[] = array(
+                    $this->form_fields[] = [
                         'title' => __('Delivery types', 'retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'shipping_options'
-                    );
+                    ];
 
                     foreach ($wc_shipping_list as $shipping_code => $shipping) {
                         if (isset($shipping['enabled']) && $shipping['enabled'] == static::YES) {
@@ -214,38 +214,62 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Payment options
                  */
-                $payment_option_list = array();
-                $retailcrm_payment_list = $this->apiClient->paymentTypesList();
+                $crmPaymentsList = $this->apiClient->paymentTypesList();
 
-                if (!empty($retailcrm_payment_list) && $retailcrm_payment_list->isSuccessful()) {
-                    foreach ($retailcrm_payment_list['paymentTypes'] as $retailcrm_payment_type) {
-                        if ($retailcrm_payment_type['active'] == false) {
+                if (!empty($crmPaymentsList) && $crmPaymentsList->isSuccessful()) {
+                    $paymentsList        = [];
+                    $integrationPayments = [];
+
+                    foreach ($crmPaymentsList['paymentTypes'] as $crmPaymentType) {
+                        if ($crmPaymentType['active'] == false) {
                             continue;
                         }
 
-                        $payment_option_list[$retailcrm_payment_type['code']] = $retailcrm_payment_type['name'];
+                        if (isset($crmPaymentType['integrationModule'])) {
+                            $integrationPayments['code'][] = $crmPaymentType['code'];
+                            $integrationPayments['name'][] = $crmPaymentType['name'];
+
+                            $crmPaymentType['name'] .= ' - ' . __('Integration payment', 'retailcrm');
+                        }
+
+                        $paymentsList[$crmPaymentType['code']] = $crmPaymentType['name'];
                     }
 
                     $wc_payment = WC_Payment_Gateways::instance();
 
-                    $this->form_fields[] = array(
-                        'title' => __('Payment types', 'retailcrm'),
-                        'type' => 'heading',
-                        'description' => '',
-                        'id' => 'payment_options'
-                    );
+                    $this->form_fields[] = [
+                            'id' => 'payment_options',
+                            'type' => 'heading',
+                            'title' => __('Payment types', 'retailcrm'),
+                    ];
+
+                    if (!empty($integrationPayments['name'])) {
+                        $this->form_fields['payment_notification'] = [
+                                'id'                => 'payment_options',
+                                'css'               => 'max-width:400px;resize: none;',
+                                'type'              => 'textarea',
+                                'title'             => __('Attention!', 'retailcrm'),
+                                'value'             => '',
+                                'placeholder'       => __('If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM', 'retailcrm'),
+                                'custom_attributes' => ['readonly' => 'readonly'],
+                        ];
+                    }
 
                     foreach ($wc_payment->payment_gateways() as $payment) {
-                        $this->form_fields[$payment->id] = array(
-                            'title'          => __($payment->method_title, 'woocommerce'),
-                            'description' => __($payment->method_description, 'woocommerce'),
-                            'css'            => 'min-width:350px;',
-                            'class'          => 'select',
-                            'type'           => 'select',
-                            'options'        => $payment_option_list,
+                        $this->form_fields[$payment->id] = [
+                            'css'         => 'min-width:350px;',
+                            'type'        => 'select',
+                            'title'       => __($payment->method_title, 'woocommerce'),
+                            'class'       => 'select',
+                            'options'     => $paymentsList,
                             'desc_tip'    =>  true,
-                        );
+                            'description' => __($payment->method_description, 'woocommerce'),
+                        ];
                     }
+                }
+
+                if (!empty($integrationPayments['code'])) {
+                    update_option('retailcrm_integration_payments', $integrationPayments['code']);
                 }
 
                 /**

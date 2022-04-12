@@ -319,6 +319,14 @@ msgstr "Синхронизация запасов"
 msgid "Don't send to CRM"
 msgstr "Не отправлять в CRM"
 
+msgid "Integration payment"
+msgstr "Интеграционная оплата"
+
+msgid "Attention!"
+msgstr "Внимание!"
+
+msgid "If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM"
+msgstr "При указании в соответствии типа оплаты, привязанного к интеграционному модулю в CRM, оплата должна происходить на стороне CRM"
 
 
 

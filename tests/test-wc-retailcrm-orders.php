@@ -241,7 +241,9 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('US', $orderData['countryIso']);
             $this->assertEquals(0, $orderData['discountManualAmount']);
             $this->assertEquals(0, $orderData['discountManualPercent']);
+
             $this->assertEquals($orderData['customFields']['crm_order'], 'test_custom_fields');
+
 
             if (mb_strlen($orderData['delivery']['address']['index']) === 6) {
                 $this->assertEquals('123456', $orderData['delivery']['address']['index']);
@@ -263,7 +265,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                 $this->assertEquals('payment1', $payment['type']);
                 $this->assertArrayNotHasKey('amount', $payment);
             } else {
-                $this->assertEquals(array(), $payment);
+                $this->assertEquals([], $payment);
             }
         } else {
             $this->assertEquals(null, $order);
