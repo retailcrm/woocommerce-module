@@ -278,7 +278,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $addresses = $this->retailcrm->customersCorporateAddresses(
                 $corporateId,
-                array(),
+                [],
                 null,
                 100,
                 'id'

@@ -227,7 +227,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
                 $companiesResponse = $this->retailcrm->customersCorporateCompanies(
                     $this->order['customer']['id'],
-                    array(),
+                    [],
                     null,
                     null,
                     'id'
@@ -236,10 +236,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 if (!empty($companiesResponse) && $companiesResponse->isSuccessful()) {
                     foreach ($companiesResponse['companies'] as $company) {
                         if ($company['name'] == $wcOrder->get_billing_company()) {
-                            $this->order['company'] = array(
+                            $this->order['company'] = [
                                 'id' => $company['id'],
                                 'name' => $company['name']
-                            );
+                            ];
                             break;
                         }
                     }
