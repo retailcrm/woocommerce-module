@@ -110,6 +110,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('type', $orderData['payments'][0]);
             $this->assertArrayHasKey('externalId', $orderData['payments'][0]);
             $this->assertEquals('payment1', $orderData['payments'][0]['type']);
+            $this->assertEquals($orderData['customFields']['woo_order_test'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $order);
         }
@@ -185,6 +186,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertArrayHasKey('name', $orderData['company']);
             $this->assertEquals(777, $orderData['company']['id']);
             $this->assertEquals($this->order->get_billing_company(), $orderData['company']['name']);
+            $this->assertEquals($orderData['customFields']['woo_order_test'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $order);
         }
@@ -239,7 +241,8 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertEquals('US', $orderData['countryIso']);
             $this->assertEquals(0, $orderData['discountManualAmount']);
             $this->assertEquals(0, $orderData['discountManualPercent']);
-            
+            $this->assertEquals($orderData['customFields']['woo_order_test'], 'test_custom_fields');
+
             if (mb_strlen($orderData['delivery']['address']['index']) === 6) {
                 $this->assertEquals('123456', $orderData['delivery']['address']['index']);
             } else {
@@ -502,6 +505,8 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $this->order->save();
+
+        update_post_meta($this->order->get_id(), 'woo_order', 'test_custom_fields');
     }
 
     private function getResponseData($externalId)

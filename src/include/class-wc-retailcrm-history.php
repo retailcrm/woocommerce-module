@@ -402,9 +402,9 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                     // @codeCoverageIgnoreStart
                     // TODO: There is a task to analyze the work set billing address in WC order
-                    $wcOrder->set_billing_state(self::arrayValue($billingAddress, 'region'));
+                    $wcOrder->set_billing_country(self::arrayValue($billingAddress, 'countryIso'));
                     $wcOrder->set_billing_postcode(self::arrayValue($billingAddress, 'index'));
-                    $wcOrder->set_billing_country(self::arrayValue($billingAddress, 'country'));
+                    $wcOrder->set_billing_state(self::arrayValue($billingAddress, 'region'));
                     $wcOrder->set_billing_city(self::arrayValue($billingAddress, 'city'));
                     $wcOrder->set_billing_address_1(self::arrayValue($billingAddress, 'text'));
                     // @codeCoverageIgnoreEnd
@@ -491,21 +491,11 @@ if (!class_exists('WC_Retailcrm_History')) :
                 if (isset($order['delivery']['address'])) {
                     $shippingAddress = $order['delivery']['address'];
 
-                    if (isset($shippingAddress['region'])) {
-                        $wcOrder->set_shipping_state($shippingAddress['region']);
-                    }
-
-                    if (isset($shippingAddress['city'])) {
-                        $wcOrder->set_shipping_city($shippingAddress['city']);
-                    }
-
-                    if (isset($shippingAddress['street'])) {
-                        $wcOrder->set_shipping_address_1($shippingAddress['street']);
-                    }
-
-                    if (isset($shippingAddress['building'])) {
-                        $wcOrder->set_shipping_address_2($shippingAddress['building']);
-                    }
+                    $wcOrder->set_shipping_country(self::arrayValue($shippingAddress, 'countryIso', ''));
+                    $wcOrder->set_shipping_postcode(self::arrayValue($shippingAddress, 'index', ''));
+                    $wcOrder->set_shipping_state(self::arrayValue($shippingAddress, 'region', ''));
+                    $wcOrder->set_shipping_city(self::arrayValue($shippingAddress, 'city', ''));
+                    $wcOrder->set_shipping_address_1(self::arrayValue($shippingAddress, 'text', ''));
                 }
             }
 
@@ -721,31 +711,31 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $companyName = $customer['mainCompany']['name'];
             }
 
-            $addressShipping = array(
-                'first_name' => isset($order['firstName']) ? $order['firstName'] : '',
-                'last_name'  => isset($order['lastName']) ? $order['lastName'] : '',
+            $addressShipping = [
+                'first_name' => $order['firstName'] ?? '',
+                'last_name'  => $order['lastName'] ?? '',
                 'company'    => '',
-                'address_1'  => isset($order['delivery']['address']['text']) ? $order['delivery']['address']['text'] : '',
+                'address_1'  => $order['delivery']['address']['text'] ?? '',
                 'address_2'  => '',
-                'city'       => isset($order['delivery']['address']['city']) ? $order['delivery']['address']['city'] : '',
-                'state'      => isset($order['delivery']['address']['region']) ? $order['delivery']['address']['region'] : '',
-                'postcode'   => isset($order['delivery']['address']['index']) ? $order['delivery']['address']['index'] : '',
-                'country'    => isset($order['delivery']['address']['countryIso']) ? $order['delivery']['address']['countryIso'] : ''
-            );
+                'city'       => $order['delivery']['address']['city'] ?? '',
+                'state'      => $order['delivery']['address']['region'] ?? '',
+                'postcode'   => $order['delivery']['address']['index'] ?? '',
+                'country'    => $order['delivery']['address']['countryIso'] ?? ''
+            ];
 
-            $addressBilling = array(
-                'first_name' => isset($contactOrCustomer['firstName']) ? $contactOrCustomer['firstName'] : '',
-                'last_name'  => isset($contactOrCustomer['lastName']) ? $contactOrCustomer['lastName'] : '',
+            $addressBilling = [
+                'first_name' => $contactOrCustomer['firstName'] ?? '',
+                'last_name'  => $contactOrCustomer['lastName'] ?? '',
                 'company'    => $companyName,
-                'email'      => isset($contactOrCustomer['email']) ? $contactOrCustomer['email'] : '',
-                'phone'      => isset($contactOrCustomer['phones'][0]['number']) ? $contactOrCustomer['phones'][0]['number'] : '',
-                'address_1'  => isset($billingAddress['text']) ? $billingAddress['text'] : '',
+                'email'      => $contactOrCustomer['email'] ?? '',
+                'phone'      => $contactOrCustomer['phones'][0]['number'] ?? '',
+                'address_1'  => $billingAddress['text'] ?? '',
                 'address_2'  => '',
-                'city'       => isset($billingAddress['city']) ? $billingAddress['city'] : '',
-                'state'      => isset($billingAddress['region']) ? $billingAddress['region'] : '',
-                'postcode'   => isset($billingAddress['index']) ? $billingAddress['index'] : '',
-                'country'    => isset($billingAddress['countryIso']) ? $billingAddress['countryIso'] : ''
-            );
+                'city'       => $billingAddress['city'] ?? '',
+                'state'      => $billingAddress['region'] ?? '',
+                'postcode'   => $billingAddress['index'] ?? '',
+                'country'    => $billingAddress['countryIso'] ?? ''
+            ];
 
             if (isset($order['payments']) && $order['payments']) {
                 $payment = WC_Payment_Gateways::instance();

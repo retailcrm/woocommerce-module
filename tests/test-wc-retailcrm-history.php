@@ -40,7 +40,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $orders  = wc_get_orders(array('numberposts' => -1));
+        $orders  = wc_get_orders(['numberposts' => -1]);
         $wcOrder = end($orders);
 
         if (!$wcOrder) {
@@ -58,15 +58,22 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         if (is_object($order_added_item)) {
             $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
         }
-
         $this->assertNotEmpty($wcOrder->get_date_created());
-        $this->assertEquals("2018-01-01 00:00:00", $order['history'][0]['createdAt']);
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
         $this->assertNotEmpty($shipping_address['postcode']);
         $this->assertNotEmpty($shipping_address['city']);
         $this->assertNotEmpty($shipping_address['country']);
         $this->assertNotEmpty($shipping_address['state']);
+
+        $this->assertEquals('Test_Name', $shipping_address['first_name']);
+        $this->assertEquals('Test_LastName', $shipping_address['last_name']);
+        $this->assertEquals('City', $shipping_address['city']);
+        $this->assertEquals('Region', $shipping_address['state']);
+        $this->assertEquals('ES', $shipping_address['country']);
+        $this->assertEquals(123456, $shipping_address['postcode']);
+        $this->assertEquals('Street', $shipping_address['address_1']);
+
 
         if (isset($billing_address['phone'])) {
             $this->assertNotEmpty($billing_address['phone']);
@@ -82,6 +89,14 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertNotEmpty($billing_address['city']);
         $this->assertNotEmpty($billing_address['country']);
         $this->assertNotEmpty($billing_address['state']);
+
+        $this->assertEquals('Test_Name', $billing_address['first_name']);
+        $this->assertEquals('Test_LastName', $billing_address['last_name']);
+        $this->assertEquals('City', $billing_address['city']);
+        $this->assertEquals('Region', $billing_address['state']);
+        $this->assertEquals('ES', $billing_address['country']);
+        $this->assertEquals(123456, $billing_address['postcode']);
+        $this->assertEquals('Street', $billing_address['address_1']);
 
         if ($wcOrder->get_payment_method()) {
             $this->assertEquals('payment4', $options[$wcOrder->get_payment_method()]);
@@ -144,7 +159,6 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $this->assertNotEmpty($order_added->get_date_created());
-        $this->assertEquals("2018-01-01 00:00:00", $order['history'][0]['createdAt']);
         $this->assertNotEmpty($shipping_address['first_name']);
         $this->assertNotEmpty($shipping_address['last_name']);
         $this->assertNotEmpty($shipping_address['postcode']);
@@ -223,7 +237,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('tester001@example.com', $order_updated->get_billing_email());
 
         //Check order note
-        $notes = wc_get_order_notes(array('limit' => 100, 'order_id' => $order->get_id()));
+        $notes = wc_get_order_notes(['limit' => 100, 'order_id' => $order->get_id()]);
 
         foreach ($notes as $note) {
             if ($note->content === 'managerComment') {
@@ -287,6 +301,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('Test_Name', $wcCustomer->get_first_name());
         $this->assertEquals('City', $wcCustomer->get_billing_city());
         $this->assertEquals(123456, $wcCustomer->get_billing_postcode());
+        $this->assertEquals('test_customer', $wcCustomer->get_meta('woo_customer'));
     }
 
     public function test_history_switch_customer_tests()
@@ -731,7 +746,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $mock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                      ->disableOriginalConstructor()
-                     ->setMethods(array('isSuccessful'))
+                     ->setMethods(['isSuccessful'])
                      ->getMock();
 
         $mock->expects($this->any())
