@@ -55,7 +55,6 @@ class DataHistoryRetailCrm
                         'totalSumm' => 0,
                         'averageSumm' => 0,
                         'ordersCount' => 0,
-                        'customFields' => [],
                         'personalDiscount' => 0,
                         'cumulativeDiscount' => 0,
                         'address' => [
@@ -64,11 +63,12 @@ class DataHistoryRetailCrm
                             'countryIso' => 'ES',
                             'region' => 'Region',
                             'city' => 'City',
-                            'text' => 'street Test 777',
+                            'text' => 'Street',
                         ],
+                        'customFields' => ['crm_customer' => 'test_customer'],
                         'segments' => [],
                         'firstName' => 'Test_Name',
-                        'lastName' => 'Test',
+                        'lastName' => 'Test_LastName',
                         'email' => 'mail_test@mail.es',
                         'phones' => [ '0' => [ 'number' => '+79184563200' ] ],
                         'birthday' => '2021-10-01'
@@ -116,17 +116,18 @@ class DataHistoryRetailCrm
                         'prepaySum' => 0,
                         'purchaseSumm' => 50,
                         'markDatetime' => '2018-01-01 00:00:00',
-                        'firstName' => 'Test',
-                        'lastName' => 'Test',
+                        'firstName' => 'Test_Name',
+                        'lastName' => 'Test_LastName',
                         'phone' => '80000000000',
                         'call' => false,
                         'expired' => false,
+                        'customFields' => ['crm_order' => 'test_order'],
                         'customer' => [
                             'type' => 'customer',
                             'segments' => [],
                             'id' => 1,
-                            'firstName' => 'Test',
-                            'lastName' => 'Test',
+                            'firstName' => 'Test_Name',
+                            'lastName' => 'Test_LastName',
                             'email' => 'email@test.ru',
                             'phones' => [
                                 [
@@ -137,11 +138,11 @@ class DataHistoryRetailCrm
                                 ]
                             ],
                             'address' => [
-                                'index' => '111111',
-                                'countryIso' => 'RU',
-                                'region' => 'Test region',
-                                'city' => 'Test',
-                                'text' => 'Test text address'
+                                'index' => 123456,
+                                'countryIso' => 'ES',
+                                'region' => 'Region',
+                                'city' => 'City',
+                                'text' => 'Street'
                             ],
                             'createdAt' => '2018-01-01 00:00:00',
                             'managerId' => 1,
@@ -158,20 +159,17 @@ class DataHistoryRetailCrm
                             'averageSumm' => 15387.25,
                             'ordersCount' => 4,
                             'costSumm' => 101,
-                            'customFields' => [
-                                'custom' => 'test'
-                            ]
                         ],
                         'contragent' => [],
                         'delivery' => [
                             'cost' => 0,
                             'netCost' => 0,
                             'address' => [
-                                'index' => '111111',
-                                'countryIso' => 'RU',
-                                'region' => 'Test region',
-                                'city' => 'Test',
-                                'text' => 'Test text address'
+                                'index' => 123456,
+                                'countryIso' => 'ES',
+                                'region' => 'Region',
+                                'city' => 'City',
+                                'text' => 'Street'
                             ]
                         ],
                         'site' => 'test-com',
@@ -217,7 +215,6 @@ class DataHistoryRetailCrm
                         'height' => 0,
                         'shipmentStore' => 'main',
                         'shipped' => false,
-                        'customFields' => [],
                         'uploadedToExternalStoreSystem' => false
                     ]
                 ]
@@ -263,8 +260,8 @@ class DataHistoryRetailCrm
                         'prepaySum' => 0,
                         'purchaseSumm' => 50,
                         'markDatetime' => '2018-01-01 00:00:00',
-                        'firstName' => 'Test',
-                        'lastName' => 'Test',
+                        'firstName' => 'Test_Name',
+                        'lastName' => 'Test_LastName',
                         'phone' => '80000000000',
                         'call' => false,
                         'expired' => false,
@@ -272,8 +269,8 @@ class DataHistoryRetailCrm
                             'type' => 'customer',
                             'segments' => [],
                             'id' => 1,
-                            'firstName' => 'Test',
-                            'lastName' => 'Test',
+                            'firstName' => 'Test_Name',
+                            'lastName' => 'Test_LastName',
                             'email' => 'email@test.ru',
                             'phones' => [
                                 [
@@ -284,11 +281,11 @@ class DataHistoryRetailCrm
                                 ]
                             ],
                             'address' => [
-                                'index' => '111111',
-                                'countryIso' => 'RU',
-                                'region' => 'Test region',
-                                'city' => 'Test',
-                                'text' => 'Test text address'
+                                'index' => 123456,
+                                'countryIso' => 'ES',
+                                'region' => 'Region',
+                                'city' => 'City',
+                                'text' => 'Street'
                             ],
                             'createdAt' => '2018-01-01 00:00:00',
                             'managerId' => 1,
@@ -305,20 +302,17 @@ class DataHistoryRetailCrm
                             'averageSumm' => 15387.25,
                             'ordersCount' => 4,
                             'costSumm' => 101,
-                            'customFields' => [
-                                'custom' => 'test'
-                            ]
                         ],
                         'contragent' => [],
                         'delivery' => [
                             'cost' => 0,
                             'netCost' => 0,
                             'address' => [
-                                'index' => '111111',
-                                'countryIso' => 'RU',
-                                'region' => 'Test region',
-                                'city' => 'Test',
-                                'text' => 'Test text address'
+                                'index' => 123456,
+                                'countryIso' => 'ES',
+                                'region' => 'Region',
+                                'city' => 'City',
+                                'text' => 'Street'
                             ]
                         ],
                         'site' => 'test-com',
@@ -385,7 +379,6 @@ class DataHistoryRetailCrm
                         'height' => 0,
                         'shipmentStore' => 'main',
                         'shipped' => false,
-                        'customFields' => [],
                         'uploadedToExternalStoreSystem' => false
                     ]
                 ],
@@ -712,7 +705,6 @@ class DataHistoryRetailCrm
                         'averageSumm' => 9412,
                         'ordersCount' => 1,
                         'costSumm' => 0,
-                        'customFields' => [],
                         'personalDiscount' => 0,
                         'cumulativeDiscount' => 0,
                         'address' => [
@@ -745,7 +737,6 @@ class DataHistoryRetailCrm
                         'averageSumm' => 9412,
                         'ordersCount' => 1,
                         'costSumm' => 0,
-                        'customFields' => [],
                         'personalDiscount' => 0,
                         'cumulativeDiscount' => 0,
                         'address' => [

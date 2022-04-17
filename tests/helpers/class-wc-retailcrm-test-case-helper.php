@@ -59,8 +59,8 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'update_number' => 'yes',
             'debug_mode'    => 'yes',
             'debug-info'    => '',
-            'order-meta-data-retailcrm'    => json_encode(['woo_order'    => 'woo_order_test']),
-            'customer-meta-data-retailcrm' => json_encode(['woo_customer' => 'woo_customer_test']),
+            'order-meta-data-retailcrm'    => json_encode(['woo_order'    => 'crm_order']),
+            'customer-meta-data-retailcrm' => json_encode(['woo_customer' => 'crm_customer']),
         ];
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
