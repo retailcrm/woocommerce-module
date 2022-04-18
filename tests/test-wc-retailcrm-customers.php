@@ -113,7 +113,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['email']);
             $this->assertEquals($customer['firstName'], $this->customer->get_first_name());
             $this->assertEquals($customer['email'], $this->customer->get_email());
-            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
+            $this->assertEquals($customer['customFields']['crm_customer'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $id);
             $this->assertEquals([], $customer);
@@ -146,7 +146,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['email']);
             $this->assertEquals($customer['firstName'], $this->customer->get_first_name());
             $this->assertEquals($customer['email'], $this->customer->get_email());
-            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
+            $this->assertEquals($customer['customFields']['crm_customer'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $id);
             $this->assertEquals([], $customer);
@@ -196,7 +196,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['createdAt']);
             $this->assertNotEmpty($customer['firstName']);
             $this->assertNotEmpty($customer['email']);
-            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
+            $this->assertEquals($customer['customFields']['crm_customer'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $wcCustomer);
             $this->assertEquals([], $customer);
@@ -225,7 +225,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['createdAt']);
             $this->assertNotEmpty($customer['firstName']);
             $this->assertNotEmpty($customer['email']);
-            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
+            $this->assertEquals($customer['customFields']['crm_customer'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $wcCustomer);
             $this->assertEquals([], $customer);
