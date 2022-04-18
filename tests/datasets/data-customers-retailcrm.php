@@ -18,14 +18,13 @@ class DataCustomersRetailCrm
     public static function getCustomerAddress() {
         return [
             'success'   => true,
-            'addresses' => [
-                'id'         => 3503,
-                'index'      => 144566,
-                'countryIso' => 'ES',
-                'region'     => 'Region',
-                'city'       => 'City',
-                'text'       => 'street Test 777',
-            ]
+            'addresses' => [[
+                'index'      => 123456,
+                'region'     => 'test_state',
+                'city'       => 'test_city',
+                'text'       => 'test_address_line',
+                'isMain'     => false
+            ]]
         ];
     }
 

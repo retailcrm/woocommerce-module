@@ -23,17 +23,17 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                                    ->disableOriginalConstructor()
-                                   ->setMethods(array(
+                                   ->setMethods([
                                        'isSuccessful',
                                        'offsetExists'
-                                   ))
+                                   ])
                                    ->getMock();
 
-        $this->responseMock->setResponse(array('id' => 1));
+        $this->responseMock->setResponse(['id' => 1]);
 
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
                               ->disableOriginalConstructor()
-                              ->setMethods(array(
+                              ->setMethods([
                                   'ordersGet',
                                   'ordersCreate',
                                   'ordersEdit',
@@ -47,7 +47,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
                                   'getSingleSiteForKey',
                                   'customersCorporateAddresses',
                                   'customersList'
-                              ))
+                              ])
                               ->getMock();
 
         $this->setMockResponse($this->responseMock, 'isSuccessful', true);
@@ -74,6 +74,8 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         $this->customer->set_billing_address_1('test_address_line');
         $this->customer->set_date_created(date('Y-m-d H:i:s'));
         $this->customer->save();
+
+        update_user_meta($this->customer->get_id(), 'woo_customer', 'test_custom_fields');
     }
 
     /**
@@ -84,9 +86,9 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_wc_customer_get($retailcrm)
     {
         $wc_customer = new WC_Customer($this->customer->get_id());
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
 
-        $this->assertEquals($wc_customer, $retailcrmCustomer->wcCustomerGet($this->customer->get_id()));
+        $this->assertEquals($wc_customer, $crmCustomer->wcCustomerGet($this->customer->get_id()));
     }
 
     /**
@@ -96,9 +98,10 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_create_customer($retailcrm)
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $id = $retailcrmCustomer->createCustomer($this->customer->get_id());
-        $customer = $retailcrmCustomer->getCustomer();
+        $crmCustomer  = $this->getRetailcrmCustomer($retailcrm);
+
+        $id       = $crmCustomer->createCustomer($this->customer->get_id());
+        $customer = $crmCustomer->getCustomer();
 
         if ($retailcrm) {
             $this->assertArrayHasKey('firstName', $customer);
@@ -110,9 +113,10 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['email']);
             $this->assertEquals($customer['firstName'], $this->customer->get_first_name());
             $this->assertEquals($customer['email'], $this->customer->get_email());
+            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $id);
-            $this->assertEquals(array(), $customer);
+            $this->assertEquals([], $customer);
         }
     }
 
@@ -127,9 +131,10 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->buildResponseCustomersList($retailcrm, DataCustomersRetailCrm::getEmptyCustomersList());
         }
 
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $id = $retailcrmCustomer->registerCustomer($this->customer->get_id());
-        $customer = $retailcrmCustomer->getCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
+
+        $id       = $crmCustomer->registerCustomer($this->customer->get_id());
+        $customer = $crmCustomer->getCustomer();
 
         if ($retailcrm) {
             $this->assertArrayHasKey('firstName', $customer);
@@ -141,20 +146,30 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['email']);
             $this->assertEquals($customer['firstName'], $this->customer->get_first_name());
             $this->assertEquals($customer['email'], $this->customer->get_email());
+            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $id);
-            $this->assertEquals(array(), $customer);
+            $this->assertEquals([], $customer);
         }
+    }
+
+    public function test_empty_customer_registration()
+    {
+        $emptyCustomer = new WC_Customer();
+        $crmCustomer   = $this->getRetailcrmCustomer($this->apiMock);
+
+        $this->assertEquals(null, $crmCustomer->registerCustomer($emptyCustomer->get_id()));
     }
 
     public function test_create_customer_empty_data()
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($this->apiMock);
-        $id = $retailcrmCustomer->createCustomer(null);
-        $customer = $retailcrmCustomer->getCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($this->apiMock);
+
+        $id       = $crmCustomer->createCustomer(null);
+        $customer = $crmCustomer->getCustomer();
 
         $this->assertEquals(null, $id);
-        $this->assertEquals(array(), $customer);
+        $this->assertEquals([], $customer);
     }
 
     /**
@@ -168,9 +183,9 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->buildResponseCustomersList($retailcrm, DataCustomersRetailCrm::getCustomersList());
         }
 
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $wcCustomer = $retailcrmCustomer->registerCustomer($this->customer->get_id());
-        $customer = $retailcrmCustomer->getCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
+        $wcCustomer  = $crmCustomer->registerCustomer($this->customer->get_id());
+        $customer    = $crmCustomer->getCustomer();
 
         if ($retailcrm) {
             $this->assertArrayHasKey('externalId', $customer);
@@ -181,9 +196,10 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['createdAt']);
             $this->assertNotEmpty($customer['firstName']);
             $this->assertNotEmpty($customer['email']);
+            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $wcCustomer);
-            $this->assertEquals(array(), $customer);
+            $this->assertEquals([], $customer);
         }
     }
 
@@ -195,9 +211,9 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_update_customer($retailcrm)
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $wcCustomer = $retailcrmCustomer->updateCustomer($this->customer->get_id());
-        $customer = $retailcrmCustomer->getCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
+        $wcCustomer  = $crmCustomer->updateCustomer($this->customer->get_id());
+        $customer    = $crmCustomer->getCustomer();
 
         if ($retailcrm) {
             $this->assertInstanceOf('WC_Customer', $wcCustomer);
@@ -209,9 +225,10 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['createdAt']);
             $this->assertNotEmpty($customer['firstName']);
             $this->assertNotEmpty($customer['email']);
+            $this->assertEquals($customer['customFields']['woo_customer_test'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $wcCustomer);
-            $this->assertEquals(array(), $customer);
+            $this->assertEquals([], $customer);
         }
     }
 
@@ -222,9 +239,9 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_update_customer_by_id($retailcrm)
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $wcCustomer = $retailcrmCustomer->updateCustomerById($this->customer->get_id(), '12345');
-        $customer = $retailcrmCustomer->getCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
+        $wcCustomer  = $crmCustomer->updateCustomerById($this->customer->get_id(), '12345');
+        $customer    = $crmCustomer->getCustomer();
 
         if ($retailcrm) {
             $this->assertInstanceOf('WC_Customer', $wcCustomer);
@@ -238,7 +255,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['email']);
         } else {
             $this->assertEquals(null, $wcCustomer);
-            $this->assertEquals(array(), $customer);
+            $this->assertEquals([], $customer);
         }
     }
 
@@ -249,8 +266,8 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_is_corparate_enabled($retailcrm)
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $isCorporate = $retailcrmCustomer->isCorporateEnabled();
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
+        $isCorporate = $crmCustomer->isCorporateEnabled();
 
         if ($retailcrm) {
             $this->assertEquals(true, $isCorporate);
@@ -266,9 +283,10 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_create_customer_corporate($retailcrm)
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($retailcrm);
-        $id = $retailcrmCustomer->createCorporateCustomerForOrder(777, $this->customer->get_id(), new WC_Order());
-        $customer = $retailcrmCustomer->getCorporateCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($retailcrm);
+
+        $id       = $crmCustomer->createCorporateCustomerForOrder(777, $this->customer->get_id(), new WC_Order());
+        $customer = $crmCustomer->getCorporateCustomer();
 
         if ($retailcrm) {
             $this->assertArrayHasKey('customerContacts', $customer);
@@ -281,28 +299,29 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             }
         } else {
             $this->assertEquals(null, $id);
-            $this->assertEquals(array(), $customer);
+            $this->assertEquals([], $customer);
         }
     }
 
     public function test_create_customer_corporate_empty_data()
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($this->apiMock);
-        $id = $retailcrmCustomer->createCorporateCustomerForOrder(777, null, new WC_Order());
-        $customer = $retailcrmCustomer->getCorporateCustomer();
+        $crmCustomer = $this->getRetailcrmCustomer($this->apiMock);
+
+        $id       = $crmCustomer->createCorporateCustomerForOrder(777, null, new WC_Order());
+        $customer = $crmCustomer->getCorporateCustomer();
 
         $this->assertEquals(null, $id);
-        $this->assertEquals(array(), $customer);
+        $this->assertEquals([], $customer);
     }
 
     public function test_fill_corporate_address()
     {
-        $retailcrmCustomer = $this->getRetailcrmCustomer($this->apiMock);
+        $crmCustomer = $this->getRetailcrmCustomer($this->apiMock);
 
         // Mock response for get customer address
         $responseCustomerAddress = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                                         ->disableOriginalConstructor()
-                                        ->setMethods(array('isSuccessful'))
+                                        ->setMethods(['isSuccessful'])
                                         ->getMock();
 
         $this->setMockResponse($responseCustomerAddress, 'isSuccessful', true);
@@ -311,23 +330,32 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         //Set responseCustomerAddress mock for apiMock
         $this->setMockResponse($this->apiMock, 'customersCorporateAddresses', $responseCustomerAddress);
 
-        $addressFound = $retailcrmCustomer->fillCorporateAddress($this->customer->get_id(), $this->customer);
+        $addressFound = $crmCustomer->fillCorporateAddress($this->customer->get_id(), $this->customer);
 
         $this->assertEquals(true, $addressFound);
+
+        $this->customer->set_billing_state('test_state123');
+        $this->customer->set_billing_postcode('123456123');
+        $this->customer->set_billing_city('test_city123');
+        $this->customer->set_billing_address_1('test_address_line123');
+
+        $addressFound = $crmCustomer->fillCorporateAddress($this->customer->get_id(), $this->customer);
+
+        $this->assertEquals(false, $addressFound);
     }
 
     public function dataProviderApiClient()
     {
         $this->setUp();
 
-        return array(
-            array(
+        return [
+            [
                 'retailcrm' => $this->apiMock
-            ),
-            array(
+            ],
+            [
                 'retailcrm' => false
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -355,7 +383,7 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         // Mock response for get customers list
         $responseCustomersList = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                                       ->disableOriginalConstructor()
-                                      ->setMethods(array('isSuccessful'))
+                                      ->setMethods(['isSuccessful'])
                                       ->getMock();
 
         $this->setMockResponse($responseCustomersList, 'isSuccessful', true);
