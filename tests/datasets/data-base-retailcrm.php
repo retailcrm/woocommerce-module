@@ -17,77 +17,86 @@ class DataBaseRetailCrm
 {
     public static function getResponseStatuses()
     {
-        return array(
+        return [
             'success' => true,
-            'statuses' => array(
-                array(
+            'statuses' => [
+                [
                     'name' => 'status1',
                     'code' => 'status1',
                     'active' => true
-                ),
-                array(
+                ],
+                [
                     'name' => 'status2',
                     'code' => 'status2',
                     'active' => false
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 
     public static function getResponsePaymentTypes()
     {
-        return array(
+        return [
             'success' => true,
-            'paymentTypes' => array(
-                array(
+            'paymentTypes' => [
+                [
                     'name' => 'payment1',
                     'code' => 'payment1',
                     'active' => true
-                ),
-                array(
+                ],
+                [
                     'name' => 'payment2',
                     'code' => 'payment2',
                     'active' => false
-                )
-            )
-        );
+                ],
+                [
+                    'name' => 'payment3',
+                    'code' => 'payment3',
+                    'integrationModule' => [
+                        'name' => 'test',
+                        'active' => true,
+                    ],
+                    'active' => true
+                ],
+            ]
+        ];
     }
 
     public static function getResponseDeliveryTypes()
     {
-        return array(
+        return [
             'success' => true,
-            'deliveryTypes' => array(
-                array(
+            'deliveryTypes' => [
+                [
                     'name' => 'delivery1',
                     'code' => 'delivery1',
                     'active' => true
-                ),
-                array(
+                ],
+                [
                     'name' => 'delivery2',
                     'code' => 'delivery2',
                     'active' => false
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 
     public static function getResponseOrderMethods()
     {
-        return array(
+        return [
             'success' => true,
-            'orderMethods' => array(
-                array(
+            'orderMethods' => [
+                [
                     'name' => 'orderMethod1',
                     'code' => 'orderMethod1',
                     'active' => true
-                ),
-                array(
+                ],
+                [
                     'name' => 'orderMethod2',
                     'code' => 'orderMethod2',
                     'active' => false
-                )
-            )
-        );
+                ]
+            ]
+        ];
     }
 }

@@ -310,4 +310,11 @@ msgstr "Sincronización de inventario"
 msgid "Don't send to CRM"
 msgstr "No enviar al CRM"
 
+msgid "Integration payment"
+msgstr "Integración pago"
 
+msgid "Attention!"
+msgstr "¡Atención!"
+
+msgid "If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM"
+msgstr "Al seleccionar en el enlace de tipos de pago un método de pago de integración en CRM, el pago se debe realizar por parte del CRM"

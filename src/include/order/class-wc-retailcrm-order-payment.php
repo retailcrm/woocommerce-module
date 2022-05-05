@@ -49,7 +49,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
     public function build($order, $externalId = false)
     {
         $this->reset_data();
-        $data = array();
+        $data = [];
 
         if (!$this->is_new) {
             $data['externalId'] = $externalId;
@@ -57,9 +57,9 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
             $data['externalId'] = uniqid($order->get_id() . "-");
         }
 
-        $data['order'] = array(
+        $data['order'] = [
             'externalId' => $order->get_id()
-        );
+        ];
 
         if ($order->is_paid()) {
             $data['status'] = 'paid';
@@ -77,7 +77,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
             if (isset($this->settings[$order->get_payment_method()])) {
                 $data['type'] = $this->settings[$order->get_payment_method()];
             } else {
-                $data = array();
+                $data = [];
             }
         }
 

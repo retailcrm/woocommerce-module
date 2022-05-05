@@ -39,13 +39,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         private $ordersGetRequestCache = array();
 
         /** @var array */
-        private $order = array();
+        private $order = [];
 
         /** @var array */
-        private $payment = array();
+        private $payment = [];
 
         /**@var array */
-        private $customFields = array();
+        private $customFields = [];
 
         public function __construct(
             $retailcrm,
@@ -290,29 +290,31 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             $retailcrmOrder = $this->getCrmOrder($order->get_id());
 
-            if (!empty($retailcrmOrder)) {
-                foreach ($retailcrmOrder['payments'] as $payment_data) {
-                    $payment_external_id = explode('-', $payment_data['externalId']);
+            if (empty($retailcrmOrder)) {
+                return null;
+            }
 
-                    if ($payment_external_id[0] == $order->get_id()) {
-                        $payment = $payment_data;
-                    }
+            foreach ($retailcrmOrder['payments'] as $paymentData) {
+                $paymentId = explode('-', $paymentData['externalId']);
+
+                if ($paymentId[0] == $order->get_id()) {
+                    $payment = $paymentData;
                 }
             }
 
-            if (isset($payment) && $payment['type'] == $this->retailcrm_settings[$order->get_payment_method()] && $order->is_paid()) {
-                $payment = $this->sendPayment($order, true, $payment['externalId']);
-
-                return $payment;
+            if (empty($payment)) {
+                return null;
             }
 
-            if (isset($payment) && $payment['type'] != $this->retailcrm_settings[$order->get_payment_method()]) {
+            if ($payment['type'] == $this->retailcrm_settings[$order->get_payment_method()] && $order->is_paid()) {
+                return $this->sendPayment($order, true, $payment['externalId']);
+            }
+
+            if ($payment['type'] != $this->retailcrm_settings[$order->get_payment_method()]) {
                 $response = $this->retailcrm->ordersPaymentDelete($payment['id']);
 
                 if (!empty($response) && $response->isSuccessful()) {
-                    $payment = $this->sendPayment($order);
-
-                    return $payment;
+                    return $this->sendPayment($order);
                 }
             }
 
@@ -362,11 +364,11 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $service = retailcrm_get_delivery_service($shipping['method_id'], $shipping['instance_id']);
 
                     if ($service) {
-                        $orderData['delivery']['service'] = array(
+                        $orderData['delivery']['service'] = [
                             'name' => $service['title'],
                             'code' => $service['instance_id'],
                             'active' => true
-                        );
+                        ];
                     }
                 }
 
@@ -380,17 +382,16 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             }
 
             $orderData['delivery']['address'] = $this->order_address->build($order)->get_data();
-            $order_items = array();
+            $orderItems = [];
 
             /** @var WC_Order_Item_Product $item */
             foreach ($order->get_items() as $item) {
-                $order_items[] = $this->order_item->build($item)->get_data();
+                $orderItems[] = $this->order_item->build($item)->get_data();
                 $this->order_item->reset_data();
             }
 
-            $orderData['items'] = $order_items;
-
-            $orderData['discountManualAmount'] = 0;
+            $orderData['items'] = $orderItems;
+            $orderData['discountManualAmount']  = 0;
             $orderData['discountManualPercent'] = 0;
 
             if (!$update && $order->get_total() > 0) {
@@ -431,6 +432,16 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         {
             $this->order_payment->is_new = !$update;
             $payment = $this->order_payment->build($order, $externalId)->get_data();
+
+            $integrationPayments = get_option('retailcrm_integration_payments');
+
+            if (is_array($integrationPayments)) {
+                $integrationPayments = array_flip($integrationPayments);
+            }
+
+            if ($update === true && isset($integrationPayments[$payment['type']])) {
+                return $payment;
+            }
 
             if ($update === false) {
                 $this->retailcrm->ordersPaymentCreate($payment);

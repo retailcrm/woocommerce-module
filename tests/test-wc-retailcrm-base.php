@@ -76,29 +76,49 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             }
         }
 
+        $integrationPayments = get_option('retailcrm_integration_payments');
+
+        $this->assertNotEmpty($integrationPayments);
+        $this->assertInternalType('array', $integrationPayments);
+        $this->assertEquals('payment3', $integrationPayments[0]);
+
         foreach (wc_get_order_statuses() as $idx => $name) {
             $uid = str_replace('wc-', '', $idx);
             $this->assertArrayHasKey($uid, $this->baseRetailcrm->form_fields);
         }
 
-        $this->assertArrayHasKey('corporate_enabled', $this->baseRetailcrm->form_fields);
-        $this->assertArrayHasKey('online_assistant', $this->baseRetailcrm->form_fields);
-
+        //Order settings
         $this->assertArrayHasKey('order_methods', $this->baseRetailcrm->form_fields);
         $this->assertInternalType('array', $this->baseRetailcrm->form_fields['order_methods']);
 
+        //Payment settings
+        $this->assertArrayHasKey('payment_notification', $this->baseRetailcrm->form_fields);
+        $this->assertInternalType('array', $this->baseRetailcrm->form_fields['payment_notification']);
+        $this->assertEquals('textarea', $this->baseRetailcrm->form_fields['payment_notification']['type']);
+
+        //WhatsApp settings
         $this->assertArrayHasKey('whatsapp_active', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('whatsapp_location_icon', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('whatsapp_number', $this->baseRetailcrm->form_fields);
+
+        //Cron settings
         $this->assertArrayHasKey('icml', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('history', $this->baseRetailcrm->form_fields);
+
+        //Export orders/customers settings
         $this->assertArrayHasKey('export_selected_orders_ids', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('export_selected_orders_btn', $this->baseRetailcrm->form_fields);
-        $this->assertArrayHasKey('history', $this->baseRetailcrm->form_fields);
+
+        //Debug info settings
+        $this->assertArrayHasKey('debug_mode', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('debug-info', $this->baseRetailcrm->form_fields);
+
+        //Other settings
+        $this->assertArrayHasKey('corporate_enabled', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('online_assistant', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('deactivate_update_order', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('bind_by_sku', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('update_number', $this->baseRetailcrm->form_fields);
-        $this->assertArrayHasKey('debug_mode', $this->baseRetailcrm->form_fields);
-        $this->assertArrayHasKey('debug-info', $this->baseRetailcrm->form_fields);
     }
 
     public function test_retailcrm_form_fields_value()
