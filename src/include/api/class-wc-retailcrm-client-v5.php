@@ -35,19 +35,19 @@ class WC_Retailcrm_Client_V5
      *
      * @param string $url    api url
      * @param string $apiKey api key
-     * @param string $site   site code
+     * @param string|null $site   site code
      *
      * @throws InvalidArgumentException
      *
      */
-    public function __construct($url, $apiKey, $version = null, $site = null)
+    public function __construct(string $url, string $apiKey, string $site = null)
     {
         if ('/' !== $url[strlen($url) - 1]) {
             $url .= '/';
         }
 
         $unversionedUrl = $url . 'api';
-        $url = $version == null ? $url . 'api' : $url . 'api/' . $version;
+        $url .= 'api/v5';
 
         $this->client = new WC_Retailcrm_Request($url, ['apiKey' => $apiKey]);
         $this->unversionedClient = new WC_Retailcrm_Request($unversionedUrl, ['apiKey' => $apiKey]);
@@ -78,16 +78,16 @@ class WC_Retailcrm_Client_V5
      * Returns filtered corporate customers list
      *
      * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateList(array $filter = [], $page = null, $limit = null)
+    public function customersCorporateList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -95,10 +95,10 @@ class WC_Retailcrm_Client_V5
             $parameters['filter'] = $filter;
         }
         if (null !== $page) {
-            $parameters['page'] = (int) $page;
+            $parameters['page'] = $page;
         }
         if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
+            $parameters['limit'] = $limit;
         }
 
         return $this->client->makeRequest(
@@ -112,15 +112,15 @@ class WC_Retailcrm_Client_V5
      * Create a corporate customer
      *
      * @param array  $customerCorporate corporate customer data
-     * @param string $site     (default: null)
+     * @param string|null $site     (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateCreate(array $customerCorporate, $site = null)
+    public function customersCorporateCreate(array $customerCorporate, string $site = null)
     {
         if (! count($customerCorporate)) {
             throw new InvalidArgumentException(
@@ -188,17 +188,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Returns filtered corporate customers notes list
      *
-     * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param array    $filter (default: array())
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateNotesList(array $filter = [], $page = null, $limit = null)
+    public function customersCorporateNotesList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -222,16 +222,16 @@ class WC_Retailcrm_Client_V5
     /**
      * Create corporate customer note
      *
-     * @param array $note (default: array())
-     * @param string $site     (default: null)
+     * @param array       $note (default: array())
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateNotesCreate($note, $site = null)
+    public function customersCorporateNotesCreate(array $note, string $site = null)
     {
         if (empty($note['customer']['id']) && empty($note['customer']['externalId'])) {
             throw new InvalidArgumentException(
@@ -274,8 +274,8 @@ class WC_Retailcrm_Client_V5
     /**
      * Upload array of the corporate customers
      *
-     * @param array  $customersCorporate array of corporate customers
-     * @param string $site               (default: null)
+     * @param array       $customersCorporate array of corporate customers
+     * @param string|null $site               (default: null)
      *
      * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
@@ -283,7 +283,7 @@ class WC_Retailcrm_Client_V5
      *
      * @throws InvalidArgumentException
      */
-    public function customersCorporateUpload(array $customersCorporate, $site = null)
+    public function customersCorporateUpload(array $customersCorporate, string $site = null)
     {
         if (!count($customersCorporate)) {
             throw new InvalidArgumentException(
@@ -301,17 +301,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Get corporate customer by id or externalId
      *
-     * @param string $id   corporate customer identifier
-     * @param string $by   (default: 'externalId')
-     * @param string $site (default: null)
+     * @param string      $id   corporate customer identifier
+     * @param string      $by   (default: 'externalId')
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateGet($id, $by = 'externalId', $site = null)
+    public function customersCorporateGet(string $id, string $by = 'externalId', string $site = null)
     {
         $this->checkIdParameter($by);
 
@@ -325,26 +325,26 @@ class WC_Retailcrm_Client_V5
     /**
      * Get corporate customer addresses by id or externalId
      *
-     * @param string $id     corporate customer identifier
-     * @param array  $filter (default: array())
-     * @param int    $page   (default: null)
-     * @param int    $limit  (default: null)
-     * @param string $by     (default: 'externalId')
-     * @param string $site   (default: null)
+     * @param string      $id     corporate customer identifier
+     * @param array       $filter (default: array())
+     * @param int|null    $page   (default: null)
+     * @param int|null    $limit  (default: null)
+     * @param string      $by     (default: 'externalId')
+     * @param string|null $site   (default: null)
      *
+     * @return WC_Retailcrm_Response
      * @throws InvalidArgumentException
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
      */
     public function customersCorporateAddresses(
-        $id,
+        string $id,
         array $filter = [],
-        $page = null,
-        $limit = null,
-        $by = 'externalId',
-        $site = null
+        int $page = null,
+        int $limit = null,
+        string $by = 'externalId',
+        string $site = null
     ) {
         $this->checkIdParameter($by);
 
@@ -354,10 +354,10 @@ class WC_Retailcrm_Client_V5
             $parameters['filter'] = $filter;
         }
         if (null !== $page) {
-            $parameters['page'] = (int) $page;
+            $parameters['page'] = $page;
         }
         if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
+            $parameters['limit'] = $limit;
         }
 
         return $this->client->makeRequest(
@@ -370,19 +370,23 @@ class WC_Retailcrm_Client_V5
     /**
      * Create corporate customer address
      *
-     * @param string $id       corporate customer identifier
-     * @param array  $address  (default: array())
-     * @param string $by       (default: 'externalId')
-     * @param string $site     (default: null)
+     * @param string      $id       corporate customer identifier
+     * @param array       $address  (default: array())
+     * @param string      $by       (default: 'externalId')
+     * @param string|null $site     (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateAddressesCreate($id, array $address = [], $by = 'externalId', $site = null)
-    {
+    public function customersCorporateAddressesCreate(
+        string $id,
+        array $address = [],
+        string $by = 'externalId',
+        string $site = null
+    ) {
         return $this->client->makeRequest(
             "/customers-corporate/$id/addresses/create",
             'POST',
@@ -393,26 +397,26 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit corporate customer address
      *
-     * @param string $customerId corporate customer identifier
-     * @param string $addressId  corporate customer identifier
-     * @param array  $address    (default: array())
-     * @param string $customerBy (default: 'externalId')
-     * @param string $addressBy  (default: 'externalId')
-     * @param string $site       (default: null)
+     * @param string      $customerId corporate customer identifier
+     * @param string      $addressId  corporate customer identifier
+     * @param array       $address    (default: array())
+     * @param string      $customerBy (default: 'externalId')
+     * @param string      $addressBy  (default: 'externalId')
+     * @param string|null $site       (default: null)
      *
+     * @return WC_Retailcrm_Response
      * @throws InvalidArgumentException
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
      */
     public function customersCorporateAddressesEdit(
-        $customerId,
-        $addressId,
+        string $customerId,
+        string $addressId,
         array $address = [],
-        $customerBy = 'externalId',
-        $addressBy = 'externalId',
-        $site = null
+        string $customerBy = 'externalId',
+        string $addressBy = 'externalId',
+        string $site = null
     ) {
         $addressFiltered = array_filter($address);
 
@@ -441,26 +445,26 @@ class WC_Retailcrm_Client_V5
     /**
      * Get corporate customer companies by id or externalId
      *
-     * @param string $id     corporate customer identifier
-     * @param array  $filter (default: array())
-     * @param int    $page   (default: null)
-     * @param int    $limit  (default: null)
-     * @param string $by     (default: 'externalId')
-     * @param string $site   (default: null)
+     * @param string      $id     corporate customer identifier
+     * @param array       $filter (default: array())
+     * @param int|null    $page   (default: null)
+     * @param int|null    $limit  (default: null)
+     * @param string      $by     (default: 'externalId')
+     * @param string|null $site   (default: null)
      *
+     * @return WC_Retailcrm_Response
      * @throws InvalidArgumentException
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
      */
     public function customersCorporateCompanies(
-        $id,
+        string $id,
         array $filter = [],
-        $page = null,
-        $limit = null,
-        $by = 'externalId',
-        $site = null
+        int $page = null,
+        int $limit = null,
+        string $by = 'externalId',
+        string $site = null
     ) {
         $this->checkIdParameter($by);
 
@@ -470,10 +474,10 @@ class WC_Retailcrm_Client_V5
             $parameters['filter'] = $filter;
         }
         if (null !== $page) {
-            $parameters['page'] = (int) $page;
+            $parameters['page'] = $page;
         }
         if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
+            $parameters['limit'] = $limit;
         }
 
         return $this->client->makeRequest(
@@ -486,19 +490,23 @@ class WC_Retailcrm_Client_V5
     /**
      * Create corporate customer company
      *
-     * @param string $id       corporate customer identifier
-     * @param array  $company  (default: array())
-     * @param string $by       (default: 'externalId')
-     * @param string $site     (default: null)
+     * @param string      $id       corporate customer identifier
+     * @param array       $company  (default: array())
+     * @param string      $by       (default: 'externalId')
+     * @param string|null $site     (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateCompaniesCreate($id, array $company = [], $by = 'externalId', $site = null)
-    {
+    public function customersCorporateCompaniesCreate(
+        string $id,
+        array $company = [],
+        string $by = 'externalId',
+        string $site = null
+    ) {
         return $this->client->makeRequest(
             "/customers-corporate/$id/companies/create",
             'POST',
@@ -509,12 +517,12 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit corporate customer company
      *
-     * @param string $customerId corporate customer identifier
-     * @param string $companyId  corporate customer identifier
-     * @param array  $company    (default: array())
-     * @param string $customerBy (default: 'externalId')
-     * @param string $companyBy  (default: 'externalId')
-     * @param string $site       (default: null)
+     * @param string      $customerId corporate customer identifier
+     * @param string      $companyId  corporate customer identifier
+     * @param array       $company    (default: array())
+     * @param string      $customerBy (default: 'externalId')
+     * @param string      $companyBy  (default: 'externalId')
+     * @param string|null $site       (default: null)
      *
      * @return WC_Retailcrm_Response
      * @throws InvalidArgumentException
@@ -523,12 +531,12 @@ class WC_Retailcrm_Client_V5
      *
      */
     public function customersCorporateCompaniesEdit(
-        $customerId,
-        $companyId,
+        string $customerId,
+        string $companyId,
         array $company = [],
-        $customerBy = 'externalId',
-        $companyBy = 'externalId',
-        $site = null
+        string $customerBy = 'externalId',
+        string $companyBy = 'externalId',
+        string $site = null
     ) {
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/companies/$companyId/edit",
@@ -544,26 +552,26 @@ class WC_Retailcrm_Client_V5
     /**
      * Get corporate customer contacts by id or externalId
      *
-     * @param string $id     corporate customer identifier
-     * @param array  $filter (default: array())
-     * @param int    $page   (default: null)
-     * @param int    $limit  (default: null)
-     * @param string $by     (default: 'externalId')
-     * @param string $site   (default: null)
+     * @param string      $id     corporate customer identifier
+     * @param array       $filter (default: array())
+     * @param int|null    $page   (default: null)
+     * @param int|null    $limit  (default: null)
+     * @param string      $by     (default: 'externalId')
+     * @param string|null $site   (default: null)
      *
+     * @return WC_Retailcrm_Response
      * @throws InvalidArgumentException
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
      */
     public function customersCorporateContacts(
-        $id,
+        string $id,
         array $filter = [],
-        $page = null,
-        $limit = null,
-        $by = 'externalId',
-        $site = null
+        int $page = null,
+        int $limit = null,
+        string $by = 'externalId',
+        string $site = null
     ) {
         $this->checkIdParameter($by);
 
@@ -573,10 +581,10 @@ class WC_Retailcrm_Client_V5
             $parameters['filter'] = $filter;
         }
         if (null !== $page) {
-            $parameters['page'] = (int) $page;
+            $parameters['page'] = $page;
         }
         if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
+            $parameters['limit'] = $limit;
         }
 
         return $this->client->makeRequest(
@@ -589,10 +597,10 @@ class WC_Retailcrm_Client_V5
     /**
      * Create corporate customer contact
      *
-     * @param string $id      corporate customer identifier
-     * @param array  $contact (default: array())
-     * @param string $by      (default: 'externalId')
-     * @param string $site    (default: null)
+     * @param string      $id      corporate customer identifier
+     * @param array       $contact (default: array())
+     * @param string      $by      (default: 'externalId')
+     * @param string|null $site    (default: null)
      *
      * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
@@ -600,8 +608,12 @@ class WC_Retailcrm_Client_V5
      *
      * @throws InvalidArgumentException
      */
-    public function customersCorporateContactsCreate($id, array $contact = [], $by = 'externalId', $site = null)
-    {
+    public function customersCorporateContactsCreate(
+        string $id,
+        array $contact = [],
+        string $by = 'externalId',
+        string $site = null
+    ) {
         return $this->client->makeRequest(
             "/customers-corporate/$id/contacts/create",
             'POST',
@@ -612,12 +624,12 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit corporate customer contact
      *
-     * @param string $customerId corporate customer identifier
-     * @param string $contactId  corporate customer identifier
-     * @param array  $contact    (default: array())
-     * @param string $customerBy (default: 'externalId')
-     * @param string $contactBy  (default: 'externalId')
-     * @param string $site       (default: null)
+     * @param string      $customerId corporate customer identifier
+     * @param string      $contactId  corporate customer identifier
+     * @param array       $contact    (default: array())
+     * @param string      $customerBy (default: 'externalId')
+     * @param string      $contactBy  (default: 'externalId')
+     * @param string|null $site       (default: null)
      *
      * @return WC_Retailcrm_Response
      * @throws InvalidArgumentException
@@ -626,12 +638,12 @@ class WC_Retailcrm_Client_V5
      *
      */
     public function customersCorporateContactsEdit(
-        $customerId,
-        $contactId,
+        string $customerId,
+        string $contactId,
         array $contact = [],
-        $customerBy = 'externalId',
-        $contactBy = 'externalId',
-        $site = null
+        string $customerBy = 'externalId',
+        string $contactBy = 'externalId',
+        string $site = null
     ) {
         return $this->client->makeRequest(
             "/customers-corporate/$customerId/contacts/$contactId/edit",
@@ -647,17 +659,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit a corporate customer
      *
-     * @param array  $customerCorporate corporate customer data
-     * @param string $by       (default: 'externalId')
-     * @param string $site     (default: null)
+     * @param array       $customerCorporate corporate customer data
+     * @param string      $by                (default: 'externalId')
+     * @param string|null $site              (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCorporateEdit(array $customerCorporate, $by = 'externalId', $site = null)
+    public function customersCorporateEdit(array $customerCorporate, string $by = 'externalId', string $site = null)
     {
         if (!count($customerCorporate)) {
             throw new InvalidArgumentException(
@@ -684,17 +696,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Returns users list
      *
-     * @param array $filter
-     * @param null  $page
-     * @param null  $limit
+     * @param array    $filter
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws WC_Retailcrm_Exception_Json
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws InvalidArgumentException
      *
-     * @return WC_Retailcrm_Response
+     * @throws WC_Retailcrm_Exception_Json
      */
-    public function usersList(array $filter = [], $page = null, $limit = null)
+    public function usersList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -720,13 +732,13 @@ class WC_Retailcrm_Client_V5
      *
      * @param int $id user ID
      *
-     * @throws WC_Retailcrm_Exception_Json
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws InvalidArgumentException
      *
-     * @return WC_Retailcrm_Response
+     * @throws WC_Retailcrm_Exception_Json
      */
-    public function usersGet($id)
+    public function usersGet(int $id)
     {
         return $this->client->makeRequest("/users/$id", WC_Retailcrm_Request::METHOD_GET);
     }
@@ -734,12 +746,12 @@ class WC_Retailcrm_Client_V5
     /**
      * Change user status
      *
-     * @param int $id     user ID
-     * @param string  $status user status
+     * @param int    $id     user ID
+     * @param string $status user status
      *
      * @return WC_Retailcrm_Response
      */
-    public function usersStatus($id, $status)
+    public function usersStatus(int $id, string $status)
     {
         $statuses = ['free', 'busy', 'dinner', 'break'];
 
@@ -1016,17 +1028,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Returns filtered orders list
      *
-     * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param array    $filter (default: array())
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersList(array $filter = [], $page = null, $limit = null)
+    public function ordersList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -1050,16 +1062,16 @@ class WC_Retailcrm_Client_V5
     /**
      * Create an order
      *
-     * @param array  $order order data
-     * @param string $site  (default: null)
+     * @param array       $order order data
+     * @param string|null $site  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersCreate(array $order, $site = null)
+    public function ordersCreate(array $order, string $site = null)
     {
         if (!count($order)) {
             throw new InvalidArgumentException(
@@ -1135,16 +1147,16 @@ class WC_Retailcrm_Client_V5
     /**
      * Upload array of the orders
      *
-     * @param array  $orders array of orders
-     * @param string $site   (default: null)
+     * @param array       $orders array of orders
+     * @param string|null $site   (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersUpload(array $orders, $site = null)
+    public function ordersUpload(array $orders, string $site = null)
     {
         if (!count($orders)) {
             throw new InvalidArgumentException(
@@ -1162,17 +1174,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Get order by id or externalId
      *
-     * @param string $id   order identificator
+     * @param string $id   order identifier
      * @param string $by   (default: 'externalId')
-     * @param string $site (default: null)
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersGet($id, $by = 'externalId', $site = null)
+    public function ordersGet(string $id, string $by = 'externalId', string $site = null)
     {
         $this->checkIdParameter($by);
 
@@ -1186,17 +1198,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit a order
      *
-     * @param array  $order order data
-     * @param string $by    (default: 'externalId')
-     * @param string $site  (default: null)
+     * @param array       $order order data
+     * @param string      $by    (default: 'externalId')
+     * @param string|null $site  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersEdit(array $order, $by = 'externalId', $site = null)
+    public function ordersEdit(array $order, string $by = 'externalId', string $site = null)
     {
         if (!count($order)) {
             throw new InvalidArgumentException(
@@ -1255,7 +1267,7 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersCombine($order, $resultOrder, $technique = 'ours')
+    public function ordersCombine(array $order, array $resultOrder, string $technique = 'ours')
     {
         $techniques = ['ours', 'summ', 'theirs'];
 
@@ -1317,7 +1329,7 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersPaymentEdit(array $payment, $by = 'externalId', $site = null)
+    public function ordersPaymentEdit(array $payment, string $by = 'externalId', $site = null)
     {
         if (!count($payment)) {
             throw new InvalidArgumentException(
@@ -1367,17 +1379,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Returns filtered customers list
      *
-     * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param array    $filter (default: array())
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersList(array $filter = [], $page = null, $limit = null)
+    public function customersList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -1402,15 +1414,15 @@ class WC_Retailcrm_Client_V5
      * Create a customer
      *
      * @param array  $customer customer data
-     * @param string $site     (default: null)
+     * @param string|null $site     (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersCreate(array $customer, $site = null)
+    public function customersCreate(array $customer, string $site = null)
     {
         if (! count($customer)) {
             throw new InvalidArgumentException(
@@ -1455,15 +1467,15 @@ class WC_Retailcrm_Client_V5
      * Upload array of the customers
      *
      * @param array  $customers array of customers
-     * @param string $site      (default: null)
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersUpload(array $customers, $site = null)
+    public function customersUpload(array $customers, string $site = null)
     {
         if (! count($customers)) {
             throw new InvalidArgumentException(
@@ -1481,17 +1493,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Get customer by id or externalId
      *
-     * @param string $id   customer identificator
-     * @param string $by   (default: 'externalId')
-     * @param string $site (default: null)
+     * @param string      $id   customer identifier
+     * @param string      $by   (default: 'externalId')
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersGet($id, $by = 'externalId', $site = null)
+    public function customersGet(string $id, string $by = 'externalId', string $site = null)
     {
         $this->checkIdParameter($by);
 
@@ -1505,17 +1517,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit a customer
      *
-     * @param array  $customer customer data
-     * @param string $by       (default: 'externalId')
-     * @param string $site     (default: null)
+     * @param array       $customer customer data
+     * @param string      $by       (default: 'externalId')
+     * @param string|null $site     (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersEdit(array $customer, $by = 'externalId', $site = null)
+    public function customersEdit(array $customer, string $by = 'externalId', string $site = null)
     {
         if (!count($customer)) {
             throw new InvalidArgumentException(
@@ -1573,7 +1585,7 @@ class WC_Retailcrm_Client_V5
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCombine(array $customers, $resultCustomer)
+    public function customersCombine(array $customers, array $resultCustomer)
     {
 
         if (!count($customers) || !count($resultCustomer)) {
@@ -1595,17 +1607,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Returns filtered customers notes list
      *
-     * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param array    $filter (default: array())
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersNotesList(array $filter = [], $page = null, $limit = null)
+    public function customersNotesList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
         if (count($filter)) {
@@ -1627,16 +1639,16 @@ class WC_Retailcrm_Client_V5
     /**
      * Create customer note
      *
-     * @param array $note (default: array())
-     * @param string $site     (default: null)
+     * @param array       $note (default: array())
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersNotesCreate($note, $site = null)
+    public function customersNotesCreate(array $note, string $site = null)
     {
         if (empty($note['customer']['id']) && empty($note['customer']['externalId'])) {
             throw new InvalidArgumentException(
@@ -1655,13 +1667,13 @@ class WC_Retailcrm_Client_V5
      *
      * @param int $id
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function customersNotesDelete($id)
+    public function customersNotesDelete(int $id)
     {
         if (empty($id)) {
             throw new InvalidArgumentException(
@@ -1677,17 +1689,17 @@ class WC_Retailcrm_Client_V5
     /**
      * Get orders assembly list
      *
-     * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param array    $filter (default: array())
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersPacksList(array $filter = [], $page = null, $limit = null)
+    public function ordersPacksList(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -1711,16 +1723,16 @@ class WC_Retailcrm_Client_V5
     /**
      * Create orders assembly
      *
-     * @param array  $pack pack data
-     * @param string $site (default: null)
+     * @param array       $pack pack data
+     * @param string|null $site (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersPacksCreate(array $pack, $site = null)
+    public function ordersPacksCreate(array $pack, string $site = null)
     {
         if (!count($pack)) {
             throw new InvalidArgumentException(
@@ -1768,13 +1780,13 @@ class WC_Retailcrm_Client_V5
      *
      * @param string $id pack identificator
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersPacksGet($id)
+    public function ordersPacksGet(string $id)
     {
         if (empty($id)) {
             throw new InvalidArgumentException('Parameter `id` must be set');
@@ -1791,13 +1803,13 @@ class WC_Retailcrm_Client_V5
      *
      * @param string $id pack identificator
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function ordersPacksDelete($id)
+    public function ordersPacksDelete(string $id)
     {
         if (empty($id)) {
             throw new InvalidArgumentException('Parameter `id` must be set');
@@ -2087,19 +2099,46 @@ class WC_Retailcrm_Client_V5
     }
 
     /**
-     * Get products
+     * Upload store prices
      *
-     * @param array $filter (default: array())
-     * @param int   $page   (default: null)
-     * @param int   $limit  (default: null)
+     * @param array       $prices prices data
+     * @param string|null $site   (default: null)
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws \InvalidArgumentException
      */
-    public function storeProducts(array $filter = [], $page = null, $limit = null)
+    public function storePricesUpload(array $prices, string $site = null)
+    {
+        if (!count($prices)) {
+            throw new \InvalidArgumentException(
+                'Parameter `prices` must contains array of the prices'
+            );
+        }
+
+        return $this->client->makeRequest(
+            '/store/prices/upload',
+            WC_Retailcrm_Request::METHOD_POST,
+            $this->fillSite($site, array('prices' => json_encode($prices)))
+        );
+    }
+
+    /**
+     * Get products
+     *
+     * @param array $filter (default: array())
+     * @param int|null $page   (default: null)
+     * @param int|null $limit  (default: null)
+     *
+     * @return WC_Retailcrm_Response
+     * @throws WC_Retailcrm_Exception_Curl
+     * @throws WC_Retailcrm_Exception_Json
+     *
+     * @throws InvalidArgumentException
+     */
+    public function storeProducts(array $filter = [], int $page = null, int $limit = null)
     {
         $parameters = [];
 
@@ -2175,13 +2214,13 @@ class WC_Retailcrm_Client_V5
      * @param string $code
      * @param array  $statusUpdate
      *
-     * @throws WC_Retailcrm_Exception_Json
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws InvalidArgumentException
      *
-     * @return WC_Retailcrm_Response
+     * @throws WC_Retailcrm_Exception_Json
      */
-    public function deliveryTracking($code, array $statusUpdate)
+    public function deliveryTracking(string $code, array $statusUpdate)
     {
         if (empty($code)) {
             throw new InvalidArgumentException('Parameter `code` must be set');
@@ -2671,17 +2710,65 @@ class WC_Retailcrm_Client_V5
     }
 
     /**
+     * Get prices types
+     *
+     * @throws WC_Retailcrm_Exception_Curl
+     * @throws WC_Retailcrm_Exception_Json
+     *
+     * @return WC_Retailcrm_Response
+     */
+    public function pricesTypes()
+    {
+        return $this->client->makeRequest(
+            '/reference/price-types',
+            WC_Retailcrm_Request::METHOD_GET
+        );
+    }
+
+    /**
+     * Edit price type
+     *
+     * @param array $data
+     *
+     * @throws \InvalidArgumentException
+     * @throws WC_Retailcrm_Exception_Curl
+     * @throws WC_Retailcrm_Exception_Json
+     *
+     * @return WC_Retailcrm_Response
+     */
+    public function pricesEdit(array $data)
+    {
+        if (!array_key_exists('code', $data)) {
+            throw new \InvalidArgumentException(
+                'Data must contain "code" parameter.'
+            );
+        }
+
+        if (!array_key_exists('name', $data)) {
+            throw new \InvalidArgumentException(
+                'Data must contain "name" parameter.'
+            );
+        }
+
+        return $this->client->makeRequest(
+            sprintf('/reference/price-types/%s/edit', $data['code']),
+            WC_Retailcrm_Request::METHOD_POST,
+            array('priceType' => json_encode($data))
+        );
+    }
+
+    /**
      * Get telephony settings
      *
      * @param string $code
      *
-     * @throws WC_Retailcrm_Exception_Json
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws InvalidArgumentException
      *
-     * @return WC_Retailcrm_Response
+     * @throws WC_Retailcrm_Exception_Json
      */
-    public function telephonySettingsGet($code)
+    public function telephonySettingsGet(string $code)
     {
         if (empty($code)) {
             throw new InvalidArgumentException('Parameter `code` must be set');
@@ -2696,37 +2783,36 @@ class WC_Retailcrm_Client_V5
     /**
      * Edit telephony settings
      *
-     * @param string  $code        symbolic code
-     * @param string  $clientId    client id
-     * @param bool    $active      telephony activity
-     * @param mixed   $name        service name
-     * @param mixed   $makeCallUrl service init url
-     * @param mixed   $image       service logo url(svg file)
-     *
-     * @param array   $additionalCodes
-     * @param array   $externalPhones
-     * @param bool    $allowEdit
-     * @param bool    $inputEventSupported
-     * @param bool    $outputEventSupported
-     * @param bool    $hangupEventSupported
-     * @param bool    $changeUserStatusUrl
+     * @param string $code            symbolic code
+     * @param string $clientId        client id
+     * @param bool   $active          telephony activity
+     * @param false  $name            service name
+     * @param false  $makeCallUrl     service init url
+     * @param false  $image           service logo url(svg file)
+     * @param array  $additionalCodes
+     * @param array  $externalPhones
+     * @param bool   $allowEdit
+     * @param bool   $inputEventSupported
+     * @param bool   $outputEventSupported
+     * @param bool   $hangupEventSupported
+     * @param bool   $changeUserStatusUrl
      *
      * @return WC_Retailcrm_Response
      */
     public function telephonySettingsEdit(
-        $code,
-        $clientId,
-        $active = false,
-        $name = false,
-        $makeCallUrl = false,
-        $image = false,
-        $additionalCodes = [],
-        $externalPhones = [],
-        $allowEdit = false,
-        $inputEventSupported = false,
-        $outputEventSupported = false,
-        $hangupEventSupported = false,
-        $changeUserStatusUrl = false
+        string $code,
+        string $clientId,
+        bool $active = false,
+        bool $name = false,
+        bool $makeCallUrl = false,
+        bool $image = false,
+        array $additionalCodes = [],
+        array $externalPhones = [],
+        bool $allowEdit = false,
+        bool $inputEventSupported = false,
+        bool $outputEventSupported = false,
+        bool $hangupEventSupported = false,
+        bool $changeUserStatusUrl = false
     ) {
         if (!isset($code)) {
             throw new InvalidArgumentException('Code must be set');
@@ -2800,12 +2886,12 @@ class WC_Retailcrm_Client_V5
     /**
      * Call event
      *
-     * @param string $phone phone number
-     * @param string $type  call type
-     * @param array  $codes
-     * @param string $hangupStatus
-     * @param string $externalPhone
-     * @param array  $webAnalyticsData
+     * @param string      $phone phone number
+     * @param string      $type  call type
+     * @param array       $codes
+     * @param string      $hangupStatus
+     * @param string|null $externalPhone
+     * @param array       $webAnalyticsData
      *
      * @return WC_Retailcrm_Response
      * @internal param string $code additional phone code
@@ -2813,12 +2899,12 @@ class WC_Retailcrm_Client_V5
      *
      */
     public function telephonyCallEvent(
-        $phone,
-        $type,
-        $codes,
-        $hangupStatus,
-        $externalPhone = null,
-        $webAnalyticsData = []
+        string $phone,
+        string $type,
+        array $codes,
+        string $hangupStatus,
+        string $externalPhone = null,
+        array $webAnalyticsData = []
     ) {
         if (!isset($phone)) {
             throw new InvalidArgumentException('Phone number must be set');
@@ -2879,20 +2965,20 @@ class WC_Retailcrm_Client_V5
      * @param string $phone   phone number
      * @param bool   $details detailed information
      *
-     * @throws InvalidArgumentException
+     * @return WC_Retailcrm_Response
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      *
-     * @return WC_Retailcrm_Response
+     * @throws InvalidArgumentException
      */
-    public function telephonyCallManager($phone, $details)
+    public function telephonyCallManager(string $phone, bool $details)
     {
         if (!isset($phone)) {
             throw new InvalidArgumentException('Phone number must be set');
         }
 
         $parameters['phone'] = $phone;
-        $parameters['details'] = isset($details) ? $details : 0;
+        $parameters['details'] = $details ?? 0;
 
         return $this->client->makeRequest(
             '/telephony/manager',
@@ -2990,7 +3076,7 @@ class WC_Retailcrm_Client_V5
      *
      * @return void
      */
-    public function setSite($site)
+    public function setSite(string $site)
     {
         $this->siteCode = $site;
     }
@@ -3000,11 +3086,11 @@ class WC_Retailcrm_Client_V5
      *
      * @param string $by identify by
      *
+     * @return bool
      * @throws InvalidArgumentException
      *
-     * @return bool
      */
-    protected function checkIdParameter($by)
+    protected function checkIdParameter(string $by)
     {
         $allowedForBy = [
             'externalId',
@@ -3032,7 +3118,7 @@ class WC_Retailcrm_Client_V5
      *
      * @return array
      */
-    protected function fillSite($site, array $params)
+    protected function fillSite(string $site, array $params)
     {
         if ($site) {
             $params['site'] = $site;
