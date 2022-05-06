@@ -40,14 +40,14 @@ class WC_Retailcrm_Client_V5
      * @throws InvalidArgumentException
      *
      */
-    public function __construct($url, $apiKey, $version = null, $site = null)
+    public function __construct($url, $apiKey, $site = null)
     {
         if ('/' !== $url[strlen($url) - 1]) {
             $url .= '/';
         }
 
         $unversionedUrl = $url . 'api';
-        $url = $version == null ? $url . 'api' : $url . 'api/' . $version;
+        $url .= 'api/v5';
 
         $this->client = new WC_Retailcrm_Request($url, ['apiKey' => $apiKey]);
         $this->unversionedClient = new WC_Retailcrm_Request($unversionedUrl, ['apiKey' => $apiKey]);
@@ -2083,6 +2083,33 @@ class WC_Retailcrm_Client_V5
             '/store/inventories/upload',
             WC_Retailcrm_Request::METHOD_POST,
             $this->fillSite($site, ['offers' => json_encode($offers)])
+        );
+    }
+
+    /**
+     * Upload store prices
+     *
+     * @param array  $prices prices data
+     * @param string $site   default: null)
+     *
+     * @throws \InvalidArgumentException
+     * @throws WC_Retailcrm_Exception_Curl
+     * @throws WC_Retailcrm_Exception_Json
+     *
+     * @return WC_Retailcrm_Response
+     */
+    public function storePricesUpload(array $prices, $site = null)
+    {
+        if (!count($prices)) {
+            throw new \InvalidArgumentException(
+                'Parameter `prices` must contains array of the prices'
+            );
+        }
+
+        return $this->client->makeRequest(
+            '/store/prices/upload',
+            WC_Retailcrm_Request::METHOD_POST,
+            $this->fillSite($site, array('prices' => json_encode($prices)))
         );
     }
 
