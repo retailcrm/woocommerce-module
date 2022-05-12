@@ -23,14 +23,14 @@ class WC_Retailcrm_History_Assembler
     public static function assemblyOrder($orderHistory)
     {
         $fields = self::getMappingValues();
-        $orders = array();
+        $orders = [];
         $orderHistory = self::filterHistory($orderHistory, 'order');
 
         foreach ($orderHistory as $change) {
             $change['order'] = self::removeEmpty($change['order']);
 
             if (isset($change['order']['items']) && $change['order']['items']) {
-                $items = array();
+                $items = [];
 
                 foreach ($change['order']['items'] as $item) {
                     if (isset($change['created'])) {

@@ -109,7 +109,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $customers  = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
 
                     WC_Retailcrm_Plugin::$history_run = true;
-                    WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled customers history:', $customers));
+                    WC_Retailcrm_Logger::debug(__METHOD__, ['Assembled customers history:', $customers]);
 
                     foreach ($customers as $crmCustomer) {
                          /*
@@ -157,7 +157,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $this->updateMetaData($customFields, $crmCustomer, $wcCustomer);
                             }
 
-                            WC_Retailcrm_Logger::debug(__METHOD__, array('Updated WC_Customer:', $wcCustomer));
+                            WC_Retailcrm_Logger::debug(__METHOD__, ['Updated WC_Customer:', $wcCustomer]);
 
                             // @codeCoverageIgnoreStart
                         } catch (Exception $exception) {
@@ -210,7 +210,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $lastChange      = end($history);
                     $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
 
-                    WC_Retailcrm_Logger::debug(__METHOD__, array('Assembled orders history:', $historyAssembly));
+                    WC_Retailcrm_Logger::debug(__METHOD__, ['Assembled orders history:', $historyAssembly]);
                     WC_Retailcrm_Plugin::$history_run = true;
 
                     foreach ($historyAssembly as $orderHistory) {
@@ -673,7 +673,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             $wcOrder = wc_create_order(['status' => $orderStatus, 'customer_id' => $customerId]);
             $wcOrder->set_date_created($order['createdAt']);
             $customer = $order['customer'];
-            $contactOrCustomer = array();
+            $contactOrCustomer = [];
             $billingAddress = '';
 
             if ($this->retailcrm->getCorporateEnabled() && self::isOrderCorporate($order)) {
@@ -784,7 +784,8 @@ if (!class_exists('WC_Retailcrm_History')) :
 
             $wcOrder->set_address($addressBilling, 'billing');
             $wcOrder->set_address($addressShipping, 'shipping');
-            $productData = isset($order['items']) ? $order['items'] : array();
+
+            $productData = $order['items'] ?? [];
 
             if ($productData) {
                 foreach ($productData as $key => $product) {
@@ -792,8 +793,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                         continue;
                     }
 
-                    $arItemsNew = array();
-                    $arItemsOld = array();
+                    $arItemsNew = [];
+                    $arItemsOld = [];
+
                     $item = retailcrm_get_wc_product($product['offer'][$this->bindField], $this->retailcrmSettings);
 
                     if (!$item) {
@@ -809,20 +811,22 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $wcOrder->add_product(
                         $item,
                         $product['quantity'],
-                        array(
+                        [
                             'subtotal' => wc_get_price_excluding_tax(
                                 $item,
-                                array(
+                                [
                                     'price' => $product['initialPrice'],
-                                    'qty' => $product['quantity'],)
+                                    'qty' => $product['quantity'],
+                                ]
                             ),
                             'total' => wc_get_price_excluding_tax(
                                 $item,
-                                array(
+                                [
                                     'price' => $product['initialPrice'] - $product['discountTotal'],
-                                    'qty' => $product['quantity'],)
+                                    'qty' => $product['quantity'],
+                                ]
                             ),
-                        )
+                        ]
                     );
 
                     foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
@@ -873,10 +877,10 @@ if (!class_exists('WC_Retailcrm_History')) :
                 }
             }
 
-            $ids[] = array(
+            $ids[] = [
                 'id' => (int) $order['id'],
                 'externalId' => (int) $wcOrder->get_id()
-            );
+            ];
 
             $wcOrder->save();
 
@@ -888,7 +892,7 @@ if (!class_exists('WC_Retailcrm_History')) :
         }
 
         /**
-         * @param        $order
+         * @param array  $order Data CRM order.
          * @param string $event
          */
         protected function editOrder($order, $event = 'create')
@@ -910,15 +914,16 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $data = $order;
             }
 
-            $iterableItems = isset($data['items']) ? $data['items'] : array();
+            $iterableItems = $data['items'] ?? [];
 
             foreach ($iterableItems as $id => $item) {
                 if (isset($item['delete']) && $item['delete'] == true) {
                     continue;
                 }
 
-                $orderItems[$id]['id'] = $item['id'];
-                $orderItems[$id]['offer'] = array('id' => $item['offer']['id']);
+                $orderItems[$id]['id']        = $item['id'];
+                $orderItems[$id]['offer']     = ['id' => $item['offer']['id']];
+                $orderItems[$id]['priceType'] = $item['priceType'] ?? '';
 
                 if (!isset($order['items'][$item['id']])) {
                     if (empty($crmOrder)) {
@@ -960,12 +965,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                     continue;
                 }
 
-                $externalIds = array(
-                    array(
+                $externalIds = [
+                    [
                         'code' => 'woocomerce',
                         'value' => $item['offer']['externalId'] . '_' . $woocommerceId,
-                    )
-                );
+                    ]
+                ];
 
                 if (!empty($item['externalIds'])) {
                     $found = false;
@@ -988,10 +993,10 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             if (!empty($orderItems)) {
-                $orderEdit = array(
+                $orderEdit = [
                     'id' => $order['id'],
                     'items' => WC_Retailcrm_Plugin::clearArray($orderItems),
-                );
+                ];
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
             }
@@ -1007,20 +1012,15 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function handleCustomerDataChange($wcOrder, $order)
         {
-            $handled = false;
-            $crmOrder = array();
+            $data          = new WC_Retailcrm_Customer_Switcher_State();
+            $handled       = false;
+            $switcher      = new WC_Retailcrm_Customer_Switcher();
+            $crmOrder      = [];
             $newCustomerId = null;
-            $switcher = new WC_Retailcrm_Customer_Switcher();
-            $data = new WC_Retailcrm_Customer_Switcher_State();
+
             $data->setWcOrder($wcOrder);
 
-            WC_Retailcrm_Logger::debug(
-                __METHOD__,
-                [
-                    'processing order',
-                    $order
-                ]
-            );
+            WC_Retailcrm_Logger::debug(__METHOD__, ['processing order', $order]);
 
             if (isset($order['customer'])) {
                 $crmOrder = $this->getCRMOrder($order['id'], 'id');
@@ -1034,18 +1034,18 @@ if (!class_exists('WC_Retailcrm_History')) :
                     return false;
                 }
 
-                $newCustomerId = $order['customer']['id'];
-                $isChangedToRegular = self::isCustomerChangedToRegular($order);
+                $newCustomerId        = $order['customer']['id'];
+                $isChangedToRegular   = self::isCustomerChangedToRegular($order);
                 $isChangedToCorporate = self::isCustomerChangedToLegal($order);
 
                 if (!$isChangedToRegular && !$isChangedToCorporate) {
                     $isChangedToCorporate = self::isOrderCorporate($crmOrder);
-                    $isChangedToRegular = !$isChangedToCorporate;
+                    $isChangedToRegular   = !$isChangedToCorporate;
                 }
 
                 if ($isChangedToRegular) {
                     $this->prepareChangeToIndividual(
-                        self::arrayValue($crmOrder, 'customer', array()),
+                        self::arrayValue($crmOrder, 'customer', []),
                         $data
                     );
                 }
@@ -1074,7 +1074,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                         true
                     );
 
-                    $data->setNewCustomer(array());
+                    $data->setNewCustomer([]);
                 }
             }
 
@@ -1288,7 +1288,7 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         private static function noRealDataInEntity($entity)
         {
-            $allowedKeys = array('id', 'externalId', 'site');
+            $allowedKeys = ['id', 'externalId', 'site'];
 
             if (count($entity) <= 3) {
                 foreach (array_keys($entity) as $key) {
