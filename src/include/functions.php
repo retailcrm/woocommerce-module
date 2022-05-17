@@ -136,3 +136,17 @@ function is_wplogin()
         || $_SERVER['PHP_SELF'] == '/wp-login.php'
     );
 }
+
+
+/**
+ *  Validate API url.
+ *
+ * @param string $url URL of Simla.com.
+ *
+ * @return string
+ */
+function validateUrl(string $url)
+{
+    return (preg_match("/https:\/\/(.*).(retailcrm.(pro|ru|es)|simla.com)/", $url)) ? $url : '';
+}
+

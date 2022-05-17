@@ -76,9 +76,6 @@ msgstr "Введите корректный API ключ"
 msgid "Enter the correct URL of Simla.com"
 msgstr "Введите корректный адрес Simla.com"
 
-msgid "The selected API version is unavailable"
-msgstr "Выбранная версия API недоступна"
-
 msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com"
 msgstr "Эта функция позволяет сгенерировать ICML каталог товаров для выгрузки в Simla.com"
 

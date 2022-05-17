@@ -1,3 +1,11 @@
+## 2022-05-26 4.4.4
+* Add product description to ICML
+* Fix fatal error using API without api_key
+* Add priceType processing to CRM order by history
+* Add method in API V5 and delete use another version
+* Fix error with integration payments
+* Fix bug with changing order status by history
+
 ## 2022-03-24 4.4.3
 * Fix bug in updating order number by history
 * Add multiple image transfer in ICML

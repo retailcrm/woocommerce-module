@@ -69,41 +69,41 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->uploader = new WC_Retailcrm_Uploader($this->apiClient, $this->orders, $this->customers);
 
             // Actions.
-            add_action('woocommerce_update_options_integration_' .  $this->id, array($this, 'process_admin_options'));
-            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'api_sanitized'));
-            add_action('admin_bar_menu', array($this, 'add_retailcrm_button'), 100);
-            add_action('woocommerce_checkout_order_processed', array($this, 'retailcrm_process_order'), 10, 1);
-            add_action('retailcrm_history', array($this, 'retailcrm_history_get'));
-            add_action('retailcrm_icml', array($this, 'generate_icml'));
-            add_action('retailcrm_inventories', array($this, 'load_stocks'));
-            add_action('wp_ajax_do_upload', array($this, 'upload_to_crm'));
-            add_action('wp_ajax_cron_info', array($this, 'get_cron_info'), 99);
-            add_action('wp_ajax_set_meta_fields', array($this, 'set_meta_fields'), 99);
-            add_action('wp_ajax_content_upload', array($this, 'count_upload_data'), 99);
-            add_action('wp_ajax_generate_icml', array($this, 'generate_icml'));
-            add_action('wp_ajax_upload_selected_orders', array($this, 'upload_selected_orders'));
-            add_action('admin_print_footer_scripts', array($this, 'ajax_generate_icml'), 99);
-            add_action('woocommerce_update_customer', array($this, 'update_customer'), 10, 1);
-            add_action('user_register', array($this, 'create_customer'), 10, 2);
-            add_action('profile_update', array($this, 'update_customer'), 10, 2);
-            add_action('wp_print_scripts', array($this, 'initialize_analytics'), 98);
-            add_action('wp_print_scripts', array($this, 'initialize_daemon_collector'), 99);
-            add_action('wp_print_scripts', array($this, 'initialize_online_assistant'), 101);
-            add_action('wp_enqueue_scripts', array($this, 'include_whatsapp_icon_style'), 101);
-            add_action('wp_print_footer_scripts', array($this, 'initialize_whatsapp'), 101);
-            add_action('wp_print_footer_scripts', array($this, 'send_analytics'), 99);
-            add_action('admin_enqueue_scripts', array($this, 'include_files_for_admin'), 101);
-            add_action('woocommerce_new_order', array($this, 'create_order'), 11, 1);
+            add_action('woocommerce_update_options_integration_' .  $this->id, [$this, 'process_admin_options']);
+            add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [$this, 'api_sanitized']);
+            add_action('admin_bar_menu', [$this, 'add_retailcrm_button'], 100);
+            add_action('woocommerce_checkout_order_processed', [$this, 'retailcrm_process_order'], 10, 1);
+            add_action('retailcrm_history', [$this, 'retailcrm_history_get']);
+            add_action('retailcrm_icml', [$this, 'generate_icml']);
+            add_action('retailcrm_inventories', [$this, 'load_stocks']);
+            add_action('wp_ajax_do_upload', [$this, 'upload_to_crm']);
+            add_action('wp_ajax_cron_info', [$this, 'get_cron_info'], 99);
+            add_action('wp_ajax_set_meta_fields', [$this, 'set_meta_fields'], 99);
+            add_action('wp_ajax_content_upload', [$this, 'count_upload_data'], 99);
+            add_action('wp_ajax_generate_icml', [$this, 'generate_icml']);
+            add_action('wp_ajax_upload_selected_orders', [$this, 'upload_selected_orders']);
+            add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
+            add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
+            add_action('user_register', [$this, 'create_customer'], 10, 2);
+            add_action('profile_update', [$this, 'update_customer'], 10, 2);
+            add_action('wp_print_scripts', [$this, 'initialize_analytics'], 98);
+            add_action('wp_print_scripts', [$this, 'initialize_daemon_collector'], 99);
+            add_action('wp_print_scripts', [$this, 'initialize_online_assistant'], 101);
+            add_action('wp_enqueue_scripts', [$this, 'include_whatsapp_icon_style'], 101);
+            add_action('wp_print_footer_scripts', [$this, 'initialize_whatsapp'], 101);
+            add_action('wp_print_footer_scripts', [$this, 'send_analytics'], 99);
+            add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
+            add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
             if (
                 !$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
             ) {
-                add_action('woocommerce_update_order', array($this, 'update_order'), 11, 1);
+                add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
             }
 
             // Deactivate hook
-            add_action('retailcrm_deactivate', array($this, 'deactivate'));
+            add_action('retailcrm_deactivate', [$this, 'deactivate']);
         }
 
         /**
@@ -115,7 +115,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->init_settings();
         }
 
-         /**
+        /**
          * @param $settings
          *
          * @return array
@@ -165,6 +165,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
              * We have rebranded the module and changed the name of the ICML file.
              * This solution checks the url specified to the ICML file and updates it if necessary.
              */
+
+            if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
 
             $codeSite   = '';
             $infoApiKey = $this->apiClient->credentials();
@@ -498,19 +502,19 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function count_upload_data()
         {
-            $translate = array(
-                'tr_order'          => __('Orders', 'retailcrm'),
-                'tr_customer'       => __('Customers', 'retailcrm'),
-                'tr_empty_field'    => __('The field cannot be empty, enter the order ID', 'retailcrm'),
-                'tr_successful'     => __('Orders were uploaded', 'retailcrm'),
-            );
+            $translate = [
+                'tr_order'       => __('Orders', 'retailcrm'),
+                'tr_customer'    => __('Customers', 'retailcrm'),
+                'tr_empty_field' => __('The field cannot be empty, enter the order ID', 'retailcrm'),
+                'tr_successful'  => __('Orders were uploaded', 'retailcrm'),
+            ];
 
             echo json_encode(
-                array(
+                [
                     'count_orders' => $this->uploader->getCountOrders(),
                     'count_users'  => $this->uploader->getCountUsers(),
                     'translate'    => $translate,
-                )
+                ]
             );
 
             wp_die();
@@ -524,12 +528,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $icml         = $defaultValue;
             $history      = $defaultValue;
             $inventories  = $defaultValue;
-            $translate    = array(
+            $translate    = [
                 'tr_td_cron'        => __('Cron launches', 'retailcrm'),
                 'tr_td_icml'        => __('Generation ICML', 'retailcrm'),
                 'tr_td_history'     => __('Syncing history', 'retailcrm'),
                 'tr_td_inventories' => __('Syncing inventories', 'retailcrm'),
-            );
+            ];
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
                 $history = date( 'H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
@@ -544,12 +548,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             echo json_encode(
-                array(
+                [
                     'history'     => $history,
                     'icml'        => $icml,
                     'inventories' => $inventories,
                     'translate'   => $translate,
-                )
+                ]
             );
 
             wp_die();
@@ -560,23 +564,27 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function set_meta_fields()
         {
+            if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+
             $orderMetaData        = $this->getMetaData('order');
             $customerMetaData     = $this->getMetaData('user');
             $orderCustomFields    = $this->getCustomFields('order');
             $customerCustomFields = $this->getCustomFields('customer');
 
-            $translate = array(
+            $translate = [
                 'tr_lb_order'    => __('Custom fields for order', 'retailcrm'),
                 'tr_lb_customer' => __('Custom fields for customer', 'retailcrm'),
                 'tr_btn'         => __('Add new select for order', 'retailcrm'),
-            );
+            ];
 
             echo json_encode(
-                array(
-                    'order'     => array('custom' => $orderCustomFields, 'meta' => $orderMetaData),
-                    'customer'  => array('custom' => $customerCustomFields, 'meta' => $customerMetaData),
+                [
+                    'order'     => ['custom' => $orderCustomFields, 'meta' => $orderMetaData],
+                    'customer'  => ['custom' => $customerCustomFields, 'meta' => $customerMetaData],
                     'translate' => $translate,
-                )
+                ]
             );
 
             wp_die();
@@ -589,8 +597,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function getCustomFields($entity)
         {
-            $customFields = array('default_retailcrm' => __('Select value', 'retailcrm'));
-            $getCustomFields = $this->apiClient->customFieldsList(array('entity' => $entity), 100);
+            $customFields    = ['default_retailcrm' => __('Select value', 'retailcrm')];
+            $getCustomFields = $this->apiClient->customFieldsList(['entity' => $entity], 100);
 
             if (!empty($getCustomFields['customFields']) && $getCustomFields->isSuccessful()) {
                 foreach ($getCustomFields['customFields'] as $field) {
@@ -614,7 +622,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $table = $entity === 'order' ? $wpdb->postmeta : $wpdb->usermeta;
 
-            $metaData = array('default_retailcrm' => __('Select value', 'retailcrm'));
+            $metaData = ['default_retailcrm' => __('Select value', 'retailcrm')];
             $sqlQuery = "SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`";
             $defaultMetaFields = file(
                 __DIR__ . '/../assets/default/default_meta_fields.txt',

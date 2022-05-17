@@ -91,6 +91,10 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function customersHistory()
         {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+
             $sinceId    = get_option('retailcrm_customers_history_since_id');
             $pagination = 1;
 
@@ -193,6 +197,10 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function ordersHistory()
         {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+
             $options    = array_flip(array_filter($this->retailcrmSettings));
             $sinceId    = get_option('retailcrm_orders_history_since_id');
             $pagination = 1;
