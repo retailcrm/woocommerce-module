@@ -119,6 +119,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayHasKey('deactivate_update_order', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('bind_by_sku', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('update_number', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('product_description', $this->baseRetailcrm->form_fields);
     }
 
     public function test_retailcrm_form_fields_value()

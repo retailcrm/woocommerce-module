@@ -14,33 +14,39 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
 {
     public function setUp()
     {
-        for ($i = 0; $i < 10; $i++) {
-            WC_Helper_Product::create_simple_product();
-        }
-
-        wp_insert_term(
-            'Test', // the term
-            'product_cat', // the taxonomy
-            array(
-                'description'=> 'Test',
-                'slug' => 'test'
-            )
-        );
+        WC_Helper_Product::create_simple_product();
+        WC_Helper_Product::create_variation_product();
     }
 
     public function testGenerate()
     {
         $icml = new WC_Retailcrm_Icml();
+
         $icml->generate();
-
         $this->assertFileExists(ABSPATH . 'simla.xml');
+
         $xml = simplexml_load_file(ABSPATH . 'simla.xml');
-        $res = $xml->xpath('/yml_catalog/shop/categories/category[@id]');
 
-        $this->assertNotEmpty($res);
+        $this->assertNotEmpty($xml);
 
-        foreach ($res as $node) {
-            $this->assertEquals('category', $node->getName());
+        $xmlArray = json_decode(json_encode($xml), true);
+
+        $this->assertNotEmpty($xmlArray['shop']['categories']['category']);
+        $this->assertCount(2, $xmlArray['shop']['categories']['category']);
+        $this->assertNotEmpty($xmlArray['shop']['offers']['offer']);
+        $this->assertCount(7, $xmlArray['shop']['offers']['offer']);
+        $this->assertNotEmpty($xmlArray['shop']['offers']['offer'][0]);
+        $this->assertNotEmpty($xmlArray['shop']['offers']['offer'][1]);
+
+        foreach ($xmlArray['shop']['offers']['offer'] as $product) {
+            $this->assertNotEmpty($product['name']);
+            $this->assertNotEmpty($product['productName']);
+            $this->assertNotEmpty($product['price']);
+            $this->assertNotEmpty($product['url']);
+            $this->assertNotEmpty($product['param']);
+            $this->assertNotEmpty($product['vatRate']);
+            $this->assertEquals('none', $product['vatRate']);
+            $this->assertContains('Dummy', $product['productName']);
         }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -18,7 +19,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         protected $file;
         protected $tmpFile;
 
-        protected $properties = array(
+        protected $properties = [
             'name',
             'productName',
             'price',
@@ -28,7 +29,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             'url',
             'xmlId',
             'productActivity'
-        );
+        ];
 
         protected $xml;
 
@@ -51,7 +52,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         public function __construct()
         {
             $this->settings = get_option(WC_Retailcrm_Base::$option_key);
-            $this->shop = get_bloginfo( 'name' );
+            $this->shop = get_bloginfo('name');
             $this->file = ABSPATH . 'simla.xml';
             $this->tmpFile = sprintf('%s.tmp', $this->file);
         }
@@ -80,8 +81,11 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
                 $status_args = $this->checkPostStatuses();
                 $this->get_wc_products_taxonomies($status_args);
+
                 $dom = dom_import_simplexml(simplexml_load_file($this->tmpFile))->ownerDocument;
+
                 $dom->formatOutput = true;
+
                 $formatted = $dom->saveXML();
 
                 unset($dom, $this->xml);
@@ -170,7 +174,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         {
             $categories = self::filterRecursive($categories);
 
-            foreach($categories as $category) {
+            foreach ($categories as $category) {
                 if (!array_key_exists('name', $category) || !array_key_exists('id', $category)) {
                     continue;
                 }
@@ -278,7 +282,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          * @param $key
          * @param $e
          */
-        private function setOffersProperties($value, $key, &$e) {
+        private function setOffersProperties($value, $key, &$e)
+        {
             if (in_array($key, $this->properties) && $key != 'params') {
                 /** @var SimpleXMLElement $e */
                 $e->addChild($key, htmlspecialchars($value));
@@ -292,7 +297,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          * @param $key
          * @param $e
          */
-        private function setOffersParams($value, $key, &$e) {
+        private function setOffersParams($value, $key, &$e)
+        {
             if (
                 array_key_exists('code', $value) &&
                 array_key_exists('name', $value) &&
@@ -323,7 +329,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                     $haystack[$key] = self::filterRecursive($haystack[$key]);
                 }
 
-                if (is_null($haystack[$key])
+                if (
+                    is_null($haystack[$key])
                     || $haystack[$key] === ''
                     || (is_array($haystack[$key]) && count($haystack[$key]) == 0)
                 ) {
@@ -341,26 +348,27 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          *
          * @return void
          */
-        private function get_wc_products_taxonomies($status_args) {
+        private function get_wc_products_taxonomies($status_args)
+        {
             if (!$status_args) {
-                $status_args = array('publish');
+                $status_args = ['publish'];
             }
 
             $attribute_taxonomies = wc_get_attribute_taxonomies();
-            $product_attributes = array();
+            $product_attributes = [];
 
             foreach ($attribute_taxonomies as $product_attribute) {
                 $attribute_id = wc_attribute_taxonomy_name_by_id(intval($product_attribute->attribute_id));
                 $product_attributes[$attribute_id] = $product_attribute->attribute_label;
             }
 
-            $full_product_list = array();
+            $full_product_list = [];
 
             $products = wc_get_products(
-                array(
+                [
                     'limit' => -1,
                     'status' => $status_args
-                )
+                ]
             );
 
             foreach ($products as $offer) {
@@ -391,8 +399,9 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          *
          * @return array
          */
-        private function get_wc_categories_taxonomies() {
-            $categories = array();
+        private function get_wc_categories_taxonomies()
+        {
+            $categories   = [];
             $taxonomy     = 'product_cat';
             $orderby      = 'parent';
             $show_count   = 0;      // 1 for yes, 0 for no
@@ -401,7 +410,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $title        = '';
             $empty        = 0;
 
-            $args = array(
+            $args = [
                 'taxonomy'     => $taxonomy,
                 'orderby'      => $orderby,
                 'show_count'   => $show_count,
@@ -409,16 +418,16 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'hierarchical' => $hierarchical,
                 'title_li'     => $title,
                 'hide_empty'   => $empty
-            );
+            ];
 
             $wcatTerms = get_categories($args);
 
             foreach ($wcatTerms as $term) {
-                $category = array(
+                $category = [
                     'id' => $term->term_id,
                     'parentId' => $term->parent,
                     'name' => $term->name
-                );
+                ];
 
                 $thumbnail_id = function_exists('get_term_meta')
                     ? get_term_meta($term->term_id, 'thumbnail_id', true)
@@ -533,10 +542,22 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             ];
 
             if ($product->get_sku() != '') {
-                $params[] = array('code' => 'article', 'name' => 'Артикул', 'value' => $product->get_sku());
+                $params[] = ['code' => 'article', 'name' => 'Article', 'value' => $product->get_sku()];
 
                 if (isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES) {
                     $product_data['xmlId'] = $product->get_sku();
+                }
+            }
+
+            if (isset($this->settings['product_description'])) {
+                $productDescription = $this->getDescription($product);
+
+                if (empty($productDescription) && $parent instanceof WC_Product_Variable) {
+                    $this->getDescription($parent);
+                }
+
+                if ($productDescription != '') {
+                    $params[] = ['code' => 'description', 'name' => 'Description', 'value' => $productDescription];
                 }
             }
 
@@ -556,8 +577,9 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          *
          * @return array
          */
-        private function checkPostStatuses() {
-            $status_args = array();
+        private function checkPostStatuses()
+        {
+            $status_args = [];
 
             foreach (get_post_statuses() as $key => $value) {
                 if (isset($this->settings['p_' . $key]) && $this->settings['p_' . $key] == WC_Retailcrm_Base::YES) {
@@ -566,6 +588,20 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             }
 
             return $status_args;
+        }
+
+        /**
+         * Get product description
+         *
+         * @param WC_Product | WC_Product_Variable $product WC product.
+         *
+         * @return string
+         */
+        private function getDescription($product)
+        {
+            return $this->settings['product_description'] == 'full'
+                ? $product->get_description()
+                : $product->get_short_description();
         }
     }
 
