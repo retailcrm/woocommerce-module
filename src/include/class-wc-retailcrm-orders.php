@@ -264,6 +264,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             }
 
             $wcOrder = wc_get_order($order_id);
+
             $this->processOrder($wcOrder, true);
 
             $response = $this->retailcrm->ordersEdit($this->order);
@@ -387,6 +388,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             /** @var WC_Order_Item_Product $item */
             foreach ($order->get_items() as $item) {
                 $orderItems[] = $this->order_item->build($item)->get_data();
+
                 $this->order_item->reset_data();
             }
 

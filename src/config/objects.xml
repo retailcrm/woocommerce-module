@@ -94,6 +94,7 @@
         <field id="order_product.quantity" group="item">quantity</field>
         <field id="order_product.status" group="item">status</field>
         <field id="order_product.summ" group="item">summ</field>
+        <field id="order_product.price_type" group="item">priceType</field>
 
         <field id="delivery_type" group="delivery">code</field>
         <field id="delivery_service" group="delivery">service</field>

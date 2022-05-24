@@ -5,29 +5,28 @@ if (! defined('ABSPATH')) {
 }
 
 // @codeCoverageIgnoreStart
-// TODO: There is a task to analyze the work
 function get_wc_shipping_methods_by_zones($enhanced = false)
 {
-    $result = array();
+    $result = [];
 
     $shippingZones = WC_Shipping_Zones::get_zones();
     $defaultZone = WC_Shipping_Zones::get_zone_by();
 
-    $shippingZones[$defaultZone->get_id()] = array(
+    $shippingZones[$defaultZone->get_id()] = [
         $defaultZone->get_data(),
         'zone_id' => $defaultZone->get_id(),
         'formatted_zone_location' => $defaultZone->get_formatted_location(),
         'shipping_methods' => $defaultZone->get_shipping_methods(false)
-    );
+    ];
 
     if ($shippingZones) {
         foreach ($shippingZones as $code => $shippingZone) {
             foreach ($shippingZone['shipping_methods'] as $key => $shipping_method) {
-                $shipping_methods = array(
+                $shipping_methods = [
                     'id' => $shipping_method->id,
                     'instance_id' => $shipping_method->instance_id,
                     'title' => $shipping_method->title
-                );
+                ];
 
                 if ($enhanced) {
                     $shipping_code = $shipping_method->id;
@@ -36,12 +35,12 @@ function get_wc_shipping_methods_by_zones($enhanced = false)
                 }
 
                 if (!isset($result[$shipping_code])) {
-                    $result[$shipping_code] = array(
+                    $result[$shipping_code] = [
                         'name' => $shipping_method->method_title,
                         'enabled' => $shipping_method->enabled,
                         'description' => $shipping_method->method_description,
                         'title' => $shipping_method->title
-                    );
+                    ];
                 }
 
                 if ($enhanced) {
@@ -61,15 +60,15 @@ function get_wc_shipping_methods()
     $wc_shipping = WC_Shipping::instance();
     $shipping_methods = $wc_shipping->get_shipping_methods();
 
-    $result = array();
+    $result = [];
 
     foreach ($shipping_methods as $code => $shipping) {
-        $result[$code] = array(
+        $result[$code] = [
             'name' => $shipping->method_title,
             'enabled' => $shipping->enabled,
             'description' => $shipping->method_description,
             'title' => $shipping->title ? $shipping->title : $shipping->method_title
-        );
+        ];
     }
 
     return apply_filters('retailcrm_shipping_list', WC_Retailcrm_Plugin::clearArray($result));
@@ -80,7 +79,7 @@ function retailcrm_get_delivery_service($method_id, $instance_id)
     $shippings_by_zone = get_wc_shipping_methods_by_zones(true);
     $method = explode(':', $method_id);
     $method_id = $method[0];
-    $shipping = isset($shippings_by_zone[$method_id]) ? $shippings_by_zone[$method_id] : array();
+    $shipping = $shippings_by_zone[$method_id] ?? [];
 
     if ($shipping && isset($shipping['shipping_methods'][$method_id . ':' . $instance_id])) {
         return $shipping['shipping_methods'][$method_id . ':' . $instance_id];
@@ -128,7 +127,7 @@ function retailcrm_is_debug()
  */
 function is_wplogin()
 {
-    $ABSPATH_MY = str_replace(array('\\','/'), DIRECTORY_SEPARATOR, ABSPATH);
+    $ABSPATH_MY = str_replace(['\\','/'], DIRECTORY_SEPARATOR, ABSPATH);
 
     return (
         (in_array($ABSPATH_MY . 'wp-login.php', get_included_files())

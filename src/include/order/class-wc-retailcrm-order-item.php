@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -15,17 +16,17 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
     /**
      * @var array order item
      */
-    protected $data = array(
-        'offer' => array(),
+    protected $data = [
+        'offer' => [],
         'productName' => '',
         'initialPrice' => 0.00,
         'quantity' => 0.00
-    );
+    ];
 
     /**
      * @var array
      */
-    protected $settings = array();
+    protected $settings = [];
 
     /**
      * WC_Retailcrm_Order_Item constructor.
@@ -47,21 +48,21 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $price = $this->calculate_price($item);
         $discount_price = $this->calculate_discount($item, $price);
 
-        $data['productName'] = $item['name'];
-        $data['initialPrice'] = (float)$price;
-        $data['quantity'] = (double)$item['qty'];
+        $data['productName']  = $item['name'];
+        $data['initialPrice'] = $price;
+        $data['quantity']     = (double)$item['qty'];
 
         $itemId = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];
-        $data['externalIds'] = array(
-            array(
-                'code' =>'woocomerce',
+        $data['externalIds'] = [
+            [
+                'code' => 'woocomerce',
                 'value' => $itemId . '_' . $item->get_id(),
-            )
-        );
+            ]
+        ];
 
         $this->set_data_fields($data);
         $this->set_offer($item);
-        $this->set_data_field('discountManualAmount', (float) round($discount_price, 2));
+        $this->set_data_field('discountManualAmount', round($discount_price, 2));
 
         return $this;
     }
@@ -112,9 +113,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     private function calculate_discount(WC_Order_Item_Product $item, $price)
     {
-        $product_price = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
-        $product_tax  = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
-        $price_item = $product_price + $product_tax;
+        $product_price  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+        $product_tax    = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
+        $price_item     = $product_price + $product_tax;
         $discount_price = $price - $price_item;
 
         return round($discount_price, 2);
@@ -125,11 +126,11 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     public function reset_data()
     {
-        $this->data = array(
-            'offer' => array(),
+        $this->data = [
+            'offer' => [],
             'productName' => '',
             'initialPrice' => 0.00,
             'quantity' => 0.00
-        );
+        ];
     }
 }
