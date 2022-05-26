@@ -318,3 +318,15 @@ msgstr "¡Atención!"
 
 msgid "If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM"
 msgstr "Al seleccionar en el enlace de tipos de pago un método de pago de integración en CRM, el pago se debe realizar por parte del CRM"
+
+msgid "Product description"
+msgstr "Descripción del Producto"
+
+msgid "Full description"
+msgstr "Descripción completa"
+
+msgid "Short description"
+msgstr "Descripción corta"
+
+msgid "In the catalog, you can use a full or short description of the product"
+msgstr "En el catálogo, puedes utilizar una descripción del producto corta o completa"

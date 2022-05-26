@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -61,6 +62,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'debug-info'    => '',
             'order-meta-data-retailcrm'    => json_encode(['woo_order'    => 'crm_order']),
             'customer-meta-data-retailcrm' => json_encode(['woo_customer' => 'crm_customer']),
+            'product_description' => 'full',
         ];
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
@@ -78,16 +80,18 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         } else {
             global $wpdb;
 
-            foreach ([
-                          $wpdb->posts,
-                          $wpdb->postmeta,
-                          $wpdb->comments,
-                          $wpdb->commentmeta,
-                          $wpdb->term_relationships,
-                          $wpdb->termmeta,
-            ] as $table ) {
+            foreach (
+                [
+                $wpdb->posts,
+                $wpdb->postmeta,
+                $wpdb->comments,
+                $wpdb->commentmeta,
+                $wpdb->term_relationships,
+                $wpdb->termmeta,
+                ] as $table
+            ) {
                 //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                $wpdb->query( "DELETE FROM {$table}" );
+                $wpdb->query("DELETE FROM {$table}");
             }
 
             foreach ([$wpdb->terms, $wpdb->term_taxonomy] as $table) {

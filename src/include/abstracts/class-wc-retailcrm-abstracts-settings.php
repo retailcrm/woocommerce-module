@@ -127,6 +127,21 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'catalog_options'
                 );
 
+                $this->form_fields['product_description'] = [
+                    'type'        => 'select',
+                    'class'       => 'select',
+                    'title'       => __('Product description', 'retailcrm'),
+                    'options'     => [
+                            'full'  => __('Full description', 'retailcrm'),
+                            'short' => __('Short description', 'retailcrm'),
+                            ],
+                    'desc_tip'    => true,
+                    'description' => __(
+                        'In the catalog, you can use a full or short description of the product',
+                        'retailcrm'
+                    ),
+                ];
+
                 foreach (get_post_statuses() as $status_key => $status_value) {
                     $this->form_fields['p_' . $status_key] = array(
                         'title'       => $status_value,
@@ -134,7 +149,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'description' => '',
                         'class'       => 'checkbox',
                         'type'        => 'checkbox',
-                        'desc_tip'    =>  true,
+                        'desc_tip'    => true,
                     );
                 }
 

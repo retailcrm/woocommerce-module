@@ -328,5 +328,15 @@ msgstr "Внимание!"
 msgid "If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM"
 msgstr "При указании в соответствии типа оплаты, привязанного к интеграционному модулю в CRM, оплата должна происходить на стороне CRM"
 
+msgid "Product description"
+msgstr "Описание товара"
 
+msgid "Full description"
+msgstr "Полное описание"
+
+msgid "Short description"
+msgstr "Краткое описание"
+
+msgid "In the catalog, you can use a full or short description of the product"
+msgstr "В каталоге можно использовать полное или краткое описание товара"
 
