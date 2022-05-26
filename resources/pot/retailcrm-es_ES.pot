@@ -67,9 +67,6 @@ msgstr "Introduce la llave API correcta"
 msgid "Enter the correct URL of Simla.com"
 msgstr "Introduce el enlace del Simla.com correcto"
 
-msgid "The selected API version is unavailable"
-msgstr "La versión de API elegida no está disponible"
-
 msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com"
 msgstr "Esta función permite generar los catálogos de pedidos ICML para subida al Simla.com"
 

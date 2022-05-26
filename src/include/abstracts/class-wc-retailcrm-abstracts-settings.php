@@ -36,7 +36,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             isset($_GET['page']) && $_GET['page'] == 'wc-settings'
             && isset($_GET['tab']) && $_GET['tab'] == 'integration'
         ) {
-            add_action('init', array($this, 'init_settings_fields'), 99);
+            add_action('init', [$this, 'init_settings_fields'], 99);
         }
     }
 
@@ -67,24 +67,24 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function init_form_fields()
     {
-        $this->form_fields = array(
-            array( 'title' => __('Main settings', 'retailcrm'), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ),
+        $this->form_fields = [
+            [ 'title' => __('Main settings', 'retailcrm'), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ],
 
-            'api_url' => array(
+            'api_url' => [
                 'title'             => __('API of URL', 'retailcrm'),
                 'type'              => 'text',
                 'description'       => __( 'Enter API of URL (https://yourdomain.simla.com)', 'retailcrm' ),
                 'desc_tip'          => true,
                 'default'           => ''
-            ),
-            'api_key' => array(
+            ],
+            'api_key' => [
                 'title'             => __('API key', 'retailcrm'),
                 'type'              => 'text',
                 'description'       => __('Enter your API key. You can find it in the administration section of Simla.com', 'retailcrm'),
                 'desc_tip'          => true,
                 'default'           => ''
-            )
-        );
+            ]
+        ];
 
         $post = $this->get_post_data();
         $apiUrl = !empty($post[$this->plugin_id . $this->id . '_api_url']) ? $post[$this->plugin_id . $this->id . '_api_url'] : null;
@@ -95,37 +95,37 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 isset($_GET['page']) && $_GET['page'] == 'wc-settings'
                 && isset($_GET['tab']) && $_GET['tab'] == 'integration'
             ) {
-                add_action('admin_print_footer_scripts', array($this, 'show_blocks'), 99);
+                add_action('admin_print_footer_scripts', [$this, 'show_blocks'], 99);
 
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('API settings', 'retailcrm'),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'api_options'
-                );
+                ];
 
-                $this->form_fields['corporate_enabled'] = array(
+                $this->form_fields['corporate_enabled'] = [
                     'title'       => __('Corporate customers support', 'retailcrm'),
                     'label'       => __('Enabled'),
                     'description' => '',
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'desc_tip'    =>  true
-                );
+                ];
 
-                $this->form_fields['online_assistant'] = array(
+                $this->form_fields['online_assistant'] = [
                     'title'       => __('Online assistant', 'retailcrm'),
                     'type'        => 'textarea',
                     'id'          => 'online_assistant',
                     'placeholder' => __('Insert the Online consultant code here', 'retailcrm')
-                );
+                ];
 
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('Catalog settings', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'catalog_options'
-                );
+                ];
 
                 $this->form_fields['product_description'] = [
                     'type'        => 'select',
@@ -143,20 +143,21 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 ];
 
                 foreach (get_post_statuses() as $status_key => $status_value) {
-                    $this->form_fields['p_' . $status_key] = array(
+                    $this->form_fields['p_' . $status_key] = [
                         'title'       => $status_value,
                         'label'       => ' ',
                         'description' => '',
                         'class'       => 'checkbox',
                         'type'        => 'checkbox',
-                        'desc_tip'    => true,
-                    );
+                        'desc_tip'    =>  true,
+                    ];
+
                 }
 
                 /**
                  * Order methods options
                  */
-                $order_methods_option = array();
+                $order_methods_option = [];
                 $order_methods_list = $this->apiClient->orderMethodsList();
 
                 if (!empty($order_methods_list) && $order_methods_list->isSuccessful()) {
@@ -168,23 +169,26 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         $order_methods_option[$order_method['code']] = $order_method['name'];
                     }
 
-                    $this->form_fields[] = array(
+                    $this->form_fields[] = [
                         'title' => __('Order methods', 'retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'order_methods_options'
-                    );
+                    ];
 
-                    $this->form_fields['order_methods'] = array(
+                    $this->form_fields['order_methods'] = [
                         'label'       =>  ' ',
                         'title'       => __('Order methods available for uploading from Simla.com', 'retailcrm'),
                         'class'       => '',
                         'type'        => 'multiselect',
-                        'description' => __('Select order methods which will be uploaded from Simla.com to the website', 'retailcrm'),
                         'options'     => $order_methods_option,
                         'css'         => 'min-height:100px;',
-                        'select_buttons' => true
-                    );
+                        'select_buttons' => true,
+                        'description' => __(
+                            'Select order methods which will be uploaded from Simla.com to the website',
+                            'retailcrm'
+                        ),
+                    ];
                 }
 
                 /**
@@ -213,7 +217,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     foreach ($wc_shipping_list as $shipping_code => $shipping) {
                         if (isset($shipping['enabled']) && $shipping['enabled'] == static::YES) {
-                            $this->form_fields[$shipping_code] = array(
+                            $this->form_fields[$shipping_code] = [
                                 'title'          => __($shipping['title'], 'woocommerce'),
                                 'description' => __($shipping['description'], 'woocommerce'),
                                 'css'            => 'min-width:350px;',
@@ -221,7 +225,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                                 'type'           => 'select',
                                 'options'        => $shipping_option_list,
                                 'desc_tip'    =>  true,
-                            );
+                            ];
                         }
                     }
                 }
@@ -327,236 +331,242 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Meta data options
                  */
-                $this->form_fields[] = array(
-                     'title'       => __('Custom fields', 'retailcrm'),
-                     'type'        => 'heading',
-                     'description' => '',
-                     'class'       => 'meta-fields'
-                );
+                $this->form_fields[] = [
+                    'title'       => __('Custom fields', 'retailcrm'),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'class'       => 'meta-fields'
+                ];
 
-                $this->form_fields['order-meta-data-retailcrm'] = array(
+                $this->form_fields['order-meta-data-retailcrm'] = [
                     'type'        => 'textarea',
                     'class'       => 'order-meta-data-retailcrm',
-                );
+                ];
 
-                $this->form_fields['customer-meta-data-retailcrm'] = array(
+                $this->form_fields['customer-meta-data-retailcrm'] = [
                     'type'        => 'textarea',
                     'class'       => 'customer-meta-data-retailcrm',
-                );
+                ];
 
                 /**
                  * Inventories options
                  */
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('Setting of the stock balance', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'invent_options'
-                );
+                ];
 
-                $this->form_fields['sync'] = array(
+                $this->form_fields['sync'] = [
                     'label'       => __('Synchronization of the stock balance', 'retailcrm'),
                     'title'       => __('Stock balance', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => __('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website', 'retailcrm')
-                );
+                ];
 
                 /**
                  * UA options
                  */
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('UA settings', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'ua_options'
-                );
+                ];
 
-                $this->form_fields['ua'] = array(
+                $this->form_fields['ua'] = [
                     'label'       => __('Activate UA', 'retailcrm'),
                     'title'       => __('UA', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => __('Enable this setting for uploading data to UA', 'retailcrm')
-                );
+                ];
 
-                $this->form_fields['ua_code'] = array(
+                $this->form_fields['ua_code'] = [
                     'title'       => __('UA tracking code', 'retailcrm'),
                     'class'       => 'input',
                     'type'        => 'input'
-                );
+                ];
 
-                $this->form_fields['ua_custom'] = array(
+                $this->form_fields['ua_custom'] = [
                     'title'       => __('User parameter', 'retailcrm'),
                     'class'       => 'input',
                     'type'        => 'input'
-                );
+                ];
 
                 /**
                  * Daemon collector settings
                  */
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('Daemon Collector settings', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'invent_options'
-                );
+                ];
 
-                $this->form_fields['daemon_collector'] = array(
+                $this->form_fields['daemon_collector'] = [
                     'label'       => __('Activate Daemon Collector', 'retailcrm'),
                     'title'       => __('Daemon Collector', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => __('Enable this setting for activate Daemon Collector on site', 'retailcrm')
-                );
+                ];
 
-                $this->form_fields['daemon_collector_key'] = array(
+                $this->form_fields['daemon_collector_key'] = [
                     'title'       => __('Site key', 'retailcrm'),
                     'class'       => 'input',
                     'type'        => 'input'
-                );
+                ];
 
                 /**
                  * Uploads options
                  */
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('Settings of uploading', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'upload_options'
-                );
+                ];
 
-                $this->form_fields['upload-button'] = array(
+                $this->form_fields['upload-button'] = [
                     'label'       => __('Upload', 'retailcrm'),
                     'title'       => __('Uploading all customers and orders', 'retailcrm'),
                     'type'        => 'button',
                     'description' => __('You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open', 'retailcrm'),
                     'desc_tip'    => true,
                     'id'          => 'export-orders-submit'
-                );
+                ];
 
-                $this->form_fields['export_selected_orders_ids'] = array(
+                $this->form_fields['export_selected_orders_ids'] = [
                     'label'             => __('Orders identifiers', 'retailcrm'),
                     'title'             => __('Orders identifiers', 'retailcrm'),
                     'type'              => 'text',
                     'description'       => __('Enter orders identifiers separated by a comma, but no more than 50', 'retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'export_selected_orders_ids'
-                );
+                ];
 
-                $this->form_fields['export_selected_orders_btn'] = array(
+                $this->form_fields['export_selected_orders_btn'] = [
                     'label'             => __('Upload', 'retailcrm'),
                     'title'             => __('Uploading orders by identifiers', 'retailcrm'),
                     'type'              => 'button',
                     'description'       => __('This functionality allows to upload orders to Simla.com differentially', 'retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'export_selected_orders_btn'
-                );
+                ];
 
                 /**
                  * WhatsApp options
                  */
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('Settings of WhatsApp', 'retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'whatsapp_options'
-                );
+                ];
 
-                $this->form_fields['whatsapp_active'] = array(
+                $this->form_fields['whatsapp_active'] = [
                     'label'       => __('Activate WhatsApp', 'retailcrm'),
                     'title'       => __('WhatsApp', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => __('Activate this setting to activate WhatsApp on the website', 'retailcrm')
-                );
+                ];
 
-                $this->form_fields['whatsapp_location_icon'] = array(
+                $this->form_fields['whatsapp_location_icon'] = [
                     'label'       => __('Place in the lower right corner of the website', 'retailcrm'),
                     'title'       => __('WhatsApp icon location', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('By default, WhatsApp icon is located in the lower left corner of the website', 'retailcrm')
-                );
+                    'description' => __(
+                        'By default, WhatsApp icon is located in the lower left corner of the website',
+                        'retailcrm'
+                    )
+                ];
 
-                $this->form_fields['whatsapp_number'] = array(
+                $this->form_fields['whatsapp_number'] = [
                     'title'       => __('Enter your phone number', 'retailcrm'),
                     'class'       => '',
                     'type'        => 'text',
                     'description' => __('WhatsApp chat will be opened with this contact', 'retailcrm')
-                );
+                ];
 
                 /**
                  * Generate icml file
                  */
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'title'       => __('Generating ICML catalog', 'retailcrm'),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'icml_options'
-                );
+                ];
 
-                $this->form_fields[] = array(
+                $this->form_fields[] = [
                     'label'             => __('Generate now', 'retailcrm'),
                     'title'             => __('Generating ICML', 'retailcrm'),
                     'type'              => 'button',
-                    'description'       => __('This functionality allows to generate ICML products catalog for uploading to Simla.com', 'retailcrm'),
                     'desc_tip'          => true,
-                    'id'                => 'icml-retailcrm'
-                );
+                    'id'                => 'icml-retailcrm',
+                    'description'       => __(
+                        'This functionality allows to generate ICML products catalog for uploading to Simla.com',
+                        'retailcrm'
+                    ),
+                ];
 
-                $this->form_fields['icml'] = array(
+                $this->form_fields['icml'] = [
                     'label'       => __('Generating ICML', 'retailcrm'),
                     'title'       => __('Generating ICML catalog by wp-cron', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox'
-                );
+                ];
 
 
-                $this->form_fields['history'] = array(
+                $this->form_fields['history'] = [
                     'label'       => __('Activate history uploads', 'retailcrm'),
                     'title'       => __('Upload data from Simla.com', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox'
-                );
+                ];
 
-                $this->form_fields['deactivate_update_order'] = array(
-                     'label'       => __('Disable data editing in Simla.com', 'retailcrm'),
-                     'title'       => __('Data updating in Simla.com', 'retailcrm'),
-                     'class'       => 'checkbox',
-                     'type'        => 'checkbox'
-                );
+                $this->form_fields['deactivate_update_order'] = [
+                        'label'       => __('Disable data editing in Simla.com', 'retailcrm'),
+                        'title'       => __('Data updating in Simla.com', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox'
+                ];
 
-                $this->form_fields['bind_by_sku'] = array(
-                     'label'       => __('Activate the binding via sku (xml)', 'retailcrm'),
-                     'title'       => __('Stock synchronization and link between products', 'retailcrm'),
-                     'class'       => 'checkbox',
-                     'type'        => 'checkbox'
-                );
+                $this->form_fields['bind_by_sku'] = [
+                        'label'       => __('Activate the binding via sku (xml)', 'retailcrm'),
+                        'title'       => __('Stock synchronization and link between products', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox'
+                ];
 
-                $this->form_fields['update_number'] = array(
-                     'label'       => __('Enable transferring the number to Simla.com', 'retailcrm'),
-                     'title'       => __('Transferring the order number', 'retailcrm'),
-                     'class'       => 'checkbox',
-                     'type'        => 'checkbox'
-                );
+                $this->form_fields['update_number'] = [
+                        'label'       => __('Enable transferring the number to Simla.com', 'retailcrm'),
+                        'title'       => __('Transferring the order number', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox'
+                ];
 
-                $this->form_fields['debug_mode'] = array(
-                     'label'       => __('Enable debug mode in module', 'retailcrm'),
-                     'title'       => __('Debug mode', 'retailcrm'),
-                     'description' => __('Is required to enable debug mode for advanced logs', 'retailcrm'),
-                     'class'       => 'checkbox',
-                     'type'        => 'checkbox'
-                );
+                $this->form_fields['debug_mode'] = [
+                        'label'       => __('Enable debug mode in module', 'retailcrm'),
+                        'title'       => __('Debug mode', 'retailcrm'),
+                        'description' => __('Is required to enable debug mode for advanced logs', 'retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox'
+                ];
 
                 /**
                  * Debug information
                  */
-                $this->form_fields['debug-info'] = array(
+                $this->form_fields['debug-info'] = [
                     'title'       => __('Debug information', 'retailcrm'),
                     'type'        => 'heading',
                     'class'       => 'debug_info_options'
-                );
+                ];
             }
         } elseif (empty($apiUrl) === false && empty($apiKey) === false) {
             $api = new WC_Retailcrm_Proxy(
@@ -586,14 +596,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function generate_button_html($key, $data)
     {
         $field    = $this->plugin_id . $this->id . '_' . $key;
-        $defaults = array(
+        $defaults = [
             'class'             => 'button-secondary',
             'css'               => '',
-            'custom_attributes' => array(),
+            'custom_attributes' => [],
             'desc_tip'          => false,
             'description'       => '',
             'title'             => '',
-        );
+        ];
 
         $data = wp_parse_args($data, $defaults);
 
@@ -629,12 +639,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function generate_heading_html($key, $data)
     {
         $field_key = $this->get_field_key($key);
-        $defaults  = array(
-            'title' => '',
-            'class' => '',
-        );
-
-        $data = wp_parse_args($data, $defaults);
+        $defaults  = ['title' => '', 'class' => ''];
+        $data      = wp_parse_args($data, $defaults);
 
         ob_start();
         ?>
@@ -680,21 +686,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function validate_api_url_field($key, $value)
     {
-        $post = $this->get_post_data();
-        $api = new WC_Retailcrm_Proxy(
-            $value,
-            $post[$this->plugin_id . $this->id . '_api_key'],
-            $this->get_option('corporate_enabled', 'no') === 'yes'
-        );
+        $crmUrl = validateUrl($value);
 
-        $response = $api->apiVersions();
-
-        if ($response == null) {
-            WC_Admin_Settings::add_error(esc_html__('Enter the correct URL of CRM', 'retailcrm'));
-            $value = '';
+        if (validateUrl($crmUrl) == '') {
+            WC_Admin_Settings::add_error(esc_html__('Enter the correct URL of Simla.com', 'retailcrm'));
+            header("Refresh:3");
         }
 
-        return $value;
+        return $crmUrl;
     }
 
     /**
@@ -709,9 +708,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function validate_api_key_field($key, $value)
     {
-        $post = $this->get_post_data();
+        $crmUrl = $_POST['woocommerce_integration-retailcrm_api_url'];
+
+        // If entered the wrong URL, don't need to validate the API key.
+        if (validateUrl($crmUrl) == '') {
+            return $value;
+        }
+
         $api = new WC_Retailcrm_Proxy(
-            $post[$this->plugin_id . $this->id . '_api_url'],
+            $crmUrl,
             $value,
             $this->get_option('corporate_enabled', 'no') === 'yes'
         );
@@ -724,6 +729,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         if (empty($response) || !$response->isSuccessful()) {
             WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
+            header("Refresh:3");
+
             $value = '';
         }
 
@@ -800,30 +807,30 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         }
 
         $wp_admin_bar->add_menu(
-            array(
+            [
                 'id' => 'retailcrm_top_menu',
                 'title' => __('Simla.com', 'retailcrm')
-            )
+            ]
         );
 
         $wp_admin_bar->add_menu(
-            array(
+            [
                 'id' => 'retailcrm_ajax_generate_icml',
                 'title' => __('Generating ICML catalog', 'retailcrm'),
                 'href' => '#',
                 'parent' => 'retailcrm_top_menu',
                 'class' => 'retailcrm_ajax_generate_icml'
-            )
+            ]
         );
 
         $wp_admin_bar->add_menu(
-            array(
+            [
                 'id' => 'retailcrm_ajax_generate_setings',
                 'title' => __('Settings', 'retailcrm'),
                 'href' => get_site_url() . '/wp-admin/admin.php?page=wc-settings&tab=integration&section=integration-retailcrm',
                 'parent' => 'retailcrm_top_menu',
                 'class' => 'retailcrm_ajax_settings'
-            )
+            ]
         );
     }
 }
