@@ -30,4 +30,5 @@
   line-height: 10px;
   text-align: center;
   margin: 0 0 8px;
+  white-space: nowrap;
 }
