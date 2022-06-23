@@ -2,7 +2,7 @@
   position: fixed;
   z-index: 999;
   left: 0;
-  bottom: 55px;
+  bottom: 32px;
   width: 60px;
   height: 60px;
   box-sizing: border-box;
@@ -26,8 +26,9 @@
 .chat-btn__text {
   color: #8A96A6;
   font-weight: 600;
-  font-size: 12px;
-  line-height: 14px;
+  font-size: 8px;
+  line-height: 10px;
   text-align: center;
-  margin: 8px 0 0;
+  margin: 0 0 8px;
+  white-space: nowrap;
 }
