@@ -12,23 +12,20 @@
  */
 class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
 {
-    /** @var string  */
-    protected $filter_name = 'order_payment';
-
     /** @var array  */
-    protected $data = array(
+    protected $data = [
+        'type'       => '',
+        'order'      => [],
         'externalId' => '',
-        'type' => '',
-        'order' => array()
-    );
+    ];
 
     /** @var bool */
-    public $is_new = true;
+    public $isNew = true;
 
     /**
      * @var array
      */
-    protected $settings = array();
+    protected $settings = [];
 
     /**
      * WC_Retailcrm_Order_Item constructor.
@@ -49,39 +46,41 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
     public function build($order, $externalId = false)
     {
         $this->reset_data();
-        $data = [];
+        $paymentData = [];
 
-        if (!$this->is_new) {
-            $data['externalId'] = $externalId;
+        if (!$this->isNew) {
+            $paymentData['externalId'] = $externalId;
         } else {
-            $data['externalId'] = uniqid($order->get_id() . "-");
+            $paymentData['externalId'] = uniqid($order->get_id() . '-');
         }
 
-        $data['order'] = [
+        $paymentData['order'] = [
             'externalId' => $order->get_id()
         ];
 
         if ($order->is_paid()) {
-            $data['status'] = 'paid';
+            $paymentData['status'] = 'paid';
 
             if (isset($this->settings[$order->get_payment_method()])) {
-                $data['type'] = $this->settings[$order->get_payment_method()];
+                $paymentData['type'] = $this->settings[$order->get_payment_method()];
             }
         }
 
-        if ($order->get_date_paid()) {
-            $data['paidAt'] = $order->get_date_paid()->date('Y-m-d H:i:s');
+        $paidAt = $order->get_date_paid();
+
+        if (!empty($paidAt)) {
+            $paymentData['paidAt'] = $paidAt->date('Y-m-d H:i:s');
         }
 
-        if ($this->is_new) {
+        if ($this->isNew) {
             if (isset($this->settings[$order->get_payment_method()])) {
-                $data['type'] = $this->settings[$order->get_payment_method()];
+                $paymentData['type'] = $this->settings[$order->get_payment_method()];
             } else {
-                $data = [];
+                $paymentData = [];
             }
         }
 
-        $this->set_data_fields($data);
+        $this->set_data_fields($paymentData);
 
         return $this;
     }
@@ -96,20 +95,21 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         $data = parent::get_data();
 
         if (empty($data['type'])) {
-            return array();
+            return [];
         }
 
-        return $data;
+        // Need to clear the array from empty values
+        return array_filter($data);
     }
 
     public function reset_data()
     {
-        $this->data = array(
+        $this->data = [
             'externalId' => '',
             'type' => '',
             'status' => '',
             'paidAt' => '',
-            'order' => array()
-        );
+            'order' => []
+        ];
     }
 }

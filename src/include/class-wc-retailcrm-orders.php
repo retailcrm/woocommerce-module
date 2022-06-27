@@ -397,8 +397,8 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             $orderData['discountManualPercent'] = 0;
 
             if (!$update && $order->get_total() > 0) {
-                $this->order_payment->is_new = true;
-                $orderData['payments'][] = $this->order_payment->build($order)->get_data();
+                $this->order_payment->isNew = true;
+                $orderData['payments'][]    = $this->order_payment->build($order)->get_data();
             }
 
             if (!empty($this->customFields)) {
@@ -432,8 +432,8 @@ if (!class_exists('WC_Retailcrm_Orders')) :
          */
         protected function sendPayment($order, $update = false, $externalId = false)
         {
-            $this->order_payment->is_new = !$update;
-            $payment = $this->order_payment->build($order, $externalId)->get_data();
+            $this->order_payment->isNew = !$update;
+            $payment                    = $this->order_payment->build($order, $externalId)->get_data();
 
             $integrationPayments = get_option('retailcrm_integration_payments');
 
