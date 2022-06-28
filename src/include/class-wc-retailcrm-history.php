@@ -67,6 +67,10 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         public function getHistory()
         {
+            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+
             try {
                 $this->customersHistory();
                 $this->ordersHistory();
@@ -74,7 +78,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             } catch (\Exception $exception) {
                 WC_Retailcrm_Logger::add(
                     sprintf(
-                        "[%s] - %s",
+                        '[%s] - %s',
                         $exception->getMessage(),
                         'Exception in file - ' . $exception->getFile() . ' on line ' . $exception->getLine()
                     )
@@ -91,9 +95,6 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function customersHistory()
         {
-            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
-                return null;
-            }
 
             $sinceId    = get_option('retailcrm_customers_history_since_id');
             $pagination = 1;
@@ -108,12 +109,22 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $history = $this->getHistoryData($historyResponse);
 
                 if (!empty($history)) {
-                    $builder    = new WC_Retailcrm_WC_Customer_Builder();
                     $lastChange = end($history);
-                    $customers  = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
 
-                    WC_Retailcrm_Plugin::$history_run = true;
+                    update_option('retailcrm_customers_history_since_id', $lastChange['id']);
+
+                    $filter['sinceId'] = $lastChange['id'];
+
+                    WC_Retailcrm_Logger::debug(__METHOD__, [
+                        'Processing customers history, ID:',
+                        $filter['sinceId']
+                    ]);
+
+                    $builder   = new WC_Retailcrm_WC_Customer_Builder();
+                    $customers = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
+
                     WC_Retailcrm_Logger::debug(__METHOD__, ['Assembled customers history:', $customers]);
+                    WC_Retailcrm_Plugin::$history_run = true;
 
                     foreach ($customers as $crmCustomer) {
                          /*
@@ -177,10 +188,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                             WC_Retailcrm_Logger::error($exception->getTraceAsString());
                         }
                         // @codeCoverageIgnoreEnd
-
-                        update_option('retailcrm_customers_history_since_id', $lastChange['id']);
-
-                        $filter['sinceId'] = $lastChange['id'];
                     }
                 } else {
                     break;
@@ -197,10 +204,6 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function ordersHistory()
         {
-            if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
-                return null;
-            }
-
             $options    = array_flip(array_filter($this->retailcrmSettings));
             $sinceId    = get_option('retailcrm_orders_history_since_id');
             $pagination = 1;
@@ -215,7 +218,17 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $history = $this->getHistoryData($historyResponse);
 
                 if (!empty($history)) {
-                    $lastChange      = end($history);
+                    $lastChange = end($history);
+
+                    update_option('retailcrm_orders_history_since_id', $lastChange['id']);
+
+                    $filter['sinceId'] = $lastChange['id'];
+
+                    WC_Retailcrm_Logger::debug(__METHOD__, [
+                        'Processing orders history, ID:',
+                        $filter['sinceId']
+                    ]);
+
                     $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
 
                     WC_Retailcrm_Logger::debug(__METHOD__, ['Assembled orders history:', $historyAssembly]);
@@ -281,10 +294,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                         }
                         // @codeCoverageIgnoreEnd
                     }
-
-                    update_option('retailcrm_orders_history_since_id', $lastChange['id']);
-
-                    $filter['sinceId'] = $lastChange['id'];
                 } else {
                     break;
                 }
