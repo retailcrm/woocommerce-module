@@ -62,6 +62,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <?php
     }
 
+
     /**
      * Initialize integration settings form fields.
      */
@@ -566,6 +567,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'title'       => __('Debug information', 'retailcrm'),
                     'type'        => 'heading',
                     'class'       => 'debug_info_options'
+                ];
+
+                $this->form_fields['clear_cron_tasks'] = [
+                    'label'       => __('Clear', 'retailcrm'),
+                    'title'       => __('Clear cron tasks', 'retailcrm'),
+                    'type'        => 'button',
+                    'description' => __('If you change the time interval, need to clear the old cron tasks', 'retailcrm'),
+                    'desc_tip'    => true,
+                    'id'          => 'clear_cron_tasks'
                 ];
             }
         } elseif (empty($apiUrl) === false && empty($apiKey) === false) {

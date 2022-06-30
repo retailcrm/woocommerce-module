@@ -38,27 +38,28 @@ class WC_Retailcrm_Plugin
     {
         $this->file = $file;
 
-        add_filter('cron_schedules', array($this, 'filter_cron_schedules'), 10, 1);
+        add_filter('cron_schedules', [$this, 'filter_cron_schedules'], 10, 1);
     }
 
     public function filter_cron_schedules($schedules)
     {
         return array_merge(
             $schedules,
-            array(
-                'five_minutes' => array(
+            [
+                'five_minutes' => [
                     'interval' => 300, // seconds
                     'display'  => __('Every 5 minutes')
-                ),
-                'three_hours' => array(
+                ],
+                'three_hours' => [
                     'interval' => 10800, // seconds
                     'display'  => __('Every 3 hours')
-                ),
-                'fiveteen_minutes' => array(
+                ],
+                'fiveteen_minutes' => [
                     'interval' => 900, // seconds
                     'display'  => __('Every 15 minutes')
-                )
-            )
+                ]
+            ],
+            apply_filters('retailcrm_add_cron_interval', $schedules)
         );
     }
 
