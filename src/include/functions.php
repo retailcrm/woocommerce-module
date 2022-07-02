@@ -150,3 +150,19 @@ function validateUrl(string $url)
     return (preg_match("/https:\/\/(.*).(retailcrm.(pro|ru|es)|simla.com)/", $url)) ? $url : '';
 }
 
+/**
+ *  Get shipping rate.
+ *
+ * @return mixed
+ */
+function getShippingRates()
+{
+    $shippingRates = WC_Tax::get_shipping_tax_rates();
+
+    // Only one tax can be selected for shipping
+    if (is_array($shippingRates)) {
+        $shippingRates = array_shift($shippingRates);
+    }
+
+    return $shippingRates['rate'] ?? $shippingRates;
+}

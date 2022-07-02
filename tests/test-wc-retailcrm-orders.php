@@ -338,6 +338,21 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals(false, WC_Retailcrm_Orders::isCorporateOrder($this->order));
     }
 
+    public function test_get_shipping_rates()
+    {
+        $rate = getShippingRates();
+
+        $this->assertEquals(null, $rate);
+    }
+
+    public function test_validate_url()
+    {
+        $this->assertEquals('https://test.simla.com', validateUrl('https://test.simla.com'));
+
+        // Not valid url
+        $this->assertEquals('', validateUrl('https://test.com'));
+    }
+
     public function test_is_corporate_crm_order()
     {
         $this->assertEquals(
