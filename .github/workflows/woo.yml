@@ -440,7 +440,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer, phpunit:6.4.3
+          tools: composer:2.1.14, phpunit:6.4.3
           extensions: gd, mbstring, mysqli, zip, unzip, mcrypt, mysql, pdo_mysql, dom
           coverage: xdebug
 
