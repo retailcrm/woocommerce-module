@@ -327,3 +327,15 @@ msgstr "Descripción corta"
 
 msgid "In the catalog, you can use a full or short description of the product"
 msgstr "En el catálogo, puedes utilizar una descripción del producto corta o completa"
+
+msgid "If you change the time interval, need to clear the old cron tasks"
+msgstr "Si cambias el Intervalo de Tiempo tienes que limpiar los cron tareas antiguos"
+
+msgid "Clear cron tasks"
+msgstr "Borrar tareas cron"
+
+msgid "Clear"
+msgstr "Borrar"
+
+msgid "Cron tasks cleared"
+msgstr "Trabajos cron borrados"

@@ -337,3 +337,14 @@ msgstr "Краткое описание"
 msgid "In the catalog, you can use a full or short description of the product"
 msgstr "В каталоге можно использовать полное или краткое описание товара"
 
+msgid "If you change the time interval, need to clear the old cron tasks"
+msgstr "Если вы изменили временной интервал, необходимо очистить старые cron задачи"
+
+msgid "Clear cron tasks"
+msgstr "Очистить cron задачи"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "Cron tasks cleared"
+msgstr "Cron задачи очищены"

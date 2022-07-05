@@ -82,6 +82,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_content_upload', [$this, 'count_upload_data'], 99);
             add_action('wp_ajax_generate_icml', [$this, 'generate_icml']);
             add_action('wp_ajax_upload_selected_orders', [$this, 'upload_selected_orders']);
+            add_action('wp_ajax_clear_cron_tasks', [$this, 'clear_cron_tasks']);
             add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
             add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
             add_action('user_register', [$this, 'create_customer'], 10, 2);
@@ -122,9 +123,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function api_sanitized($settings)
         {
+            $timeInterval = apply_filters(
+                'retailcrm_cron_schedules',
+                [
+                    'icml' => 'three_hours',
+                    'history' => 'five_minutes',
+                    'inventories' => 'fiveteen_minutes',
+                ]
+            );
+
             if (isset($settings['sync']) && $settings['sync'] == static::YES) {
                 if (!wp_next_scheduled('retailcrm_inventories')) {
-                    wp_schedule_event(time(), 'fiveteen_minutes', 'retailcrm_inventories');
+                    wp_schedule_event(time(), $timeInterval['inventories'], 'retailcrm_inventories');
                 }
             } elseif (isset($settings['sync']) && $settings['sync'] == static::NO) {
                 wp_clear_scheduled_hook('retailcrm_inventories');
@@ -132,7 +142,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (isset($settings['history']) && $settings['history'] == static::YES) {
                 if (!wp_next_scheduled('retailcrm_history')) {
-                    wp_schedule_event(time(), 'five_minutes', 'retailcrm_history');
+                    wp_schedule_event(time(), $timeInterval['history'], 'retailcrm_history');
                 }
             } elseif (isset($settings['history']) && $settings['history'] == static::NO) {
                 wp_clear_scheduled_hook('retailcrm_history');
@@ -140,7 +150,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (isset($settings['icml']) && $settings['icml'] == static::YES) {
                 if (!wp_next_scheduled('retailcrm_icml')) {
-                    wp_schedule_event(time(), 'three_hours', 'retailcrm_icml');
+                    wp_schedule_event(time(), $timeInterval['icml'], 'retailcrm_icml');
                 }
             } elseif (isset($settings['icml']) && $settings['icml'] == static::NO) {
                 wp_clear_scheduled_hook('retailcrm_icml');
@@ -151,6 +161,21 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             return $settings;
+        }
+
+        /**
+         * If you change the time interval, need to clear the old cron tasks
+         *
+         * @codeCoverageIgnore Check in another tests
+         */
+        public function clear_cron_tasks()
+        {
+            wp_clear_scheduled_hook('retailcrm_icml');
+            wp_clear_scheduled_hook('retailcrm_history');
+            wp_clear_scheduled_hook('retailcrm_inventories');
+
+            //Add new cron tasks
+            $this->api_sanitized($this->settings);
         }
 
         /**
@@ -532,6 +557,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'tr_td_cron'        => __('Cron launches', 'retailcrm'),
                 'tr_td_icml'        => __('Generation ICML', 'retailcrm'),
                 'tr_td_history'     => __('Syncing history', 'retailcrm'),
+                'tr_successful'     => __('Cron tasks cleared', 'retailcrm'),
                 'tr_td_inventories' => __('Syncing inventories', 'retailcrm'),
             ];
 
