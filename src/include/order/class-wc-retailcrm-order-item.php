@@ -45,8 +45,11 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     public function build($item)
     {
-        $price = $this->calculate_price($item);
-        $discount_price = $this->calculate_discount($item, $price);
+        $decimalPlaces = wc_get_price_decimals();
+
+        // Calculate price and discount
+        $price         = $this->calculatePrice($item, $decimalPlaces);
+        $discountPrice = $this->calculateDiscount($item, $price, $decimalPlaces);
 
         $data['productName']  = $item['name'];
         $data['initialPrice'] = $price;
@@ -62,7 +65,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
         $this->set_data_fields($data);
         $this->set_offer($item);
-        $this->set_data_field('discountManualAmount', round($discount_price, 2));
+        $this->set_data_field('discountManualAmount', $discountPrice);
 
         return $this;
     }
@@ -94,31 +97,31 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
     /**
      * @param WC_Order_Item_Product $item
+     * @param int $decimalPlaces Price rounding from WC settings
      *
      * @return float
      */
-    private function calculate_price(WC_Order_Item_Product $item)
+    private function calculatePrice(WC_Order_Item_Product $item, int $decimalPlaces)
     {
         $price = ($item['line_subtotal'] / $item->get_quantity()) + ($item['line_subtotal_tax'] / $item->get_quantity());
 
-        return round($price, 2);
+        return round($price, $decimalPlaces);
     }
 
     /**
      * @param WC_Order_Item_Product $item
      * @param $price
+     * @param int $decimalPlaces Price rounding from WC settings
      *
      * @return float|int
-     * @todo Rounding issues with prices in pennies / cents should be expected here.
      */
-    private function calculate_discount(WC_Order_Item_Product $item, $price)
+    private function calculateDiscount(WC_Order_Item_Product $item, $price, int $decimalPlaces)
     {
-        $product_price  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
-        $product_tax    = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
-        $price_item     = $product_price + $product_tax;
-        $discount_price = $price - $price_item;
+        $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+        $productTax    = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
+        $itemPrice     = $productPrice + $productTax;
 
-        return round($discount_price, 2);
+        return round($price - $itemPrice, $decimalPlaces);
     }
 
     /**
