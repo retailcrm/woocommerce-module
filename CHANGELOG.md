@@ -1,3 +1,12 @@
+## 2022-07-18 4.4.5
+* Change logic work with delivery cost
+* Add price rounding from WC settings
+* Add functionality for changing the time interval for cron tasks
+* Fix error with empty 'paidAt'
+* Change processing history by sinceId
+* Fix spanish accents processing in ICML
+* Fix WA icon positioning
+
 ## 2022-05-26 4.4.4
 * Add product description to ICML
 * Fix fatal error using API without api_key
