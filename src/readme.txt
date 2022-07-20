@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 5.6
 Requires at least: 5.3
 Tested up to: 5.9
-Stable tag: 4.4.4
+Stable tag: 4.4.5
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,15 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.4.5 =
+* Change logic work with delivery cost
+* Add price rounding from WC settings
+* Add functionality for changing the time interval for cron tasks
+* Fix error with empty 'paidAt'
+* Change processing history by sinceId
+* Fix spanish accents processing in ICML
+* Fix WA icon positioning
+
 = 4.4.4 =
 * Add product description to ICML
 * Fix fatal error using API without api_key

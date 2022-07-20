@@ -341,12 +341,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $shipping->set_method_id($options[$order['delivery']['code']]);
             }
 
-            if (isset($order['delivery']['cost']) && !wc_tax_enabled()) {
-                $shipping->set_total($order['delivery']['cost']);
-            }
+            if (wc_tax_enabled()) {
+                $rate = getShippingRates();
 
-            if (!empty($order['delivery']['netCost']) && wc_tax_enabled()) {
-                $shipping->set_total($order['delivery']['netCost']);
+                $shipping->set_total($this->getDeliveryCost($order, $rate));
+            } else {
+                $shipping->set_total($this->getDeliveryCost($order));
             }
 
             if (isset($order['delivery']['service']['code'])) {
@@ -881,15 +881,17 @@ if (!class_exists('WC_Retailcrm_History')) :
                         }
                     }
 
-                    if (isset($order['delivery']['cost']) && !wc_tax_enabled()) {
-                        $shipping->set_total($order['delivery']['cost']);
-                    } elseif (isset($order['delivery']['netCost'])) {
-                        $shipping->set_total($order['delivery']['netCost']);
+                    if (wc_tax_enabled()) {
+                        $rate = getShippingRates();
+
+                        $shipping->set_total($this->getDeliveryCost($order, $rate));
+                    } else {
+                        $shipping->set_total($this->getDeliveryCost($order));
                     }
 
                     $shipping->set_order_id($wcOrder->get_id());
-
                     $shipping->save();
+
                     $wcOrder->add_item($shipping);
                 }
             }
@@ -1132,6 +1134,26 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             return $handled;
+        }
+
+        /**
+         * Get delivery cost for WC order
+         *
+         * @param array $order
+         *
+         * @return double
+         */
+        private function getDeliveryCost($order, $rate = null)
+        {
+            $deliveryCost = $order['delivery']['cost'] ?? 0.0;
+
+            if (empty($rate) || empty($deliveryCost)) {
+                return $deliveryCost;
+            }
+
+            $decimalPlaces = wc_get_price_decimals();
+
+            return round($deliveryCost / (1 +  $rate / 100), $decimalPlaces);
         }
 
         /**
