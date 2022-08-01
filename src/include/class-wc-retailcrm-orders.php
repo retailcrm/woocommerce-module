@@ -379,10 +379,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                         ? $shipping['total'] + $shipping['total_tax']
                         : $shipping['total'];
 
-                    $rate = getShippingRates();
+                    if (wc_tax_enabled()) {
+                        $rate = getShippingRates();
 
-                    if (!empty($rate)) {
-                        $orderData['delivery']['vatRate'] = $rate;
+                        if (!empty($rate)) {
+                            $orderData['delivery']['vatRate'] = $rate;
+                        }
                     }
                 }
             }
