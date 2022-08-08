@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -198,30 +199,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $codeSite   = '';
             $infoApiKey = $this->apiClient->credentials();
 
-            if (empty($infoApiKey) === false && $infoApiKey->isSuccessful() === true) {
-                if (empty($infoApiKey['siteAccess']) === false && $infoApiKey['siteAccess'] === 'access_selective') {
-                    if (empty($infoApiKey['sitesAvailable']) === false && count($infoApiKey['sitesAvailable']) === 1) {
-                        $codeSite = $infoApiKey['sitesAvailable'][0];
-                    }
-                }
+            if (
+                $infoApiKey->isSuccessful()
+                && !empty($infoApiKey['siteAccess'])
+                && !empty($infoApiKey['sitesAvailable'])
+                && $infoApiKey['siteAccess'] === 'access_selective'
+                && count($infoApiKey['sitesAvailable']) === 1
+            ) {
+                $codeSite = $infoApiKey['sitesAvailable'][0];
             }
 
-            if (empty($codeSite) === false) {
+            if (!empty($codeSite)) {
                 $getSites = $this->apiClient->sitesList();
 
-                if (empty($getSites['sites']) === false && $getSites->isSuccessful() === true) {
-                    if (empty($getSites['sites'][$codeSite]) === false) {
-                        $dataSite = $getSites['sites'][$codeSite];
+                if ($getSites->isSuccessful() && !empty($getSites['sites'][$codeSite])) {
+                    $dataSite = $getSites['sites'][$codeSite];
 
-                        if (empty($dataSite['ymlUrl']) === false) {
-                            $ymlUrl = $dataSite['ymlUrl'];
+                    if (!empty($dataSite['ymlUrl'])) {
+                        $ymlUrl = $dataSite['ymlUrl'];
 
-                            if (strpos($ymlUrl, 'simla') === false) {
-                                $ymlUrl = str_replace('/retailcrm.xml', '/simla.xml', $ymlUrl);
-                                $dataSite['ymlUrl'] = $ymlUrl;
+                        if (strpos($ymlUrl, 'simla') === false) {
+                            $ymlUrl = str_replace('/retailcrm.xml', '/simla.xml', $ymlUrl);
+                            $dataSite['ymlUrl'] = $ymlUrl;
 
-                                $this->apiClient->sitesEdit($dataSite);
-                            }
+                            $this->apiClient->sitesEdit($dataSite);
                         }
                     }
                 }
@@ -229,6 +230,35 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $retailCrmIcml = new WC_Retailcrm_Icml();
             $retailCrmIcml->generate();
+
+            $this->uploadCatalog($infoApiKey);
+        }
+
+        /**
+         * Add task for automatically upload catalog in CRM
+         */
+        private function uploadCatalog($infoApiKey)
+        {
+            if ($infoApiKey->isSuccessful() && !empty($infoApiKey['scopes'])) {
+                if (!in_array('analytics_write', $infoApiKey['scopes'])) {
+                    writeBaseLogs(
+                        'To automatically load the catalog in CRM, you need to enable analytics_write for the API key'
+                    );
+
+                    return;
+                }
+
+                $statisticUpdate = $this->apiClient->statisticUpdate();
+
+                if ($statisticUpdate->isSuccessful()) {
+                    writeBaseLogs('Catalog generated, task automatically upload added to CRM');
+                } else {
+                    writeBaseLogs(
+                        $statisticUpdate['errorMsg']
+                        ?? 'Unrecognized error when adding catalog upload task to CRM'
+                    );
+                }
+            }
         }
 
         /**
@@ -548,7 +578,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /**
          * Return time work next cron
          */
-        public function get_cron_info() {
+        public function get_cron_info()
+        {
             $defaultValue = __('This option is disabled', 'retailcrm');
             $icml         = $defaultValue;
             $history      = $defaultValue;
@@ -562,15 +593,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
             ];
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
-                $history = date( 'H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
+                $history = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
             }
 
             if (isset($this->settings['icml']) && $this->settings['icml'] == static::YES) {
-                $icml = date( 'H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
+                $icml = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
             }
 
             if (isset($this->settings['sync']) && $this->settings['sync'] == static::YES) {
-                $inventories = date( 'H:i:s d-m-Y ', wp_next_scheduled('retailcrm_inventories'));
+                $inventories = date('H:i:s d-m-Y ', wp_next_scheduled('retailcrm_inventories'));
             }
 
             echo json_encode(
@@ -724,4 +755,3 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
     }
 }
-
