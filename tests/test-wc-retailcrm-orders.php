@@ -21,7 +21,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
                               ->disableOriginalConstructor()
                               ->setMethods(
-                                  array(
+                                  [
                                       'ordersGet',
                                       'ordersCreate',
                                       'ordersEdit',
@@ -37,7 +37,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                                       'getSingleSiteForKey',
                                       'customersCorporateAddressesCreate',
                                       'customersCorporateCompaniesCreate'
-                                  )
+                                  ]
                               )
                               ->getMock();
 
@@ -130,10 +130,10 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->setMockResponse($responseMockSearch, 'isSuccessful', true);
 
             $responseMockSearch->setResponse(
-                array(
+                [
                     'success'   => true,
-                    'customersCorporate' => array()
-                )
+                    'customersCorporate' => []
+                ]
             );
 
             // Mock response for create customer corporate, his addresses and companies
@@ -141,10 +141,10 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->setMockResponse($responseMockCustomerCorporate, 'isSuccessful', true);
 
             $responseMockCustomerCorporate->setResponse(
-                array(
+                [
                     'success' => true,
                     'id' => 1
-                )
+                ]
             );
 
             // Mock response for get companies
@@ -152,12 +152,12 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->setMockResponse($responseMockCompany, 'isSuccessful', true);
 
             $responseMockCompany->setResponse(
-                array(
+                [
                     'success'   => true,
-                    'companies' => array(
-                        array('name' => 'WooCompany', 'id' => 777)
-                    )
-                )
+                    'companies' => [
+                        ['name' => 'WooCompany', 'id' => 777]
+                    ]
+                ]
             );
 
             $this->setMockResponse($retailcrm, 'ordersCreate', $responseMock);
@@ -325,6 +325,89 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    /**
+     * @param $isSuccessful
+     * @param $retailcrm
+     *
+     * @throws Exception
+     * @dataProvider dataProviderUpdateOrder
+     */
+    public function test_payment_on_delivery($isSuccessful, $retailcrm)
+    {
+        $this->createTestOrder();
+        $this->order->set_payment_method('cod');
+        $this->order->save();
+
+        if ($retailcrm) {
+            $responseMock = $this->createResponseMock();
+
+            $this->setMockResponse($responseMock, 'isSuccessful', $isSuccessful);
+            $this->setMockResponse($retailcrm, 'ordersEdit', $responseMock);
+            $this->setMockResponse($retailcrm, 'ordersPaymentDelete', $responseMock);
+
+            $response = $this->getResponseData($this->order->get_id());
+            $responseMock->setResponse($response);
+
+            $this->setMockResponse($retailcrm, 'ordersGet', $responseMock);
+        }
+
+        $retailcrmOrders = $this->getRetailcrmOrders($retailcrm);
+        $order = $retailcrmOrders->updateOrder($this->order->get_id());
+        $orderData = $retailcrmOrders->getOrder();
+
+        if ($retailcrm) {
+            $this->assertInstanceOf('WC_Order', $order);
+            $this->assertInternalType('array', $orderData);
+
+            $payment = $retailcrmOrders->getPayment();
+
+            $this->assertInternalType('array', $payment);
+
+            if (!empty($payment)) {
+                $this->assertArrayHasKey('type', $payment);
+                $this->assertArrayHasKey('order', $payment);
+                $this->assertArrayHasKey('externalId', $payment);
+                $this->assertEquals('payment3', $payment['type']);
+
+                $this->assertArrayNotHasKey('amount', $payment);
+                $this->assertArrayNotHasKey('status', $payment);
+                $this->assertArrayNotHasKey('paidAt', $payment);
+            } else {
+                $this->assertEquals([], $payment);
+            }
+
+            // Check payment status
+            $this->order->set_status('completed');
+            $this->order->save();
+
+            $order = $retailcrmOrders->updateOrder($this->order->get_id());
+            $orderData = $retailcrmOrders->getOrder();
+
+            $this->assertInstanceOf('WC_Order', $order);
+            $this->assertInternalType('array', $orderData);
+            $this->assertArrayHasKey('status', $orderData);
+            $this->assertEquals('status4', $orderData['status']);
+
+            $payment = $retailcrmOrders->getPayment();
+
+            $this->assertInternalType('array', $payment);
+
+            if (!empty($payment)) {
+                $this->assertArrayHasKey('type', $payment);
+                $this->assertArrayHasKey('order', $payment);
+                $this->assertArrayHasKey('externalId', $payment);
+                $this->assertArrayHasKey('status', $payment);
+                $this->assertArrayHasKey('paidAt', $payment);
+                $this->assertEquals('payment3', $payment['type']);
+                $this->assertEquals('paid', $payment['status']);
+            } else {
+                $this->assertEquals([], $payment);
+            }
+        } else {
+            $this->assertEquals(null, $order);
+        }
+    }
+
     public function test_is_corporate_order()
     {
         $this->createTestOrder();
@@ -358,11 +441,11 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals(
             true,
             WC_Retailcrm_Orders::isCorporateCrmOrder(
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer_corporate'
-                    )
-                )
+                    ]
+                ]
             )
         );
 
@@ -370,11 +453,11 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals(
             false,
             WC_Retailcrm_Orders::isCorporateCrmOrder(
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer'
-                    )
-                )
+                    ]
+                ]
             )
         );
     }
@@ -390,11 +473,11 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             true,
             WC_Retailcrm_Orders::isOrderCustomerWasChanged(
                 $this->order,
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer'
-                    )
-                )
+                    ]
+                ]
             )
         );
 
@@ -403,14 +486,14 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             true,
             WC_Retailcrm_Orders::isOrderCustomerWasChanged(
                 $this->order,
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer_corporate'
-                    ),
-                    'company' => array(
+                    ],
+                    'company' => [
                         'name' => 'Test1'
-                    )
-                )
+                    ]
+                ]
             )
         );
 
@@ -421,15 +504,15 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             true,
             WC_Retailcrm_Orders::isOrderCustomerWasChanged(
                 $this->order,
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer_corporate',
                         'externalId' => 2
-                    ),
-                    'company' => array(
+                    ],
+                    'company' => [
                         'name' => 'Test'
-                    )
-                )
+                    ]
+                ]
             )
         );
 
@@ -440,16 +523,16 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             true,
             WC_Retailcrm_Orders::isOrderCustomerWasChanged(
                 $this->order,
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer_corporate',
                         'externalId' => 1,
                         'email' => 'test1@mail.es'
-                    ),
-                    'company' => array(
+                    ],
+                    'company' => [
                         'name' => 'Test'
-                    )
-                )
+                    ]
+                ]
             )
         );
 
@@ -458,16 +541,16 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             false,
             WC_Retailcrm_Orders::isOrderCustomerWasChanged(
                 $this->order,
-                array(
-                    'customer' => array(
+                [
+                    'customer' => [
                         'type' => 'customer_corporate',
                         'externalId' => 1,
                         'email' => 'test@mail.es'
-                    ),
-                    'company' => array(
+                    ],
+                    'company' => [
                         'name' => 'Test'
-                    )
-                )
+                    ]
+                ]
             )
         );
     }
@@ -476,38 +559,38 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $this->setUp();
 
-        return array(
-            array(
+        return [
+            [
                 'is_successful' => true,
                 'retailcrm' => $this->apiMock
-            ),
-            array(
+            ],
+            [
                 'is_successful' => true,
                 'retailcrm' => false
-            ),
-            array(
+            ],
+            [
                 'is_successful' => false,
                 'retailcrm' => false
-            ),
-            array(
+            ],
+            [
                 'is_successful' => false,
                 'retailcrm' => $this->apiMock
-            )
-        );
+            ]
+        ];
     }
 
     public function dataProviderRetailcrm()
     {
         $this->setUp();
 
-        return array(
-            array(
+        return [
+            [
                 'retailcrm' => $this->apiMock
-            ),
-            array(
+            ],
+            [
                 'retailcrm' => false
-            )
-        );
+            ]
+        ];
     }
 
     private function createTestOrder()
@@ -528,18 +611,18 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function getResponseData($externalId)
     {
-        return array(
+        return [
             'success' => true,
-            'order' => array(
-                'payments' => array(
-                    array(
+            'order' => [
+                'payments' => [
+                    [
                         'id' => 1,
                         'externalId' => $externalId,
                         'type' => 'payment2'
-                    )
-                )
-            )
-        );
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
@@ -572,7 +655,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
     {
         return $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                     ->disableOriginalConstructor()
-                    ->setMethods(array('isSuccessful'))
+                    ->setMethods(['isSuccessful'])
                     ->getMock();
     }
 }
