@@ -526,7 +526,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $quantity = $product->get_stock_status() === 'instock' ? 1 : 0;
             }
 
-            $product_data = [
+            $productData = [
                 'id' => $product->get_id(),
                 'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
                 'name' => $product->get_name(),
@@ -545,7 +545,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $params[] = ['code' => 'article', 'name' => 'Article', 'value' => $product->get_sku()];
 
                 if (isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES) {
-                    $product_data['xmlId'] = $product->get_sku();
+                    $productData['xmlId'] = $product->get_sku();
                 }
             }
 
@@ -562,14 +562,20 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             }
 
             if (!empty($params)) {
-                $product_data['params'] = $params;
+                $productData['params'] = $params;
             }
 
-            if (isset($product_data)) {
-                $full_product_list[] = $product_data;
+            $productData = apply_filters(
+                'retailcrm_process_offer',
+                WC_Retailcrm_Plugin::clearArray($productData),
+                $product
+            );
+
+            if (isset($productData)) {
+                $full_product_list[] = $productData;
             }
 
-            unset($product_data);
+            unset($productData);
         }
 
         /**

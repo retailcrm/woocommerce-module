@@ -82,6 +82,11 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.4.6 =
+* Add automatically upload ICML in CRM
+* Add filter for changing ICML product information
+* Important fix bug with shipping tax
+
 = 4.4.5 =
 * Change logic work with delivery cost
 * Add price rounding from WC settings
