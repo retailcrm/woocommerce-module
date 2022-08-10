@@ -166,3 +166,14 @@ function getShippingRates()
 
     return $shippingRates['rate'] ?? $shippingRates;
 }
+
+/**
+ * Write base logs in retailcrm file.
+ *
+ * @codeCoverageIgnore Check in another tests
+ */
+function writeBaseLogs($message)
+{
+    WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
+}
+
