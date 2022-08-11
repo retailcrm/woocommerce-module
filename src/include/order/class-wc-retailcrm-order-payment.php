@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHP version 5.6
  *
@@ -59,17 +60,30 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         ];
 
         if ($order->is_paid()) {
-            $paymentData['status'] = 'paid';
+            if ($order->get_status() != 'completed' && $order->get_payment_method() == 'cod') {
+                writeBaseLogs(
+                    implode(
+                        ' ',
+                        [
+                            'Payment for order: ' . $order->get_id(),
+                            'Payment status cannot be changed as it is cash (or other payment method) on delivery.',
+                            'The status will be changed when the order is in status completed.',
+                        ]
+                    )
+                );
+            } else {
+                $paymentData['status'] = 'paid';
 
-            if (isset($this->settings[$order->get_payment_method()])) {
-                $paymentData['type'] = $this->settings[$order->get_payment_method()];
+                if (isset($this->settings[$order->get_payment_method()])) {
+                    $paymentData['type'] = $this->settings[$order->get_payment_method()];
+                }
+
+                $paidAt = $order->get_date_paid();
+
+                if (!empty($paidAt)) {
+                    $paymentData['paidAt'] = $paidAt->date('Y-m-d H:i:s');
+                }
             }
-        }
-
-        $paidAt = $order->get_date_paid();
-
-        if (!empty($paidAt)) {
-            $paymentData['paidAt'] = $paidAt->date('Y-m-d H:i:s');
         }
 
         if ($this->isNew) {
@@ -79,6 +93,12 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
                 $paymentData = [];
             }
         }
+
+        $paymentData = apply_filters(
+            'retailcrm_process_payment',
+            WC_Retailcrm_Plugin::clearArray($paymentData),
+            $order
+        );
 
         $this->set_data_fields($paymentData);
 

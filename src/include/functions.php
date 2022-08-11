@@ -170,7 +170,7 @@ function getShippingRates()
 /**
  * Write base logs in retailcrm file.
  *
- * @codeCoverageIgnore Check in another tests
+ * @codeCoverageIgnore
  */
 function writeBaseLogs($message)
 {

@@ -475,7 +475,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 return (array) $this->ordersGetRequestCache[$orderId];
             }
 
-            $crmOrder = array();
+            $crmOrder = [];
             $response = $this->retailcrm->ordersGet($orderId);
 
             if (!empty($response) && $response->isSuccessful() && isset($response['order'])) {

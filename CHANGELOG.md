@@ -1,3 +1,6 @@
+## 2022-08-10 4.4.7
+* Add support for payment method on delivery
+
 ## 2022-08-06 4.4.6
 * Add automatically upload ICML in CRM
 * Add filter for changing ICML product information
