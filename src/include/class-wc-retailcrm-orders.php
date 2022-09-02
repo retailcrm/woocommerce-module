@@ -380,9 +380,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                         : $shipping['total'];
 
                     if (wc_tax_enabled()) {
-                        $rate = getShippingRates();
+                        $shippingTaxClass = get_option('woocommerce_shipping_tax_class');
 
-                        if (!empty($rate)) {
+                        $rate = $shippingTaxClass == 'inherit'
+                            ? $this->getOrderItemRate($order)
+                            : getShippingRate();
+
+                        if ($rate !== null) {
                             $orderData['delivery']['vatRate'] = $rate;
                         }
                     }
@@ -500,6 +504,20 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         public function getPayment()
         {
             return $this->payment;
+        }
+
+        /**
+         * @return mixed
+         */
+        private function getOrderItemRate($order)
+        {
+            $orderItemTax = $order->get_taxes();
+
+            if (is_array($orderItemTax)) {
+                $orderItemTax = array_shift($orderItemTax);
+            }
+
+            return $orderItemTax instanceof WC_Order_Item_Tax ? $orderItemTax->get_rate_percent() : null;
         }
 
         /**

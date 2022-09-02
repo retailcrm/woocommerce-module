@@ -1,3 +1,6 @@
+## 2022-09-02 4.4.8
+* Fix a critical bug when working with taxes
+
 ## 2022-08-10 4.4.7
 * Add support for payment method on delivery
 
