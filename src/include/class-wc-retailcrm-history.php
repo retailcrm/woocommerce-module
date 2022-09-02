@@ -342,7 +342,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             if (wc_tax_enabled()) {
-                $rate = getShippingRates();
+                $rate = getShippingRate();
 
                 $shipping->set_total($this->getDeliveryCost($order, $rate));
             } else {
@@ -882,7 +882,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                     }
 
                     if (wc_tax_enabled()) {
-                        $rate = getShippingRates();
+                        $rate = getShippingRate();
 
                         $shipping->set_total($this->getDeliveryCost($order, $rate));
                     } else {

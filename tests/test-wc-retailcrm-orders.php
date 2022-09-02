@@ -423,7 +423,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_get_shipping_rates()
     {
-        $rate = getShippingRates();
+        $rate = getShippingRate();
 
         $this->assertEquals(null, $rate);
     }

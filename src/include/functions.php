@@ -155,8 +155,12 @@ function validateUrl(string $url)
  *
  * @return mixed
  */
-function getShippingRates()
+function getShippingRate()
 {
+    if (!isset(WC()->cart)) {
+        return null;
+    }
+
     $shippingRates = WC_Tax::get_shipping_tax_rates();
 
     // Only one tax can be selected for shipping
