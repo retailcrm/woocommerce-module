@@ -1,3 +1,6 @@
+## 2022-09-05 4.4.9
+* Fix bug with product tax
+
 ## 2022-09-02 4.4.8
 * Fix a critical bug when working with taxes
 

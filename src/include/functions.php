@@ -172,6 +172,29 @@ function getShippingRate()
 }
 
 /**
+ *  Get order item rate.
+ *
+ * @return mixed
+ */
+function getOrderItemRate($wcOrder)
+{
+    $orderItemTax = $wcOrder->get_taxes();
+
+    if (is_array($orderItemTax)) {
+        $orderItemTax = array_shift($orderItemTax);
+    }
+
+    return $orderItemTax instanceof WC_Order_Item_Tax ? $orderItemTax->get_rate_percent() : null;
+}
+
+function calculatePriceExcludingTax($priceIncludingTax, $rate)
+{
+    $decimalPlaces = wc_get_price_decimals();
+
+    return round($priceIncludingTax / (1 + $rate / 100), $decimalPlaces);
+}
+
+/**
  * Write base logs in retailcrm file.
  *
  * @codeCoverageIgnore

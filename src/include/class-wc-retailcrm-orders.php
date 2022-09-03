@@ -383,7 +383,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                         $shippingTaxClass = get_option('woocommerce_shipping_tax_class');
 
                         $rate = $shippingTaxClass == 'inherit'
-                            ? $this->getOrderItemRate($order)
+                            ? getOrderItemRate($order)
                             : getShippingRate();
 
                         if ($rate !== null) {
@@ -504,20 +504,6 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         public function getPayment()
         {
             return $this->payment;
-        }
-
-        /**
-         * @return mixed
-         */
-        private function getOrderItemRate($order)
-        {
-            $orderItemTax = $order->get_taxes();
-
-            if (is_array($orderItemTax)) {
-                $orderItemTax = array_shift($orderItemTax);
-            }
-
-            return $orderItemTax instanceof WC_Order_Item_Tax ? $orderItemTax->get_rate_percent() : null;
         }
 
         /**
