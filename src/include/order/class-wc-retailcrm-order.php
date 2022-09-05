@@ -15,7 +15,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
     /** @var bool */
     public $is_new = true;
 
-    protected $data = array(
+    protected $data = [
         'externalId' => 0,
         'status' => '',
         'number' => '',
@@ -28,12 +28,12 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
         'paymentStatus' => '',
         'phone' => '',
         'countryIso' => ''
-    );
+    ];
 
     /**
      * @var array
      */
-    protected $settings = array();
+    protected $settings = [];
 
     /**
      * WC_Retailcrm_Order constructor.
@@ -62,7 +62,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
 
         $dateCreate = $order->get_date_created();
 
-        $data = array(
+        $data = [
             'externalId' => $order->get_id(),
             'createdAt' => !empty($dateCreate) ? $dateCreate->date('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
             'firstName' => $firstName,
@@ -71,7 +71,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
             'customerComment' => $order->get_customer_note(),
             'phone' => $order->get_billing_phone(),
             'countryIso' => $order->get_shipping_country()
-        );
+        ];
 
         if ($data['countryIso'] == '--' || empty($data['countryIso'])) {
             $countries = new WC_Countries();
@@ -103,7 +103,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
 
     public function reset_data()
     {
-        $this->data = array(
+        $this->data = [
             'externalId' => '',
             'status' => '',
             'number' => '',
@@ -116,6 +116,6 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
             'paymentStatus' => '',
             'phone' => '',
             'countryIso' => ''
-        );
+        ];
     }
 }

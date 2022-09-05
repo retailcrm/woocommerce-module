@@ -208,10 +208,6 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->assertNotEquals($sinceId, $oldSinceId);
         $this->assertEquals(0, get_option('retailcrm_customers_history_since_id'));
-
-        // Check added products
-        $this->assertEquals(2, $wcOrderItem->get_quantity());
-        $this->assertEquals($product->get_id(), $wcOrderItem->get_product()->get_id());
     }
 
     public function test_history_order_update()
