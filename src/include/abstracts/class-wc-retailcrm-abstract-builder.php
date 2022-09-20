@@ -41,7 +41,8 @@ abstract class WC_Retailcrm_Abstract_Builder implements WC_Retailcrm_Builder_Int
      */
     public function reset()
     {
-        $this->data = array();
+        $this->data = [];
+
         return $this;
     }
 

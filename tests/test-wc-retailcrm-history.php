@@ -46,57 +46,59 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         if (!$wcOrder) {
             $this->fail('$order_added is null - no orders were added after receiving history');
         }
+        $options         = get_option(\WC_Retailcrm_Base::$option_key);
+        $orderItems      = $wcOrder->get_items();
+        $orderItem       = reset($orderItems);
+        $shippingAddress = $wcOrder->get_address('shipping');
+        $billingAddress  = $wcOrder->get_address('billing');
 
-        $order_added_items = $wcOrder->get_items();
-        $order_added_item = reset($order_added_items);
-        $shipping_address = $wcOrder->get_address('shipping');
-        $billing_address = $wcOrder->get_address('billing');
-        $options = get_option(\WC_Retailcrm_Base::$option_key);
 
         $this->assertEquals('status1', $options[$wcOrder->get_status()]);
 
-        if (is_object($order_added_item)) {
-            $this->assertEquals($product->get_id(), $order_added_item->get_product()->get_id());
+        if (is_object($orderItem)) {
+            $this->assertEquals($product->get_id(), $orderItem->get_product()->get_id());
         }
+
         $this->assertNotEmpty($wcOrder->get_date_created());
-        $this->assertNotEmpty($shipping_address['first_name']);
-        $this->assertNotEmpty($shipping_address['last_name']);
-        $this->assertNotEmpty($shipping_address['postcode']);
-        $this->assertNotEmpty($shipping_address['city']);
-        $this->assertNotEmpty($shipping_address['country']);
-        $this->assertNotEmpty($shipping_address['state']);
+        $this->assertNotEmpty($shippingAddress['first_name']);
+        $this->assertNotEmpty($shippingAddress['last_name']);
+        $this->assertNotEmpty($shippingAddress['postcode']);
+        $this->assertNotEmpty($shippingAddress['city']);
+        $this->assertNotEmpty($shippingAddress['country']);
+        $this->assertNotEmpty($shippingAddress['state']);
 
-        $this->assertEquals('Test_Name', $shipping_address['first_name']);
-        $this->assertEquals('Test_LastName', $shipping_address['last_name']);
-        $this->assertEquals('City', $shipping_address['city']);
-        $this->assertEquals('Region', $shipping_address['state']);
-        $this->assertEquals('ES', $shipping_address['country']);
-        $this->assertEquals(123456, $shipping_address['postcode']);
-        $this->assertEquals('Street', $shipping_address['address_1']);
+        $this->assertEquals('Test_Name', $shippingAddress['first_name']);
+        $this->assertEquals('Test_LastName', $shippingAddress['last_name']);
+        $this->assertEquals('City', $shippingAddress['city']);
+        $this->assertEquals('Region', $shippingAddress['state']);
+        $this->assertEquals('ES', $shippingAddress['country']);
+        $this->assertEquals(123456, $shippingAddress['postcode']);
+        $this->assertEquals('Street1', $shippingAddress['address_1']);
+        $this->assertEquals('Street2', $shippingAddress['address_2']);
 
 
-        if (isset($billing_address['phone'])) {
-            $this->assertNotEmpty($billing_address['phone']);
+        if (isset($billingAddress['phone'])) {
+            $this->assertNotEmpty($billingAddress['phone']);
         }
 
-        if (isset($billing_address['email'])) {
-            $this->assertNotEmpty($billing_address['email']);
+        if (isset($billingAddress['email'])) {
+            $this->assertNotEmpty($billingAddress['email']);
         }
 
-        $this->assertNotEmpty($billing_address['first_name']);
-        $this->assertNotEmpty($billing_address['last_name']);
-        $this->assertNotEmpty($billing_address['postcode']);
-        $this->assertNotEmpty($billing_address['city']);
-        $this->assertNotEmpty($billing_address['country']);
-        $this->assertNotEmpty($billing_address['state']);
+        $this->assertNotEmpty($billingAddress['first_name']);
+        $this->assertNotEmpty($billingAddress['last_name']);
+        $this->assertNotEmpty($billingAddress['postcode']);
+        $this->assertNotEmpty($billingAddress['city']);
+        $this->assertNotEmpty($billingAddress['country']);
+        $this->assertNotEmpty($billingAddress['state']);
 
-        $this->assertEquals('Test_Name', $billing_address['first_name']);
-        $this->assertEquals('Test_LastName', $billing_address['last_name']);
-        $this->assertEquals('City', $billing_address['city']);
-        $this->assertEquals('Region', $billing_address['state']);
-        $this->assertEquals('ES', $billing_address['country']);
-        $this->assertEquals(123456, $billing_address['postcode']);
-        $this->assertEquals('Street', $billing_address['address_1']);
+        $this->assertEquals('Test_Name', $billingAddress['first_name']);
+        $this->assertEquals('Test_LastName', $billingAddress['last_name']);
+        $this->assertEquals('City', $billingAddress['city']);
+        $this->assertEquals('Region', $billingAddress['state']);
+        $this->assertEquals('ES', $billingAddress['country']);
+        $this->assertEquals(123456, $billingAddress['postcode']);
+        $this->assertEquals('Street', $billingAddress['address_1']);
 
         if ($wcOrder->get_payment_method()) {
             $this->assertEquals('payment4', $options[$wcOrder->get_payment_method()]);

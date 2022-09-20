@@ -28,10 +28,10 @@ class WC_Retailcrm_Customer_Address_Test extends WC_Retailcrm_Test_Case_Helper
         $this->customer->set_billing_address_2('TestAddress2');
     }
 
-    public function test_build_and_reset_address()
+    public function test_build_address()
     {
         $customer_address = new WC_Retailcrm_Customer_Address();
-        $data = $customer_address->build($this->customer)->get_data();
+        $data = $customer_address->build($this->customer)->getData();
 
         $this->assertArrayHasKey('index', $data);
         $this->assertArrayHasKey('city', $data);
@@ -41,37 +41,20 @@ class WC_Retailcrm_Customer_Address_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('000000', $data['index']);
         $this->assertEquals('TestCity', $data['city']);
         $this->assertEquals('TestState', $data['region']);
-        $this->assertEquals('TestAddress1, TestAddress2', $data['text']);
+        $this->assertEquals('TestAddress1 || TestAddress2', $data['text']);
         $this->assertEquals('CO', $data['countryIso']);
-
-        // Check reset customer address data
-        $customer_address->reset_data();
-
-        $data = $customer_address->get_data();
-
-        $this->assertArrayHasKey('index', $data);
-        $this->assertArrayHasKey('city', $data);
-        $this->assertArrayHasKey('region', $data);
-        $this->assertArrayHasKey('text', $data);
-        $this->assertEquals('', $data['index']);
-        $this->assertEquals('', $data['city']);
-        $this->assertEquals('', $data['region']);
-        $this->assertEquals('', $data['text']);
     }
 
     public function test_empty_address()
     {
-        $customer_address = new WC_Retailcrm_Customer_Address();
-        $data = $customer_address->build(null)->get_data();
+        $customerAddress = new WC_Retailcrm_Customer_Address();
 
-        $this->assertArrayHasKey('index', $data);
-        $this->assertArrayHasKey('city', $data);
-        $this->assertArrayHasKey('region', $data);
-        $this->assertArrayHasKey('text', $data);
-        $this->assertEquals('', $data['index']);
-        $this->assertEquals('', $data['city']);
-        $this->assertEquals('', $data['region']);
-        $this->assertEquals('', $data['text']);
+        $addressData = $customerAddress
+            ->build(null)
+            ->getData();
+
+        $this->assertInternalType('array', $addressData);
+        $this->assertEquals([], $addressData);
     }
 }
 

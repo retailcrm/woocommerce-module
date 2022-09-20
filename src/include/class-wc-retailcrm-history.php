@@ -438,11 +438,11 @@ if (!class_exists('WC_Retailcrm_History')) :
                     }
 
                     if (isset($billingAddress['street'])) {
-                        $wcOrder->set_shipping_address_1($billingAddress['street']);
+                        $wcOrder->set_billing_address_1($billingAddress['street']);
                     }
 
                     if (isset($billingAddress['building'])) {
-                        $wcOrder->set_shipping_address_2($billingAddress['building']);
+                        $wcOrder->set_billing_address_2($billingAddress['building']);
                     }
                     // @codeCoverageIgnoreEnd
                 }
@@ -744,17 +744,22 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $companyName = $customer['mainCompany']['name'];
             }
 
+            $shippingAddress      = $order['delivery']['address'];
+            $shippingAddressLines = $this->getAddressLines($shippingAddress['text']);
+
             $addressShipping = [
                 'first_name' => $order['firstName'] ?? '',
                 'last_name'  => $order['lastName'] ?? '',
                 'company'    => '',
-                'address_1'  => $order['delivery']['address']['text'] ?? '',
-                'address_2'  => '',
-                'city'       => $order['delivery']['address']['city'] ?? '',
-                'state'      => $order['delivery']['address']['region'] ?? '',
-                'postcode'   => $order['delivery']['address']['index'] ?? '',
-                'country'    => $order['delivery']['address']['countryIso'] ?? ''
+                'address_1'  => $shippingAddressLines['address_1'] ?? $shippingAddressLines,
+                'address_2'  => $shippingAddressLines['address_2'] ?? '',
+                'city'       => $shippingAddress['city'] ?? '',
+                'state'      => $shippingAddress['region'] ?? '',
+                'postcode'   => $shippingAddress['index'] ?? '',
+                'country'    => $shippingAddress['countryIso'] ?? ''
             ];
+
+            $billingAddressLines = $this->getAddressLines($billingAddress['text']);
 
             $addressBilling = [
                 'first_name' => $contactOrCustomer['firstName'] ?? '',
@@ -762,13 +767,16 @@ if (!class_exists('WC_Retailcrm_History')) :
                 'company'    => $companyName,
                 'email'      => $contactOrCustomer['email'] ?? '',
                 'phone'      => $contactOrCustomer['phones'][0]['number'] ?? '',
-                'address_1'  => $billingAddress['text'] ?? '',
-                'address_2'  => '',
+                'address_1'  => $billingAddressLines['address_1'] ?? $billingAddressLines,
+                'address_2'  => $billingAddressLines['address_2'] ?? '',
                 'city'       => $billingAddress['city'] ?? '',
                 'state'      => $billingAddress['region'] ?? '',
                 'postcode'   => $billingAddress['index'] ?? '',
                 'country'    => $billingAddress['countryIso'] ?? ''
             ];
+
+            $wcOrder->set_address($addressShipping, 'shipping');
+            $wcOrder->set_address($addressBilling, 'billing');
 
             if (isset($order['payments']) && $order['payments']) {
                 $payment = WC_Payment_Gateways::instance();
@@ -783,9 +791,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                     }
                 }
             }
-
-            $wcOrder->set_address($addressBilling, 'billing');
-            $wcOrder->set_address($addressShipping, 'shipping');
 
             $crmOrderItems = $order['items'] ?? [];
 
@@ -987,6 +992,24 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
             }
+        }
+
+        /**
+         * Returns data for address_1 and address_2(if exist data for this field) for WC order.
+         *
+         * @param string $addressLine
+         *
+         * @return mixed
+         */
+        private function getAddressLines(string $addressLine)
+        {
+            if (strpos($addressLine, WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER) !== false) {
+                $addressLines = explode(WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER, $addressLine);
+
+                return ['address_1' => $addressLines[0], 'address_2' => $addressLines[1]];
+            }
+
+            return $addressLine;
         }
 
         /**

@@ -46,7 +46,8 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
      */
     public function build($order, $externalId = false)
     {
-        $this->reset_data();
+        $this->resetData();
+
         $paymentData = [];
 
         if (!$this->isNew) {
@@ -100,7 +101,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
             $order
         );
 
-        $this->set_data_fields($paymentData);
+        $this->setDataFields($paymentData);
 
         return $this;
     }
@@ -110,9 +111,9 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
      *
      * @return array
      */
-    public function get_data()
+    public function getData()
     {
-        $data = parent::get_data();
+        $data = parent::getData();
 
         if (empty($data['type'])) {
             return [];
@@ -122,7 +123,7 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
         return array_filter($data);
     }
 
-    public function reset_data()
+    public function resetData()
     {
         $this->data = [
             'externalId' => '',

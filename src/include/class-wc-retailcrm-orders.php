@@ -36,7 +36,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         protected $orders;
 
         /** @var array */
-        private $ordersGetRequestCache = array();
+        private $ordersGetRequestCache = [];
 
         /** @var array */
         private $order = [];
@@ -83,7 +83,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 return null;
             }
 
-            $this->order_payment->reset_data();
+            $this->order_payment->resetData();
 
             $wcOrder = wc_get_order($order_id);
             $this->processOrder($wcOrder);
@@ -345,7 +345,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->orders->is_new = false;
             }
 
-            $orderData = $this->orders->build($order)->get_data();
+            $orderData = $this->orders->build($order)->getData();
 
             if ($order->get_items('shipping')) {
                 $shippings = $order->get_items('shipping');
@@ -393,14 +393,14 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
             }
 
-            $orderData['delivery']['address'] = $this->order_address->build($order)->get_data();
+            $orderData['delivery']['address'] = $this->order_address->build($order)->getData();
             $orderItems = [];
 
             /** @var WC_Order_Item_Product $item */
             foreach ($order->get_items() as $item) {
-                $orderItems[] = $this->order_item->build($item)->get_data();
+                $orderItems[] = $this->order_item->build($item)->getData();
 
-                $this->order_item->reset_data();
+                $this->order_item->resetData();
             }
 
             $orderData['items'] = $orderItems;
@@ -409,7 +409,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             if (!$update && $order->get_total() > 0) {
                 $this->order_payment->isNew = true;
-                $orderData['payments'][]    = $this->order_payment->build($order)->get_data();
+                $orderData['payments'][]    = $this->order_payment->build($order)->getData();
             }
 
             if (!empty($this->customFields)) {
@@ -444,8 +444,8 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         protected function sendPayment($order, $update = false, $externalId = false)
         {
             $this->order_payment->isNew = !$update;
-            $payment                    = $this->order_payment->build($order, $externalId)->get_data();
 
+            $payment = $this->order_payment->build($order, $externalId)->getData();
             $integrationPayments = get_option('retailcrm_integration_payments');
 
             if (is_array($integrationPayments)) {

@@ -12,28 +12,10 @@
  */
 abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Data
 {
-    /** @var array $data */
-    protected $data = array(
-        'index' => '',
-        'city' => '',
-        'region' => '',
-        'text' => '',
-    );
-
     /**
-     * Resets inner state
+     * Divider for order delivery address_1 and address_2
      */
-    public function reset_data()
-    {
-        $this->data = array(
-            'index' => '',
-            'city' => '',
-            'region' => '',
-            'text' => '',
-        );
-
-        return $this;
-    }
+    const ADDRESS_LINE_DIVIDER = ' || ';
 
     /**
      * Returns shipping address from order.
@@ -44,26 +26,16 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      */
     protected function getOrderAddress($order)
     {
-        if ($order === null) {
-            return array();
+        if (!$order instanceof WC_Order) {
+            return [];
         }
 
-        $orderShippingAddress = array(
-            'postcode' => $order->get_shipping_postcode(),
-            'state' => $order->get_shipping_state(),
-            'city' => $order->get_shipping_city(),
-            'address_1' => $order->get_shipping_address_1(),
-            'address_2' => $order->get_shipping_address_2()
-        );
-
-        if (!empty($orderShippingAddress)) {
-            return array(
-                'index'  => $orderShippingAddress['postcode'],
-                'city'   => $orderShippingAddress['city'],
-                'region' => $this->get_state_name($order->get_shipping_country(), $orderShippingAddress['state']),
-                'text'   => implode(' ', $orderShippingAddress)
-            );
-        }
+        return [
+            'index'  => $order->get_shipping_postcode(),
+            'city'   => $order->get_shipping_city(),
+            'region' => $this->getRegion($order->get_shipping_country(), $order->get_shipping_state()),
+            'text'   => $this->getText($order, 'order'),
+        ];
     }
 
     /**
@@ -76,43 +48,29 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      */
     protected function getCustomerAddress($customer, $order)
     {
-        if ($customer === null) {
-            return array();
+        if (!$customer instanceof WC_Customer) {
+            return [];
         }
 
         $customerBillingAddress = $customer->get_billing_address();
 
         if ($order instanceof WC_Order && empty($customerBillingAddress)) {
-            return array(
+            return [
                 'index' => $order->get_billing_postcode(),
-                'countryIso' => $this->validateCountryCode($order->get_billing_country()),
-                'region' => $this->get_state_name($order->get_billing_country(), $order->get_billing_state()),
+                'countryIso' => $this->getCountryCode($order->get_billing_country()),
+                'region' => $this->getRegion($order->get_billing_country(), $order->get_billing_state()),
                 'city' => $order->get_billing_city(),
-                'text' => $this->joinAddresses($order->get_billing_address_1(), $order->get_billing_address_2())
-            );
+                'text' => $this->getText($order),
+            ];
         } else {
-            return array(
+            return [
                 'index' => $customer->get_billing_postcode(),
-                'countryIso' => $this->validateCountryCode($customer->get_billing_country()),
-                'region' => $this->get_state_name($customer->get_billing_country(), $customer->get_billing_state()),
+                'countryIso' => $this->getCountryCode($customer->get_billing_country()),
+                'region' => $this->getRegion($customer->get_billing_country(), $customer->get_billing_state()),
                 'city' => $customer->get_billing_city(),
-                'text' => $this->joinAddresses($customer->get_billing_address_1(), $customer->get_billing_address_2())
-            );
+                'text' => $this->getText($customer),
+            ];
         }
-    }
-
-    /**
-     * Validate countryIso. Check if a given code represents a valid ISO 3166-1 alpha-2 code.
-     *
-     * @param $countryCode
-     *
-     * @return string
-     */
-    private function validateCountryCode($countryCode)
-    {
-        $countries = new WC_Countries();
-
-        return $countries->country_exists($countryCode) ? $countryCode : '';
     }
 
     /**
@@ -123,9 +81,23 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      *
      * @return string
      */
-    protected function joinAddresses($address1 = '', $address2 = '')
+    protected function joinAddresses(string $address1 = '', string $address2 = '')
     {
-        return implode(', ', array_filter(array($address1, $address2)));
+        return implode(self::ADDRESS_LINE_DIVIDER, array_filter([$address1, $address2]));
+    }
+
+    /**
+     * Validate countryIso. Check if a given code represents a valid ISO 3166-1 alpha-2 code.
+     *
+     * @param $countryCode
+     *
+     * @return string
+     */
+    private function getCountryCode($countryCode)
+    {
+        $countries = new WC_Countries();
+
+        return $countries->country_exists($countryCode) ? $countryCode : '';
     }
 
     /**
@@ -136,7 +108,7 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
      *
      * @return string
      */
-    protected function get_state_name($countryCode, $stateCode)
+    protected function getRegion(string $countryCode, string $stateCode)
     {
         if (preg_match('/^[A-Z\-0-9]{0,5}$/', $stateCode) && !is_null($countryCode)) {
             $countriesProvider = new WC_Countries();
@@ -148,5 +120,25 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
         }
 
         return $stateCode;
+    }
+
+    /**
+     * Returns data for CRM field 'text'.
+     * If type entity equals 'order', get address for order and use shipping address,
+     * else get address for customer and use billing address.
+     *
+     * @return string
+     */
+    protected function getText($wcEntity, $typeEntity = 'customer')
+    {
+        if ($typeEntity === 'order') {
+            return empty($wcEntity->get_shipping_address_2())
+                ? $wcEntity->get_shipping_address_1()
+                : $this->joinAddresses($wcEntity->get_shipping_address_1(), $wcEntity->get_shipping_address_2());
+        } else {
+            return empty($wcEntity->get_billing_address_2())
+                ? $wcEntity->get_billing_address_1()
+                : $this->joinAddresses($wcEntity->get_billing_address_1(), $wcEntity->get_billing_address_2());
+        }
     }
 }

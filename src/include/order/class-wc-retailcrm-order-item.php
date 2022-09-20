@@ -63,9 +63,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             ]
         ];
 
-        $this->set_data_fields($data);
-        $this->set_offer($item);
-        $this->set_data_field('discountManualAmount', $discountPrice);
+        $this->setDataFields($data);
+        $this->setOffer($item);
+        $this->setField('discountManualAmount', $discountPrice);
 
         return $this;
     }
@@ -75,7 +75,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      *
      * @return void
      */
-    private function set_offer(WC_Order_Item_Product $item)
+    private function setOffer(WC_Order_Item_Product $item)
     {
         $uid   = $item['variation_id'] > 0 ? $item['variation_id'] : $item['product_id'] ;
         $offer = ['externalId' => $uid];
@@ -92,7 +92,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             unset($offer['externalId']);
         }
 
-        $this->set_data_field('offer', $offer);
+        $this->setField('offer', $offer);
     }
 
     /**
@@ -125,9 +125,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
     }
 
     /**
-     * Reset data for object
+     * Reset item data.
      */
-    public function reset_data()
+    public function resetData()
     {
         $this->data = [
             'offer' => [],

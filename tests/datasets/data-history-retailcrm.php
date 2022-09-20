@@ -169,7 +169,7 @@ class DataHistoryRetailCrm
                                 'countryIso' => 'ES',
                                 'region' => 'Region',
                                 'city' => 'City',
-                                'text' => 'Street'
+                                'text' => 'Street1 || Street2'
                             ]
                         ],
                         'site' => 'test-com',

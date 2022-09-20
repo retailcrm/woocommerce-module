@@ -274,7 +274,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $newAddress = $builder
                 ->setIsMain(false)
                 ->build($customer, $order)
-                ->get_data();
+                ->getData();
 
             $addresses = $this->retailcrm->customersCorporateAddresses(
                 $corporateId,
@@ -335,9 +335,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             );
 
             if ($response->isSuccessful() && $response->offsetExists('id')) {
-                $this->customerCorporateCompany['address'] = array(
+                $this->customerCorporateCompany['address'] = [
                     'id' => $response['id'],
-                );
+                ];
 
                 $this->retailcrm->customersCorporateCompaniesCreate(
                     $customerId,
@@ -401,22 +401,22 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             // then we take $order->get_date_created() order
             $createdAt = empty($createdAt) ? $order->get_date_created() : $createdAt;
 
-            $data_customer = array(
+            $customerData = [
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
                 'firstName' => $firstName ? $firstName : $customer->get_username(),
                 'lastName' => $lastName,
                 'email' => $email,
-                'address' => $this->customer_address->build($customer, $order)->get_data()
-            );
+                'address' => $this->customer_address->build($customer, $order)->getData()
+            ];
 
             if ($customer->get_id() > 0) {
-                $data_customer['externalId'] = $customer->get_id();
+                $customerData['externalId'] = $customer->get_id();
             }
 
             if (!empty($billingPhone)) {
-                $data_customer['phones'][] = array(
+                $customerData['phones'][] = [
                     'number' => $customer->get_billing_phone()
-                );
+                ];
             }
 
             // If the client is corporate, set the value isContact.
@@ -430,7 +430,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 }
 
                 if (!empty($company)) {
-                    $data_customer['isContact'] = true;
+                    $customerData['isContact'] = true;
                 }
             }
 
@@ -439,14 +439,14 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     $metaValue = $customer->get_meta($metaKey);
 
                     if (!empty($metaValue)) {
-                        $data_customer['customFields'][$customKey] = $metaValue;
+                        $customerData['customFields'][$customKey] = $metaValue;
                     }
                 }
             }
 
             $this->customer = apply_filters(
                 'retailcrm_process_customer',
-                WC_Retailcrm_Plugin::clearArray($data_customer),
+                WC_Retailcrm_Plugin::clearArray($customerData),
                 $customer
             );
         }
@@ -462,39 +462,39 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         protected function processCorporateCustomer($crmCustomerId, $customer, $order)
         {
-            $data_company = array(
+            $data_company = [
                 'isMain' => true,
                 'name' => $order->get_billing_company()
-            );
+            ];
 
-            $data_customer = array(
+            $data_customer = [
                 'nickName' => $order->get_billing_company(),
-                'customerContacts' => array(
-                    array(
+                'customerContacts' => [
+                    [
                         'isMain' => true,
-                        'customer' => array(
+                        'customer' => [
                             'id' => $crmCustomerId
-                        )
-                    )
-                )
-            );
+                        ]
+                    ]
+                ]
+            ];
 
             $corpAddress = new WC_Retailcrm_Customer_Corporate_Address();
 
             $billingAddress = $corpAddress
                 ->setIsMain(true)
                 ->build($customer, $order)
-                ->get_data();
+                ->getData();
 
             if (!empty($billingAddress)) {
                 $data_company['contragent']['legalAddress'] = implode(
                     ', ',
-                    array(
+                    [
                         $billingAddress['index'],
                         $billingAddress['city'],
                         $billingAddress['region'],
                         $billingAddress['text']
-                    )
+                    ]
                 );
             }
 
@@ -577,11 +577,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $customer = false;
 
             if (!empty($customerExternalId)) {
-                $customer = $this->searchCustomer(array('externalId' => $customerExternalId));
+                $customer = $this->searchCustomer(['externalId' => $customerExternalId]);
             }
 
             if (!$customer && !empty($customerEmailOrPhone)) {
-                $customer = $this->searchCustomer(array('email' => $customerEmailOrPhone, 'isContact' => $isContact));
+                $customer = $this->searchCustomer(['email' => $customerEmailOrPhone, 'isContact' => $isContact]);
             }
 
             return $customer;
