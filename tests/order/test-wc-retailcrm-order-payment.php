@@ -33,7 +33,7 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
 	    $settings = $this->getOptions();
 	    $order_payment = new WC_Retailcrm_Order_Payment($settings);
 
-        $data = $order_payment->build($this->order, $externalId)->get_data();
+        $data = $order_payment->build($this->order, $externalId)->getData();
 
         $this->assertNotEmpty($data);
 
@@ -53,7 +53,7 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_build_payment_type_not_exist($externalId)
     {
         $order_payment = new WC_Retailcrm_Order_Payment('test');
-        $data = $order_payment->build($this->order, $externalId)->get_data();
+        $data = $order_payment->build($this->order, $externalId)->getData();
 
         $this->assertEmpty($data);
     }
@@ -70,7 +70,7 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
         $order_payment = new WC_Retailcrm_Order_Payment($settings);
         $order_payment->isNew = false;
 
-        $data = $order_payment->build($this->order, $externalId)->get_data();
+        $data = $order_payment->build($this->order, $externalId)->getData();
 
         $this->assertEmpty($data);
     }
@@ -88,7 +88,7 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->order->update_status('completed');
 
-        $data = $order_payment->build($this->order, $externalId)->get_data();
+        $data = $order_payment->build($this->order, $externalId)->getData();
 
         $this->assertNotEmpty($data);
 
@@ -111,7 +111,7 @@ class WC_Retailcrm_Order_Payment_Test extends WC_Retailcrm_Test_Case_Helper
         $settings = $this->getOptions();
         $order_payment = new WC_Retailcrm_Order_Payment($settings);
 
-        $data = $order_payment->build($this->order, $externalId)->get_data();
+        $data = $order_payment->build($this->order, $externalId)->getData();
 
 	    $this->assertNotEmpty($data);
 

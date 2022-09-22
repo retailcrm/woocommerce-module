@@ -28,13 +28,13 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $this->customer->set_billing_address_2('TestAddress2');
     }
 
-    public function test_build_and_reset_address()
+    public function test_build_address()
     {
         $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
         $data = $customer_address
             ->setIsMain(true)
             ->build($this->customer)
-            ->get_data();
+            ->getData();
 
         $this->assertArrayHasKey('index', $data);
         $this->assertArrayHasKey('city', $data);
@@ -45,23 +45,9 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $this->assertEquals('000000', $data['index']);
         $this->assertEquals('TestCity', $data['city']);
         $this->assertEquals('TestState', $data['region']);
-        $this->assertEquals('TestAddress1, TestAddress2', $data['text']);
+        $this->assertEquals('TestAddress1 || TestAddress2', $data['text']);
         $this->assertEquals('CO', $data['countryIso']);
         $this->assertEquals(true, $data['isMain']);
-
-        // Check reset customer corporate address data
-        $customer_address->reset_data();
-
-        $data = $customer_address->get_data();
-
-        $this->assertArrayHasKey('index', $data);
-        $this->assertArrayHasKey('city', $data);
-        $this->assertArrayHasKey('region', $data);
-        $this->assertArrayHasKey('text', $data);
-        $this->assertEquals('', $data['index']);
-        $this->assertEquals('', $data['city']);
-        $this->assertEquals('', $data['region']);
-        $this->assertEquals('', $data['text']);
     }
 
     public function test_build_not_main_company()
@@ -70,7 +56,7 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $data = $customer_address
             ->setIsMain(false)
             ->build($this->customer)
-            ->get_data();
+            ->getData();
 
         $this->assertArrayHasKey('index', $data);
         $this->assertArrayHasKey('city', $data);
@@ -81,7 +67,7 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
         $this->assertEquals('000000', $data['index']);
         $this->assertEquals('TestCity', $data['city']);
         $this->assertEquals('TestState', $data['region']);
-        $this->assertEquals('TestAddress1, TestAddress2', $data['text']);
+        $this->assertEquals('TestAddress1 || TestAddress2', $data['text']);
         $this->assertEquals('CO', $data['countryIso']);
         $this->assertEquals(false, $data['isMain']);
     }
@@ -89,20 +75,15 @@ class WC_Retailcrm_Customer_Corporate_Address_Test extends WC_Retailcrm_Test_Cas
 
     public function test_empty_address()
     {
-        $customer_address = new WC_Retailcrm_Customer_Corporate_Address();
-        $data = $customer_address
+        $customerCorporateAddress = new WC_Retailcrm_Customer_Corporate_Address();
+
+        $addressData = $customerCorporateAddress
             ->setIsMain(false)
             ->build(null)
-            ->get_data();
+            ->getData();
 
-        $this->assertArrayHasKey('index', $data);
-        $this->assertArrayHasKey('city', $data);
-        $this->assertArrayHasKey('region', $data);
-        $this->assertArrayHasKey('text', $data);
-        $this->assertEquals('', $data['index']);
-        $this->assertEquals('', $data['city']);
-        $this->assertEquals('', $data['region']);
-        $this->assertEquals('', $data['text']);
+        $this->assertInternalType('array', $addressData);
+        $this->assertEquals([], $addressData);
     }
 }
 

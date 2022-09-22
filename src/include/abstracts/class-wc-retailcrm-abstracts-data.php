@@ -13,12 +13,7 @@
 abstract class WC_Retailcrm_Abstracts_Data
 {
     /** @var array */
-    protected $data = array();
-
-    /**
-     * @return void
-     */
-    abstract public function reset_data();
+    protected $data = [];
 
     /**
      * @param $data
@@ -30,7 +25,7 @@ abstract class WC_Retailcrm_Abstracts_Data
     /**
      * @codeCoverageIgnore
      */
-    protected function set_data_field($field, $value)
+    protected function setField($field, $value)
     {
         if (isset($this->data[$field]) && \gettype($value) !== \gettype($this->data[$field])) {
             return false;
@@ -44,11 +39,11 @@ abstract class WC_Retailcrm_Abstracts_Data
     /**
      * @param $fields
      */
-    protected function set_data_fields($fields)
+    protected function setDataFields($fields)
     {
         if (!empty($fields)) {
             foreach ($fields as $field => $value) {
-                $this->set_data_field($field, $value);
+                $this->setField($field, $value);
             }
         }
     }
@@ -56,7 +51,7 @@ abstract class WC_Retailcrm_Abstracts_Data
     /**
      * @return array
      */
-    public function get_data()
+    public function getData()
     {
         return $this->data;
     }

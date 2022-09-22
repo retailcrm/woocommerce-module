@@ -21,22 +21,10 @@ class WC_Retailcrm_Order_Test extends WC_Retailcrm_Test_Case_Helper {
         $this->order = WC_Helper_Order::create_order();
     }
 
-    public function test_reset_data()
-    {
-        $buildOrder = new WC_Retailcrm_Order($this->getOptions());
-        $data = $buildOrder->build($this->order)->get_data();
-
-        $this->assertNotEmpty($data);
-
-        $buildOrder->reset_data();
-
-        $this->assertEmpty(array_filter($buildOrder->get_data()));
-    }
-
     public function test_empty_shipping_data()
     {
         $buildOrder = new WC_Retailcrm_Order($this->getOptions());
-        $data = $buildOrder->build($this->order)->get_data();
+        $data = $buildOrder->build($this->order)->getData();
 
         $this->assertNotEmpty($data);
         $this->assertArrayHasKey('firstName', $data);
@@ -51,7 +39,7 @@ class WC_Retailcrm_Order_Test extends WC_Retailcrm_Test_Case_Helper {
 
         $this->order->set_shipping_country('');
 
-        $data = $buildOrder->build($this->order)->get_data();
+        $data = $buildOrder->build($this->order)->getData();
 
         $this->assertNotEmpty($data);
         $this->assertArrayHasKey('countryIso', $data);
