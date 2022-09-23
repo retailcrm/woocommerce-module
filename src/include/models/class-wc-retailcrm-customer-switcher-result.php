@@ -1,6 +1,7 @@
 <?php
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Customer_Switcher_Result - Holds modified order and customer which was set in the order.
  * If customer is null, then only order props was updated. Previous customer (if it was registered)
@@ -31,7 +32,8 @@ class WC_Retailcrm_Customer_Switcher_Result
         $this->wcCustomer = $wcCustomer;
         $this->wcOrder = $wcOrder;
 
-        if ((!is_null($this->wcCustomer) && !($this->wcCustomer instanceof WC_Customer))
+        if (
+            (!is_null($this->wcCustomer) && !($this->wcCustomer instanceof WC_Customer))
             || !($this->wcOrder instanceof WC_Order)
         ) {
             throw new \InvalidArgumentException(sprintf('Incorrect data provided to %s', __CLASS__));

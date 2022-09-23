@@ -1,7 +1,15 @@
 <?php
 
+if (!class_exists('WC_Retailcrm_Request')) {
+    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-request.php'));
+}
+
+if (!class_exists('WC_Retailcrm_Response')) {
+    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
+}
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Client_V5 - Api Client V5 class.
  *
@@ -11,15 +19,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
  */
-
-if (!class_exists('WC_Retailcrm_Request')) {
-    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-request.php'));
-}
-
-if (!class_exists('WC_Retailcrm_Response')) {
-    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
-}
-
 class WC_Retailcrm_Client_V5
 {
     protected $client;

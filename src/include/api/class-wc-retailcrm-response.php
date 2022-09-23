@@ -1,6 +1,11 @@
 <?php
+
+if (!class_exists('WC_Retailcrm_Exception_Json')) {
+    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-exception-json.php'));
+}
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Response -  Response class.
  *
@@ -10,11 +15,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
  */
-
-if (!class_exists('WC_Retailcrm_Exception_Json')) {
-    include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-exception-json.php'));
-}
-
 class WC_Retailcrm_Response implements \ArrayAccess
 {
     // HTTP response status code

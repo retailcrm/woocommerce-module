@@ -339,3 +339,6 @@ msgstr "Borrar"
 
 msgid "Cron tasks cleared"
 msgstr "Trabajos cron borrados"
+
+msgid "Untitled"
+msgstr "Intitulado"

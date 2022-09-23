@@ -1,18 +1,17 @@
 <?php
 
-/**
- * PHP version 5.6
- *
- * Class WC_Retailcrm_History - Allows transfer data orders/customers with CRM.
- *
- * @category Integration
- * @author   RetailCRM <integration@retailcrm.ru>
- * @license  http://retailcrm.ru Proprietary
- * @link     http://retailcrm.ru
- * @see      http://help.retailcrm.ru
- */
-
 if (!class_exists('WC_Retailcrm_History')) :
+    /**
+     * PHP version 7.0
+     *
+     * Class WC_Retailcrm_History - Allows transfer data orders/customers with CRM.
+     *
+     * @category Integration
+     * @author   RetailCRM <integration@retailcrm.ru>
+     * @license  http://retailcrm.ru Proprietary
+     * @link     http://retailcrm.ru
+     * @see      http://help.retailcrm.ru
+     */
     class WC_Retailcrm_History
     {
         const PAGE_LIMIT = 25;

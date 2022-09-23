@@ -1,6 +1,7 @@
 <?php
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_History_Assembler - Assembles history records into list which closely resembles
  * orders & customers list output from API.

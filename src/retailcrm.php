@@ -5,7 +5,7 @@
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.4.9
+ * Version: 4.5.0
  * Tested up to: 6.0
  * WC requires at least: 5.4
  * WC tested up to: 6.7
@@ -117,6 +117,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/customer/class-wc-retailcrm-customer-address.php'));
             require_once(self::checkCustomFile('include/customer/class-wc-retailcrm-customer-corporate-address.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-icml.php'));
+            require_once(self::checkCustomFile('include/icml/class-wc-retailcrm-icml-writer.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-orders.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-customers.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-inventories.php'));

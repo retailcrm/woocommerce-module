@@ -1,6 +1,7 @@
 <?php
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Customer_Switcher - This component provides builder-like interface in order to make it easier to
  * change customer & customer data in the order via retailCRM history.

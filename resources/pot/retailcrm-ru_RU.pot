@@ -348,3 +348,7 @@ msgstr "Очистить"
 
 msgid "Cron tasks cleared"
 msgstr "Cron задачи очищены"
+
+msgid "Untitled"
+msgstr "Без названия"
+

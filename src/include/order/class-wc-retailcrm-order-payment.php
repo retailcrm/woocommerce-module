@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Order_Payment - Build payments for CRM order.
  *

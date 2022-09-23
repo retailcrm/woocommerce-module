@@ -1,3 +1,8 @@
+## 2022-09-23 4.5.0
+* Migrating to PHP 7.0.
+* Change logic work with ICML catalog: added streaming generation, added generators in the ICML generation process.
+* Change logic work with address
+
 ## 2022-09-05 4.4.9
 * Fix bug with product tax
 

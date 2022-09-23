@@ -1,17 +1,17 @@
 <?php
-/**
- * PHP version 5.6
- *
- * Class WC_Retailcrm_Customers - Allows transfer data customers with CMS.
- *
- * @category Integration
- * @author   RetailCRM <integration@retailcrm.ru>
- * @license  http://retailcrm.ru Proprietary
- * @link     http://retailcrm.ru
- * @see      http://help.retailcrm.ru
- */
 
 if (!class_exists('WC_Retailcrm_Customers')) :
+    /**
+     * PHP version 7.0
+     *
+     * Class WC_Retailcrm_Customers - Allows transfer data customers with CMS.
+     *
+     * @category Integration
+     * @author   RetailCRM <integration@retailcrm.ru>
+     * @license  http://retailcrm.ru Proprietary
+     * @link     http://retailcrm.ru
+     * @see      http://help.retailcrm.ru
+     */
     class WC_Retailcrm_Customers
     {
         /** @var bool | WC_Retailcrm_Proxy | \WC_Retailcrm_Client_V5 */
