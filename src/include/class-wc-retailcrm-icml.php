@@ -46,13 +46,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         }
 
         /**
-         * Generate file
+         * Generate ICML catalog.
          */
         public function generate()
         {
-            $start  = microtime(true);
-            $memory = memory_get_usage();
-
             $this->icmlWriter->writeHead($this->shop);
 
             $categories = $this->prepareCategories();
@@ -64,7 +61,14 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
             $this->icmlWriter->writeCategories($categories);
 
-            $this->writeProducts();
+            $offers = $this->prepareOffers();
+
+            if (empty($offers)) {
+                writeBaseLogs('Can`t get offers!');
+                return;
+            }
+
+            $this->icmlWriter->writeOffers($offers);
 
             $this->icmlWriter->writeEnd();
             $this->icmlWriter->formatXml($this->tmpFile);
@@ -73,33 +77,26 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         }
 
         /**
-         * Get WC products
+         * Prepare WC offers for write.
          *
          * @return void
          */
-        private function writeProducts()
+        private function prepareOffers()
         {
-            $statusArgs = $this->getProductStatuses();
+            $productStatuses = $this->getProductStatuses();
 
-            if (!$statusArgs) {
-                $statusArgs = ['publish'];
-            }
-
-            $productAttributes   = [];
-            $attributeTaxonomies = wc_get_attribute_taxonomies();
-
-            foreach ($attributeTaxonomies as $productAttribute) {
-                $attributeId = wc_attribute_taxonomy_name_by_id(intval($productAttribute->attribute_id));
-                $productAttributes[$attributeId] = $productAttribute->attribute_label;
+            if (!$productStatuses) {
+                $productStatuses = ['publish'];
             }
 
             $page = 1;
+            $offerAttributes = $this->getOfferAttributes();
 
             do {
                 $products = wc_get_products(
                     [
                         'limit'    => 1000,
-                        'status'   => $statusArgs,
+                        'status'   => $productStatuses,
                         'page'     => $page,
                         'paginate' => true,
                     ]
@@ -107,43 +104,47 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
                 if (empty($products)) {
                     writeBaseLogs('Can`t get products!');
-
                     return;
                 }
 
-                $offer = $this->prepareOffers($products->products, $productAttributes);
+                foreach ($products->products as $offer) {
+                    $type = $offer->get_type();
 
-                $this->icmlWriter->writeOffers($offer);
+                    if (strpos($type, 'variable') !== false || strpos($type, 'variation') !== false) {
+                        foreach ($offer->get_children() as $childId) {
+                            $childProduct = wc_get_product($childId);
+
+                            if (!$childProduct) {
+                                continue;
+                            }
+
+                            yield $this->getOffer($offerAttributes, $childProduct, $offer);
+                        }
+                    } else {
+                        yield $this->getOffer($offerAttributes, $offer);
+                    }
+                }
 
                 $page++;
             } while ($page <= $products->max_num_pages);
         }
 
         /**
-         * @param $products
-         * @param $productAttributes
+         * Get WC offer attributes.
          *
-         * @return Generator
+         * @return array
          */
-        private function prepareOffers($products, $productAttributes)
+        private function getOfferAttributes()
         {
-            foreach ($products as $offer) {
-                $type = $offer->get_type();
+            $offerAttributes   = [];
+            $attributeTaxonomies = wc_get_attribute_taxonomies();
 
-                if (strpos($type, 'variable') !== false || strpos($type, 'variation') !== false) {
-                    foreach ($offer->get_children() as $childId) {
-                        $childProduct = wc_get_product($childId);
-
-                        if (!$childProduct) {
-                            continue;
-                        }
-
-                        yield $this->getOffer($productAttributes, $childProduct, $offer);
-                    }
-                } else {
-                    yield $this->getOffer($productAttributes, $offer);
-                }
+            foreach ($attributeTaxonomies as $productAttribute) {
+                $attributeId = wc_attribute_taxonomy_name_by_id(intval($productAttribute->attribute_id));
+                $offerAttributes[$attributeId] = $productAttribute->attribute_label;
             }
+
+            return $offerAttributes;
         }
 
         /**
@@ -251,10 +252,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             }
 
             if (isset($this->settings['product_description'])) {
-                $productDescription = $this->getDescription($product);
+                $productDescription = $this->getOfferDescription($product);
 
                 if (empty($productDescription) && $parent instanceof WC_Product_Variable) {
-                    $this->getDescription($parent);
+                    $this->getOfferDescription($parent);
                 }
 
                 if ($productDescription != '') {
@@ -278,31 +279,31 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         }
 
         /**
-         * Get product statuses
+         * Get product statuses.
          *
          * @return array
          */
         private function getProductStatuses()
         {
-            $statusArgs = [];
+            $statuses = [];
 
             foreach (get_post_statuses() as $key => $value) {
                 if (isset($this->settings['p_' . $key]) && $this->settings['p_' . $key] == WC_Retailcrm_Base::YES) {
-                    $statusArgs[] = $key;
+                    $statuses[] = $key;
                 }
             }
 
-            return $statusArgs;
+            return $statuses;
         }
 
         /**
-         * Get product description
+         * Get offer description.
          *
          * @param WC_Product | WC_Product_Variable $product WC product.
          *
          * @return string
          */
-        private function getDescription($product)
+        private function getOfferDescription($product)
         {
             return $this->settings['product_description'] == 'full'
                 ? $product->get_description()
@@ -310,7 +311,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         }
 
         /**
-         * Get WC categories
+         * Prepare WC categories for write.
          *
          * @return array
          */
@@ -359,13 +360,5 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
             return $categories;
         }
-
-        private function getCountProducts()
-        {
-            global $wpdb;
-
-            return $wpdb->get_var("SELECT COUNT(*) FROM $wpdb->posts WHERE `post_type` LIKE 'product'");
-        }
     }
-
 endif;

@@ -203,8 +203,6 @@ if (!class_exists('WC_Retailcrm_Icml_Writer')) :
          */
         private function writeOffersParams(array $offerParams)
         {
-            WC_Retailcrm_Logger::debug(__METHOD__, ['Hello', $offerParams['params']]);
-
             foreach ($offerParams as $param) {
                 if (
                     empty($param['code'])
