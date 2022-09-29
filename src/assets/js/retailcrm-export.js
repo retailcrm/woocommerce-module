@@ -25,10 +25,13 @@ jQuery(function () {
 
         this.ordersCount = 0;
         this.customersCount = 0;
+
+        this.adminUrl = AdminUrl.url;
+
         let _this = this;
 
         jQuery.ajax({
-            url: window.location.origin + '/wp-admin/admin-ajax.php?action=content_upload',
+            url: this.adminUrl + '/admin-ajax.php?action=content_upload',
             method: "POST",
             timeout: 0,
             data: {ajax: 1},
@@ -101,7 +104,7 @@ jQuery(function () {
         let _this = this;
 
         jQuery.ajax({
-            url: window.location.origin + '/wp-admin/admin-ajax.php?action=do_upload',
+            url: this.adminUrl + '/admin-ajax.php?action=do_upload',
             method: "POST",
             timeout: 0,
             data: data
@@ -167,7 +170,7 @@ jQuery(function () {
 
             jQuery.ajax({
                 type: "POST",
-                url: window.location.origin + '/wp-admin/admin-ajax.php?action=upload_selected_orders&order_ids_retailcrm=' + ids,
+                url: this.adminUrl + '/admin-ajax.php?action=upload_selected_orders&order_ids_retailcrm=' + ids,
                 success: function (response) {
                     alert(_this.messageSuccessful);
                 }

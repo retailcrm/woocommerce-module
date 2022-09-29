@@ -17,10 +17,12 @@ jQuery(function () {
         this.inventories = 0;
         this.messageSuccessful = '';
 
+        this.adminUrl = AdminUrl.url;
+
         let _this = this;
 
         jQuery.ajax({
-            url: window.location.origin + '/wp-admin/admin-ajax.php?action=cron_info',
+            url: this.adminUrl + '/admin-ajax.php?action=cron_info',
             method: "POST",
             timeout: 0,
             data: {ajax: 1},
@@ -61,7 +63,7 @@ jQuery(function () {
 
         jQuery.ajax({
             type: "POST",
-            url: window.location.origin + '/wp-admin/admin-ajax.php?action=clear_cron_tasks',
+            url: this.adminUrl + '/admin-ajax.php?action=clear_cron_tasks',
             success: function (response) {
                 alert(_this.messageSuccessful);
             }

@@ -503,16 +503,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function include_js_scripts_for_admin()
         {
-            $path =  plugins_url() . '/woo-retailcrm/assets/js/';
+            $jsScripts     = ['retailcrm-export', 'retailcrm-cron-info','retailcrm-meta-fields'];
+            $wpAdminUrl    = ['url' => get_admin_url()];
+            $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
 
-            wp_register_script('retailcrm-export', $path . 'retailcrm-export.js', false, '0.1');
-            wp_enqueue_script('retailcrm-export', $path . 'retailcrm-export.js', '', '', true);
+            foreach ($jsScripts as $scriptName) {
+                wp_register_script($scriptName, $jsScriptsPath . $scriptName . '.js', false, '0.1');
+                wp_enqueue_script($scriptName, $jsScriptsPath . $scriptName . '.js', '', '', true);
 
-            wp_register_script('retailcrm-cron-info', $path . 'retailcrm-cron-info.js', false, '0.1');
-            wp_enqueue_script('retailcrm-cron-info', $path . 'retailcrm-export.js', '', '', true);
-
-            wp_register_script('retailcrm-meta-fields', $path . 'retailcrm-meta-fields.js', false, '0.1');
-            wp_enqueue_script('retailcrm-meta-fields', $path . 'retailcrm-meta-fields.js', '', '', true);
+                // In this method transfer wp-admin url in JS scripts.
+                wp_localize_script($scriptName, 'AdminUrl', $wpAdminUrl);
+            }
         }
 
         /**
