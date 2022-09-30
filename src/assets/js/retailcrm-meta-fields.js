@@ -36,7 +36,7 @@ jQuery(function () {
         }
 
         jQuery.ajax({
-            url: window.location.origin + '/wp-admin/admin-ajax.php?action=set_meta_fields',
+            url: AdminUrl.url + '/admin-ajax.php?action=set_meta_fields',
             method: 'POST',
             timeout: 0,
             data: {ajax: 1},
