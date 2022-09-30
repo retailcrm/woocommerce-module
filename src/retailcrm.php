@@ -45,9 +45,9 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
 
             if (class_exists( 'WC_Integration' )) {
                 self::load_module();
-                add_filter('woocommerce_integrations', array( $this, 'add_integration'));
+                add_filter('woocommerce_integrations', [$this, 'add_integration']);
             } else {
-                add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
+                add_action('admin_notices', [$this, 'woocommerce_missing_notice']);
             }
         }
 
@@ -187,10 +187,10 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
 
             return wp_nonce_url(
                 add_query_arg(
-                    array(
+                    [
                         'action' => $action,
                         'plugin' => $pluginSlug
-                    ),
+                    ],
                     admin_url( 'update.php' )
                 ),
                 $action.'_'.$pluginSlug
@@ -206,5 +206,5 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     $plugin->register_activation_hook();
     $plugin->register_deactivation_hook();
 
-    add_action('plugins_loaded', array('WC_Integration_Retailcrm', 'get_instance'), 0);
+    add_action('plugins_loaded', ['WC_Integration_Retailcrm', 'get_instance'], 0);
 endif;
