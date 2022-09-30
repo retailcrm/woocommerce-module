@@ -83,6 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.5.0 =
+* Fix path for js scripts
 * Migrating to PHP 7.0.
 * Change logic work with ICML catalog: added streaming generation, added generators in the ICML generation process.
 * Change logic work with address
