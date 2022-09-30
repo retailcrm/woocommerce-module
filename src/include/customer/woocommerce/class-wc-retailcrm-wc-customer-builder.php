@@ -1,7 +1,7 @@
 <?php
 
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_WC_Customer_Builder - It converts retailCRM customer data (array) into WC_Customer.
  *

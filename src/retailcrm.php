@@ -5,7 +5,7 @@
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.4.9
+ * Version: 4.5.0
  * Tested up to: 6.0
  * WC requires at least: 5.4
  * WC tested up to: 6.7
@@ -45,9 +45,9 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
 
             if (class_exists( 'WC_Integration' )) {
                 self::load_module();
-                add_filter('woocommerce_integrations', array( $this, 'add_integration'));
+                add_filter('woocommerce_integrations', [$this, 'add_integration']);
             } else {
-                add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
+                add_action('admin_notices', [$this, 'woocommerce_missing_notice']);
             }
         }
 
@@ -117,6 +117,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/customer/class-wc-retailcrm-customer-address.php'));
             require_once(self::checkCustomFile('include/customer/class-wc-retailcrm-customer-corporate-address.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-icml.php'));
+            require_once(self::checkCustomFile('include/icml/class-wc-retailcrm-icml-writer.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-orders.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-customers.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-inventories.php'));
@@ -186,10 +187,10 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
 
             return wp_nonce_url(
                 add_query_arg(
-                    array(
+                    [
                         'action' => $action,
                         'plugin' => $pluginSlug
-                    ),
+                    ],
                     admin_url( 'update.php' )
                 ),
                 $action.'_'.$pluginSlug
@@ -205,5 +206,5 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     $plugin->register_activation_hook();
     $plugin->register_deactivation_hook();
 
-    add_action('plugins_loaded', array('WC_Integration_Retailcrm', 'get_instance'), 0);
+    add_action('plugins_loaded', ['WC_Integration_Retailcrm', 'get_instance'], 0);
 endif;

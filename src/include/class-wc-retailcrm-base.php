@@ -1,22 +1,21 @@
 <?php
 
-/**
- * PHP version 5.6
- *
- * Class WC_Retailcrm_Base - Main settings plugin.
- *
- * @category Integration
- * @author   RetailCRM <integration@retailcrm.ru>
- * @license  http://retailcrm.ru Proprietary
- * @link     http://retailcrm.ru
- * @see      http://help.retailcrm.ru
- */
-
 if (!class_exists('WC_Retailcrm_Base')) {
     if (!class_exists('WC_Retailcrm_Abstracts_Settings')) {
         include_once(WC_Integration_Retailcrm::checkCustomFile('include/abstracts/class-wc-retailcrm-abstracts-settings.php'));
     }
 
+    /**
+     * PHP version 7.0
+     *
+     * Class WC_Retailcrm_Base - Main settings plugin.
+     *
+     * @category Integration
+     * @author   RetailCRM <integration@retailcrm.ru>
+     * @license  http://retailcrm.ru Proprietary
+     * @link     http://retailcrm.ru
+     * @see      http://help.retailcrm.ru
+     */
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
         /** @var WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5|bool */

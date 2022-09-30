@@ -2,10 +2,10 @@
 Contributors: Simla.com
 Donate link: https://www.simla.com
 Tags: Интеграция, Simla.com, simla
-Requires PHP: 5.6
+Requires PHP: 7.0
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 4.4.9
+Stable tag: 4.5.0
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,12 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.5.0 =
+* Fix path for js scripts
+* Migrating to PHP 7.0.
+* Change logic work with ICML catalog: added streaming generation, added generators in the ICML generation process.
+* Change logic work with address
+
 = 4.4.9 =
 * Fix bug with product tax
 

@@ -3,7 +3,7 @@
 use datasets\DataHistoryRetailCrm;
 
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_History_Test - Testing WC_Retailcrm_History.
  *

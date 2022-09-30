@@ -1,15 +1,4 @@
 <?php
-/**
- * PHP version 5.6
- *
- * Class WC_Retailcrm_Request - Request class.
- *
- * @category Integration
- * @package  WC_Retailcrm_Request
- * @author   RetailCRM <dev@retailcrm.ru>
- * @license  https://opensource.org/licenses/MIT MIT License
- * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
- */
 
 if (!class_exists('WC_Retailcrm_Exception_Curl')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-exception-curl.php'));
@@ -19,6 +8,17 @@ if (!class_exists('WC_Retailcrm_Response')) {
     include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-response.php'));
 }
 
+/**
+ * PHP version 7.0
+ *
+ * Class WC_Retailcrm_Request - Request class.
+ *
+ * @category Integration
+ * @package  WC_Retailcrm_Request
+ * @author   RetailCRM <dev@retailcrm.ru>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     http://retailcrm.ru/docs/Developers/ApiVersion5
+ */
 class WC_Retailcrm_Request
 {
     const METHOD_GET = 'GET';

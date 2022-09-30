@@ -1,6 +1,7 @@
 <?php
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Interface WC_Retailcrm_Builder_Interface - Main interface for builders. All builders.
  *

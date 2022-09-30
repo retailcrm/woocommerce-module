@@ -1,6 +1,7 @@
 <?php
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Customer_Switcher_State_Test - Testing WC_Retailcrm_Customer_Switcher_State.
  *

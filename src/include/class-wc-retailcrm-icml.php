@@ -1,25 +1,20 @@
 <?php
 
-/**
- * PHP version 5.6
- *
- * Class WC_Retailcrm_Icml - Generate ICML file (catalog).
- *
- * @category Integration
- * @author   RetailCRM <integration@retailcrm.ru>
- * @license  http://retailcrm.ru Proprietary
- * @link     http://retailcrm.ru
- * @see      http://help.retailcrm.ru
- */
-
 if (!class_exists('WC_Retailcrm_Icml')) :
+    /**
+     * PHP version 7.0
+     *
+     * Class WC_Retailcrm_Icml - Generate ICML file (catalog).
+     *
+     * @category Integration
+     * @author   RetailCRM <integration@retailcrm.ru>
+     * @license  http://retailcrm.ru Proprietary
+     * @link     http://retailcrm.ru
+     * @see      http://help.retailcrm.ru
+     */
     class WC_Retailcrm_Icml
     {
-        protected $shop;
-        protected $file;
-        protected $tmpFile;
-
-        protected $properties = [
+        const OFFER_PROPERTIES = [
             'name',
             'productName',
             'price',
@@ -31,19 +26,11 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             'productActivity'
         ];
 
-        protected $xml;
-
-        /** @var SimpleXMLElement $categories */
-        protected $categories;
-
-        /** @var SimpleXMLElement $categories */
-        protected $offers;
-
-        protected $chunk = 500;
-        protected $fileLifeTime = 3600;
-
-        /** @var array */
+        protected $shop;
+        protected $file;
+        protected $tmpFile;
         protected $settings;
+        protected $icmlWriter;
 
         /**
          * WC_Retailcrm_Icml constructor.
@@ -51,410 +38,125 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          */
         public function __construct()
         {
-            $this->settings = get_option(WC_Retailcrm_Base::$option_key);
-            $this->shop = get_bloginfo('name');
-            $this->file = ABSPATH . 'simla.xml';
-            $this->tmpFile = sprintf('%s.tmp', $this->file);
+            $this->shop       = get_bloginfo('name');
+            $this->file       = ABSPATH . 'simla.xml';
+            $this->tmpFile    = sprintf('%s.tmp', $this->file);
+            $this->settings   = get_option(WC_Retailcrm_Base::$option_key);
+            $this->icmlWriter = new WC_Retailcrm_Icml_Writer($this->tmpFile);
         }
 
         /**
-         * Generate file
+         * Generate ICML catalog.
          */
         public function generate()
         {
-            $categories = $this->get_wc_categories_taxonomies();
+            $this->icmlWriter->writeHead($this->shop);
 
-            if (file_exists($this->tmpFile)) {
-                if (filectime($this->tmpFile) + $this->fileLifeTime < time()) {
-                    unlink($this->tmpFile);
-                    $this->writeHead();
-                }
-            } else {
-                $this->writeHead();
+            $categories = $this->prepareCategories();
+
+            if (empty($categories)) {
+                writeBaseLogs('Can`t get categories!');
+                return;
             }
 
-            try {
-                if (!empty($categories)) {
-                    $this->writeCategories($categories);
-                    unset($categories);
-                }
+            $this->icmlWriter->writeCategories($categories);
 
-                $status_args = $this->checkPostStatuses();
-                $this->get_wc_products_taxonomies($status_args);
+            $offers = $this->prepareOffers();
 
-                $dom = dom_import_simplexml(simplexml_load_file($this->tmpFile))->ownerDocument;
-
-                $dom->formatOutput = true;
-
-                $formatted = $dom->saveXML();
-
-                unset($dom, $this->xml);
-
-                file_put_contents($this->tmpFile, $formatted);
-                rename($this->tmpFile, $this->file);
-            } catch (Exception $e) {
-                unlink($this->tmpFile);
-            }
-        }
-
-        /**
-         * Load tmp data
-         *
-         * @return \SimpleXMLElement
-         */
-        private function loadXml()
-        {
-            return new SimpleXMLElement(
-                $this->tmpFile,
-                LIBXML_NOENT | LIBXML_NOCDATA | LIBXML_COMPACT | LIBXML_PARSEHUGE,
-                true
-            );
-        }
-
-        /**
-         * Generate xml header
-         */
-        private function writeHead()
-        {
-            $string = sprintf(
-                '<?xml version="1.0" encoding="UTF-8"?><yml_catalog date="%s"><shop><name>%s</name><categories/><offers/></shop></yml_catalog>',
-                current_time('Y-m-d H:i:s'),
-                html_entity_decode($this->shop)
-            );
-
-            file_put_contents($this->tmpFile, $string, LOCK_EX);
-        }
-
-        /**
-         * Write categories in file
-         *
-         * @param $categories
-         */
-        private function writeCategories($categories)
-        {
-            $chunkCategories = array_chunk($categories, $this->chunk);
-            foreach ($chunkCategories as $categories) {
-                $this->xml = $this->loadXml();
-
-                $this->categories = $this->xml->shop->categories;
-                $this->addCategories($categories);
-
-                $this->xml->asXML($this->tmpFile);
+            if (empty($offers)) {
+                writeBaseLogs('Can`t get offers!');
+                return;
             }
 
-            unset($this->categories);
+            $this->icmlWriter->writeOffers($offers);
+
+            $this->icmlWriter->writeEnd();
+            $this->icmlWriter->formatXml($this->tmpFile);
+
+            rename($this->tmpFile, $this->file);
         }
 
         /**
-         * Write products in file
-         *
-         * @param $offers
-         */
-        private function writeOffers($offers)
-        {
-            $chunkOffers = array_chunk($offers, $this->chunk);
-            foreach ($chunkOffers as $offers) {
-                $this->xml = $this->loadXml();
-
-                $this->offers = $this->xml->shop->offers;
-                $this->addOffers($offers);
-
-                $this->xml->asXML($this->tmpFile);
-            }
-
-            unset($this->offers);
-        }
-
-        /**
-         * Add categories
-         *
-         * @param $categories
-         */
-        private function addCategories($categories)
-        {
-            $categories = self::filterRecursive($categories);
-
-            foreach ($categories as $category) {
-                if (!array_key_exists('name', $category) || !array_key_exists('id', $category)) {
-                    continue;
-                }
-
-                /** @var SimpleXMLElement $e */
-                /** @var SimpleXMLElement $cat */
-
-                $cat = $this->categories;
-                $e = $cat->addChild('category');
-
-                $e->addAttribute('id', $category['id']);
-
-                if (array_key_exists('parentId', $category) && $category['parentId'] > 0) {
-                    $e->addAttribute('parentId', $category['parentId']);
-                }
-
-                $e->addChild('name', $category['name']);
-
-                if (array_key_exists('picture', $category)) {
-                    $e->addChild('picture', $category['picture']);
-                }
-            }
-        }
-
-        /**
-         * Add offers
-         *
-         * @param $offers
-         */
-        private function addOffers($offers)
-        {
-            $offers = self::filterRecursive($offers);
-
-            foreach ($offers as $key => $offer) {
-                if (!array_key_exists('id', $offer)) {
-                    continue;
-                }
-
-                $e = $this->offers->addChild('offer');
-
-                $e->addAttribute('id', $offer['id']);
-
-                if (!array_key_exists('productId', $offer) || empty($offer['productId'])) {
-                    $offer['productId'] = $offer['id'];
-                }
-                $e->addAttribute('productId', $offer['productId']);
-
-                if (!empty($offer['quantity'])) {
-                    $e->addAttribute('quantity', (int) $offer['quantity']);
-                } else {
-                    $e->addAttribute('quantity', 0);
-                }
-
-                if (isset($offer['categoryId']) && $offer['categoryId']) {
-                    if (is_array($offer['categoryId'])) {
-                        foreach ($offer['categoryId'] as $categoryId) {
-                            $e->addChild('categoryId', $categoryId);
-                        }
-                    } else {
-                        $e->addChild('categoryId', $offer['categoryId']);
-                    }
-                }
-
-                if (!array_key_exists('name', $offer) || empty($offer['name'])) {
-                    $offer['name'] = 'Без названия';
-                }
-
-                if (!array_key_exists('productName', $offer) || empty($offer['productName'])) {
-                    $offer['productName'] = $offer['name'];
-                }
-
-                if (array_key_exists('picture', $offer) && !empty($offer['picture'])) {
-                    foreach ($offer['picture'] as $urlImage) {
-                        $e->addChild('picture', $urlImage);
-                    }
-                }
-
-                unset($offer['id'], $offer['productId'], $offer['categoryId'], $offer['quantity'], $offer['picture']);
-                array_walk($offer, [$this, 'setOffersProperties'], $e);
-
-                if (array_key_exists('params', $offer) && !empty($offer['params'])) {
-                    array_walk($offer['params'], [$this, 'setOffersParams'], $e);
-                }
-
-                if (array_key_exists('dimensions', $offer)) {
-                    $e->addChild('dimensions', $offer['dimensions']);
-                }
-
-                if (array_key_exists('weight', $offer)) {
-                    $e->addChild('weight', $offer['weight']);
-                }
-
-                if (array_key_exists('tax', $offer)) {
-                    $e->addChild('vatRate', $offer['tax']);
-                }
-
-                unset($offers[$key]);
-            }
-        }
-
-        /**
-         * Set offer properties
-         *
-         * @param $value
-         * @param $key
-         * @param $e
-         */
-        private function setOffersProperties($value, $key, &$e)
-        {
-            if (in_array($key, $this->properties) && $key != 'params') {
-                /** @var SimpleXMLElement $e */
-                $e->addChild($key, htmlspecialchars($value));
-            }
-        }
-
-        /**
-         * Set offer params
-         *
-         * @param $value
-         * @param $key
-         * @param $e
-         */
-        private function setOffersParams($value, $key, &$e)
-        {
-            if (
-                array_key_exists('code', $value) &&
-                array_key_exists('name', $value) &&
-                array_key_exists('value', $value) &&
-                !empty($value['code']) &&
-                !empty($value['name']) &&
-                !empty($value['value'])
-            ) {
-                /** @var SimpleXMLElement $e */
-                $param = $e->addChild('param', htmlspecialchars($value['value']));
-                $param->addAttribute('code', $value['code']);
-                $param->addAttribute('name', substr(htmlspecialchars($value['name']), 0, 200));
-                unset($key);
-            }
-        }
-
-        /**
-         * Filter result array
-         *
-         * @param $haystack
-         *
-         * @return mixed
-         */
-        public static function filterRecursive($haystack)
-        {
-            foreach ($haystack as $key => $value) {
-                if (is_array($value)) {
-                    $haystack[$key] = self::filterRecursive($haystack[$key]);
-                }
-
-                if (
-                    is_null($haystack[$key])
-                    || $haystack[$key] === ''
-                    || (is_array($haystack[$key]) && count($haystack[$key]) == 0)
-                ) {
-                    unset($haystack[$key]);
-                } elseif (!is_array($value)) {
-                    $haystack[$key] = trim($value);
-                }
-            }
-
-            return $haystack;
-        }
-
-        /**
-         * Get WC products
+         * Prepare WC offers for write.
          *
          * @return void
          */
-        private function get_wc_products_taxonomies($status_args)
+        private function prepareOffers()
         {
-            if (!$status_args) {
-                $status_args = ['publish'];
+            $productStatuses = $this->getProductStatuses();
+
+            if (!$productStatuses) {
+                $productStatuses = ['publish'];
             }
 
-            $attribute_taxonomies = wc_get_attribute_taxonomies();
-            $product_attributes = [];
+            $page = 1;
+            $offerAttributes = $this->getOfferAttributes();
 
-            foreach ($attribute_taxonomies as $product_attribute) {
-                $attribute_id = wc_attribute_taxonomy_name_by_id(intval($product_attribute->attribute_id));
-                $product_attributes[$attribute_id] = $product_attribute->attribute_label;
-            }
+            do {
+                $products = wc_get_products(
+                    [
+                        'limit'    => 1000,
+                        'status'   => $productStatuses,
+                        'page'     => $page,
+                        'paginate' => true,
+                    ]
+                );
 
-            $full_product_list = [];
-
-            $products = wc_get_products(
-                [
-                    'limit' => -1,
-                    'status' => $status_args
-                ]
-            );
-
-            foreach ($products as $offer) {
-                $type = $offer->get_type();
-
-                if (strpos($type, 'variable') !== false || strpos($type, 'variation') !== false) {
-                    foreach ($offer->get_children() as $child_id) {
-                        $child_product = wc_get_product($child_id);
-                        if (!$child_product) {
-                            continue;
-                        }
-
-                        $this->setOffer($full_product_list, $product_attributes, $child_product, $offer);
-                    }
-                } else {
-                    $this->setOffer($full_product_list, $product_attributes, $offer);
+                if (empty($products)) {
+                    writeBaseLogs('Can`t get products!');
+                    return;
                 }
-            }
 
-            if (isset($full_product_list) && $full_product_list) {
-                $this->writeOffers($full_product_list);
-                unset($full_product_list);
-            }
+                foreach ($products->products as $offer) {
+                    $type = $offer->get_type();
+
+                    if (strpos($type, 'variable') !== false || strpos($type, 'variation') !== false) {
+                        foreach ($offer->get_children() as $childId) {
+                            $childProduct = wc_get_product($childId);
+
+                            if (!$childProduct) {
+                                continue;
+                            }
+
+                            yield $this->getOffer($offerAttributes, $childProduct, $offer);
+                        }
+                    } else {
+                        yield $this->getOffer($offerAttributes, $offer);
+                    }
+                }
+
+                $page++;
+            } while ($page <= $products->max_num_pages);
         }
 
         /**
-         * Get WC categories
+         * Get WC offer attributes.
          *
          * @return array
          */
-        private function get_wc_categories_taxonomies()
+        private function getOfferAttributes()
         {
-            $categories   = [];
-            $taxonomy     = 'product_cat';
-            $orderby      = 'parent';
-            $show_count   = 0;      // 1 for yes, 0 for no
-            $pad_counts   = 0;      // 1 for yes, 0 for no
-            $hierarchical = 1;      // 1 for yes, 0 for no
-            $title        = '';
-            $empty        = 0;
+            $offerAttributes   = [];
+            $attributeTaxonomies = wc_get_attribute_taxonomies();
 
-            $args = [
-                'taxonomy'     => $taxonomy,
-                'orderby'      => $orderby,
-                'show_count'   => $show_count,
-                'pad_counts'   => $pad_counts,
-                'hierarchical' => $hierarchical,
-                'title_li'     => $title,
-                'hide_empty'   => $empty
-            ];
-
-            $wcatTerms = get_categories($args);
-
-            foreach ($wcatTerms as $term) {
-                $category = [
-                    'id' => $term->term_id,
-                    'parentId' => $term->parent,
-                    'name' => $term->name
-                ];
-
-                $thumbnail_id = function_exists('get_term_meta')
-                    ? get_term_meta($term->term_id, 'thumbnail_id', true)
-                    : get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
-                $picture = wp_get_attachment_url($thumbnail_id);
-
-                if ($picture) {
-                    $category['picture'] = $picture;
-                }
-
-                $categories[] = $category;
+            foreach ($attributeTaxonomies as $productAttribute) {
+                $attributeId = wc_attribute_taxonomy_name_by_id(intval($productAttribute->attribute_id));
+                $offerAttributes[$attributeId] = $productAttribute->attribute_label;
             }
 
-            return $categories;
+            return $offerAttributes;
         }
 
         /**
-         * Set offer for icml catalog
+         * Get offer for ICML catalog
          *
-         * @param array $full_product_list
-         * @param array $product_attributes
+         * @param array $productAttributes
          * @param WC_Product $product
          * @param bool | WC_Product_Variable $parent
          *
-         * @return void
+         * @return array
          */
-        private function setOffer(&$full_product_list, $product_attributes, $product, $parent = false)
+        private function getOffer(array $productAttributes, WC_Product $product, $parent = false)
         {
             $idImages = array_merge([$product->get_image_id()], $product->get_gallery_image_ids());
 
@@ -482,12 +184,12 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $params = [];
 
             if (!empty($attributes)) {
-                foreach ($attributes as $attribute_name => $attribute) {
-                    $attributeValue = $product->get_attribute($attribute_name);
+                foreach ($attributes as $attributeName => $attribute) {
+                    $attributeValue = $product->get_attribute($attributeName);
                     if ($attribute['is_visible'] == 1 && !empty($attributeValue)) {
                         $params[] = [
-                            'code' => $attribute_name,
-                            'name' => $product_attributes[$attribute_name],
+                            'code'  => $attributeName,
+                            'name'  => $productAttributes[$attributeName],
                             'value' => $attributeValue
                         ];
                     }
@@ -550,10 +252,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             }
 
             if (isset($this->settings['product_description'])) {
-                $productDescription = $this->getDescription($product);
+                $productDescription = $this->getOfferDescription($product);
 
                 if (empty($productDescription) && $parent instanceof WC_Product_Variable) {
-                    $this->getDescription($parent);
+                    $this->getOfferDescription($parent);
                 }
 
                 if ($productDescription != '') {
@@ -572,43 +274,91 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             );
 
             if (isset($productData)) {
-                $full_product_list[] = $productData;
+                return $productData;
             }
-
-            unset($productData);
         }
 
         /**
-         * Get product statuses
+         * Get product statuses.
          *
          * @return array
          */
-        private function checkPostStatuses()
+        private function getProductStatuses()
         {
-            $status_args = [];
+            $statuses = [];
 
             foreach (get_post_statuses() as $key => $value) {
                 if (isset($this->settings['p_' . $key]) && $this->settings['p_' . $key] == WC_Retailcrm_Base::YES) {
-                    $status_args[] = $key;
+                    $statuses[] = $key;
                 }
             }
 
-            return $status_args;
+            return $statuses;
         }
 
         /**
-         * Get product description
+         * Get offer description.
          *
          * @param WC_Product | WC_Product_Variable $product WC product.
          *
          * @return string
          */
-        private function getDescription($product)
+        private function getOfferDescription($product)
         {
             return $this->settings['product_description'] == 'full'
                 ? $product->get_description()
                 : $product->get_short_description();
         }
-    }
 
+        /**
+         * Prepare WC categories for write.
+         *
+         * @return array
+         */
+        private function prepareCategories()
+        {
+            $categories   = [];
+            $taxonomy     = 'product_cat';
+            $orderby      = 'parent';
+            $show_count   = 0;      // 1 for yes, 0 for no
+            $pad_counts   = 0;      // 1 for yes, 0 for no
+            $hierarchical = 1;      // 1 for yes, 0 for no
+            $title        = '';
+            $empty        = 0;
+
+            $args = [
+                'taxonomy'     => $taxonomy,
+                'orderby'      => $orderby,
+                'show_count'   => $show_count,
+                'pad_counts'   => $pad_counts,
+                'hierarchical' => $hierarchical,
+                'title_li'     => $title,
+                'hide_empty'   => $empty
+            ];
+
+            $wcTerms = get_categories($args);
+
+            foreach ($wcTerms as $term) {
+                $category = [
+                    'id' => $term->term_id,
+                    'parentId' => $term->parent,
+                    'name' => $term->name
+                ];
+
+                $thumbnailId = function_exists('get_term_meta')
+                    ? get_term_meta($term->term_id, 'thumbnail_id', true)
+                    : get_woocommerce_term_meta($term->term_id, 'thumbnail_id', true);
+
+                $picture = wp_get_attachment_url($thumbnailId);
+
+                if ($picture) {
+                    $category['picture'] = $picture;
+                }
+
+                $categories[] = $category;
+            }
+
+            return $categories;
+        }
+    }
 endif;

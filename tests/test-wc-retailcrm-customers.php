@@ -3,7 +3,7 @@
 use datasets\DataCustomersRetailCrm;
 
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Customers_Test - Testing WC_Retailcrm_Customers.
  *

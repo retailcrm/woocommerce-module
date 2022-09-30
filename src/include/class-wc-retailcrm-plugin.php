@@ -1,6 +1,7 @@
 <?php
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Plugin - Internal plugin settings.
  *
@@ -79,13 +80,17 @@ class WC_Retailcrm_Plugin
     public function activate()
     {
         if (!class_exists('WC_Integration')) {
-            add_action('admin_notices', array(new WC_Integration_Retailcrm(), 'woocommerce_missing_notice'));
+            add_action('admin_notices', [new WC_Integration_Retailcrm(), 'woocommerce_missing_notice']);
 
             return;
         }
 
         if (!class_exists('WC_Retailcrm_Icml')) {
             require_once(WC_Integration_Retailcrm::checkCustomFile('include/class-wc-retailcrm-icml.php'));
+        }
+
+        if (!class_exists('WC_Retailcrm_Icml_Writer')) {
+            require_once(WC_Integration_Retailcrm::checkCustomFile('include/icml/class-wc-retailcrm-icml-writer.php'));
         }
 
         if (!class_exists('WC_Retailcrm_Base')) {

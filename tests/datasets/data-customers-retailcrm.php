@@ -3,7 +3,7 @@
 namespace datasets;
 
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class DataCustomersRetailCrm - Data set for WC_Retailcrm_Customers.
  *

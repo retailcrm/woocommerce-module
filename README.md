@@ -1,7 +1,7 @@
 [![Build Status](https://github.com/retailcrm/woocommerce-module/workflows/woo/badge.svg)](https://github.com/retailcrm/woocommerce-module/actions)
 [![Coverage](https://img.shields.io/codecov/c/gh/retailcrm/woocommerce-module/master.svg?logo=github)](https://codecov.io/gh/retailcrm/woocommerce-module)
 [![GitHub release](https://img.shields.io/github/release/retailcrm/woocommerce-module.svg?logo=codecov)](https://github.com/retailcrm/woocommerce-module/releases)
-[![PHP version](https://img.shields.io/badge/PHP->=5.4-blue.svg?logo=php)](https://php.net/)
+[![PHP version](https://img.shields.io/badge/PHP->=7.0-blue.svg?logo=php)](https://php.net/)
 
 Woocommerce-module
 ==================

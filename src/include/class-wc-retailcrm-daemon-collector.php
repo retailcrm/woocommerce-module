@@ -1,6 +1,11 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Daemon_Collector - Integration with Daemon Collector.
  *
@@ -10,11 +15,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class WC_Retailcrm_Daemon_Collector {
     /** @var self $instance */
     private static $instance;

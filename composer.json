@@ -10,7 +10,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-      "ext-simplexml": "*"
+      "ext-simplexml": "*",
+      "ext-xmlwriter": "*"
     },
     "require-dev": {
         "ext-json": "*",

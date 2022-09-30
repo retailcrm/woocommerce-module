@@ -1,6 +1,11 @@
 <?php
+
+if (!defined( 'ABSPATH')) {
+    exit;
+}
+
 /**
- * PHP version 5.6
+ * PHP version 7.0
  *
  * Class WC_Retailcrm_Log_Handler_Stdout - Handles log entries by writing to a stdout.
  *
@@ -10,11 +15,6 @@
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-
-if (!defined( 'ABSPATH')) {
-    exit;
-}
-
 class WC_Retailcrm_Log_Handler_Stdout extends WC_Log_Handler
 {
     /**
