@@ -8,7 +8,7 @@
  * Version: 4.5.0
  * Tested up to: 6.0
  * WC requires at least: 5.4
- * WC tested up to: 6.7
+ * WC tested up to: 6.9
  * Text Domain: retailcrm
  */
 

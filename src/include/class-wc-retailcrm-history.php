@@ -104,6 +104,11 @@ if (!class_exists('WC_Retailcrm_History')) :
 
             do {
                 $historyResponse = $this->retailcrm->customersHistory($filter);
+                $isLastPage      = $this->checkTotalPage($pagination, $historyResponse);
+
+                if ($isLastPage) {
+                    break;
+                }
 
                 $history = $this->getHistoryData($historyResponse);
 
@@ -213,6 +218,11 @@ if (!class_exists('WC_Retailcrm_History')) :
 
             do {
                 $historyResponse = $this->retailcrm->OrdersHistory($filter);
+                $isLastPage      = $this->checkTotalPage($pagination, $historyResponse);
+
+                if ($isLastPage) {
+                    break;
+                }
 
                 $history = $this->getHistoryData($historyResponse);
 
@@ -1448,6 +1458,23 @@ if (!class_exists('WC_Retailcrm_History')) :
             time_nanosleep(0, 300000000);
 
             return $historyResponse['history'];
+        }
+
+        /**
+         * @param int                   $currentPage
+         * @param WC_Retailcrm_Response $historyResponse Responce from CRM
+         *
+         * @return bool
+         */
+        private function checkTotalPage($currentPage, $historyResponse): bool
+        {
+            $totalPageCount = $historyResponse['pagination']['totalPageCount'] ?? null;
+
+            if (empty($totalPageCount)) {
+                return true;
+            }
+
+            return $currentPage > $totalPageCount;
         }
     }
 

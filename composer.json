@@ -10,13 +10,13 @@
     ],
     "minimum-stability": "dev",
     "require": {
-      "ext-simplexml": "*",
-      "ext-xmlwriter": "*"
+        "ext-simplexml": "*",
+        "ext-xmlwriter": "*"
     },
     "require-dev": {
         "ext-json": "*",
         "ext-mbstring": "*",
-        "ext-simplexml": "*",
-        "phpunit/phpunit": "6.*"
+        "phpunit/phpunit": "6.*",
+        "yoast/phpunit-polyfills": "1.x-dev"
     }
 }
