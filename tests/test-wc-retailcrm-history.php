@@ -116,7 +116,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         $retailcrm_history->getHistory();
 
-        $orders   = wc_get_orders(array( 'numberposts' => - 1 ));
+        $orders   = wc_get_orders(['numberposts' => - 1]);
         $wcOrder  = end($orders);
         $options  = get_option(\WC_Retailcrm_Base::$option_key);
 
@@ -140,7 +140,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        $orders = wc_get_orders(array('numberposts' => -1));
+        $orders = wc_get_orders(['numberposts' => -1]);
         $order_added = end($orders);
 
         if (!$order_added) {
@@ -433,7 +433,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
             DataHistoryRetailCrm::get_order_with_customer_and_contact(
                 DataHistoryRetailCrm::get_new_corporate_for_order(),
                 DataHistoryRetailCrm::get_new_contact_for_order(),
-                array('name' => 'Компания1'),
+                ['name' => 'Компания1'],
                 'legal-entity'
             )
         );
@@ -496,7 +496,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
             DataHistoryRetailCrm::get_order_with_customer_and_contact(
                 DataHistoryRetailCrm::get_another_corporate_for_order(),
                 DataHistoryRetailCrm::get_another_contact_for_order(),
-                array('name' => 'TestCompany3428769'),
+                ['name' => 'TestCompany3428769'],
                 'legal-entity'
             )
         );
@@ -560,7 +560,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
             DataHistoryRetailCrm::get_order_with_customer_and_contact(
                 DataHistoryRetailCrm::get_another_corporate_for_order(),
                 DataHistoryRetailCrm::get_another_contact_for_order(),
-                array('name' => 'TestCompany017089465'),
+                ['name' => 'TestCompany017089465'],
                 'legal-entity'
             )
         );
@@ -624,7 +624,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
             DataHistoryRetailCrm::get_order_with_customer_and_contact(
                 DataHistoryRetailCrm::get_another_corporate_for_order(),
                 DataHistoryRetailCrm::get_contact_when_only_contact_changed(),
-                array('name' => 'TestCompany017089465'),
+                ['name' => 'TestCompany017089465'],
                 'legal-entity'
             )
         );
@@ -798,17 +798,17 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
                               ->disableOriginalConstructor()
-                              ->setMethods(array('ordersHistory', 'customersHistory', 'ordersGet'))
+                              ->setMethods(['ordersHistory', 'customersHistory', 'ordersGet'])
                               ->getMock();
 
         $this->customersHistoryResponse = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                                                ->disableOriginalConstructor()
-                                               ->setMethods(array('isSuccessful'))
+                                               ->setMethods(['isSuccessful'])
                                                ->getMock();
 
         $this->ordersHistoryResponse = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
                                             ->disableOriginalConstructor()
-                                            ->setMethods(array('isSuccessful'))
+                                            ->setMethods(['isSuccessful'])
                                             ->getMock();
     }
 }
