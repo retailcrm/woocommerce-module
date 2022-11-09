@@ -102,6 +102,9 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                     ]
                 );
 
+                // Clearing the object cache after calling the function wc_get_products
+                wp_cache_flush();
+
                 if (empty($products)) {
                     writeBaseLogs('Can`t get products!');
                     return;
