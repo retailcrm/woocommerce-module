@@ -1,3 +1,6 @@
+## 2022-11-09 4.5.1
+* Correction of RAM overflow during ICMP product catalog generation.
+
 ## 2022-09-30 4.5.0
 * Fix path for js scripts
 * Migrating to PHP 7.0.
