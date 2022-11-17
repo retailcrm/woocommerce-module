@@ -15,6 +15,23 @@ namespace datasets;
  */
 class DataBaseRetailCrm
 {
+    public static function getResponseCustomFields()
+    {
+        return [
+            'success' => true,
+            'customFields' => [
+                [
+                    'name' => 'Test_Upload',
+                    'code' => 'test_upload',
+                ],
+                [
+                    'name' => 'test123',
+                    'code' => 'test',
+                ],
+            ]
+        ];
+    }
+
     public static function getResponseStatuses()
     {
         return [

@@ -20,7 +20,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
     {
         $options = [
             'api_url' => 'https://example.retailcrm.ru',
-            'api_key' => 'test_key',
+            'api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',
             'corporate_enabled' => 'yes',
             'online_assistant'  => 'code',
             'p_draft'   => 'no',

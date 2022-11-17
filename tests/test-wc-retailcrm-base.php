@@ -20,34 +20,37 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     protected $responseMockDeliveryTypes;
     protected $responseMockPaymentTypes;
     protected $responseMockStatuses;
+    protected $responseMockCustomFields;
     protected $dataOptions;
     private $baseRetailcrm;
 
     public function setUp()
     {
-        $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
-                              ->disableOriginalConstructor()
-                              ->setMethods(
-                                  [
-                                      'orderMethodsList',
-                                      'deliveryTypesList',
-                                      'paymentTypesList',
-                                      'statusesList',
-                                      'customFieldsList',
-                                  ]
-                              )
-                              ->getMock();
+        $this->apiMock = $this
+            ->getMockBuilder('\WC_Retailcrm_Proxy')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'orderMethodsList',
+                    'deliveryTypesList',
+                    'paymentTypesList',
+                    'statusesList',
+                    'customFieldsList',
+                ]
+            )
+            ->getMock();
 
         $this->setMockOrderMethods();
         $this->setMockDeliveryTypes();
         $this->setMockPaymentTypes();
         $this->setMockStatuses();
+        $this->setMockCustomFields();
 
         $_GET['page'] = 'wc-settings';
         $_GET['tab'] = 'integration';
 
         $this->dataOptions = $this->setOptions();
-        $this->baseRetailcrm = new \WC_Retailcrm_Base($this->apiMock);
+        $this->baseRetailcrm = new WC_Retailcrm_Base($this->apiMock);
     }
 
     public function test_retailcrm_form_fields()
@@ -158,14 +161,14 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_option_cron_disabled()
     {
         $settings = $this->baseRetailcrm->api_sanitized(
-            array(
+            [
                 'api_url' => 'https://example.retailcrm.ru',
-                'api_key' => 'test_key',
+                'api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',
                 'corporate_enabled' => 'yes',
                 'sync' => 'no',
                 'icml' => 'no',
                 'history' => 'no',
-            )
+            ]
         );
 
         $history = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
@@ -180,7 +183,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayHasKey('api_url', $settings);
         $this->assertEquals('https://example.retailcrm.ru', $settings['api_url']);
         $this->assertArrayHasKey('api_key', $settings);
-        $this->assertEquals('test_key', $settings['api_key']);
+        $this->assertEquals('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1', $settings['api_key']);
         $this->assertArrayHasKey('corporate_enabled', $settings);
         $this->assertEquals('yes', $settings['corporate_enabled']);
         $this->assertArrayHasKey('sync', $settings);
@@ -214,7 +217,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_get_cron_info_off()
     {
-        $this->baseRetailcrm->settings = array('sync' => 'no', 'icml' => 'no', 'history' => 'no');
+        $this->baseRetailcrm->settings = ['sync' => 'no', 'icml' => 'no', 'history' => 'no'];
 
         ob_start();
         $this->baseRetailcrm->get_cron_info();
@@ -263,11 +266,11 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_initialize_whatsapp_off()
     {
-        $this->baseRetailcrm->settings = array(
+        $this->baseRetailcrm->settings = [
             'whatsapp_active' => 'no',
             'whatsapp_location_icon' => 'no',
             'whatsapp_number' => '',
-        );
+        ];
 
         ob_start();
         $this->baseRetailcrm->initialize_whatsapp();
@@ -278,7 +281,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_initialize_daemon_collector_off()
     {
-        $this->baseRetailcrm->settings = array('daemon_collector' => 'no', 'daemon_collector_key' => '');
+        $this->baseRetailcrm->settings = ['daemon_collector' => 'no', 'daemon_collector_key' => ''];
 
         ob_start();
         $this->baseRetailcrm->initialize_daemon_collector();
@@ -301,7 +304,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_initialize_analytics_off()
     {
-        $this->baseRetailcrm->settings = array('ua' => '', 'ua_code' => '', 'ua_custom' => '');
+        $this->baseRetailcrm->settings = ['ua' => '', 'ua_code' => '', 'ua_custom' => ''];
 
         ob_start();
         $this->baseRetailcrm->initialize_analytics();
@@ -312,31 +315,6 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_set_meta_fields()
     {
-        $responseApiMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
-                                ->disableOriginalConstructor()
-                                ->setMethods(['isSuccessful'])
-                                ->getMock();
-
-        $this->setMockResponse($responseApiMock, 'isSuccessful', true);
-
-        $responseApiMock->setResponse(
-            [
-                'success' => true,
-                'customFields' => [
-                    [
-                        'name' => 'Test_Upload',
-                        'code' => 'test_upload',
-                    ],
-                    [
-                        'name' => 'test123',
-                        'code' => 'test',
-                    ],
-                ]
-            ]
-        );
-
-        $this->setMockResponse($this->apiMock, 'customFieldsList', $responseApiMock);
-
         ob_start();
 
         $this->baseRetailcrm->set_meta_fields();
@@ -378,6 +356,34 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_end_clean();
     }
 
+    public function test_validate_crm_url()
+    {
+        $this->assertEquals(
+            'https://test.simla.com',
+            $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com')
+        );
+        $this->assertEquals(
+            'https://test.retailcrm.ru',
+            $this->baseRetailcrm->validate_api_url_field('', 'https://test.retailcrm.ru')
+        );
+        $this->assertEquals(
+            'https://test.retailcrm.pro',
+            $this->baseRetailcrm->validate_api_url_field('', 'https://test.retailcrm.pro')
+        );
+        $this->assertEquals(
+            '',
+            $this->baseRetailcrm->validate_api_url_field('', 'https://test.test.pro')
+        );
+
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'http://test.retailcrm.pro'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com?query=test'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com?pass=test'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com?user=test'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://te.simla.com?fragment=test'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com:12345'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com/test'));
+    }
+
     private function getJsonData($text)
     {
         preg_match('/{.*}/', $text, $matches);
@@ -387,10 +393,12 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function setMockOrderMethods()
     {
-        $this->responseMockOrderMethods = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
-                                               ->disableOriginalConstructor()
-                                               ->setMethods(array('isSuccessful'))
-                                               ->getMock();
+        $this->responseMockOrderMethods = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
         $this->setMockResponse($this->responseMockOrderMethods, 'isSuccessful', true);
 
         $this->responseMockOrderMethods->setResponse(DataBaseRetailCrm::getResponseOrderMethods());
@@ -399,10 +407,12 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function setMockDeliveryTypes()
     {
-        $this->responseMockDeliveryTypes = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
-                                                ->disableOriginalConstructor()
-                                                ->setMethods(array('isSuccessful'))
-                                                ->getMock();
+        $this->responseMockDeliveryTypes = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
         $this->setMockResponse($this->responseMockDeliveryTypes, 'isSuccessful', true);
 
         $this->responseMockDeliveryTypes->setResponse(DataBaseRetailCrm::getResponseDeliveryTypes());
@@ -411,10 +421,12 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function setMockPaymentTypes()
     {
-        $this->responseMockPaymentTypes = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
-                                               ->disableOriginalConstructor()
-                                               ->setMethods(array('isSuccessful'))
-                                               ->getMock();
+        $this->responseMockPaymentTypes = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
         $this->setMockResponse($this->responseMockPaymentTypes, 'isSuccessful', true);
 
         $this->responseMockPaymentTypes->setResponse(DataBaseRetailCrm::getResponsePaymentTypes());
@@ -423,13 +435,30 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function setMockStatuses()
     {
-        $this->responseMockStatuses = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
-                                           ->disableOriginalConstructor()
-                                           ->setMethods(array('isSuccessful'))
-                                           ->getMock();
+        $this->responseMockStatuses = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
         $this->setMockResponse($this->responseMockStatuses, 'isSuccessful', true);
 
         $this->responseMockStatuses->setResponse(DataBaseRetailCrm::getResponseStatuses());
         $this->setMockResponse($this->apiMock, 'statusesList', $this->responseMockStatuses);
+    }
+
+    private function setMockCustomFields()
+    {
+        $this->responseMockCustomFields = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
+        $this->setMockResponse($this->responseMockCustomFields, 'isSuccessful', true);
+
+        $this->responseMockCustomFields->setResponse(DataBaseRetailCrm::getResponseCustomFields());
+
+        $this->setMockResponse($this->apiMock, 'customFieldsList', $this->responseMockCustomFields);
     }
 }
