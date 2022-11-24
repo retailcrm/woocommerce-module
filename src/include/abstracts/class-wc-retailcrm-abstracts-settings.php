@@ -84,7 +84,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'api_url' => [
                 'title'             => __('API of URL', 'retailcrm'),
                 'type'              => 'text',
-                'description'       => __('Enter API of URL (https://yourdomain.simla.com)', 'retailcrm'),
+                'description'       => __('Enter API URL (https://yourdomain.simla.com)', 'retailcrm'),
                 'desc_tip'          => true,
                 'default'           => ''
             ],
@@ -692,14 +692,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $validateMessage = $this->urlValidator->validateUrl($value);
 
         if ('' !== $validateMessage) {
-            WC_Admin_Settings::add_error(esc_html__('Enter the correct URL of Simla.com:' .  $validateMessage, 'retailcrm'));
-
-            // Need check if change API data in settings
-            if (isset($_POST['woocommerce_integration-retailcrm_whatsapp_number'])) {
-                header("Refresh:3");
-            }
-
             $value = '';
+
+            WC_Admin_Settings::add_error(esc_html__($validateMessage, 'retailcrm'));
         }
 
         $this->crmUrl = $value;
@@ -728,14 +723,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $response = $api->apiVersions();
 
         if (empty($response) || !$response->isSuccessful()) {
-            WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
-
-            // Need check if change API data in settings
-            if (isset($_POST['woocommerce_integration-retailcrm_whatsapp_number'])) {
-                header("Refresh:3");
-            }
-
             $value = '';
+
+            WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
         } else {
             header("Refresh:0");
         }

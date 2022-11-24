@@ -4,7 +4,7 @@ if (!class_exists('WC_Retailcrm_Url_Constraint')) :
     /**
      * PHP version 7.0
      *
-     * Class WC_Retailcrm_Url_Constraint - Constraint for CRM url.
+     * Class WC_Retailcrm_Url_Constraint - Constraint for CRM URL.
      *
      * @category Integration
      * @author   RetailCRM <integration@retailcrm.ru>

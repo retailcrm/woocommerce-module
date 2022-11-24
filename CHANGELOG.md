@@ -1,3 +1,6 @@
+## 2022-11-09 4.5.2
+* Add validator for CRM URL
+
 ## 2022-11-09 4.5.1
 * Correction of RAM overflow during ICMP product catalog generation.
 

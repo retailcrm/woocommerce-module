@@ -375,11 +375,12 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             $this->baseRetailcrm->validate_api_url_field('', 'https://test.test.pro')
         );
 
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', ''));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://tedsast.simla.comssd'));
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'http://test.retailcrm.pro'));
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com?query=test'));
-        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com?pass=test'));
-        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com?user=test'));
-        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://te.simla.com?fragment=test'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://pass:user@test.simla.com'));
+        $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com#fragment'));
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com:12345'));
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com/test'));
     }

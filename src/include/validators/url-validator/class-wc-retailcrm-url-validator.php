@@ -4,7 +4,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
     /**
      * PHP version 7.0
      *
-     * Class WC_Retailcrm_Url_Validator - Validate CRM url.
+     * Class WC_Retailcrm_Url_Validator - Validate CRM URL.
      *
      * @category Integration
      * @author   RetailCRM <integration@retailcrm.ru>
