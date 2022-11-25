@@ -22,6 +22,12 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     /** @var string */
     public static $option_key;
 
+    /** @var WC_Retailcrm_Url_Validator*/
+    private $urlValidator;
+
+    /** @var string */
+    private $crmUrl;
+
     /**
      * WC_Retailcrm_Abstracts_Settings constructor.
      */
@@ -39,6 +45,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         ) {
             add_action('init', [$this, 'init_settings_fields'], 99);
         }
+
+        // Initialization validator
+        $this->urlValidator = new WC_Retailcrm_Url_Validator();
     }
 
     /**
@@ -75,7 +84,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             'api_url' => [
                 'title'             => __('API of URL', 'retailcrm'),
                 'type'              => 'text',
-                'description'       => __( 'Enter API of URL (https://yourdomain.simla.com)', 'retailcrm' ),
+                'description'       => __('Enter API URL (https://yourdomain.simla.com)', 'retailcrm'),
                 'desc_tip'          => true,
                 'default'           => ''
             ],
@@ -87,10 +96,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 'default'           => ''
             ]
         ];
-
-        $post = $this->get_post_data();
-        $apiUrl = !empty($post[$this->plugin_id . $this->id . '_api_url']) ? $post[$this->plugin_id . $this->id . '_api_url'] : null;
-        $apiKey = !empty($post[$this->plugin_id . $this->id . '_api_key']) ? $post[$this->plugin_id . $this->id . '_api_key'] : null;
 
         if ($this->apiClient) {
             if (
@@ -153,7 +158,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'type'        => 'checkbox',
                         'desc_tip'    =>  true,
                     ];
-
                 }
 
                 /**
@@ -579,18 +583,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'clear_cron_tasks'
                 ];
             }
-        } elseif (empty($apiUrl) === false && empty($apiKey) === false) {
-            $api = new WC_Retailcrm_Proxy(
-                $apiUrl,
-                $apiKey,
-                $this->get_option('corporate_enabled', 'no') === 'yes'
-            );
-
-            $response = $api->apiVersions();
-
-            if ($response->isSuccessful()) {
-                header("Refresh:0");
-            }
         }
     }
 
@@ -686,7 +678,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     }
 
     /**
-     * Validate API url
+    * Validate CRM URL.
      *
      * @param string $key
      * @param string $value
@@ -697,14 +689,17 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function validate_api_url_field($key, $value)
     {
-        $crmUrl = validateUrl($value);
+        $validateMessage = $this->urlValidator->validateUrl($value);
 
-        if (validateUrl($crmUrl) == '') {
-            WC_Admin_Settings::add_error(esc_html__('Enter the correct URL of Simla.com', 'retailcrm'));
-            header("Refresh:3");
+        if ('' !== $validateMessage) {
+            $value = '';
+
+            WC_Admin_Settings::add_error(esc_html__($validateMessage, 'retailcrm'));
         }
 
-        return $crmUrl;
+        $this->crmUrl = $value;
+
+        return $value;
     }
 
     /**
@@ -719,30 +714,20 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function validate_api_key_field($key, $value)
     {
-        $crmUrl = $_POST['woocommerce_integration-retailcrm_api_url'];
-
         // If entered the wrong URL, don't need to validate the API key.
-        if (validateUrl($crmUrl) == '') {
+        if ('' === $this->crmUrl) {
             return $value;
         }
 
-        $api = new WC_Retailcrm_Proxy(
-            $crmUrl,
-            $value,
-            $this->get_option('corporate_enabled', 'no') === 'yes'
-        );
-
+        $api = new WC_Retailcrm_Proxy($this->crmUrl, $value);
         $response = $api->apiVersions();
 
-        if (!is_object($response)) {
-            $value = '';
-        }
-
         if (empty($response) || !$response->isSuccessful()) {
-            WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
-            header("Refresh:3");
-
             $value = '';
+
+            WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
+        } else {
+            header("Refresh:0");
         }
 
         return $value;

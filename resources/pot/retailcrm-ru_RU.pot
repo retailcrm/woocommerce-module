@@ -73,9 +73,6 @@ msgstr "Клиенты и заказы были выгружены"
 msgid "Enter the correct API key"
 msgstr "Введите корректный API ключ"
 
-msgid "Enter the correct URL of Simla.com"
-msgstr "Введите корректный адрес Simla.com"
-
 msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com"
 msgstr "Эта функция позволяет сгенерировать ICML каталог товаров для выгрузки в Simla.com"
 
@@ -172,7 +169,7 @@ msgstr "Настройки API"
 msgid "Enter your API key. You can find it in the administration section of Simla.com"
 msgstr "Введите API ключ. Вы можете найти его в административном разделе Simla.com"
 
-msgid "Enter API of URL (https://yourdomain.simla.com)"
+msgid "Enter API URL (https://yourdomain.simla.com)"
 msgstr "Введите API URL (https://yourdomain.simla.com)"
 
 msgid "Integration with Simla.com management system"
@@ -352,3 +349,32 @@ msgstr "Cron задачи очищены"
 msgid "Untitled"
 msgstr "Без названия"
 
+msgid "Incorrect protocol. Only https is allowed."
+msgstr "Некорректный протокол. Допускается только https."
+
+msgid "The domain path must be empty."
+msgstr "Путь к домену должен быть пустым."
+
+msgid "An invalid domain is specified."
+msgstr "Указан недопустимый домен."
+
+msgid "The port does not need to be specified."
+msgstr "Не нужно указывать порт."
+
+msgid "Incorrect Host URL."
+msgstr "Некорректный URL хоста"
+
+msgid "Incorrect URL."
+msgstr "Некорректный URL."
+
+msgid "The query must be blank."
+msgstr "Запрос должен быть пустым."
+
+msgid "The fragment should be blank."
+msgstr "Фрагмент должен быть пустым."
+
+msgid "No need to provide authorization data."
+msgstr "Нет необходимости предоставлять авторизационные данные."
+
+msgid "Unable to obtain reference values."
+msgstr "Не удалось получить эталонное значение"

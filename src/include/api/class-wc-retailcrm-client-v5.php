@@ -35,9 +35,6 @@ class WC_Retailcrm_Client_V5
      * @param string $url    api url
      * @param string $apiKey api key
      * @param string $site   site code
-     *
-     * @throws InvalidArgumentException
-     *
      */
     public function __construct($url, $apiKey, $site = null)
     {

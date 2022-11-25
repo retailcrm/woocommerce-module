@@ -64,9 +64,6 @@ msgstr "Los clientes y pedidos están subidos"
 msgid "Enter the correct API key"
 msgstr "Introduce la llave API correcta"
 
-msgid "Enter the correct URL of Simla.com"
-msgstr "Introduce el enlace del Simla.com correcto"
-
 msgid "This functionality allows to generate ICML products catalog for uploading to Simla.com"
 msgstr "Esta función permite generar los catálogos de pedidos ICML para subida al Simla.com"
 
@@ -163,7 +160,7 @@ msgstr "Ajustes de API"
 msgid "Enter your API key. You can find it in the administration section of Simla.com"
 msgstr "Introduce la llave API. Puede encontrarla en apartado administrativo del Simla.com"
 
-msgid "Enter API of URL (https://yourdomain.simla.com)"
+msgid "Enter API URL (https://yourdomain.simla.com)"
 msgstr "Introduce enlace de API (https://yourdomain.simla.com)"
 
 msgid "Integration with Simla.com management system"
@@ -342,3 +339,33 @@ msgstr "Trabajos cron borrados"
 
 msgid "Untitled"
 msgstr "Intitulado"
+
+msgid "Incorrect protocol. Only https is allowed."
+msgstr "Protocolo incorrecto. Sólo se permite https."
+
+msgid "The domain path must be empty."
+msgstr "La ruta del dominio debe estar vacía."
+
+msgid "An invalid domain is specified."
+msgstr "Se especifica un dominio no válido."
+
+msgid "The port does not need to be specified."
+msgstr "No es necesario especificar el puerto."
+
+msgid "Incorrect Host URL."
+msgstr "URL del Host incorrecta."
+
+msgid "Incorrect URL."
+msgstr "URL incorrecta."
+
+msgid "The query must be blank."
+msgstr "La consulta debe estar en blanco."
+
+msgid "The fragment should be blank."
+msgstr "El fragmento debe estar en blanco."
+
+msgid "No need to provide authorization data."
+msgstr "No es necesario proporcionar datos de autorización."
+
+msgid "Unable to obtain reference values."
+msgstr "No se pueden obtener valores de referencia."
