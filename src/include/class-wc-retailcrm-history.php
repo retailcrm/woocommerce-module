@@ -1066,15 +1066,15 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $wcOrderItem->save();
             }
 
-            // Be aware that discounts may be added.
             if (!empty($crmProduct['summ'])) {
                 if (wc_tax_enabled()) {
-                    $shippingTaxClass = get_option('woocommerce_shipping_tax_class');
+                    $itemRate = getShippingRate();
 
-                    $wcOrder   = wc_get_order($wcOrderItem->get_order_id());
-                    $itemRate  = $shippingTaxClass == 'inherit'
-                        ? getOrderItemRate($wcOrder)
-                        : getShippingRate();
+                    if (empty($itemRate) || get_option('woocommerce_shipping_tax_class') == 'inherit') {
+                        $wcOrder  = wc_get_order($wcOrderItem->get_order_id());
+                        $itemRate = getOrderItemRate($wcOrder);
+                    }
+
                     $itemPrice = calculatePriceExcludingTax($crmProduct['summ'], $itemRate);
 
                     $wcOrderItem->set_total($itemPrice);

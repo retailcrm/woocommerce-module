@@ -5,7 +5,7 @@
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.5.2
+ * Version: 4.5.3
  * Tested up to: 6.0
  * WC requires at least: 5.4
  * WC tested up to: 6.9

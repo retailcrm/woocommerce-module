@@ -176,9 +176,7 @@ function getOrderItemRate($wcOrder)
 
 function calculatePriceExcludingTax($priceIncludingTax, $rate)
 {
-    $decimalPlaces = wc_get_price_decimals();
-
-    return round($priceIncludingTax / (1 + $rate / 100), $decimalPlaces);
+    return round($priceIncludingTax / (1 + $rate / 100), wc_get_price_decimals());
 }
 
 /**
