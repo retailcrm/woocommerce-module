@@ -138,7 +138,10 @@ function is_wplogin()
 }
 
 /**
- *  Get shipping rate.
+ * If a tax class with a standart rate is selected, woocommerce_shipping_tax_class = ''
+ * If a tax class with a zero rate is selected, woocommerce_shipping_tax_class = zero-rate
+ * If a tax class with a reduced rate is selected, woocommerce_shipping_tax_class = reduced-rate
+ * If the tax is calculated based on the items in the cart, woocommerce_shipping_tax_class = inherit
  *
  * @return mixed
  */
