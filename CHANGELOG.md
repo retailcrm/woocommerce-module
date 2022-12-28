@@ -1,3 +1,6 @@
+## 2022-12-26 4.5.3
+* Fix bug with products tax
+
 ## 2022-11-09 4.5.2
 * Add validator for CRM URL
 
