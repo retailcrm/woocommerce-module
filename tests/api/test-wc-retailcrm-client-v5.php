@@ -13,7 +13,7 @@ use datasets\DataBaseRetailCrm;
  * @link     http://retailcrm.ru
  * @see      http://help.retailcrm.ru
  */
-class WC_Retailcrm_client_V5 extends WC_Retailcrm_Test_Case_Helper
+class Test_WC_Retailcrm_client_V5 extends WC_Retailcrm_Test_Case_Helper
 {
     protected $apiClientMock;
     protected $responseMock;
