@@ -18,7 +18,6 @@ class Test_WC_Retailcrm_client_V5 extends WC_Retailcrm_Test_Case_Helper
     protected $apiClientMock;
     protected $responseMock;
 
-
     public function setUp()
     {
         $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
