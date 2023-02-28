@@ -36,7 +36,7 @@ class DataCartRetailCrm
                             'externalId' => '1',
                             'name' => 'test product',
                             'properties' => [
-                                'prop1' => 'prop'
+                                'prop1' => 'prop',
                             ],
                             'unit' => [
                                 'code' => 'test code',

@@ -56,8 +56,8 @@ class WC_Retailcrm_Cart_Test extends WC_Retailcrm_Test_Case_Helper
         $response = $this->apiClientMock->cartGet(1, 'test-site');
         $this->assertNotEmpty($response->__get('cart'));
         $this->assertTrue($response->__get('success'));
-
     }
+
     public function testSetCart()
     {
         $response = $this->apiClientMock->cartSet(DataCartRetailCrm::dataSetCart(), 'test-site');
