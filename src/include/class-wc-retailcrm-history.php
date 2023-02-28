@@ -1006,15 +1006,14 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * Returns data for address_1 and address_2(if exist data for this field) for WC order.
          *
-         * @param string $addressLine
+         * @param string $addressLine|null
          *
          * @return mixed
          */
-        private function getAddressLines(string $addressLine)
+        public function getAddressLines(?string $addressLine = '')
         {
             if (strpos($addressLine, WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER) !== false) {
                 $addressLines = explode(WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER, $addressLine);
-
                 return ['address_1' => $addressLines[0], 'address_2' => $addressLines[1]];
             }
 

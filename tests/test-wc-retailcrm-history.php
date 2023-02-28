@@ -57,6 +57,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         if (is_object($orderItem)) {
             $this->assertEquals($product->get_id(), $orderItem->get_product()->get_id());
+            $this->assertEquals($product->get_id(), $orderItem->get_product()->get_id());
         }
 
         $this->assertNotEmpty($wcOrder->get_date_created());
@@ -734,7 +735,23 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEmpty($order->get_customer_id());
     }
 
-    /**
+    public function test_get_address_lines()
+    {
+        $retailcrm_history = new \WC_Retailcrm_History();
+        $this->assertEquals('', $retailcrm_history->getAddressLines());
+
+        $this->assertEquals('Test', $retailcrm_history->getAddressLines('Test'));
+
+        $this->assertEquals(
+            [
+                'address_1' => 'Test',
+                'address_2' => 'Test 2'
+            ],
+            $retailcrm_history->getAddressLines('Test || Test 2')
+        );
+    }
+
+        /**
      * Mock ordersGet response.
      *
      * @param bool $isSuccessful
