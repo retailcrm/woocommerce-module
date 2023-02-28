@@ -71,9 +71,11 @@ class WC_Retailcrm_Client_V5
     }
 
     /**
-     * Clearing current customer bucket
-     * @param array $cart
+     * Get cart by id or externalId
+     *
+     * @param $customerId
      * @param string $site
+     * @param $by (default: 'externalId')
      *
      * @return WC_Retailcrm_Response
      *
@@ -81,8 +83,10 @@ class WC_Retailcrm_Client_V5
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      */
-    public function cartClear(array $cart, string $site)
+    public function cartGet($customerId, string $site, $by = 'externalId')
     {
+        $this->checkIdParameter($by);
+
         if (empty($site)) {
             throw new InvalidArgumentException(
                 'Site must be set'
@@ -90,9 +94,9 @@ class WC_Retailcrm_Client_V5
         }
 
         return $this->client->makeRequest(
-            sprintf('/customer-interaction/%s/cart/clear', $site),
-            WC_Retailcrm_Request::METHOD_POST,
-            ['cart' => json_encode($cart)]
+            sprintf('/customer-interaction/%s/cart/%s', $site, $customerId),
+            WC_Retailcrm_Request::METHOD_GET,
+            ['by' => $by]
         );
     }
 
@@ -124,11 +128,10 @@ class WC_Retailcrm_Client_V5
     }
 
     /**
-     * Get cart by id or externalId
+     * Clear customer cart
      *
-     * @param $customerId
+     * @param array $cart
      * @param string $site
-     * @param $by (default: 'externalId')
      *
      * @return WC_Retailcrm_Response
      *
@@ -136,10 +139,8 @@ class WC_Retailcrm_Client_V5
      * @throws WC_Retailcrm_Exception_Curl
      * @throws WC_Retailcrm_Exception_Json
      */
-    public function cartGet($customerId, string $site, $by = 'externalId')
+    public function cartClear(array $cart, string $site)
     {
-        $this->checkIdParameter($by);
-
         if (empty($site)) {
             throw new InvalidArgumentException(
                 'Site must be set'
@@ -147,12 +148,11 @@ class WC_Retailcrm_Client_V5
         }
 
         return $this->client->makeRequest(
-            sprintf('/customer-interaction/%s/cart/%s', $site, $customerId),
-            WC_Retailcrm_Request::METHOD_GET,
-            ['by' => $by]
+            sprintf('/customer-interaction/%s/cart/clear', $site),
+            WC_Retailcrm_Request::METHOD_POST,
+            ['cart' => json_encode($cart)]
         );
     }
-
 
     /**
      * Returns filtered corporate customers list
