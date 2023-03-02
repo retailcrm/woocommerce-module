@@ -1,3 +1,6 @@
+## 2023-03-01 4.5.4
+* Fix bug with creating orders with empty address
+
 ## 2022-12-26 4.5.3
 * Fix bug with products tax
 

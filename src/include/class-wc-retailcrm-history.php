@@ -1006,7 +1006,7 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * Returns data for address_1 and address_2(if exist data for this field) for WC order.
          *
-         * @param string $addressLine|null
+         * @param string|null $addressLine This address line will be split if it is needed
          *
          * @return mixed
          */

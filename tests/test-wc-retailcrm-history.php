@@ -57,7 +57,6 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
 
         if (is_object($orderItem)) {
             $this->assertEquals($product->get_id(), $orderItem->get_product()->get_id());
-            $this->assertEquals($product->get_id(), $orderItem->get_product()->get_id());
         }
 
         $this->assertNotEmpty($wcOrder->get_date_created());
