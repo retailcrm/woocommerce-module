@@ -47,6 +47,7 @@ class WC_Retailcrm_Abstracts_Settings_Test extends  WC_Retailcrm_Test_Case_Helpe
 
     public function test_validate_payments()
     {
+        $this->register_lagacy_proxy_static_mocks;
         $paymentGateway = new WC_Payment_Gateways();
 
         $enabledPayments = $paymentGateway->get_available_payment_gateways();

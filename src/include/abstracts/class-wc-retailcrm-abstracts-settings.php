@@ -281,20 +281,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     }
 
                     foreach ($wc_payment->get_available_payment_gateways() as $payment) {
-                        $title = '';
-                        $description = '';
-
-                        if (empty($payment->method_title)) {
-                            $title = $payment->id;
-                        } else {
-                            $title = $payment->method_title;
-                        }
-
-                        if (empty($payment->method_description)) {
-                            $description = $payment->description;
-                        } else {
-                            $description = $payment->method_description;
-                        }
+                        $title = empty($payment->method_title) ? $payment->id : $payment->method_title;
+                        $description = empty($payment->method_description) ? $payment->description :
+                            $payment->method_description;
 
                         $this->form_fields[$payment->id] = [
                             'css'         => 'min-width:350px;',
