@@ -111,15 +111,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'api_options'
                 ];
 
-                $this->form_fields['corporate_enabled'] = [
-                    'title'       => __('Corporate customers support', 'retailcrm'),
-                    'label'       => __('Enabled'),
-                    'description' => '',
-                    'class'       => 'checkbox',
-                    'type'        => 'checkbox',
-                    'desc_tip'    =>  true
-                ];
-
                 $this->form_fields['online_assistant'] = [
                     'title'       => __('Online assistant', 'retailcrm'),
                     'type'        => 'textarea',
@@ -533,6 +524,24 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'type'        => 'checkbox'
                 ];
 
+                $this->form_fields['corporate_enabled'] = [
+                    'title'       => __('Corporate customers support', 'retailcrm'),
+                    'label'       => __('Enabled'),
+                    'description' => '',
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                ];
+
+                $this->form_fields['abandoned_carts_enabled'] = [
+                    'title'       => __('Abandoned carts', 'retailcrm'),
+                    'label'       => __('Upload abandoned carts', 'retailcrm'),
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'description' => __(
+                            'Enable if you want to in CRM abandoned shopping carts were unloaded',
+                            'retailcrm'
+                    ),
+                ];
 
                 $this->form_fields['history'] = [
                     'label'       => __('Activate history uploads', 'retailcrm'),

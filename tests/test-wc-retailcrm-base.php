@@ -118,6 +118,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
         //Other settings
         $this->assertArrayHasKey('corporate_enabled', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('abandoned_carts_enabled', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('online_assistant', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('deactivate_update_order', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('bind_by_sku', $this->baseRetailcrm->form_fields);
