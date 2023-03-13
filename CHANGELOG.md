@@ -1,3 +1,6 @@
+## 2023-03-02 4.5.4
+* Fix display payment methods
+
 ## 2022-12-26 4.5.3
 * Fix bug with products tax
 
