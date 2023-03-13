@@ -271,15 +271,20 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         ];
                     }
 
-                    foreach ($wc_payment->payment_gateways() as $payment) {
+                    foreach ($wc_payment->get_available_payment_gateways() as $payment) {
+                        $title = empty($payment->method_title) ? $payment->id : $payment->method_title;
+                        $description = empty($payment->method_description)
+                            ? $payment->description
+                            : $payment->method_description;
+
                         $this->form_fields[$payment->id] = [
                             'css'         => 'min-width:350px;',
                             'type'        => 'select',
-                            'title'       => __($payment->method_title, 'woocommerce'),
+                            'title'       => __($title, 'woocommerce'),
                             'class'       => 'select',
                             'options'     => $paymentsList,
                             'desc_tip'    =>  true,
-                            'description' => __($payment->method_description, 'woocommerce'),
+                            'description' => __($description, 'woocommerce'),
                         ];
                     }
                 }
