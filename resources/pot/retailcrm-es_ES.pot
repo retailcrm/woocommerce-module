@@ -369,3 +369,12 @@ msgstr "No es necesario proporcionar datos de autorización."
 
 msgid "Unable to obtain reference values."
 msgstr "No se pueden obtener valores de referencia."
+
+msgid "Abandoned carts"
+msgstr "Carritos Abandonadas"
+
+msgid "Upload abandoned carts"
+msgstr "Importar los carritos abandonados"
+
+msgid "Enable if you want to in CRM abandoned shopping carts were unloaded"
+msgstr "Habilitar Si desea que en CRM se descargaron las cestas abandonadas de los compradores"
