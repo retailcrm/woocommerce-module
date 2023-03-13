@@ -21,7 +21,6 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         $options = [
             'api_url' => 'https://example.retailcrm.ru',
             'api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',
-            'corporate_enabled' => 'yes',
             'online_assistant'  => 'code',
             'p_draft'   => 'no',
             'p_pending' => 'no',
@@ -53,6 +52,8 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'whatsapp_location_icon' => 'yes',
             'whatsapp_number' => '+79184567234',
             'icml'          => 'yes',
+            'corporate_enabled' => 'yes',
+            'abandoned_carts_enabled' => 'yes',
             'single_order'  => '123',
             'history'       => 'yes',
             'deactivate_update_order' => 'no',

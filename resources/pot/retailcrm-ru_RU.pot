@@ -378,3 +378,12 @@ msgstr "Нет необходимости предоставлять автор�
 
 msgid "Unable to obtain reference values."
 msgstr "Не удалось получить эталонное значение"
+
+msgid "Abandoned carts"
+msgstr "Брошенные корзины"
+
+msgid "Upload abandoned carts"
+msgstr "Выгружать брошенные корзины"
+
+msgid "Enable if you want to in CRM abandoned shopping carts were unloaded"
+msgstr "Включите, если хотите, чтобы в CRM выгружались брошенные корзины покупателей"
