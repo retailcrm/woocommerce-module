@@ -30,6 +30,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var WC_Retailcrm_Uploader */
         protected $uploader;
 
+        /** @var WC_Retailcrm_Cart */
+        protected $cart;
+
         /**
          * Init and hook in the integration.
          *
@@ -101,6 +104,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 || $this->get_option('deactivate_update_order') == static::NO
             ) {
                 add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
+            }
+
+            if ($this->get_option('abandoned_carts_enabled') === static::YES) {
+                $this->cart = new WC_Retailcrm_Cart($this->apiClient);
+
+                add_action('woocommerce_add_to_cart', [$this, 'set_cart']);
+                add_action('woocommerce_after_cart_item_quantity_update', [$this, 'set_cart']);
+                add_action('woocommerce_cart_item_removed', [$this, 'set_cart']);
+                add_action('woocommerce_cart_emptied', [$this, 'clear_cart']);
             }
 
             // Deactivate hook
@@ -382,6 +394,71 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             if (is_admin()) {
                 $this->retailcrm_process_order($order_id);
+            }
+        }
+
+        /**
+         * Create and update cart in CRM
+         *
+         * @codeCoverageIgnore Check in another tests
+         *
+         * @return void
+         */
+        public function set_cart()
+        {
+            global $woocommerce;
+
+            $site = $this->apiClient->getSingleSiteForKey();
+            $cartItems = $woocommerce->cart->get_cart();
+            $customerId = $woocommerce->customer->get_id();
+
+            if (empty($site)) {
+                writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+            } elseif (empty($customerId)) {
+                writeBaseLogs('Abandoned carts work only for registered customers');
+            } else {
+                $isCartExist = $this->cart->isCartExist($customerId, $site);
+                $isSuccessful = $this->cart->processCart($customerId, $cartItems, $site, $isCartExist);
+
+                if ($isSuccessful) {
+                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' processed. Hook: ' . current_filter());
+                } else {
+                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' not processed. Hook: ' . current_filter());
+                }
+            }
+        }
+
+        /**
+         * Clear the cart in CRM for 2 cases:
+         * 1. Delete all items from the basket;
+         * 2. Create an order, items from the cart are automatically deleted.
+         *
+         * The hook is called 3 times.
+         *
+         * @codeCoverageIgnore Check in another tests
+         *
+         * @return void
+         */
+        public function clear_cart()
+        {
+            global $woocommerce;
+
+            $site = $this->apiClient->getSingleSiteForKey();
+            $customerId = $woocommerce->customer->get_id();
+
+            if (empty($site)) {
+                writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+            } elseif (empty($customerId)) {
+                writeBaseLogs('Abandoned carts work only for registered customers');
+            } else {
+                $isCartExist = $this->cart->isCartExist($customerId, $site);
+                $isSuccessful = $this->cart->clearCart($customerId, $site, $isCartExist);
+
+                if ($isSuccessful) {
+                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' cleared. Hook: ' . current_filter());
+                } elseif ($isCartExist) {
+                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' not cleared. Hook: ' . current_filter());
+                }
             }
         }
 
