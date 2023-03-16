@@ -1,3 +1,6 @@
+## 2022-03-17 4.6.0
+* Added functionality of abandoned carts
+
 ## 2023-03-02 4.5.4
 * Fix display payment methods
 
