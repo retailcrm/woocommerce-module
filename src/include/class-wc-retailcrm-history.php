@@ -94,30 +94,21 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function customersHistory()
         {
-
-            $sinceId    = get_option('retailcrm_customers_history_since_id');
-            $pagination = 1;
-
+            $page = 1;
+            $sinceId = get_option('retailcrm_customers_history_since_id');
             $filter = !empty($sinceId)
                 ? ['sinceId' => $sinceId]
                 : ['startDate' => $this->startDate->format('Y-m-d H:i:s')];
 
             do {
                 $historyResponse = $this->retailcrm->customersHistory($filter);
-                $isLastPage      = $this->checkTotalPage($pagination, $historyResponse);
-
-                if ($isLastPage) {
-                    break;
-                }
-
                 $history = $this->getHistoryData($historyResponse);
 
                 if (!empty($history)) {
                     $lastChange = end($history);
+                    $filter['sinceId'] = $lastChange['id'];
 
                     update_option('retailcrm_customers_history_since_id', $lastChange['id']);
-
-                    $filter['sinceId'] = $lastChange['id'];
 
                     WC_Retailcrm_Logger::debug(__METHOD__, [
                         'Processing customers history, ID:',
@@ -197,8 +188,13 @@ if (!class_exists('WC_Retailcrm_History')) :
                     break;
                 }
 
-                $pagination++;
-            } while ($pagination !== self::PAGE_LIMIT);
+                $page++;
+
+                if ($page > self::PAGE_LIMIT) {
+                    break;
+                }
+
+            } while ($historyResponse['pagination']['currentPage'] < $historyResponse['pagination']['totalPageCount']);
         }
 
         /**
@@ -208,30 +204,22 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         protected function ordersHistory()
         {
-            $options    = array_flip(array_filter($this->retailcrmSettings));
-            $sinceId    = get_option('retailcrm_orders_history_since_id');
-            $pagination = 1;
-
+            $page = 1;
+            $options = array_flip(array_filter($this->retailcrmSettings));
+            $sinceId = get_option('retailcrm_orders_history_since_id');
             $filter = !empty($sinceId)
                 ? ['sinceId' => $sinceId]
                 : ['startDate' => $this->startDate->format('Y-m-d H:i:s')];
 
             do {
                 $historyResponse = $this->retailcrm->OrdersHistory($filter);
-                $isLastPage      = $this->checkTotalPage($pagination, $historyResponse);
-
-                if ($isLastPage) {
-                    break;
-                }
-
                 $history = $this->getHistoryData($historyResponse);
 
                 if (!empty($history)) {
                     $lastChange = end($history);
+                    $filter['sinceId'] = $lastChange['id'];
 
                     update_option('retailcrm_orders_history_since_id', $lastChange['id']);
-
-                    $filter['sinceId'] = $lastChange['id'];
 
                     WC_Retailcrm_Logger::debug(__METHOD__, [
                         'Processing orders history, ID:',
@@ -307,8 +295,11 @@ if (!class_exists('WC_Retailcrm_History')) :
                     break;
                 }
 
-                $pagination++;
-            } while ($pagination !== self::PAGE_LIMIT);
+                if ($page > self::PAGE_LIMIT) {
+                    break;
+                }
+
+            } while ($historyResponse['pagination']['currentPage'] < $historyResponse['pagination']['totalPageCount']);
 
             WC_Retailcrm_Plugin::$history_run = false;
 
@@ -1449,30 +1440,18 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         private function getHistoryData($historyResponse)
         {
-            if (!$historyResponse->isSuccessful() || empty($historyResponse['history'])) {
+            if (
+                !$historyResponse instanceof WC_Retailcrm_Response
+                || !$historyResponse->isSuccessful()
+                || empty($historyResponse['history'])
+                || empty($historyResponse['pagination'])
+            ) {
                 return [];
             }
 
             time_nanosleep(0, 300000000);
 
             return $historyResponse['history'];
-        }
-
-        /**
-         * @param int                   $currentPage
-         * @param WC_Retailcrm_Response $historyResponse Responce from CRM
-         *
-         * @return bool
-         */
-        private function checkTotalPage($currentPage, $historyResponse): bool
-        {
-            $totalPageCount = $historyResponse['pagination']['totalPageCount'] ?? null;
-
-            if (empty($totalPageCount)) {
-                return true;
-            }
-
-            return $currentPage > $totalPageCount;
         }
     }
 

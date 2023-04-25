@@ -245,23 +245,16 @@ class WC_Retailcrm_Client_V5
      * Get corporate customers history
      *
      * @param array $filter
-     * @param int   $page
      * @param int   $limit
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersCorporateHistory(array $filter = [], int $page = 1, int $limit = 100)
+    public function customersCorporateHistory(array $filter = [], int $limit = 100)
     {
-        $parameters = [
-            'page'    => $page,
-            'limit'   => $limit,
-            'filter'  => $filter,
-        ];
-
         return $this->client->makeRequest(
             '/customers-corporate/history',
             WC_Retailcrm_Request::METHOD_GET,
-            $parameters
+            ['limit' => $limit, 'filter' => $filter]
         );
     }
 
@@ -1306,23 +1299,16 @@ class WC_Retailcrm_Client_V5
      * Get orders history
      *
      * @param array $filter
-     * @param int   $page
      * @param int   $limit
      *
      * @return WC_Retailcrm_Response
      */
-    public function ordersHistory(array $filter = [], int $page = 1, int $limit = 100)
+    public function ordersHistory(array $filter = [], int $limit = 100)
     {
-        $parameters = [
-            'page'    => $page,
-            'limit'   => $limit,
-            'filter'  => $filter,
-        ];
-
         return $this->client->makeRequest(
             '/orders/history',
             WC_Retailcrm_Request::METHOD_GET,
-            $parameters
+            ['limit' => $limit, 'filter' => $filter]
         );
     }
 
@@ -1625,23 +1611,16 @@ class WC_Retailcrm_Client_V5
      * Get customers history
      *
      * @param array $filter
-     * @param int   $page
      * @param int   $limit
      *
      * @return WC_Retailcrm_Response
      */
-    public function customersHistory(array $filter = [], int $page = 1, int $limit = 100)
+    public function customersHistory(array $filter = [], int $limit = 100)
     {
-        $parameters = [
-            'page'    => $page,
-            'limit'   => $limit,
-            'filter'  => $filter,
-        ];
-
         return $this->client->makeRequest(
             '/customers/history',
             WC_Retailcrm_Request::METHOD_GET,
-            $parameters
+            ['limit' => $limit, 'filter' => $filter]
         );
     }
 
@@ -1819,7 +1798,6 @@ class WC_Retailcrm_Client_V5
      * Get orders assembly history
      *
      * @param array $filter (default: array())
-     * @param int $page   (default: int)
      * @param int $limit  (default: null)
      *
      * @return WC_Retailcrm_Response
@@ -1828,18 +1806,12 @@ class WC_Retailcrm_Client_V5
      *
      * @throws InvalidArgumentException
      */
-    public function ordersPacksHistory(array $filter = [], int $page = 1, int $limit = 100)
+    public function ordersPacksHistory(array $filter = [], int $limit = 100)
     {
-        $parameters = [
-            'page'    => $page,
-            'limit'   => $limit,
-            'filter'  => $filter,
-        ];
-
         return $this->client->makeRequest(
             '/orders/packs/history',
             WC_Retailcrm_Request::METHOD_GET,
-            $parameters
+            ['limit' => $limit, 'filter' => $filter]
         );
     }
 

@@ -1,3 +1,6 @@
+## 2022-04-25 4.6.1
+* The algorithm for getting the history of orders and customers has been optimized
+
 ## 2022-03-17 4.6.0
 * Added functionality of abandoned carts
 
