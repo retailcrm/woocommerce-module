@@ -997,12 +997,16 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * Returns data for address_1 and address_2(if exist data for this field) for WC order.
          *
-         * @param string $addressLine
+         * @param string|null $addressLine
          *
          * @return mixed
          */
-        private function getAddressLines(string $addressLine)
+        private function getAddressLines($addressLine)
         {
+            if ($addressLine === null) {
+                return null;
+            }
+
             if (strpos($addressLine, WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER) !== false) {
                 $addressLines = explode(WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER, $addressLine);
 
@@ -1183,6 +1187,7 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                     $result->save();
                     $handled = true;
+                // @codeCoverageIgnoreStart
                 } catch (\Exception $exception) {
                     $errorMessage = sprintf(
                         'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s',
@@ -1201,6 +1206,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                     ));
                     $handled = false;
                 }
+                // @codeCoverageIgnoreEnd
             }
 
             return $handled;

@@ -105,6 +105,27 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    public function test_history_order_create_with_empty_address_delivery()
+    {
+        $product = WC_Helper_Product::create_simple_product();
+        $order = DataHistoryRetailCrm::get_history_data_new_order($product->get_id());
+        $order['history'][0]['order']['delivery']['address'] = null;
+
+        $this->mockHistory(true, DataHistoryRetailCrm::empty_history(), $order);
+
+        $retailcrm_history = new WC_Retailcrm_History($this->apiMock);
+        $retailcrm_history->getHistory();
+
+        $orders  = wc_get_orders(['numberposts' => -1]);
+        $wcOrder = end($orders);
+
+        if (!$wcOrder) {
+            $this->fail('$order_added is null - no orders were added after receiving history');
+        }
+
+        $this->assertNotEmpty($wcOrder->get_date_created());
+    }
+
     public function test_history_order_create_statuses()
     {
         $product = WC_Helper_Product::create_simple_product();

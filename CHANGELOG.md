@@ -1,3 +1,6 @@
+## 2022-05-17 4.6.2
+* Modified method getting an address by history
+
 ## 2022-04-25 4.6.1
 * The algorithm for getting the history of orders and customers has been optimized
 
