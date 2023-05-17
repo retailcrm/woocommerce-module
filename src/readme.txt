@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 7.0
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 4.6.1
+Stable tag: 4.6.2
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.6.2 =
+* Modified method getting an address by history
+
 = 4.6.1 =
 * The algorithm for getting the history of orders and customers has been optimized
 
