@@ -57,9 +57,9 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $retailcrm_inventories = new WC_Retailcrm_Inventories($retailcrm);
-        $result = $retailcrm_inventories->updateQuantity();
+        $retailcrm_inventories->updateQuantity();
 
-        $this->checkProductData($retailcrm, $response, $result, 'simple');
+        $this->checkProductData($retailcrm, $response, $offer->get_id(), 'simple');
     }
 
     /**
@@ -86,9 +86,9 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
         }
 
         $retailcrm_inventories = new WC_Retailcrm_Inventories($retailcrm);
-        $result = $retailcrm_inventories->updateQuantity();
+        $retailcrm_inventories->updateQuantity();
 
-        $this->checkProductData($retailcrm, $response, $result, 'variation');
+        $this->checkProductData($retailcrm, $response, $childrens[0], 'variation');
     }
 
     public function test_sync_off()
@@ -104,19 +104,16 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals(false, $result);
     }
 
-    private function checkProductData($retailcrm, $response, $result, $entity)
+    private function checkProductData($retailcrm, $response, $offerId, $entity)
     {
+        $product = wc_get_product($offerId);
+
         if ($retailcrm && null !== $response) {
-            $product = wc_get_product($result[0]);
             $this->assertInstanceOf('WC_Product', $product);
             $this->assertEquals($entity, $product->get_type());
             $this->assertEquals(10, $product->get_stock_quantity());
-            $this->assertEquals($result[0], $product->get_id());
-            $this->assertInternalType('array', $result);
-        } elseif (null === $response) {
-            $this->assertEquals(false, $result);
         } else {
-            $this->assertEquals(null, $result);
+            $this->assertNotEquals(10, $product->get_stock_quantity());
         }
     }
 
