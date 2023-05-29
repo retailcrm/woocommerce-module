@@ -1,3 +1,6 @@
+## 2022-05-29 4.6.3
+* Types of deliveries and payments are displayed only for available stores
+
 ## 2022-05-17 4.6.2
 * Modified method getting an address by history
 

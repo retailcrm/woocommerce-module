@@ -36,10 +36,12 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
                     'paymentTypesList',
                     'statusesList',
                     'customFieldsList',
+                    'getSingleSiteForKey',
                 ]
             )
             ->getMock();
 
+        $this->setMockResponse($this->apiMock, 'getSingleSiteForKey', ['woocommerce']);
         $this->setMockOrderMethods();
         $this->setMockDeliveryTypes();
         $this->setMockPaymentTypes();

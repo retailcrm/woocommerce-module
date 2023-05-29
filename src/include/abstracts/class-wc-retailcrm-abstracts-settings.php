@@ -188,19 +188,30 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     ];
                 }
 
-                /**
-                 * Shipping options
-                 */
-                $shipping_option_list = [];
-                $retailcrm_shipping_list = $this->apiClient->deliveryTypesList();
+                $crmSite = $this->apiClient->getSingleSiteForKey();
 
-                if (!empty($retailcrm_shipping_list) && $retailcrm_shipping_list->isSuccessful()) {
-                    foreach ($retailcrm_shipping_list['deliveryTypes'] as $retailcrm_shipping_type) {
-                        if ($retailcrm_shipping_type['active'] == false) {
+                /**
+                 * Delivery options
+                 */
+                $crmDeliveryList = $this->apiClient->deliveryTypesList();
+
+                if ($crmDeliveryList instanceof WC_Retailcrm_Response && $crmDeliveryList->isSuccessful()) {
+                    $shippingOptionList = [];
+
+                    foreach ($crmDeliveryList['deliveryTypes'] as $crmDelivery) {
+                        if ($crmDelivery['active'] === false) {
                             continue;
                         }
 
-                        $shipping_option_list[$retailcrm_shipping_type['code']] = $retailcrm_shipping_type['name'];
+                        if (
+                            isset($crmDelivery['sites'])
+                            && $crmDelivery['sites'] !== []
+                            && in_array($crmSite, $crmDelivery['sites']) === false
+                        ) {
+                            continue;
+                        }
+
+                        $shippingOptionList[$crmDelivery['code']] = $crmDelivery['name'];
                     }
 
                     $wc_shipping_list = get_wc_shipping_methods();
@@ -220,7 +231,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                                 'css'            => 'min-width:350px;',
                                 'class'          => 'select',
                                 'type'           => 'select',
-                                'options'        => $shipping_option_list,
+                                'options'        => $shippingOptionList,
                                 'desc_tip'    =>  true,
                             ];
                         }
@@ -232,23 +243,31 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  */
                 $crmPaymentsList = $this->apiClient->paymentTypesList();
 
-                if (!empty($crmPaymentsList) && $crmPaymentsList->isSuccessful()) {
-                    $paymentsList        = [];
+                if ($crmPaymentsList instanceof WC_Retailcrm_Response && $crmPaymentsList->isSuccessful()) {
+                    $paymentOptionList   = [];
                     $integrationPayments = [];
 
-                    foreach ($crmPaymentsList['paymentTypes'] as $crmPaymentType) {
-                        if ($crmPaymentType['active'] == false) {
+                    foreach ($crmPaymentsList['paymentTypes'] as $crmPayment) {
+                        if ($crmPayment['active'] === false) {
                             continue;
                         }
 
-                        if (isset($crmPaymentType['integrationModule'])) {
-                            $integrationPayments['code'][] = $crmPaymentType['code'];
-                            $integrationPayments['name'][] = $crmPaymentType['name'];
-
-                            $crmPaymentType['name'] .= ' - ' . __('Integration payment', 'retailcrm');
+                        if (
+                            isset($crmPayment['sites'])
+                            && $crmPayment['sites'] !== []
+                            && in_array($crmSite, $crmPayment['sites']) === false
+                        ) {
+                            continue;
                         }
 
-                        $paymentsList[$crmPaymentType['code']] = $crmPaymentType['name'];
+                        if (isset($crmPayment['integrationModule'])) {
+                            $integrationPayments['code'][] = $crmPayment['code'];
+                            $integrationPayments['name'][] = $crmPayment['name'];
+
+                            $crmPayment['name'] .= ' - ' . __('Integration payment', 'retailcrm');
+                        }
+
+                        $paymentOptionList[$crmPayment['code']] = $crmPayment['name'];
                     }
 
                     $wc_payment = WC_Payment_Gateways::instance();
@@ -282,7 +301,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             'type'        => 'select',
                             'title'       => __($title, 'woocommerce'),
                             'class'       => 'select',
-                            'options'     => $paymentsList,
+                            'options'     => $paymentOptionList,
                             'desc_tip'    =>  true,
                             'description' => __($description, 'woocommerce'),
                         ];
