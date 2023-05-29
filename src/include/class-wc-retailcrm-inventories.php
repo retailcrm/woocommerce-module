@@ -70,7 +70,11 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                     if (isset($offer[$this->bind_field])) {
                         $product = retailcrm_get_wc_product($offer[$this->bind_field], $this->retailcrm_settings);
 
-                        if ($product instanceof WC_Product && $product->get_type() != 'external') {
+                        if ($product instanceof WC_Product) {
+                            if ($product->get_type() == 'external') {
+                                continue;
+                            }
+
                             if ($product->get_type() == 'variation' || $product->get_type() == 'variable') {
                                 $parentId = $product->get_parent_id();
 
