@@ -75,6 +75,18 @@ class DataBaseRetailCrm
                     ],
                     'active' => true
                 ],
+                [
+                    'name' => 'payment4',
+                    'code' => 'payment4',
+                    'active' => true,
+                    'sites' => ['prestaShop']
+                ],
+                [
+                    'name' => 'payment5',
+                    'code' => 'payment5',
+                    'active' => true,
+                    'sites' => ['woocommerce']
+                ]
             ]
         ];
     }
@@ -93,6 +105,18 @@ class DataBaseRetailCrm
                     'name' => 'delivery2',
                     'code' => 'delivery2',
                     'active' => false
+                ],
+                [
+                    'name' => 'delivery3',
+                    'code' => 'delivery3',
+                    'active' => true,
+                    'sites' => ['prestaShop']
+                ],
+                [
+                    'name' => 'delivery4',
+                    'code' => 'delivery4',
+                    'active' => true,
+                    'sites' => ['woocommerce']
                 ]
             ]
         ];
