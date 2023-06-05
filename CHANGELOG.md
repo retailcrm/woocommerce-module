@@ -1,3 +1,6 @@
+## 2022-05-26 4.6.4
+* Optimizing unloading of stock
+
 ## 2022-05-29 4.6.3
 * Types of deliveries and payments are displayed only for available stores
 

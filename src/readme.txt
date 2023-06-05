@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.6.4 =
+* Optimizing unloading of stock
+
 = 4.6.3 =
 * Types of deliveries and payments are displayed only for available stores
 

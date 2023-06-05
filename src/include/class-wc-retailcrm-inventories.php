@@ -42,7 +42,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
         /**
          * Load stock from RetailCRM
          *
-         * @return mixed
+         * @return void
          */
         protected function load_stocks()
         {
@@ -71,6 +71,10 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                         $product = retailcrm_get_wc_product($offer[$this->bind_field], $this->retailcrm_settings);
 
                         if ($product instanceof WC_Product) {
+                            if ($product->get_type() == 'external') {
+                                continue;
+                            }
+
                             if ($product->get_type() == 'variation' || $product->get_type() == 'variable') {
                                 $parentId = $product->get_parent_id();
 
@@ -85,39 +89,44 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
 
                             $product->set_manage_stock(true);
                             $product->set_stock_quantity($offer['quantity']);
-                            $success[] = $product->save();
+                            $product->save();
                         }
                     }
                 }
 
-                if (!empty($variationProducts)) {
-                    foreach ($variationProducts as $id => $quantity) {
+                // Clearing the object cache after calling the function wc_get_products
+                wp_cache_flush();
+            } while ($page <= $totalPageCount);
+
+            if (!empty($variationProducts)) {
+                $chunks = array_chunk($variationProducts, 100, true);
+
+                foreach ($chunks as $chunk) {
+                    foreach ($chunk as $id => $quantity) {
                         $variationProduct = wc_get_product($id);
 
                         if (is_object($variationProduct)) {
                             $variationProduct->set_manage_stock(true);
                             $variationProduct->set_stock_quantity($quantity);
-                            $success[] = $variationProduct->save();
+                            $variationProduct->save();
                         }
                     }
-                }
-            } while ($page <= $totalPageCount);
 
-            return $success;
+                    wp_cache_flush();
+                }
+            }
         }
 
         /**
          * Update stock quantity in WooCommerce
          *
-         * @return mixed
+         * @return void
          */
         public function updateQuantity()
         {
             if ($this->retailcrm_settings['sync'] == WC_Retailcrm_Base::YES) {
-                return $this->load_stocks();
+                $this->load_stocks();
             }
-
-            return false;
         }
     }
 endif;
