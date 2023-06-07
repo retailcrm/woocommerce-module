@@ -387,3 +387,39 @@ msgstr "Выгружать брошенные корзины"
 
 msgid "Enable if you want to in CRM abandoned shopping carts were unloaded"
 msgstr "Включите, если хотите, чтобы в CRM выгружались брошенные корзины покупателей"
+
+msgid "firstName"
+msgstr "Имя"
+
+msgid "lastName"
+msgstr "Фамилия"
+
+msgid "phone"
+msgstr "Телефон"
+
+msgid "tags"
+msgstr "Теги"
+
+msgid "customerComment"
+msgstr "Комментарий клиента"
+
+msgid "managerComment"
+msgstr "Комментарий менеджера"
+
+msgid "email"
+msgstr "E-mail"
+
+msgid "addressText"
+msgstr "Адрес"
+
+msgid "addressCity"
+msgstr "Город"
+
+msgid "addressIndex"
+msgstr "Индекс"
+
+msgid "addressRegion"
+msgstr "Регион"
+
+msgid "Standard CRM fields"
+msgstr "Стандартные поля CRM"

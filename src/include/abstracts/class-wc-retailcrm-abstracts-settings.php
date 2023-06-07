@@ -203,11 +203,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             continue;
                         }
 
-                        if (
-                            isset($crmDelivery['sites'])
-                            && $crmDelivery['sites'] !== []
-                            && in_array($crmSite, $crmDelivery['sites']) === false
-                        ) {
+                        if (!empty($crmDelivery['sites']) && in_array($crmSite, $crmDelivery['sites']) === false) {
                             continue;
                         }
 
@@ -252,11 +248,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             continue;
                         }
 
-                        if (
-                            isset($crmPayment['sites'])
-                            && $crmPayment['sites'] !== []
-                            && in_array($crmSite, $crmPayment['sites']) === false
-                        ) {
+                        if (!empty($crmPayment['sites']) && in_array($crmSite, $crmPayment['sites']) === false) {
                             continue;
                         }
 

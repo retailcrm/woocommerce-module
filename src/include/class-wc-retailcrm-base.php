@@ -706,6 +706,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $customerMetaData     = $this->getMetaData('user');
             $orderCustomFields    = $this->getCustomFields('order');
             $customerCustomFields = $this->getCustomFields('customer');
+            $defaultCrmOrderFields = $this->getDefaultCrmOrderFields();
+            $defaultCrmCustomerFields = $this->getDefaultCrmCustomerFields();
 
             $translate = [
                 'tr_lb_order'    => __('Custom fields for order', 'retailcrm'),
@@ -715,8 +717,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             echo json_encode(
                 [
-                    'order'     => ['custom' => $orderCustomFields, 'meta' => $orderMetaData],
-                    'customer'  => ['custom' => $customerCustomFields, 'meta' => $customerMetaData],
+                    'order' => [
+                        'meta' => $orderMetaData,
+                        'custom' => $orderCustomFields,
+                        'crmDefault' => $defaultCrmOrderFields,
+                        'tr_default_crm_fields' => __('Standard CRM fields', 'retailcrm'),
+                    ],
+                    'customer' => [
+                        'meta' => $customerMetaData,
+                        'custom' => $customerCustomFields,
+                        'crmDefault' => $defaultCrmCustomerFields,
+                        'tr_default_crm_fields' => __('Standard CRM fields', 'retailcrm'),
+                    ],
                     'translate' => $translate,
                 ]
             );
@@ -829,6 +841,37 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     update_option('retailcrm_client_id', $client_id);
                 }
             }
+        }
+
+        private function getDefaultCrmOrderFields()
+        {
+            return [
+                'default-crm-field#firstName' => __('firstName', 'retailcrm'),
+                'default-crm-field#lastName' => __('lastName', 'retailcrm'),
+                'default-crm-field#phone' => __('phone', 'retailcrm'),
+                'default-crm-field#email' => __('email', 'retailcrm'),
+                'default-crm-field#delivery#address#index' => __('addressIndex', 'retailcrm'),
+                'default-crm-field#delivery#address#region' => __('addressRegion', 'retailcrm'),
+                'default-crm-field#delivery#address#city' => __('addressCity', 'retailcrm'),
+                'default-crm-field#delivery#address#text' => __('addressText', 'retailcrm'),
+                'default-crm-field#customerComment' => __('customerComment', 'retailcrm'),
+                'default-crm-field#managerComment' => __('managerComment', 'retailcrm'),
+            ];
+        }
+
+        private function getDefaultCrmCustomerFields()
+        {
+            return [
+                'default-crm-field#firstName' => __('firstName', 'retailcrm'),
+                'default-crm-field#lastName' => __('lastName', 'retailcrm'),
+                'default-crm-field#phones' => __('phone', 'retailcrm'),
+                'default-crm-field#email' => __('email', 'retailcrm'),
+                'default-crm-field#address#index' => __('addressIndex', 'retailcrm'),
+                'default-crm-field#address#region' => __('addressRegion', 'retailcrm'),
+                'default-crm-field#address#city' => __('addressCity', 'retailcrm'),
+                'default-crm-field#address#text' => __('addressText', 'retailcrm'),
+                'default-crm-field#tags' => __('tags', 'retailcrm'),
+            ];
         }
     }
 }
