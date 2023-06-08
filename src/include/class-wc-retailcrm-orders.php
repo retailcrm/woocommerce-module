@@ -416,7 +416,20 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 foreach ($this->customFields as $metaKey => $customKey) {
                     $metaValue = $order->get_meta($metaKey);
 
-                    if (!empty($metaValue)) {
+                    if (empty($metaValue)) {
+                        continue;
+                    }
+
+                    if (strpos($customKey, 'default-crm-field') !== false) {
+                        $crmField = explode('#', $customKey);
+
+                        if (count($crmField) === 2 && isset($crmField[1])) {
+                            $orderData[$crmField[1]] = $metaValue;
+                        } elseif (isset($crmField[1], $crmField[2], $crmField[3])) {
+                            // For order delivery
+                            $orderData[$crmField[1]][$crmField[2]][$crmField[3]] = $metaValue;
+                        }
+                    } else {
                         $orderData['customFields'][$customKey] = $metaValue;
                     }
                 }

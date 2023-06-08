@@ -100,7 +100,6 @@ _used_by
 attribute_logo
 attribute_pa_color
 attribute_pa_size
-is_vat_exempt 
 total_sales
 coupon_amount
 date_expires
@@ -147,7 +146,6 @@ first_name
 last_name
 last_update
 locale
-nickname
 paying_customer
 rich_editing
 session_tokens

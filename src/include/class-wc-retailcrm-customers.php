@@ -438,7 +438,26 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 foreach ($this->customFields as $metaKey => $customKey) {
                     $metaValue = $customer->get_meta($metaKey);
 
-                    if (!empty($metaValue)) {
+                    if (empty($metaValue)) {
+                        continue;
+                    }
+
+                    if (strpos($customKey, 'default-crm-field') !== false) {
+                        $crmField = explode('#', $customKey);
+
+                        if (count($crmField) === 2 && isset($crmField[1])) {
+                            if ($crmField[1] === 'phones') {
+                                $customerData[$crmField[1]][] = ['number' => $metaValue];
+                            } elseif ($crmField[1] === 'tags') {
+                                $customerData['addTags'][] = $metaValue;
+                            } else {
+                                $customerData[$crmField[1]] = $metaValue;
+                            }
+                        } elseif (isset($crmField[1], $crmField[2])) {
+                            // For customer delivery
+                            $customerData[$crmField[1]][$crmField[2]] = $metaValue;
+                        }
+                    } else {
                         $customerData['customFields'][$customKey] = $metaValue;
                     }
                 }

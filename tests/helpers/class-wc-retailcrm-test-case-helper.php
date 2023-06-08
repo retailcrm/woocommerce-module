@@ -61,8 +61,22 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'update_number' => 'yes',
             'debug_mode'    => 'yes',
             'debug-info'    => '',
-            'order-meta-data-retailcrm'    => json_encode(['woo_order'    => 'crm_order']),
-            'customer-meta-data-retailcrm' => json_encode(['woo_customer' => 'crm_customer']),
+            'order-meta-data-retailcrm'    => json_encode(
+                [
+                    'woo_order' => 'crm_order',
+                    'crm_phone' => 'default-crm-field#phone',
+                    'crm_address_text' => 'default-crm-field#delivery#address#text',
+                    'crm_customer_comment' => 'default-crm-field#customerComment',
+                ]
+            ),
+            'customer-meta-data-retailcrm' => json_encode(
+                [
+                    'woo_customer' => 'crm_customer',
+                    '_crm_tags' => 'default-crm-field#tags',
+                    '_crm_phone' => 'default-crm-field#phones',
+                    '_crm_address_text' => 'default-crm-field#address#text',
+                ]
+            ),
             'product_description' => 'full',
         ];
 

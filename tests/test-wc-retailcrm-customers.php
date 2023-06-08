@@ -61,21 +61,27 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockResponse($this->apiMock, 'customersCorporateCreate', true);
 
         $this->customer = new WC_Customer();
+
         $this->customer->set_first_name('Tester');
         $this->customer->set_last_name('Tester');
         $this->customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
         $this->customer->set_billing_email($this->customer->get_email());
         $this->customer->set_password('password');
-        $this->customer->set_billing_phone('89000000000');
         $this->customer->set_billing_company('test_company');
         $this->customer->set_billing_state('test_state');
         $this->customer->set_billing_postcode('123456');
         $this->customer->set_billing_city('test_city');
         $this->customer->set_billing_address_1('test_address_line');
         $this->customer->set_date_created(date('Y-m-d H:i:s'));
+
         $this->customer->save();
 
-        update_user_meta($this->customer->get_id(), 'woo_customer', 'test_custom_fields');
+        $customerId = $this->customer->get_id();
+
+        add_user_meta($customerId, 'woo_customer', 'test_custom_fields');
+        add_user_meta($customerId, '_crm_phone', '1111122222');
+        add_user_meta($customerId, '_crm_tags', 'tags_test');
+        add_user_meta($customerId, '_crm_address_text', 'crm_address_text_test');
     }
 
     /**
@@ -113,6 +119,11 @@ class WC_Retailcrm_Customers_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($customer['email']);
             $this->assertEquals($customer['firstName'], $this->customer->get_first_name());
             $this->assertEquals($customer['email'], $this->customer->get_email());
+
+            //Check transferring WC meta to CRM customer fields
+            $this->assertEquals($customer['addTags'][0], 'tags_test');
+            $this->assertEquals($customer['address']['text'], 'crm_address_text_test');
+            $this->assertEquals($customer['phones'][0]['number'], '1111122222');
             $this->assertEquals($customer['customFields']['crm_customer'], 'test_custom_fields');
         } else {
             $this->assertEquals(null, $id);

@@ -295,6 +295,16 @@ jQuery(function () {
                     .attr('value', key)
                     .text(value));
         });
+
+        jQuery(`#customFields-${entity}-${index}`)
+            .append(jQuery(`<optgroup id=default-${entity}-${index}-crm-fields label = '${data.tr_default_crm_fields}'></optgroup>`));
+
+        jQuery.each(data.crmDefault, function(key, value) {
+            jQuery(`#default-${entity}-${index}-crm-fields`)
+                .append(jQuery('<option></option>')
+                    .attr('value', key)
+                    .text(value));
+        });
     }
 
     RetailcrmMetaFields.prototype.addPairSelects = function (element, entity, data, index) {

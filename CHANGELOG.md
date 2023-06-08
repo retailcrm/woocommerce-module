@@ -1,4 +1,7 @@
-## 2022-05-26 4.6.4
+## 2022-06-08 4.6.5
+* Transferring WC meta fields to standard CRM order and customer fields
+
+## 2022-05-30 4.6.4
 * Optimizing unloading of stock
 
 ## 2022-05-29 4.6.3

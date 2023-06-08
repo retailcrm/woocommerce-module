@@ -378,3 +378,39 @@ msgstr "Importar los carritos abandonados"
 
 msgid "Enable if you want to in CRM abandoned shopping carts were unloaded"
 msgstr "Habilitar Si desea que en CRM se descargaron las cestas abandonadas de los compradores"
+
+msgid "firstName"
+msgstr "Nombre"
+
+msgid "lastName"
+msgstr "Apellido"
+
+msgid "phone"
+msgstr "Número de teléfono"
+
+msgid "tags"
+msgstr "Etiquetas"
+
+msgid "customerComment"
+msgstr "Comentario del cliente"
+
+msgid "managerComment"
+msgstr "Comentario del asesor"
+
+msgid "email"
+msgstr "E-mail"
+
+msgid "addressText"
+msgstr "Dirección"
+
+msgid "addressCity"
+msgstr "Ciudad"
+
+msgid "addressIndex"
+msgstr "Código postal"
+
+msgid "addressRegion"
+msgstr "Región"
+
+msgid "Standard CRM fields"
+msgstr "Los campos del CRM por defecto"
