@@ -408,23 +408,27 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             global $woocommerce;
 
-            $site = $this->apiClient->getSingleSiteForKey();
-            $cartItems = $woocommerce->cart->get_cart();
-            $customerId = $woocommerce->customer->get_id();
+            try {
+                $site = $this->apiClient->getSingleSiteForKey();
+                $cartItems = $woocommerce->cart->get_cart();
+                $customerId = $woocommerce->customer->get_id();
 
-            if (empty($site)) {
-                writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
-            } elseif (empty($customerId)) {
-                writeBaseLogs('Abandoned carts work only for registered customers');
-            } else {
-                $isCartExist = $this->cart->isCartExist($customerId, $site);
-                $isSuccessful = $this->cart->processCart($customerId, $cartItems, $site, $isCartExist);
-
-                if ($isSuccessful) {
-                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' processed. Hook: ' . current_filter());
+                if (empty($site)) {
+                    writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+                } elseif (empty($customerId)) {
+                    writeBaseLogs('Abandoned carts work only for registered customers');
                 } else {
-                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' not processed. Hook: ' . current_filter());
+                    $isCartExist = $this->cart->isCartExist($customerId, $site);
+                    $isSuccessful = $this->cart->processCart($customerId, $cartItems, $site, $isCartExist);
+
+                    if ($isSuccessful) {
+                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' processed. Hook: ' . current_filter());
+                    } else {
+                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' not processed. Hook: ' . current_filter());
+                    }
                 }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
             }
         }
 
@@ -443,22 +447,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             global $woocommerce;
 
-            $site = $this->apiClient->getSingleSiteForKey();
-            $customerId = $woocommerce->customer->get_id();
+            try {
+                $site = $this->apiClient->getSingleSiteForKey();
+                $customerId = $woocommerce->customer->get_id();
 
-            if (empty($site)) {
-                writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
-            } elseif (empty($customerId)) {
-                writeBaseLogs('Abandoned carts work only for registered customers');
-            } else {
-                $isCartExist = $this->cart->isCartExist($customerId, $site);
-                $isSuccessful = $this->cart->clearCart($customerId, $site, $isCartExist);
+                if (empty($site)) {
+                    writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+                } elseif (empty($customerId)) {
+                    writeBaseLogs('Abandoned carts work only for registered customers');
+                } else {
+                    $isCartExist = $this->cart->isCartExist($customerId, $site);
+                    $isSuccessful = $this->cart->clearCart($customerId, $site, $isCartExist);
 
-                if ($isSuccessful) {
-                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' cleared. Hook: ' . current_filter());
-                } elseif ($isCartExist) {
-                    writeBaseLogs('Cart for customer ID: ' . $customerId . ' not cleared. Hook: ' . current_filter());
+                    if ($isSuccessful) {
+                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' cleared. Hook: ' . current_filter());
+                    } elseif ($isCartExist) {
+                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' not cleared. Hook: ' . current_filter());
+                    }
                 }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
             }
         }
 
