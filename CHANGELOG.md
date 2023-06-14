@@ -1,3 +1,6 @@
+## 2022-06-14 4.6.6
+* Added handling of fatal errors when working with abandoned carts
+
 ## 2022-06-08 4.6.5
 * Transferring WC meta fields to standard CRM order and customer fields
 
