@@ -1,3 +1,6 @@
+## 2023-06-27 4.6.7
+* Fixed customer phone sending to crm when order will create by guest
+
 ## 2022-06-14 4.6.6
 * Added handling of fatal errors when working with abandoned carts
 
