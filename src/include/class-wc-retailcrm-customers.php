@@ -393,7 +393,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 }
 
                 if (empty($billingPhone)) {
-                    $order->get_billing_phone();
+                    $billingPhone = $order->get_billing_phone();
                 }
             }
 
@@ -415,7 +415,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             if (!empty($billingPhone)) {
                 $customerData['phones'][] = [
-                    'number' => $customer->get_billing_phone()
+                    'number' => $billingPhone
                 ];
             }
 
