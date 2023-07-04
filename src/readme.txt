@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.6.7 =
+* Fixed customer phone sending to crm when order will create by guest
+
 = 4.6.6 =
 * Added handling of fatal errors when working with abandoned carts
 
