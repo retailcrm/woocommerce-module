@@ -270,14 +270,27 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $this->updateMetaData($customFields, $order, $wcOrder);
 
                                 $wcOrderNumber = $wcOrder->get_order_number();
+                                $orderEditData = [];
 
                                 if (
                                     $order['number'] != $wcOrderNumber
                                     && isset($this->retailcrmSettings['update_number'])
                                     && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
                                 ) {
+                                    $orderEditData['number'] = $wcOrderNumber;
+                                }
+
+                                $items = $this->updateItemsForUsedCoupons($order, $wcOrder);
+
+                                if (!empty($items)) {
+                                    $orderEditData['items'] = $items;
+                                }
+
+                                if (!empty($orderEditData)) {
+                                    $orderEditData['id'] = $order['id'];
+
                                     $this->retailcrm->ordersEdit(
-                                        ['id' => $order['id'], 'number' => $wcOrderNumber],
+                                        $orderEditData,
                                         'id'
                                     );
                                 }
@@ -997,6 +1010,53 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
             }
+        }
+
+        /**
+         * Checks use coupons and updates offers
+         *
+         * @param array $order
+         * @param array $wcOrder
+         *
+         * @return array
+         */
+        private function updateItemsForUsedCoupons($order, $wcOrder)
+        {
+            $couponField = apply_filters(
+                'retailcrm_coupon_order',
+                $this->retailcrmSettings['woo_coupon_apply_field'],
+                $order,
+                $wcOrder
+            );
+
+            $isNewCoupon = false;
+
+            if ($couponField !== 'not-upload' && !empty($order['customFields'][$couponField])) {
+                $masCoupons = explode(';', $order['customFields'][$couponField]);
+
+                foreach ($masCoupons as $coupon) {
+                    if (!empty($coupon) && !in_array($coupon, $wcOrder->get_coupon_codes())) {
+                        $wcOrder->apply_coupon($coupon);
+
+                        $isNewCoupon = true;
+                    }
+                }
+
+                if ($isNewCoupon) {
+                    $orderItem = new WC_Retailcrm_Order_Item($this->retailcrmSettings);
+                    $orderItems = [];
+
+                    foreach ($wcOrder->get_items() as $item) {
+                        $orderItems[] = $orderItem->build($item)->getData();
+
+                        $orderItem->resetData();
+                    }
+
+                    return $orderItems;
+                }
+            }
+
+            return [];
         }
 
         /**

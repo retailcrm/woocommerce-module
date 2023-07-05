@@ -124,6 +124,9 @@ msgstr "Ajustes del stock"
 msgid "Statuses"
 msgstr "Los estados"
 
+msgid "Coupon"
+msgstr 'Cupón'
+
 msgid "Payment types"
 msgstr "Métodos de pago"
 

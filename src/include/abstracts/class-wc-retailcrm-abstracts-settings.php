@@ -342,6 +342,36 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 }
 
                 /**
+                * Coupon options
+                */
+                $coupon_option_list = ['not-upload' => __("Don't send to CRM", 'retailcrm')];
+                $retailcrm_metaFiels_list = $this->apiClient->customFieldsList(
+                        ['entity' => 'order', 'type' => ['string', 'text']]
+                );
+
+                if (!empty($retailcrm_metaFiels_list) && $retailcrm_metaFiels_list->isSuccessful()) {
+                    foreach ($retailcrm_metaFiels_list['customFields'] as $retailcrm_metaField) {
+                        $coupon_option_list[$retailcrm_metaField['code']] = $retailcrm_metaField['name'];
+                    }
+
+                    $this->form_fields[] = [
+                            'title' => __('Coupon', 'retailcrm'),
+                            'type' => 'heading',
+                            'description' => '',
+                            'id' => 'coupon_options'
+                    ];
+
+                    $this->form_fields['woo_coupon_apply_field'] = [
+                            'title' => __('Coupon', 'retailcrm'),
+                            'css' => 'min-width:350px;',
+                            'class' => 'select',
+                            'type' => 'select',
+                            'options' => $coupon_option_list,
+                            'desc_tip' => true,
+                    ];
+                }
+
+                /**
                  * Meta data options
                  */
                 $this->form_fields[] = [
