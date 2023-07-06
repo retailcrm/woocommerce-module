@@ -438,15 +438,15 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             $couponCustomField = $this->retailcrm_settings['woo_coupon_apply_field'];
 
             if ($couponCustomField !== 'not-upload') {
-                $codeCoupons = '';
+                $codeCoupons = [];
 
                 foreach ($order->get_coupons() as $coupon) {
                     if (!empty($coupon->get_code())) {
-                        $codeCoupons .= $coupon->get_code() . ';';
+                        $codeCoupons[] = $coupon->get_code();
                     }
                 }
 
-                $orderData['customFields'][$couponCustomField] = $codeCoupons;
+                $orderData['customFields'][$couponCustomField] = implode('; ', $codeCoupons);
             }
 
             $this->order = WC_Retailcrm_Plugin::clearArray($orderData);

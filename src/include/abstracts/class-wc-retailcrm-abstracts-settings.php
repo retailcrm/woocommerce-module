@@ -355,7 +355,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     }
 
                     $this->form_fields[] = [
-                            'title' => __('Coupon', 'retailcrm'),
+                            'title' => __("Coupon", 'retailcrm'),
                             'type' => 'heading',
                             'description' => '',
                             'id' => 'coupon_options'

@@ -31,6 +31,9 @@ if (!class_exists('WC_Retailcrm_History')) :
         /** @var string */
         protected $bindField = 'externalId';
 
+        /** @var bool */
+        protected $recalculateCoupons = false;
+
         /**
          * WC_Retailcrm_History constructor.
          *
@@ -280,7 +283,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                                     $orderEditData['number'] = $wcOrderNumber;
                                 }
 
-                                $items = $this->updateItemsForUsedCoupons($order, $wcOrder);
+                                $items = $this->updateItemsForUsedCoupons($orderHistory, $wcOrder);
 
                                 if (!empty($items)) {
                                     $orderEditData['items'] = $items;
@@ -467,6 +470,8 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             if (array_key_exists('items', $order)) {
+                $this->recalculateCoupons = true;
+
                 foreach ($order['items'] as $key => $crmProduct) {
                     if (!isset($crmProduct['offer'][$this->bindField])) {
                         continue;
@@ -1015,45 +1020,70 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * Checks use coupons and updates offers
          *
-         * @param array $order
+         * @param array $orderHistory
          * @param array $wcOrder
          *
          * @return array
          */
-        private function updateItemsForUsedCoupons($order, $wcOrder)
+        private function updateItemsForUsedCoupons($orderHistory, $wcOrder)
         {
             $couponField = apply_filters(
                 'retailcrm_coupon_order',
                 $this->retailcrmSettings['woo_coupon_apply_field'],
-                $order,
+                $orderHistory,
                 $wcOrder
             );
 
-            $isNewCoupon = false;
+            if ($couponField === 'not-upload') {
+                return [];
+            }
 
-            if ($couponField !== 'not-upload' && !empty($order['customFields'][$couponField])) {
-                $masCoupons = explode(';', $order['customFields'][$couponField]);
+            $rewriteItems = false;
+            $wcOrderCoupons = $wcOrder->get_coupon_codes();
 
-                foreach ($masCoupons as $coupon) {
-                    if (!empty($coupon) && !in_array($coupon, $wcOrder->get_coupon_codes())) {
-                        $wcOrder->apply_coupon($coupon);
+            if (!empty($orderHistory['customFields'])
+                && array_key_exists($couponField, $orderHistory['customFields'])
+                && empty($orderHistory['customFields'][$couponField])
+                && !empty($wcOrderCoupons)
+            ) {
+                foreach ($wcOrderCoupons as $code) {
+                    $wcOrder->remove_coupon($code);
 
-                        $isNewCoupon = true;
-                    }
+                    $rewriteItems = true;
+                }
+            }
+
+            if (!empty($orderHistory['customFields'][$couponField])) {
+                $masCoupons = explode('; ', $orderHistory['customFields'][$couponField]);
+
+                foreach (array_diff($masCoupons, $wcOrderCoupons) as $coupon) {
+                    $wcOrder->apply_coupon($coupon);
+
+                    $rewriteItems = true;
                 }
 
-                if ($isNewCoupon) {
-                    $orderItem = new WC_Retailcrm_Order_Item($this->retailcrmSettings);
-                    $orderItems = [];
+                foreach (array_diff($wcOrderCoupons, $masCoupons) as $coupon) {
+                    $wcOrder->remove_coupon($coupon);
 
-                    foreach ($wcOrder->get_items() as $item) {
-                        $orderItems[] = $orderItem->build($item)->getData();
-
-                        $orderItem->resetData();
-                    }
-
-                    return $orderItems;
+                    $rewriteItems = true;
                 }
+            }
+
+            if (!$rewriteItems && $this->recalculateCoupons) {
+                $wcOrder->recalculate_coupons();
+            }
+
+            if ($rewriteItems || $this->recalculateCoupons) {
+                $orderItem = new WC_Retailcrm_Order_Item($this->retailcrmSettings);
+                $orderItems = [];
+
+                foreach ($wcOrder->get_items() as $item) {
+                    $orderItems[] = $orderItem->build($item)->getData();
+
+                    $orderItem->resetData();
+                }
+
+                return $orderItems;
             }
 
             return [];
