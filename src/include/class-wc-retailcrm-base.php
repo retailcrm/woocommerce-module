@@ -301,6 +301,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function load_stocks()
         {
             $inventories = new WC_Retailcrm_Inventories($this->apiClient);
+
             $inventories->updateQuantity();
         }
 

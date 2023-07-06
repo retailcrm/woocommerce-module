@@ -157,9 +157,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 $order_methods_option = [];
                 $order_methods_list = $this->apiClient->orderMethodsList();
 
-                if (!empty($order_methods_list) && $order_methods_list->isSuccessful()) {
+                if ($order_methods_list->isSuccessful() && !empty($order_methods_list['orderMethods'])) {
                     foreach ($order_methods_list['orderMethods'] as $order_method) {
-                        if ($order_method['active'] == false) {
+                        if (!$order_method['active']) {
                             continue;
                         }
 
@@ -377,6 +377,32 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => __('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website', 'retailcrm')
+                ];
+
+                $crmStores = [];
+                $crmStoresList = $this->apiClient->storesList();
+
+                if ($crmStoresList->isSuccessful() && !empty($crmStoresList['stores'])) {
+                    foreach ($crmStoresList['stores'] as $store) {
+                        if (!$store['active']) {
+                            continue;
+                        }
+
+                        $crmStores[$store['code']] = $store['name'];
+                    }
+                }
+
+                $this->form_fields['stores_for_uploading'] = [
+                        'label'       =>  ' ',
+                        'title'       => __('Warehouses available in CRM', 'retailcrm'),
+                        'class'       => '',
+                        'type'        => 'multiselect',
+                        'options'     => $crmStores,
+                        'css'         => 'min-height:100px;',
+                        'select_buttons' => true,
+                        'description' => __('Select warehouses to receive balances from CRM. To select multiple warehouses, hold CTRL (for Windows and Linux) or ⌘ Command (for MacOS)',
+                            'retailcrm'
+                        ),
                 ];
 
                 /**

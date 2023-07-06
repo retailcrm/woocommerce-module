@@ -51,7 +51,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'whatsapp_active' => 'yes',
             'whatsapp_location_icon' => 'yes',
             'whatsapp_number' => '+79184567234',
-            'icml'          => 'yes',
+            'icml' => 'yes',
             'corporate_enabled' => 'yes',
             'abandoned_carts_enabled' => 'yes',
             'single_order'  => '123',
@@ -61,7 +61,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'update_number' => 'yes',
             'debug_mode'    => 'yes',
             'debug-info'    => '',
-            'order-meta-data-retailcrm'    => json_encode(
+            'order-meta-data-retailcrm' => json_encode(
                 [
                     'woo_order' => 'crm_order',
                     'crm_phone' => 'default-crm-field#phone',
@@ -78,6 +78,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
                 ]
             ),
             'product_description' => 'full',
+            'stores_for_uploading' => ['woocommerce', 'main'],
         ];
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
@@ -140,7 +141,7 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
     protected function setMockResponse($mock, $method, $response)
     {
         $mock->expects($this->any())
-             ->method($method)
-             ->willReturn($response);
+            ->method($method)
+            ->willReturn($response);
     }
 }

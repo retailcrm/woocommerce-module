@@ -16,6 +16,7 @@ use datasets\DataBaseRetailCrm;
 class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 {
     protected $apiMock;
+    protected $responseMockStoresList;
     protected $responseMockOrderMethods;
     protected $responseMockDeliveryTypes;
     protected $responseMockPaymentTypes;
@@ -31,6 +32,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             ->disableOriginalConstructor()
             ->setMethods(
                 [
+                    'storesList',
                     'orderMethodsList',
                     'deliveryTypesList',
                     'paymentTypesList',
@@ -47,6 +49,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockPaymentTypes();
         $this->setMockStatuses();
         $this->setMockCustomFields();
+        $this->setMockStoresList();
 
         $_GET['page'] = 'wc-settings';
         $_GET['tab'] = 'integration';
@@ -120,6 +123,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
         //Other settings
         $this->assertArrayHasKey('corporate_enabled', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('stores_for_uploading', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('abandoned_carts_enabled', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('online_assistant', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('deactivate_update_order', $this->baseRetailcrm->form_fields);
@@ -393,6 +397,20 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         preg_match('/{.*}/', $text, $matches);
 
         return json_decode($matches[0], true);
+    }
+
+    private function setMockStoresList()
+    {
+        $this->responseMockStoresList = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
+        $this->setMockResponse($this->responseMockStoresList, 'isSuccessful', true);
+
+        $this->responseMockStoresList->setResponse(DataBaseRetailCrm::getResponseStoreList());
+        $this->setMockResponse($this->apiMock, 'storesList', $this->responseMockStoresList);
     }
 
     private function setMockOrderMethods()

@@ -423,3 +423,9 @@ msgstr "Регион"
 
 msgid "Standard CRM fields"
 msgstr "Стандартные поля CRM"
+
+msgid "Warehouses available in CRM"
+msgstr "Склады, доступные в CRM"
+
+msgid "Select warehouses to receive balances from CRM. To select multiple warehouses, hold CTRL (for Windows and Linux) or ⌘ Command (for MacOS)"
+msgstr "Выберите склады для получения остатков из CRM. Для выбора нескольких складов зажмите CTRL (для Windows и Linux) или ⌘ Command (для MacOS)"

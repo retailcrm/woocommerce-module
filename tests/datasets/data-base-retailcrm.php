@@ -140,4 +140,28 @@ class DataBaseRetailCrm
             ]
         ];
     }
+
+    public static function getResponseStoreList()
+    {
+        return [
+            'success' => true,
+            'stores' => [
+                [
+                    'name' => 'main',
+                    'code' => 'main',
+                    'active' => true
+                ],
+                [
+                    'name' => 'woocommerce',
+                    'code' => 'woocommerce',
+                    'active' => true
+                ],
+                [
+                    'name' => 'prestashop',
+                    'code' => 'prestashop',
+                    'active' => true
+                ]
+            ]
+        ];
+    }
 }
