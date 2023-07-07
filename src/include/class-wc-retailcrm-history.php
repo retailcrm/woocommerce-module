@@ -287,6 +287,8 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                                 if (!empty($items)) {
                                     $orderEditData['items'] = $items;
+                                    $orderEditData['discountManualAmount']  = 0;
+                                    $orderEditData['discountManualPercent'] = 0;
                                 }
 
                                 if (!empty($orderEditData)) {
@@ -507,8 +509,8 @@ if (!class_exists('WC_Retailcrm_History')) :
                             }
                         }
 
-                        $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct);
-
+                        $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct);//TODO изменить логику, передавая просто данные, уже после в зависимости от наличия купонов выполнять определенные действия
+                        // вообще без разницы как из создавать, скидки все равно сбрасываются
                         foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
                             $arItemsNew[$orderItemId] = $orderItemId;
                         }
@@ -548,7 +550,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                                     wc_delete_order_item($itemExternalId[1]);
                                 }
 
-                                $this->updateProductInWcOrder($wcOrderItem, $crmProduct);
+                                $this->updateProductInWcOrder($wcOrderItem, $crmProduct);//TODO изменить логику, передавая просто данные, уже после в зависимости от наличия купонов выполнять определенные действия
                             }
                         }
                     }
@@ -840,7 +842,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                         $arItemsOld[$orderItemId] = $orderItemId;
                     }
 
-                    $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct);
+                    $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct); //TODO изменить логику, передавая просто данные, уже после в зависимости от наличия купонов выполнять определенные действия
 
                     foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
                         $arItemsNew[$orderItemId] = $orderItemId;
