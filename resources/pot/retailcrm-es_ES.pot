@@ -418,6 +418,5 @@ msgstr "Los campos del CRM por defecto"
 msgid "Warehouses available in CRM"
 msgstr "Almacenes disponibles en CRM"
 
-msgid "Select warehouses to receive balances from CRM. To select multiple warehouses, hold CTRL (for Windows and Linux) or ⌘ Command (for MacOS)"
+msgid "Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)"
 msgstr "Selecciona los almacenes para recibir el stock desde CRM. Para seleccionar varios mantén pulsado CTRL (para Windows y Linux) o ⌘ Command (para MacOS)"
-

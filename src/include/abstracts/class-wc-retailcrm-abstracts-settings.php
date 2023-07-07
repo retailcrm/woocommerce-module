@@ -400,7 +400,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'options'     => $crmStores,
                         'css'         => 'min-height:100px;',
                         'select_buttons' => true,
-                        'description' => __('Select warehouses to receive balances from CRM. To select multiple warehouses, hold CTRL (for Windows and Linux) or ⌘ Command (for MacOS)',
+                        'description' => __('Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)',
                             'retailcrm'
                         ),
                 ];
