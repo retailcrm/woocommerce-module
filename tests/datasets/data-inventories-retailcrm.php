@@ -16,21 +16,39 @@ namespace datasets;
 class DataInventoriesRetailCrm {
     public static function getResponseData()
     {
-        return  array(
+        return  [
             'success' => true,
-            'pagination' => array(
+            'pagination' => [
                 'limit' => 250,
                 'totalCount' => 1,
                 'currentPage' => 1,
                 'totalPageCount' => 1
-            ),
-            'offers' => array(
-                array(
+            ],
+            'offers' => [
+                [
                     'id' => 1,
                     'xmlId' => 'xmlId',
-                    'quantity' => 10
-                )
-            )
-        );
+                    'quantity' => 100,
+                    'stores' => [
+                        [
+                            'quantity' => 25,
+                            'purchasePrice' => 0,
+                            'store' => 'main'
+                        ],
+                        [
+                            'quantity' => 25,
+                            'purchasePrice' => 0,
+                            'store' => 'woocommerce'
+                        ],
+                        [
+                            'quantity' => 50,
+                            'purchasePrice' => 0,
+                            'store' => 'prestashop'
+                        ],
+
+                    ]
+                ]
+            ]
+        ];
     }
 }

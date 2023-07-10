@@ -18,10 +18,10 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
         protected $retailcrm;
 
         /** @var array  */
-        protected $retailcrm_settings;
+        protected $crmSettings;
 
         /** @var string */
-        protected $bind_field = 'externalId';
+        protected $bindField = 'externalId';
 
         /**
          * WC_Retailcrm_Inventories constructor.
@@ -29,13 +29,11 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
          */
         public function __construct($retailcrm = false)
         {
-            $this->retailcrm_settings = get_option(WC_Retailcrm_Base::$option_key);
+            $this->crmSettings = get_option(WC_Retailcrm_Base::$option_key);
             $this->retailcrm = $retailcrm;
 
-            if (isset($this->retailcrm_settings['bind_by_sku'])
-                && $this->retailcrm_settings['bind_by_sku'] == WC_Retailcrm_Base::YES
-            ) {
-                $this->bind_field = 'xmlId';
+            if (!empty($this->crmSettings['bind_by_sku']) && $this->crmSettings['bind_by_sku'] === WC_Retailcrm_Base::YES) {
+                $this->bindField = 'xmlId';
             }
         }
 
@@ -46,20 +44,19 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
          */
         protected function load_stocks()
         {
-            $success = array();
-
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
             $page = 1;
-            $variationProducts = array();
+            $availableStores = $this->crmSettings['stores_for_uploading'] ?? null;
+            $variationProducts = [];
 
             do {
                 /** @var WC_Retailcrm_Response $response */
-                $response = $this->retailcrm->storeInventories(array(), $page, 250);
+                $response = $this->retailcrm->storeInventories(['details' => true], $page, 250);
 
-                if (empty($response) || !$response->isSuccessful()) {
+                if (empty($response['offers']) || !$response->isSuccessful()) {
                     return null;
                 }
 
@@ -67,11 +64,23 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                 $page++;
 
                 foreach ($response['offers'] as $offer) {
-                    if (isset($offer[$this->bind_field])) {
-                        $product = retailcrm_get_wc_product($offer[$this->bind_field], $this->retailcrm_settings);
+                    $offerQuantity = $offer['quantity'];
+
+                    if (!empty($availableStores) && count($offer['stores']) > 1) {
+                        $offerQuantity = 0;
+
+                        foreach ($offer['stores'] as $store) {
+                            if (in_array($store['store'], $availableStores, true)) {
+                                $offerQuantity += $store['quantity'];
+                            }
+                        }
+                    }
+
+                    if (isset($offer[$this->bindField])) {
+                        $product = retailcrm_get_wc_product($offer[$this->bindField], $this->crmSettings);
 
                         if ($product instanceof WC_Product) {
-                            if ($product->get_type() == 'external') {
+                            if ($product->get_type() === 'external') {
                                 continue;
                             }
 
@@ -80,15 +89,15 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
 
                                 if (!empty($parentId)) {
                                     if (isset($variationProducts[$parentId])) {
-                                        $variationProducts[$parentId] += $offer['quantity'];
+                                        $variationProducts[$parentId] += $offerQuantity;
                                     } else {
-                                        $variationProducts[$parentId] = $offer['quantity'];
+                                        $variationProducts[$parentId] = $offerQuantity;
                                     }
                                 }
                             }
 
                             $product->set_manage_stock(true);
-                            $product->set_stock_quantity($offer['quantity']);
+                            $product->set_stock_quantity($offerQuantity);
                             $product->save();
                         }
                     }
@@ -124,7 +133,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
          */
         public function updateQuantity()
         {
-            if ($this->retailcrm_settings['sync'] == WC_Retailcrm_Base::YES) {
+            if ($this->crmSettings['sync'] === WC_Retailcrm_Base::YES) {
                 $this->load_stocks();
             }
         }

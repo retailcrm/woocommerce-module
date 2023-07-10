@@ -55,6 +55,11 @@ if (!class_exists('WC_Retailcrm_History')) :
                 unset($this->retailcrmSettings['order_methods']);
             }
 
+            // Because the orderHistory method uses array_flip, and the option with array called error
+            if (isset($this->retailcrmSettings['stores_for_uploading'])) {
+                unset($this->retailcrmSettings['stores_for_uploading']);
+            }
+
             $this->retailcrm = $retailcrm;
             $this->startDate = new DateTime('-1 days');
         }

@@ -1,3 +1,6 @@
+## 2023-06-27 4.6.8
+* Added the ability to select CRM warehouses to synchronize the balance of offers
+
 ## 2023-06-27 4.6.7
 * Fixed customer phone sending to crm when order will create by guest
 

@@ -21,16 +21,16 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
     public function setUp()
     {
         $this->responseMock = $this->getMockBuilder('\WC_Retailcrm_Response_Helper')
-                                   ->disableOriginalConstructor()
-                                   ->setMethods(array('isSuccessful'))
-                                   ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
 
         $this->setMockResponse($this->responseMock, 'isSuccessful', true);
 
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Proxy')
-                              ->disableOriginalConstructor()
-                              ->setMethods(array('storeInventories'))
-                              ->getMock();
+            ->disableOriginalConstructor()
+            ->setMethods(['storeInventories'])
+            ->getMock();
 
         parent::setUp();
     }
@@ -111,9 +111,9 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
         if ($retailcrm && null !== $response) {
             $this->assertInstanceOf('WC_Product', $product);
             $this->assertEquals($entity, $product->get_type());
-            $this->assertEquals(10, $product->get_stock_quantity());
+            $this->assertEquals(50, $product->get_stock_quantity());
         } else {
-            $this->assertNotEquals(10, $product->get_stock_quantity());
+            $this->assertNotEquals(50, $product->get_stock_quantity());
         }
     }
 
