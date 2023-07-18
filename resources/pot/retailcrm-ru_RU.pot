@@ -429,3 +429,6 @@ msgstr "Склады, доступные в CRM"
 
 msgid "Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)"
 msgstr "Выберите склады для получения остатков из CRM. Для выбора нескольких складов зажмите CTRL (для Windows и Linux) или ⌘ Command (для MacOS)"
+
+msgid "I agree to receive promotional newsletters"
+msgstr "Согласен на рекламно-информационные рассылки"

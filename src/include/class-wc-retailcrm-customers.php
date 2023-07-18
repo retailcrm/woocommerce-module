@@ -38,6 +38,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         /**@var array */
         private $customFields = [];
 
+        /**@var null */
+        public $isSubscribed = null;
+
         /**
          * WC_Retailcrm_Customers constructor.
          *
@@ -95,6 +98,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
+
             $wcCustomer = new WC_Customer($customerId);
             $email      = $wcCustomer->get_billing_email();
 
@@ -123,8 +127,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     $builder = new WC_Retailcrm_WC_Customer_Builder();
                     $builder
                         ->setWcCustomer($wcCustomer)
-                        ->setPhones(isset($customer['phones']) ? $customer['phones'] : [])
-                        ->setAddress(isset($customer['address']) ? $customer['address'] : false)
+                        ->setPhones(!empty($customer['phones']) ? $customer['phones'] : [])
+                        ->setAddress(!empty($customer['address']) ? $customer['address'] : false)
                         ->build()
                         ->getResult()
                         ->save();
@@ -134,6 +138,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             } else {
                 $this->createCustomer($customerId);
 
+                $message = $this->isSubscribed
+                    ? 'The client has agreed to receive promotional newsletter, email: '
+                    : 'The client refused to receive promotional newsletters, email: ';
+
+                WC_Retailcrm_Logger::addCaller('subscribe', $message . $email);
                 WC_Retailcrm_Logger::add('Customer was created, externalId: ' . $wcCustomer->get_id());
             }
         }
@@ -384,10 +393,6 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 $firstName = $order->get_billing_first_name();
                 $lastName = $order->get_billing_last_name();
 
-                if (empty($firstName)) {
-                    $firstName = $customer->get_username();
-                }
-
                 if (empty($email)) {
                     $email = $order->get_billing_email();
                 }
@@ -403,7 +408,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             $customerData = [
                 'createdAt' => $createdAt->date('Y-m-d H:i:s'),
-                'firstName' => $firstName ? $firstName : $customer->get_username(),
+                'firstName' => !empty($firstName) ? $firstName : $customer->get_username(),
                 'lastName' => $lastName,
                 'email' => $email,
                 'address' => $this->customer_address->build($customer, $order)->getData()
@@ -411,6 +416,15 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             if ($customer->get_id() > 0) {
                 $customerData['externalId'] = $customer->get_id();
+            }
+
+            // The guest client is unsubscribed by default
+            if ($customer->get_id() === 0 && $customer->get_date_created() === null) {
+                $customerData['subscribed'] = false;
+            }
+
+            if ($this->isSubscribed !== null) {
+                $customerData['subscribed'] = $this->isSubscribed;
             }
 
             if (!empty($billingPhone)) {

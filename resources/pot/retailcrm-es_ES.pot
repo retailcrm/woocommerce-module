@@ -420,3 +420,6 @@ msgstr "Almacenes disponibles en CRM"
 
 msgid "Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)"
 msgstr "Selecciona los almacenes para recibir el stock desde CRM. Para seleccionar varios mantén pulsado CTRL (para Windows y Linux) o ⌘ Command (para MacOS)"
+
+msgid "I agree to receive promotional newsletters"
+msgstr "Estoy de acuerdo en recibir los boletines informativos"

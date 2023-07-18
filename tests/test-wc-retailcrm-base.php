@@ -259,6 +259,20 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_end_clean();
     }
 
+    public function test_subscribed_checkbox()
+    {
+        ob_start();
+
+        $this->baseRetailcrm->subscribe_register_form();
+        $this->baseRetailcrm->subscribe_woocommerce_register_form();
+        $this->baseRetailcrm->subscribe_woocommerce_before_checkout_registration_form();
+
+        $this->assertContains('subscribeEmail', ob_get_contents());
+
+        ob_end_clean();
+    }
+
+
     public function test_initialize_whatsapp()
     {
         ob_start();
