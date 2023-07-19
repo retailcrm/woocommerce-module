@@ -191,4 +191,3 @@ function writeBaseLogs($message)
 {
     WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
 }
-

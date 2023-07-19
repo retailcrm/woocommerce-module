@@ -83,6 +83,9 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
 
+        //Need for subscribe_woocommerce_before_checkout_registration_form
+        update_option('woocommerce_enable_signup_and_login_from_checkout', 'yes');
+
         return $options;
     }
 

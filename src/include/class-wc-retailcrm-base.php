@@ -99,6 +99,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
+            // Subscribed hooks
+            add_action('register_form', [$this, 'subscribe_register_form'], 99);
+            add_action('woocommerce_register_form', [$this, 'subscribe_woocommerce_register_form'], 99);
+
+            if (get_option('woocommerce_enable_signup_and_login_from_checkout') === static::YES) {
+                add_action(
+                    'woocommerce_before_checkout_registration_form',
+                    [$this, 'subscribe_woocommerce_before_checkout_registration_form'],
+                    99
+                );
+            }
+
             if (
                 !$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
@@ -174,6 +186,34 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             return $settings;
         }
+
+        /**
+         * Displaying the checkbox in the WP registration form(wp-login.php).
+         *
+         */
+        public function subscribe_register_form()
+        {
+            echo $this->getSubscribeCheckbox();
+        }
+
+        /**
+         * Displaying the checkbox in the WC registration form.
+         *
+         */
+        public function subscribe_woocommerce_register_form()
+        {
+            echo $this->getSubscribeCheckbox();
+        }
+
+        /**
+         * Displaying the checkbox in the Checkout order form.
+         *
+         */
+        public function subscribe_woocommerce_before_checkout_registration_form()
+        {
+            echo $this->getSubscribeCheckbox();
+        }
+
 
         /**
          * If you change the time interval, need to clear the old cron tasks
@@ -355,6 +395,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                 return;
             }
+
+            $post = $this->get_post_data();
+            $this->customers->isSubscribed = !empty($post['subscribe']);
 
             $this->customers->registerCustomer($customerId);
         }
@@ -881,6 +924,22 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'default-crm-field#address#text' => __('addressText', 'retailcrm'),
                 'default-crm-field#tags' => __('tags', 'retailcrm'),
             ];
+        }
+
+        private function getSubscribeCheckbox()
+        {
+            $style = is_wplogin()
+                ? 'margin-left: 2em; display: block; position: relative; margin-top: -1.4em; line-height: 1.4em;'
+                : '';
+
+            return sprintf(
+                '<div style="margin-bottom:15px">
+                            <input type="checkbox" id="subscribeEmail" name="subscribe" value="subscribed"/>
+                            <label style="%s" for="subscribeEmail">%s</label>
+                        </div>',
+                $style,
+                __('I agree to receive promotional newsletters', 'retailcrm')
+            );
         }
     }
 }

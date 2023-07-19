@@ -144,7 +144,7 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
     }
 
     /**
-     * Fill WC_Customer fields with customer data from retailCRM.
+     * Fill WC_Customer fields with customer data from RetailCRM.
      * If field is not present in retailCRM customer - it will remain unchanged.
      *
      * @return $this|\WC_Retailcrm_Builder_Interface
@@ -152,11 +152,13 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
     public function build()
     {
         $this->checkBuilderValidity();
-        WC_Retailcrm_Logger::debug(__METHOD__, array('Building WC_Customer from data:', $this->data));
+
+        WC_Retailcrm_Logger::debug(__METHOD__, ['Building WC_Customer from data:', $this->data]);
+
         $this->customer->set_first_name($this->dataValue('firstName', $this->customer->get_first_name()));
         $this->customer->set_last_name($this->dataValue('lastName', $this->customer->get_last_name()));
         $this->customer->set_billing_email($this->dataValue('email', $this->customer->get_billing_email()));
-        $phones = $this->dataValue('phones', array());
+        $phones = $this->dataValue('phones', []);
 
         if ((is_array($phones) || $phones instanceof Countable) && count($phones) > 0) {
             $phoneData = reset($phones);
