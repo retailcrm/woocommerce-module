@@ -38,7 +38,8 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                 $crmCart = [
                     'customer' => ['externalId' => $customerId],
                     'clearAt' => null,
-                    'updatedAt' => date($this->dateFormat)
+                    'updatedAt' => date($this->dateFormat),
+                    'droppedAt' => date($this->dateFormat)
                 ];
 
                 // If new cart, need set createdAt and externalId

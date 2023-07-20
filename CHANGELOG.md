@@ -1,3 +1,6 @@
+## 2023-07-19 4.6.10
+* Abandoned cart transfer fix
+
 ## 2023-07-19 4.6.9
 * Changed the logic of customer subscriptions to promotional newsletters
 
