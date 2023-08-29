@@ -300,7 +300,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                                     );
                                 }
                             }
-                        // @codeCoverageIgnoreStart
                         } catch (Exception $exception) {
                             WC_Retailcrm_Logger::add(
                                 sprintf(
@@ -312,7 +311,6 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                             continue;
                         }
-                        // @codeCoverageIgnoreEnd
                     }
                 } else {
                     break;
@@ -509,8 +507,8 @@ if (!class_exists('WC_Retailcrm_History')) :
                             }
                         }
 
-                        $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct);//TODO изменить логику, передавая просто данные, уже после в зависимости от наличия купонов выполнять определенные действия
-                        // вообще без разницы как из создавать, скидки все равно сбрасываются
+                        $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct);
+
                         foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
                             $arItemsNew[$orderItemId] = $orderItemId;
                         }
@@ -550,7 +548,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                                     wc_delete_order_item($itemExternalId[1]);
                                 }
 
-                                $this->updateProductInWcOrder($wcOrderItem, $crmProduct);//TODO изменить логику, передавая просто данные, уже после в зависимости от наличия купонов выполнять определенные действия
+                                $this->updateProductInWcOrder($wcOrderItem, $crmProduct);
                             }
                         }
                     }
@@ -842,7 +840,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                         $arItemsOld[$orderItemId] = $orderItemId;
                     }
 
-                    $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct); //TODO изменить логику, передавая просто данные, уже после в зависимости от наличия купонов выполнять определенные действия
+                    $this->addProductInWcOrder($wcOrder, $wcProduct, $crmProduct);
 
                     foreach ($wcOrder->get_items() as $orderItemId => $orderItem) {
                         $arItemsNew[$orderItemId] = $orderItemId;
@@ -1043,10 +1041,10 @@ if (!class_exists('WC_Retailcrm_History')) :
             $rewriteItems = false;
             $wcOrderCoupons = $wcOrder->get_coupon_codes();
 
-            if (!empty($orderHistory['customFields'])
+            if (isset($orderHistory['customFields'])
                 && array_key_exists($couponField, $orderHistory['customFields'])
                 && empty($orderHistory['customFields'][$couponField])
-                && !empty($wcOrderCoupons)
+                && $wcOrderCoupons
             ) {
                 foreach ($wcOrderCoupons as $code) {
                     $wcOrder->remove_coupon($code);
@@ -1071,11 +1069,10 @@ if (!class_exists('WC_Retailcrm_History')) :
                 }
             }
 
-            if (!$rewriteItems && $this->recalculateCoupons) {
+            if (($rewriteItems || $this->recalculateCoupons)
+                && ($wcOrderCoupons || !empty($orderHistory['customFields'][$couponField]))) {
                 $wcOrder->recalculate_coupons();
-            }
 
-            if ($rewriteItems || $this->recalculateCoupons) {
                 $orderItem = new WC_Retailcrm_Order_Item($this->retailcrmSettings);
                 $orderItems = [];
 

@@ -361,6 +361,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             'id' => 'coupon_options'
                     ];
 
+                    $this->form_fields['coupon_notification'] = [
+                            'id' => 'coupon_options',
+                            'css'               => 'max-width:400px;resize: none;height:150px;',
+                            'type'              => 'textarea',
+                            'title'             => __('Attention!', 'retailcrm'),
+                            'value'             => '',
+                            'placeholder'       => __('When working with coupons through CRM, it is impossible to transfer manual discounts', 'retailcrm') .
+                            PHP_EOL . PHP_EOL .
+                            __('The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`', 'retailcrm'),
+                            'custom_attributes' => ['readonly' => 'readonly'],
+                    ];
+
                     $this->form_fields['woo_coupon_apply_field'] = [
                             'title' => __('Coupon', 'retailcrm'),
                             'css' => 'min-width:350px;',
@@ -368,6 +380,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             'type' => 'select',
                             'options' => $coupon_option_list,
                             'desc_tip' => true,
+                            'description' => __('The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`', 'retailcrm')
                     ];
                 }
 

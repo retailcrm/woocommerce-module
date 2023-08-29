@@ -125,7 +125,13 @@ msgid "Statuses"
 msgstr "Los estados"
 
 msgid "Coupon"
-msgstr 'Cupón'
+msgstr "Cupón"
+
+msgid "When working with coupons through CRM, it is impossible to transfer manual discounts"
+msgstr "Al trabajar con cupones a través de CRM, es imposible transferir descuentos manuales"
+
+msgid "The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`"
+msgstr "El campo personalizado debe tener el formato de una cadena o texto. Un ejemplo de cómo completar un campo en CRM: `code_coupon` o `code_coupon1; código_cupón2`"
 
 msgid "Payment types"
 msgstr "Métodos de pago"
