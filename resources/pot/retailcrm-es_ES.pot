@@ -128,10 +128,16 @@ msgid "Coupon"
 msgstr "Cupón"
 
 msgid "When working with coupons through CRM, it is impossible to transfer manual discounts"
-msgstr "Al trabajar con cupones a través de CRM, es imposible transferir descuentos manuales"
+msgstr "При работе с купонами через CRM невозможно передавать ручные скидки."
 
 msgid "The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`"
-msgstr "El campo personalizado debe tener el formato de una cadena o texto. Un ejemplo de cómo completar un campo en CRM: `code_coupon` o `code_coupon1; código_cupón2`"
+msgstr "Пользовательское поле должно быть формата Строка или Текст."
+
+msgid "When using multiple coupons, separation using spaces, line breaks, `;` `,` characters is supported."
+msgstr "При использовании нескольких купонов, поддерживается разделение с помощью пробелов, переноса строки, символами `;` `,`."
+
+msgid "Example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4"
+msgstr "Например: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4"
 
 msgid "Payment types"
 msgstr "Métodos de pago"

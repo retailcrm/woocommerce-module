@@ -363,13 +363,17 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $this->form_fields['coupon_notification'] = [
                             'id' => 'coupon_options',
-                            'css'               => 'max-width:400px;resize: none;height:200px;',
+                            'css'               => 'max-width:400px;resize: none;height:215px;',
                             'type'              => 'textarea',
                             'title'             => __('Attention!', 'retailcrm'),
                             'value'             => '',
                             'placeholder'       => __('When working with coupons through CRM, it is impossible to transfer manual discounts', 'retailcrm') .
                             PHP_EOL . PHP_EOL .
-                            __('The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`', 'retailcrm'),
+                            __('The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`', 'retailcrm') .
+                            PHP_EOL .
+                            __('When using multiple coupons, separation using spaces, line breaks, `;` `,` characters is supported.', 'retailcrm') .
+                            PHP_EOL .
+                            __('Example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4', 'retailcrm'),
                             'custom_attributes' => ['readonly' => 'readonly'],
                     ];
 
@@ -380,7 +384,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             'type' => 'select',
                             'options' => $coupon_option_list,
                             'desc_tip' => true,
-                            'description' => __('The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`', 'retailcrm')
                     ];
                 }
 
