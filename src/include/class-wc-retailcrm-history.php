@@ -1054,7 +1054,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             if (!empty($orderHistory['customFields'][$couponField])) {
-                $masCoupons = explode('; ', $orderHistory['customFields'][$couponField]);
+                $masCoupons = preg_split("/[\s,;]+/", $orderHistory['customFields'][$couponField]);
 
                 foreach (array_diff($masCoupons, $wcOrderCoupons) as $coupon) {
                     $wcOrder->apply_coupon($coupon);

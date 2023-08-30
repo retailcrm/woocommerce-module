@@ -363,7 +363,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $this->form_fields['coupon_notification'] = [
                             'id' => 'coupon_options',
-                            'css'               => 'max-width:400px;resize: none;height:150px;',
+                            'css'               => 'max-width:400px;resize: none;height:200px;',
                             'type'              => 'textarea',
                             'title'             => __('Attention!', 'retailcrm'),
                             'value'             => '',
