@@ -30,8 +30,6 @@
 
 > retailcrm_process_order_custom_fields - позволяет изменить данные кастомных полей заказ при передачи из CRM -> CMS.
 
-> retailcrm_coupon_order - позволяет изменить данные кастомного поля купона при передачи из CRM -> CMS.
-
 > retailcrm_process_offer -  позволяет изменить данные товара перед записью в ICML каталог.
 
 > retailcrm_process_order - позволяет изменить данные заказа при передачи из CMS -> CRM.

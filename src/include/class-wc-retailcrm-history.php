@@ -294,10 +294,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 if (!empty($orderEditData)) {
                                     $orderEditData['id'] = $order['id'];
 
-                                    $this->retailcrm->ordersEdit(
-                                        $orderEditData,
-                                        'id'
-                                    );
+                                    $this->retailcrm->ordersEdit($orderEditData, 'id');
                                 }
                             }
                         } catch (Exception $exception) {
@@ -1027,12 +1024,7 @@ if (!class_exists('WC_Retailcrm_History')) :
          */
         private function updateItemsForUsedCoupons($orderHistory, $wcOrder)
         {
-            $couponField = apply_filters(
-                'retailcrm_coupon_order',
-                $this->retailcrmSettings['woo_coupon_apply_field'],
-                $orderHistory,
-                $wcOrder
-            );
+            $couponField = $this->retailcrmSettings['woo_coupon_apply_field'];
 
             if ($couponField === 'not-upload') {
                 return [];
