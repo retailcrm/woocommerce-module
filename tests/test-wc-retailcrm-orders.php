@@ -120,7 +120,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertEquals($orderData['customFields']['crm_order'], 'test_custom_fields');
             $this->assertEquals($orderData['customerComment'], 'crm_customer_comment_test');
             $this->assertEquals($orderData['delivery']['address']['text'], 'crm_address_text_test');
-            $this->assertEquals($orderData['customFields']['testField'], 'test1; test2;');
+            $this->assertEquals($orderData['customFields']['testField'], 'test1; test2');
         } else {
             $this->assertEquals(null, $order);
         }
