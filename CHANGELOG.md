@@ -1,3 +1,6 @@
+## 2023-08-31 4.6.11
+* Added the ability to work with coupons through the CRM system
+
 ## 2023-07-19 4.6.10
 * Abandoned cart transfer fix
 
