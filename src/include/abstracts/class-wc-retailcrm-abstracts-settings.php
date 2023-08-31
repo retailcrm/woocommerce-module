@@ -367,13 +367,13 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             'type'              => 'textarea',
                             'title'             => __('Attention!', 'retailcrm'),
                             'value'             => '',
-                            'placeholder'       => __('When working with coupons through CRM, it is impossible to transfer manual discounts', 'retailcrm') .
+                            'placeholder'       => __('When working with coupons via CRM, it is impossible to transfer manual discounts.', 'retailcrm') .
                             PHP_EOL . PHP_EOL .
-                            __('The custom field must be in the form of a string or text. An example of filling in a field in CRM: `code_coupon` or `code_coupon1; code_coupon2`', 'retailcrm') .
+                            __('The user field must be in the String or Text format.', 'retailcrm') .
                             PHP_EOL .
-                            __('When using multiple coupons, separation using spaces, line breaks, `;` `,` characters is supported.', 'retailcrm') .
+                            __('When using multiple coupons, separation is supported using spaces, line breaks, characters `;` `,`.', 'retailcrm') .
                             PHP_EOL .
-                            __('Example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4', 'retailcrm'),
+                            __('For example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4', 'retailcrm'),
                             'custom_attributes' => ['readonly' => 'readonly'],
                     ];
 
