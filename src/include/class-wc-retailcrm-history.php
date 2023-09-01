@@ -31,6 +31,9 @@ if (!class_exists('WC_Retailcrm_History')) :
         /** @var string */
         protected $bindField = 'externalId';
 
+        /** @var bool */
+        protected $recalculateCoupons = false;
+
         /**
          * WC_Retailcrm_History constructor.
          *
@@ -270,19 +273,30 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $this->updateMetaData($customFields, $order, $wcOrder);
 
                                 $wcOrderNumber = $wcOrder->get_order_number();
+                                $orderEditData = [];
 
                                 if (
                                     $order['number'] != $wcOrderNumber
                                     && isset($this->retailcrmSettings['update_number'])
                                     && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
                                 ) {
-                                    $this->retailcrm->ordersEdit(
-                                        ['id' => $order['id'], 'number' => $wcOrderNumber],
-                                        'id'
-                                    );
+                                    $orderEditData['number'] = $wcOrderNumber;
+                                }
+
+                                $items = $this->updateItemsForUsedCoupons($orderHistory, $wcOrder);
+
+                                if (!empty($items)) {
+                                    $orderEditData['items'] = $items;
+                                    $orderEditData['discountManualAmount']  = 0;
+                                    $orderEditData['discountManualPercent'] = 0;
+                                }
+
+                                if (!empty($orderEditData)) {
+                                    $orderEditData['id'] = $order['id'];
+
+                                    $this->retailcrm->ordersEdit($orderEditData, 'id');
                                 }
                             }
-                        // @codeCoverageIgnoreStart
                         } catch (Exception $exception) {
                             WC_Retailcrm_Logger::add(
                                 sprintf(
@@ -294,7 +308,6 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                             continue;
                         }
-                        // @codeCoverageIgnoreEnd
                     }
                 } else {
                     break;
@@ -454,6 +467,8 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             if (array_key_exists('items', $order)) {
+                $this->recalculateCoupons = true;
+
                 foreach ($order['items'] as $key => $crmProduct) {
                     if (!isset($crmProduct['offer'][$this->bindField])) {
                         continue;
@@ -997,6 +1012,72 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                 $this->retailcrm->ordersEdit($orderEdit, 'id');
             }
+        }
+
+        /**
+         * Checks use coupons and updates offers
+         *
+         * @param array $orderHistory
+         * @param array $wcOrder
+         *
+         * @return array
+         */
+        private function updateItemsForUsedCoupons($orderHistory, $wcOrder)
+        {
+            $couponField = $this->retailcrmSettings['woo_coupon_apply_field'];
+
+            if ($couponField === 'not-upload') {
+                return [];
+            }
+
+            $rewriteItems = false;
+            $wcOrderCoupons = $wcOrder->get_coupon_codes();
+
+            if (isset($orderHistory['customFields'])
+                && array_key_exists($couponField, $orderHistory['customFields'])
+                && empty($orderHistory['customFields'][$couponField])
+                && $wcOrderCoupons
+            ) {
+                foreach ($wcOrderCoupons as $code) {
+                    $wcOrder->remove_coupon($code);
+
+                    $rewriteItems = true;
+                }
+            }
+
+            if (!empty($orderHistory['customFields'][$couponField])) {
+                $masCoupons = preg_split("/[\s,;]+/", $orderHistory['customFields'][$couponField]);
+
+                foreach (array_diff($masCoupons, $wcOrderCoupons) as $coupon) {
+                    $wcOrder->apply_coupon($coupon);
+
+                    $rewriteItems = true;
+                }
+
+                foreach (array_diff($wcOrderCoupons, $masCoupons) as $coupon) {
+                    $wcOrder->remove_coupon($coupon);
+
+                    $rewriteItems = true;
+                }
+            }
+
+            if (($rewriteItems || $this->recalculateCoupons)
+                && ($wcOrderCoupons || !empty($orderHistory['customFields'][$couponField]))) {
+                $wcOrder->recalculate_coupons();
+
+                $orderItem = new WC_Retailcrm_Order_Item($this->retailcrmSettings);
+                $orderItems = [];
+
+                foreach ($wcOrder->get_items() as $item) {
+                    $orderItems[] = $orderItem->build($item)->getData();
+
+                    $orderItem->resetData();
+                }
+
+                return $orderItems;
+            }
+
+            return [];
         }
 
         /**

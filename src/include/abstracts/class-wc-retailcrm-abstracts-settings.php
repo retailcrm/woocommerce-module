@@ -342,6 +342,52 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 }
 
                 /**
+                * Coupon options
+                */
+                $coupon_option_list = ['not-upload' => __("Don't send to CRM", 'retailcrm')];
+                $retailcrm_metaFiels_list = $this->apiClient->customFieldsList(
+                        ['entity' => 'order', 'type' => ['string', 'text']]
+                );
+
+                if (!empty($retailcrm_metaFiels_list) && $retailcrm_metaFiels_list->isSuccessful()) {
+                    foreach ($retailcrm_metaFiels_list['customFields'] as $retailcrm_metaField) {
+                        $coupon_option_list[$retailcrm_metaField['code']] = $retailcrm_metaField['name'];
+                    }
+
+                    $this->form_fields[] = [
+                            'title' => __("Coupon", 'retailcrm'),
+                            'type' => 'heading',
+                            'description' => '',
+                            'id' => 'coupon_options'
+                    ];
+
+                    $this->form_fields['coupon_notification'] = [
+                            'id' => 'coupon_options',
+                            'css'               => 'max-width:400px;resize: none;height:215px;',
+                            'type'              => 'textarea',
+                            'title'             => __('Attention!', 'retailcrm'),
+                            'value'             => '',
+                            'placeholder'       => __('When working with coupons via CRM, it is impossible to transfer manual discounts.', 'retailcrm') .
+                            PHP_EOL . PHP_EOL .
+                            __('The user field must be in the String or Text format.', 'retailcrm') .
+                            PHP_EOL .
+                            __('When using multiple coupons, separation is supported using spaces, line breaks, characters `;` `,`.', 'retailcrm') .
+                            PHP_EOL .
+                            __('For example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4', 'retailcrm'),
+                            'custom_attributes' => ['readonly' => 'readonly'],
+                    ];
+
+                    $this->form_fields['woo_coupon_apply_field'] = [
+                            'title' => __('Coupon', 'retailcrm'),
+                            'css' => 'min-width:350px;',
+                            'class' => 'select',
+                            'type' => 'select',
+                            'options' => $coupon_option_list,
+                            'desc_tip' => true,
+                    ];
+                }
+
+                /**
                  * Meta data options
                  */
                 $this->form_fields[] = [

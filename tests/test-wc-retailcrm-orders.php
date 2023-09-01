@@ -120,6 +120,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertEquals($orderData['customFields']['crm_order'], 'test_custom_fields');
             $this->assertEquals($orderData['customerComment'], 'crm_customer_comment_test');
             $this->assertEquals($orderData['delivery']['address']['text'], 'crm_address_text_test');
+            $this->assertEquals($orderData['customFields']['testField'], 'test1; test2');
         } else {
             $this->assertEquals(null, $order);
         }
@@ -596,6 +597,11 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
     {
         /** @var WC_Order order */
         $this->order = WC_Helper_Order::create_order(0);
+        $coupon1 = WC_Helper_Coupon::create_coupon('test1');
+        $coupon2 = WC_Helper_Coupon::create_coupon('test2');
+
+        $this->order->apply_coupon($coupon1);
+        $this->order->apply_coupon($coupon2);
 
         foreach ($this->order->get_address('billing') as $prop => $value) {
             if (method_exists($this->order, 'set_shipping_' . $prop)) {

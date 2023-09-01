@@ -133,6 +133,21 @@ msgstr "Настройка управления остатками"
 msgid "Statuses"
 msgstr "Статусы"
 
+msgid "Coupon"
+msgstr "Купон"
+
+msgid "When working with coupons via CRM, it is impossible to transfer manual discounts."
+msgstr "При работе с купонами через CRM невозможно передавать ручные скидки."
+
+msgid "The user field must be in the String or Text format."
+msgstr "Пользовательское поле должно быть формата Строка или Текст."
+
+msgid "When using multiple coupons, separation is supported using spaces, line breaks, characters `;` `,`."
+msgstr "При использовании нескольких купонов, поддерживается разделение с помощью пробелов, переноса строки, символами `;` `,`."
+
+msgid "For example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4"
+msgstr "Например: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4"
+
 msgid "Payment types"
 msgstr "Способы оплаты"
 

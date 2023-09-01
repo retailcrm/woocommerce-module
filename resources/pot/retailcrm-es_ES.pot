@@ -124,6 +124,21 @@ msgstr "Ajustes del stock"
 msgid "Statuses"
 msgstr "Los estados"
 
+msgid "Coupon"
+msgstr "Cupón"
+
+msgid "When working with coupons via CRM, it is impossible to transfer manual discounts."
+msgstr "El trabajo con cupones a través del CRM no permite transferir descuentos manuales."
+
+msgid "The user field must be in the String or Text format."
+msgstr "El campo personalizado debe tener el formato Hilo o Texto."
+
+msgid "When using multiple coupons, separation is supported using spaces, line breaks, characters `;` `,`."
+msgstr "Si se usan varios cupones, es posible separarlos por espacios, nueva línea o caracteres `;` `,`."
+
+msgid "For example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4"
+msgstr "Por ejemplo, code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4"
+
 msgid "Payment types"
 msgstr "Métodos de pago"
 
