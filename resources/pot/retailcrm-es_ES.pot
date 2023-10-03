@@ -438,3 +438,9 @@ msgstr "Selecciona los almacenes para recibir el stock desde CRM. Para seleccion
 
 msgid "I agree to receive promotional newsletters"
 msgstr "Estoy de acuerdo en recibir los boletines informativos"
+
+msgid "API key with one-shop access required"
+msgstr "Se requiere clave API con acceso a una tienda"
+
+msgid "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match"
+msgstr "La moneda del sitio web es distinto a la tienda del CRM. Para el funcionamiento correcto de la integración, las monedas del CMS y CRM deben coincid"

@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 7.0
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 4.6.11
+Stable tag: 4.6.12
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 

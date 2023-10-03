@@ -40,7 +40,7 @@ local_test:
 run_tests:
 	docker-compose --no-ansi up -d --build mysql
 	docker-compose --no-ansi run --rm --no-deps app make local_test
-	docker-compose stop
+	docker-compose down -v
 
 coverage:
 	wget https://phar.phpunit.de/phpcov-2.0.2.phar && php phpcov-2.0.2.phar merge coverage/ --clover coverage.xml

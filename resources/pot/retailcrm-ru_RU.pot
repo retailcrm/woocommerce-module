@@ -447,3 +447,9 @@ msgstr "Выберите склады для получения остатков
 
 msgid "I agree to receive promotional newsletters"
 msgstr "Согласен на рекламно-информационные рассылки"
+
+msgid "API key with one-shop access required"
+msgstr "Требуется API ключ с доступом к одному магазину"
+
+msgid "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match"
+msgstr "Валюта сайта отличается от валюты магазина в CRM. Для корректной работы интеграции, валюты в CRM и CMS должны совпадать"

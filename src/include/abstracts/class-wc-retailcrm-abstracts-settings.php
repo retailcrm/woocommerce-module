@@ -72,7 +72,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <?php
     }
 
-
     /**
      * Initialize integration settings form fields.
      */
@@ -98,6 +97,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         ];
 
         if ($this->apiClient) {
+            // The field is highlighted in red if the CRM site is invalid
+            $this->form_fields['api_key']['class'] = $this->isValidCrmSite($this->apiClient)
+            ? ''
+            : 'red-selected-retailcrm';
+
             if (
                 isset($_GET['page']) && $_GET['page'] == 'wc-settings'
                 && isset($_GET['tab']) && $_GET['tab'] == 'integration'
@@ -816,20 +820,48 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             return $value;
         }
 
-        $api = new WC_Retailcrm_Proxy($this->crmUrl, $value);
-        $response = $api->apiVersions();
+        $isValidCrmSite = $this->isValidCrmSite(new WC_Retailcrm_Proxy($this->crmUrl, $value));
 
-        if (empty($response) || !$response->isSuccessful()) {
-            $value = '';
+        // The field is highlighted in red if the CRM site is invalid
+        if ($isValidCrmSite) {
+            $this->form_fields['api_key']['class'] = '';
 
-            WC_Admin_Settings::add_error(esc_html__('Enter the correct API key', 'retailcrm'));
-        } else {
             header("Refresh:0");
+        } else {
+            $value = '';
+            $this->form_fields['api_key']['class'] = 'red-selected-retailcrm';
         }
 
         return $value;
     }
 
+    private function isValidCrmSite($api)
+    {
+        $errorMessage = '';
+        $isValidCrmSite = true;
+        $response = $api->sitesList();
+
+        if (empty($response['sites']) || !$response->isSuccessful()) {
+            $errorMessage = 'Enter the correct API key';
+            $isValidCrmSite = false;
+        } elseif (count($response['sites']) > 1)  {
+            $errorMessage = 'API key with one-shop access required';
+            $isValidCrmSite = false;
+        } else {
+            $site = current($response['sites']);
+
+            if (get_woocommerce_currency() !== $site['currency']) {
+                $errorMessage = 'The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match';
+                $isValidCrmSite = false;
+            }
+        }
+
+        if ('' !== $errorMessage) {
+            WC_Admin_Settings::add_error(esc_html__($errorMessage, 'retailcrm'));
+        }
+
+        return $isValidCrmSite;
+    }
 
     /**
      * Validate whatsapp phone number
