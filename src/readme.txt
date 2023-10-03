@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.6.12 =
+* Added currency validation when configuring the module
+
 = 4.6.11 =
 * Added the ability to work with coupons through the CRM system
 
