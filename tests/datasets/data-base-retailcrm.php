@@ -164,4 +164,12 @@ class DataBaseRetailCrm
             ]
         ];
     }
+
+    public static function getResponseSitesList()
+    {
+        return [
+            'success' => true,
+            'sites' => ['woocommerce' => ['currency' => 'RUB']],
+        ];
+    }
 }

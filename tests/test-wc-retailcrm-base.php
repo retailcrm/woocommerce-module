@@ -32,6 +32,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
             ->disableOriginalConstructor()
             ->setMethods(
                 [
+                    'sitesList',
                     'storesList',
                     'orderMethodsList',
                     'deliveryTypesList',
@@ -50,6 +51,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockStatuses();
         $this->setMockCustomFields();
         $this->setMockStoresList();
+        $this->setMockSitesList();
 
         $_GET['page'] = 'wc-settings';
         $_GET['tab'] = 'integration';
@@ -272,7 +274,6 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_end_clean();
     }
 
-
     public function test_initialize_whatsapp()
     {
         ob_start();
@@ -424,6 +425,19 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockResponse($this->responseMockStoresList, 'isSuccessful', true);
 
         $this->responseMockStoresList->setResponse(DataBaseRetailCrm::getResponseStoreList());
+        $this->setMockResponse($this->apiMock, 'storesList', $this->responseMockStoresList);
+    }
+    private function setMockSitesList()
+    {
+        $this->responseMockStoresList = $this
+            ->getMockBuilder('\WC_Retailcrm_Response_Helper')
+            ->disableOriginalConstructor()
+            ->setMethods(['isSuccessful'])
+            ->getMock();
+
+        $this->setMockResponse($this->responseMockStoresList, 'isSuccessful', true);
+
+        $this->responseMockStoresList->setResponse(DataBaseRetailCrm::getResponseSitesList());
         $this->setMockResponse($this->apiMock, 'storesList', $this->responseMockStoresList);
     }
 

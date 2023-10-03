@@ -1,3 +1,6 @@
+## 2023-10-02 4.6.12
+* Added currency validation when configuring the module
+
 ## 2023-08-31 4.6.11
 * Added the ability to work with coupons through the CRM system
 
