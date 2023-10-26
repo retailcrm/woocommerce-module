@@ -1,3 +1,6 @@
+## 2023-10-26 4.6.13
+* Fix not correct scoring product total price when product price is not number
+
 ## 2023-10-02 4.6.12
 * Added currency validation when configuring the module
 
