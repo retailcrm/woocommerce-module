@@ -1176,7 +1176,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $wcProduct,
                 [
                     'qty'   => $quantity,
-                    'price' => $wcProduct->get_price() - $discountTotal,
+                    'price' => (float)$wcProduct->get_price() - $discountTotal,
                 ]
             );
         }
