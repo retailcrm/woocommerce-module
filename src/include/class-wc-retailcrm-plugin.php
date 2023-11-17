@@ -97,6 +97,8 @@ class WC_Retailcrm_Plugin
             require_once(WC_Integration_Retailcrm::checkCustomFile('include/class-wc-retailcrm-base.php'));
         }
 
+        do_action('retailcrm_activate');
+
         $retailcrm_icml = new WC_Retailcrm_Icml();
         $retailcrm_icml->generate();
     }
