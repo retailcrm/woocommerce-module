@@ -129,8 +129,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             // Deactivate hook
             add_action('retailcrm_deactivate', [$this, 'deactivate']);
-            //Activation of the configured module
-            add_action('retailcrm_activate', [$this, 'activate']);
+
+            //Activation configured module
+            $clientId = get_option('retailcrm_client_id');
+            $isActive = get_option('retailcrm_active_in_crm');
+
+            if ($this->apiClient && $clientId && !$isActive) {
+                WC_Retailcrm_Plugin::integration_module($this->apiClient, $clientId);
+                update_option('retailcrm_active_in_crm', true);
+            }
         }
 
         /**
@@ -866,20 +873,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             WC_Retailcrm_Plugin::integration_module($api_client, $clientId, false);
             delete_option('retailcrm_active_in_crm');
-        }
-
-        /**
-         * @return void
-         */
-        public function activate()
-        {
-            $api_client = $this->getApiClient();
-            $clientId = get_option('retailcrm_client_id');
-
-            if ($api_client && $clientId) {
-                WC_Retailcrm_Plugin::integration_module($api_client, $clientId);
-                update_option('retailcrm_active_in_crm', true);
-            }
         }
 
         /**
