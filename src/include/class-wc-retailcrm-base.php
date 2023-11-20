@@ -131,13 +131,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_deactivate', [$this, 'deactivate']);
 
             //Activation configured module
-            $clientId = get_option('retailcrm_client_id');
-            $isActive = get_option('retailcrm_active_in_crm');
-
-            if ($this->apiClient && $clientId && !$isActive) {
-                WC_Retailcrm_Plugin::integration_module($this->apiClient, $clientId);
-                update_option('retailcrm_active_in_crm', true);
-            }
+            $this->activateModule();
         }
 
         /**
@@ -949,6 +943,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $style,
                 __('I agree to receive promotional newsletters', 'retailcrm')
             );
+        }
+
+        private function activateModule()
+        {
+            $clientId = get_option('retailcrm_client_id');
+            $isActive = get_option('retailcrm_active_in_crm');
+
+            if ($this->apiClient && $clientId && !$isActive) {
+                WC_Retailcrm_Plugin::integration_module($this->apiClient, $clientId);
+                update_option('retailcrm_active_in_crm', true);
+            }
         }
     }
 }
