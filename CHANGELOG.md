@@ -1,5 +1,5 @@
 ## 2023-11-20 4.6.14
-* Fix not correct scoring product total price when product price is not number
+* Fix module activation/deactivation
 
 ## 2023-10-26 4.6.13
 * Fix not correct scoring product total price when product price is not number

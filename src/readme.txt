@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.6.14 =
-* Fix module activation
+* Fix module activation/deactivation
 
 = 4.6.13 =
 * Fix not correct scoring product total price when product price is not number
