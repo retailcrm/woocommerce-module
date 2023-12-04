@@ -1,5 +1,7 @@
 <?php
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+
 if (! defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
@@ -189,5 +191,15 @@ function calculatePriceExcludingTax($priceIncludingTax, $rate)
  */
 function writeBaseLogs($message)
 {
-    WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
+    WC_Retailcrm_Logger::debug(__METHOD__, $message);
 }
+
+
+
+
+// TODO добавить правильно
+add_action('before_woocommerce_init', function() {
+    if ( class_exists( FeaturesUtil::class ) ) {
+        FeaturesUtil::declare_compatibility( 'custom_order_tables', 'retailcrm.php', true);
+    }
+} );

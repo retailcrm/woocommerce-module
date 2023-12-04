@@ -72,34 +72,40 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         /**
          * Create order. Returns wc_get_order data or error string.
          *
-         * @param      $order_id
+         * @param      $orderId
          *
-         * @return bool|WC_Order|WC_Order_Refund|string
+         * @return bool|WC_Order|string
          * @throws \Exception
          */
-        public function orderCreate($order_id)
+        public function orderCreate($orderId)
         {
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
-            $this->order_payment->resetData();
-
-            $wcOrder = wc_get_order($order_id);
-            $this->processOrder($wcOrder);
-
             try {
+                $this->order_payment->resetData();
+
+                $wcOrder = wc_get_order($orderId);
+
+                $this->processOrder($wcOrder);
+
                 $response = $this->retailcrm->ordersCreate($this->order);
 
-                if ($response instanceof WC_Retailcrm_Proxy) {
-                    if ($response->isSuccessful()) {
-                        return $wcOrder;
-                    }
-
+                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
                     return $response->getErrorString();
                 }
-            } catch (InvalidArgumentException $exception) {
-                return $exception->getMessage();
+            } catch (Throwable $exception) {
+                writeBaseLogs(
+                    sprintf(
+                        'Error message: %s, file: %s on line: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine()
+                    )
+                );
+
+                return null;
             }
 
             return $wcOrder;
@@ -252,25 +258,38 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         /**
          * Edit order in CRM
          *
-         * @param int $order_id
+         * @param int $orderId
          *
          * @return WC_Order $order | null
          * @throws \Exception
          */
-        public function updateOrder($order_id)
+        public function updateOrder($orderId)
         {
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
-            $wcOrder = wc_get_order($order_id);
+            try {
+                $wcOrder = wc_get_order($orderId);
 
-            $this->processOrder($wcOrder, true);
+                $this->processOrder($wcOrder, true);
 
-            $response = $this->retailcrm->ordersEdit($this->order);
+                $response = $this->retailcrm->ordersEdit($this->order);
 
-            if (!empty($response) && $response->isSuccessful()) {
-                $this->payment = $this->orderUpdatePaymentType($wcOrder);
+                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                    $this->payment = $this->orderUpdatePaymentType($wcOrder);
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs(
+                    sprintf(
+                        'Error message: %s, file: %s on line: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine()
+                    )
+                );
+
+                return null;
             }
 
             return $wcOrder;
@@ -337,11 +356,11 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 return;
             }
 
-            if ($order->get_status() == 'auto-draft') {
+            if ('auto-draft' === $order->get_status()) {
                 return;
             }
 
-            if ($update === true) {
+            if ($update) {
                 $this->orders->is_new = false;
             }
 

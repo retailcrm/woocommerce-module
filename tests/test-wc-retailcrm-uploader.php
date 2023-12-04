@@ -87,7 +87,7 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_order_upload($retailcrm)
     {
         $retailcrm_uploader = $this->getRetailcrmUploader($retailcrm);
-        $data = $retailcrm_uploader->uploadArchiveOrders(0);
+        $data = $retailcrm_uploader->uploadArchiveOrders(null);
 
         $this->assertEquals(null, $data);
     }

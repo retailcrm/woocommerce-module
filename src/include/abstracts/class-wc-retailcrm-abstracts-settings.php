@@ -144,11 +144,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     ),
                 ];
 
-                foreach (get_post_statuses() as $status_key => $status_value) {
-                    $this->form_fields['p_' . $status_key] = [
-                        'title'       => $status_value,
+                // Used to select product statuses
+                foreach (get_post_statuses() as $statusKey => $statusValue) {
+                    $this->form_fields['p_' . $statusKey] = [
+                        'title'       => $statusValue,
                         'label'       => ' ',
-                        'description' => '',
                         'class'       => 'checkbox',
                         'type'        => 'checkbox',
                         'desc_tip'    =>  true,
@@ -875,6 +875,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function validate_whatsapp_number_field($key, $value)
     {
+        // Checking the activity of the option for validating a phone number.
         $post = $this->get_post_data();
 
         if (!empty($post['woocommerce_integration-retailcrm_whatsapp_active'])) {

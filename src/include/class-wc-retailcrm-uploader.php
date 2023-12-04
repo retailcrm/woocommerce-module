@@ -59,11 +59,13 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         public function uploadSelectedOrders()
         {
-            if (!empty($_GET['order_ids_retailcrm'])) {
-                $ids = array_unique(explode(',', $_GET['order_ids_retailcrm']));
-                
-                if (!empty($ids)) {
-                    $this->uploadArchiveOrders(0, $ids);
+            $ids = $_GET['order_ids_retailcrm'];
+
+            if (!empty($ids)) {
+                preg_match_all('/\d+/', $ids, $matches);
+
+                if (!empty($matches[0])) {
+                    $this->uploadArchiveOrders(null, $matches[0]);
                 }
             }
         }
@@ -71,29 +73,31 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         /**
          * Uploads archive order in CRM
          *
-         * @param int     $page Number page uploads.
-         * @param array   $ids  Ids orders upload.
+         * @param null|int $page Number page uploads.
+         * @param array    $ids  Ids orders upload.
          *
          * @return void|null
          * @throws Exception Invalid argument exception.
          */
-        public function uploadArchiveOrders($page, $ids = array())
+        public function uploadArchiveOrders($page, $ids = [])
         {
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
-            $uploadErrors = array();
-            $ordersCms    = $this->getCmsOrders($page, $ids);
+            $orderIds = [];
+            $uploadErrors = [];
 
-            foreach ($ordersCms as $dataOrder) {
-                $orderId      = $dataOrder->ID;
+            if (null !== $page) {
+                $orderIds = $this->getCmsOrders($page);
+            } elseif ([] !== $ids) {
+                $orderIds = $ids;
+            }
+
+            foreach ($orderIds as $orderId) {
                 $errorMessage = $this->orders->orderCreate($orderId);
 
-                if (true === is_string($errorMessage)) {
-                    $errorMessage = empty($errorMessage) === true
-                        ? 'Order exist. External id: ' . $orderId
-                        : $errorMessage;
+                if (is_string($errorMessage)) {
                     $uploadErrors[$orderId] = $errorMessage;
                 }
             }
@@ -118,7 +122,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             $users = $this->getCmsUsers($page);
 
             if (false === empty($users)) {
-                $dataCustomers = array();
+                $dataCustomers = [];
 
                 foreach ($users as $user) {
                     if ($this->customers->isCustomer($user) === false) {
@@ -140,20 +144,19 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          * Return orders ids
          *
          * @param integer $page Number page uploads.
-         * @param array   $ids  Ids orders upload.
          *
          * @return mixed
          */
-        private function getCmsOrders($page, $ids = array())
+        private function getCmsOrders($page)
         {
-            return get_posts(
-                array(
-                    'numberposts' => self::RETAILCRM_COUNT_OBJECT_UPLOAD,
-                    'offset'      => self::RETAILCRM_COUNT_OBJECT_UPLOAD * $page,
-                    'post_type'   => wc_get_order_types('view-orders'),
-                    'post_status' => array_keys(wc_get_order_statuses()),
-                    'include'     => $ids,
-                )
+            return wc_get_orders(
+                [
+                    'type' => wc_get_order_types('view-orders'),
+                    'limit' => self::RETAILCRM_COUNT_OBJECT_UPLOAD,
+                    'status' => array_keys(wc_get_order_statuses()),
+                    'offset' => self::RETAILCRM_COUNT_OBJECT_UPLOAD * $page,
+                    'return' => 'ids',
+                ]
             );
         }
 
@@ -179,13 +182,13 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          *
          * @return mixed
          */
-        private function getCmsUsers($page)
+        private function getCmsUsers(int $page)
         {
             return get_users(
-                array(
+                [
                     'number' => self::RETAILCRM_COUNT_OBJECT_UPLOAD,
                     'offset' => self::RETAILCRM_COUNT_OBJECT_UPLOAD * $page,
-                )
+                ]
             );
         }
 

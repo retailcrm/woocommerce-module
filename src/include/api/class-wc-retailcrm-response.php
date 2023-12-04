@@ -170,30 +170,32 @@ class WC_Retailcrm_Response implements \ArrayAccess
         return $this->response[$offset];
     }
 
-	/**
-	 * Returns error string. If there's multiple errors present - they will be squashed into single string.
-	 *
-	 * @return string
-	 */
-	public function getErrorString()
-	{
-		if ($this->offsetExists('error')) {
-			return (string) $this->response['error'];
-		} elseif ($this->offsetExists('errors') && is_array($this->response['errors'])) {
-			$errorMessage = '';
+    /**
+     * Returns error string. If there's multiple errors present - they will be squashed into single string.
+     *
+     * @return string
+     */
+    public function getErrorString()
+    {
+        if ($this->offsetExists('errorMsg')) {
+            return (string) $this->response['errorMsg'];
+        }
 
-			foreach ($this->response['errors'] as $error) {
-				$errorMessage .= $error . ' >';
-			}
+        if (is_array($this->response['errors']) && $this->offsetExists('errors')) {
+            $errorMessage = '';
 
-			if (strlen($errorMessage) > 2) {
-				return (string) substr($errorMessage, 0, strlen($errorMessage) - 2);
-			}
+            foreach ($this->response['errors'] as $error) {
+                $errorMessage .= $error . ' >';
+            }
 
-			return $errorMessage;
-		}
+            if (strlen($errorMessage) > 2) {
+                return (string) substr($errorMessage, 0, strlen($errorMessage) - 2);
+            }
 
-		return '';
+            return $errorMessage;
+        }
+
+        return '';
     }
 
     /**

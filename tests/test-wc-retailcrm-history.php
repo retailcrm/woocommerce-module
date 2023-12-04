@@ -327,26 +327,28 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $this->deleteAllData();
         $this->regenerateMocks();
-        $order_id = $this->history_order_create_for_changing_customer();
-        $this->assertNotEmpty($order_id);
+
+        $orderId = $this->history_order_create_for_changing_customer();
+
+        $this->assertNotEmpty($orderId);
 
         $this->regenerateMocks();
-        $this->history_order_switch_customer($order_id);
+        $this->history_order_switch_customer($orderId);
 
         $this->regenerateMocks();
-        $this->history_order_switch_customer_to_corporate($order_id);
+        $this->history_order_switch_customer_to_corporate($orderId);
 
         $this->regenerateMocks();
-        $this->history_order_switch_customer_to_another_corporate($order_id);
+        $this->history_order_switch_customer_to_another_corporate($orderId);
 
         $this->regenerateMocks();
-        $this->history_order_switch_only_company($order_id);
+        $this->history_order_switch_only_company($orderId);
 
         $this->regenerateMocks();
-        $this->history_order_switch_only_contact($order_id);
+        $this->history_order_switch_only_contact($orderId);
 
         $this->regenerateMocks();
-        $this->history_order_switch_back_to_individual($order_id);
+        $this->history_order_switch_back_to_individual($orderId);
     }
 
     public function history_order_create_for_changing_customer()
@@ -376,16 +378,16 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @param int $order_id
+     * @param int $orderId
      *
      * @throws \Exception
      */
-    public function history_order_switch_customer($order_id)
+    public function history_order_switch_customer(int $orderId)
     {
         $this->mockHistory(
             true,
             DataHistoryRetailCrm::empty_history(),
-            DataHistoryRetailCrm::get_history_change_to_another_individual($order_id)
+            DataHistoryRetailCrm::get_history_change_to_another_individual($orderId)
         );
 
         $this->ordersGetMock(
@@ -396,31 +398,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        try {
-            $order = new WC_Order($order_id);
-        } catch (\Exception $exception) {
-            $post = get_post($order_id);
-
-            if (!$post instanceof WP_Post) {
-                $this->fail(sprintf('Cannot find order with id=%d', $order_id));
-            }
-
-            if (!in_array($post->post_type, wc_get_order_types())) {
-                $this->fail(sprintf(
-                    'Invalid order post type `%s`. Should be one of these: %s',
-                    $post->post_type,
-                    implode(', ', wc_get_order_types())
-                ));
-            } else {
-                $this->fail(sprintf(
-                    'Cannot determine what\'s wrong with order id=%d. Message from WooCommerce: %s',
-                    $order_id,
-                    $exception->getMessage()
-                ));
-            }
-
-            return;
-        }
+        $order = new WC_Order($orderId);
 
         $this->assertEquals('tester002', $order->get_billing_first_name());
         $this->assertEquals('tester002', $order->get_billing_last_name());
@@ -437,16 +415,16 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @param int $order_id
+     * @param int $orderId
      *
      * @throws \Exception
      */
-    public function history_order_switch_customer_to_corporate($order_id)
+    public function history_order_switch_customer_to_corporate(int $orderId)
     {
         $this->mockHistory(
             true,
             DataHistoryRetailCrm::empty_history(),
-            DataHistoryRetailCrm::get_history_change_to_corporate($order_id)
+            DataHistoryRetailCrm::get_history_change_to_corporate($orderId)
         );
 
         $this->ordersGetMock(
@@ -462,31 +440,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        try {
-            $order = new WC_Order($order_id);
-        } catch (\Exception $exception) {
-            $post = get_post($order_id);
-
-            if (!$post instanceof WP_Post) {
-                $this->fail(sprintf('Cannot find order with id=%d', $order_id));
-            }
-
-            if (!in_array($post->post_type, wc_get_order_types())) {
-                $this->fail(sprintf(
-                    'Invalid order post type `%s`. Should be one of these: %s',
-                    $post->post_type,
-                    implode(', ', wc_get_order_types())
-                ));
-            } else {
-                $this->fail(sprintf(
-                    'Cannot determine what\'s wrong with order id=%d. Message from WooCommerce: %s',
-                    $order_id,
-                    $exception->getMessage()
-                ));
-            }
-
-            return;
-        }
+        $order = new WC_Order($orderId);
 
         $this->assertEquals('psycho913', $order->get_billing_first_name());
         $this->assertEquals('psycho913', $order->get_billing_last_name());
@@ -500,16 +454,16 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @param int $order_id
+     * @param int $orderId
      *
      * @throws \Exception
      */
-    public function history_order_switch_customer_to_another_corporate($order_id)
+    public function history_order_switch_customer_to_another_corporate($orderId)
     {
         $this->mockHistory(
             true,
             DataHistoryRetailCrm::empty_history(),
-            DataHistoryRetailCrm::get_history_change_to_another_corporate($order_id)
+            DataHistoryRetailCrm::get_history_change_to_another_corporate($orderId)
         );
 
         $this->ordersGetMock(
@@ -525,31 +479,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        try {
-            $order = new WC_Order($order_id);
-        } catch (\Exception $exception) {
-            $post = get_post($order_id);
-
-            if (!$post instanceof WP_Post) {
-                $this->fail(sprintf('Cannot find order with id=%d', $order_id));
-            }
-
-            if (!in_array($post->post_type, wc_get_order_types())) {
-                $this->fail(sprintf(
-                    'Invalid order post type `%s`. Should be one of these: %s',
-                    $post->post_type,
-                    implode(', ', wc_get_order_types())
-                ));
-            } else {
-                $this->fail(sprintf(
-                    'Cannot determine what\'s wrong with order id=%d. Message from WooCommerce: %s',
-                    $order_id,
-                    $exception->getMessage()
-                ));
-            }
-
-            return;
-        }
+        $order = new WC_Order($orderId);
 
         $this->assertEquals('Tester4867', $order->get_billing_first_name());
         $this->assertEquals('Tester4867', $order->get_billing_last_name());
@@ -564,16 +494,16 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @param int $order_id
+     * @param int $orderId
      *
      * @throws \Exception
      */
-    public function history_order_switch_only_company($order_id)
+    public function history_order_switch_only_company(int $orderId)
     {
         $this->mockHistory(
             true,
             DataHistoryRetailCrm::empty_history(),
-            DataHistoryRetailCrm::get_history_change_only_company($order_id)
+            DataHistoryRetailCrm::get_history_change_only_company($orderId)
         );
 
         $this->ordersGetMock(
@@ -589,31 +519,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        try {
-            $order = new WC_Order($order_id);
-        } catch (\Exception $exception) {
-            $post = get_post($order_id);
-
-            if (!$post instanceof WP_Post) {
-                $this->fail(sprintf('Cannot find order with id=%d', $order_id));
-            }
-
-            if (!in_array($post->post_type, wc_get_order_types())) {
-                $this->fail(sprintf(
-                    'Invalid order post type `%s`. Should be one of these: %s',
-                    $post->post_type,
-                    implode(', ', wc_get_order_types())
-                ));
-            } else {
-                $this->fail(sprintf(
-                    'Cannot determine what\'s wrong with order id=%d. Message from WooCommerce: %s',
-                    $order_id,
-                    $exception->getMessage()
-                ));
-            }
-
-            return;
-        }
+        $order = new WC_Order($orderId);
 
         $this->assertEquals('Tester4867', $order->get_billing_first_name());
         $this->assertEquals('Tester4867', $order->get_billing_last_name());
@@ -628,16 +534,16 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @param int $order_id
+     * @param int $orderId
      *
      * @throws \Exception
      */
-    public function history_order_switch_only_contact($order_id)
+    public function history_order_switch_only_contact(int $orderId)
     {
         $this->mockHistory(
             true,
             DataHistoryRetailCrm::empty_history(),
-            DataHistoryRetailCrm::get_history_change_only_contact($order_id)
+            DataHistoryRetailCrm::get_history_change_only_contact($orderId)
         );
 
         $this->ordersGetMock(
@@ -653,31 +559,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        try {
-            $order = new WC_Order($order_id);
-        } catch (\Exception $exception) {
-            $post = get_post($order_id);
-
-            if (!$post instanceof WP_Post) {
-                $this->fail(sprintf('Cannot find order with id=%d', $order_id));
-            }
-
-            if (!in_array($post->post_type, wc_get_order_types())) {
-                $this->fail(sprintf(
-                    'Invalid order post type `%s`. Should be one of these: %s',
-                    $post->post_type,
-                    implode(', ', wc_get_order_types())
-                ));
-            } else {
-                $this->fail(sprintf(
-                    'Cannot determine what\'s wrong with order id=%d. Message from WooCommerce: %s',
-                    $order_id,
-                    $exception->getMessage()
-                ));
-            }
-
-            return;
-        }
+        $order = new WC_Order($orderId);
 
         $this->assertEquals('Tester2890', $order->get_billing_first_name());
         $this->assertEquals('Tester2890', $order->get_billing_last_name());
@@ -692,16 +574,16 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @param int $order_id
+     * @param int $orderId
      *
      * @throws \Exception
      */
-    public function history_order_switch_back_to_individual($order_id)
+    public function history_order_switch_back_to_individual(int $orderId)
     {
         $this->mockHistory(
             true,
             DataHistoryRetailCrm::empty_history(),
-            DataHistoryRetailCrm::get_history_change_from_corporate_to_individual($order_id)
+            DataHistoryRetailCrm::get_history_change_from_corporate_to_individual($orderId)
         );
 
         $this->ordersGetMock(
@@ -712,31 +594,7 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         $retailcrm_history = new \WC_Retailcrm_History($this->apiMock);
         $retailcrm_history->getHistory();
 
-        try {
-            $order = new WC_Order($order_id);
-        } catch (\Exception $exception) {
-            $post = get_post($order_id);
-
-            if (!$post instanceof WP_Post) {
-                $this->fail(sprintf('Cannot find order with id=%d', $order_id));
-            }
-
-            if (!in_array($post->post_type, wc_get_order_types())) {
-                $this->fail(sprintf(
-                    'Invalid order post type `%s`. Should be one of these: %s',
-                    $post->post_type,
-                    implode(', ', wc_get_order_types())
-                ));
-            } else {
-                $this->fail(sprintf(
-                    'Cannot determine what\'s wrong with order id=%d. Message from WooCommerce: %s',
-                    $order_id,
-                    $exception->getMessage()
-                ));
-            }
-
-            return;
-        }
+        $order = new WC_Order($orderId);
 
         $this->assertEquals('tester001', $order->get_billing_first_name());
         $this->assertEquals('tester001', $order->get_billing_last_name());
