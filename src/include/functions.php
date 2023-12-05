@@ -1,7 +1,5 @@
 <?php
 
-use Automattic\WooCommerce\Utilities\FeaturesUtil;
-
 if (! defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
@@ -191,15 +189,23 @@ function calculatePriceExcludingTax($priceIncludingTax, $rate)
  */
 function writeBaseLogs($message)
 {
-    WC_Retailcrm_Logger::debug(__METHOD__, $message);
+    WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
 }
 
-
-
+/**
+ * Checking the use of HPOS.
+ *
+ * @codeCoverageIgnore
+ */
+function useHpos()
+{
+    return class_exists(Automattic\WooCommerce\Utilities\OrderUtil::class)
+        && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+}
 
 // TODO добавить правильно
 add_action('before_woocommerce_init', function() {
-    if ( class_exists( FeaturesUtil::class ) ) {
-        FeaturesUtil::declare_compatibility( 'custom_order_tables', 'retailcrm.php', true);
+    if (class_exists( Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', 'retailcrm.php', true);
     }
-} );
+});

@@ -169,9 +169,14 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         {
             global $wpdb;
 
-            $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM $wpdb->posts WHERE post_type = 'shop_order'");
+            if (useHpos()) {
+                // Use {$wpdb->prefix}, because wp_wc_orders not standard WP table
+                $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM {$wpdb->prefix}wc_orders");
+            } else {
+                $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM $wpdb->posts WHERE post_type = 'shop_order'");
+            }
 
-            return empty($result[0]->count) === false ? (int) $result[0]->count : 0;
+            return $result[0]->count ?? 0;
         }
 
 

@@ -1,3 +1,6 @@
+## 2023-12-06 4.7.0
+* Fix module activation/deactivation
+
 ## 2023-11-20 4.6.14
 * Fix module activation/deactivation
 

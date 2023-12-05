@@ -821,7 +821,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             global $wpdb;
 
-            $table = $entity === 'order' ? $wpdb->postmeta : $wpdb->usermeta;
+            if ('user' === $entity) {
+                $table = $wpdb->usermeta;
+            } else {
+                $table = useHpos() ? $wpdb->prefix . 'wc_orders_meta' : $wpdb->postmeta;
+            }
 
             $metaData = ['default_retailcrm' => __('Select value', 'retailcrm')];
             $sqlQuery = "SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`";
