@@ -252,7 +252,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->baseRetailcrm->count_upload_data();
 
         $uploadInfo = $this->getJsonData(ob_get_contents());
-        var_dump($uploadInfo);
+
         $this->assertInternalType('array', $uploadInfo);
         $this->assertArrayHasKey('count_orders', $uploadInfo);
         $this->assertArrayHasKey('count_users', $uploadInfo);

@@ -176,9 +176,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM $wpdb->posts WHERE post_type = 'shop_order'");
             }
 
-            return $result[0]->count ?? 0;
+            return $result[0]->count ? (int) $result[0]->count : 0;
         }
-
 
         /**
          * Return users ids
@@ -197,7 +196,6 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             );
         }
 
-
         /**
          * Return count users
          *
@@ -207,9 +205,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         {
             $userCount = count_users();
 
-            return empty($userCount['total_users']) === false ? $userCount['total_users'] : 0;
+            return $userCount['total_users'] ? (int) $userCount['total_users'] : 0;
         }
-
 
         /**
          * Array keys must be orders ID's in WooCommerce, values must be strings (error messages).

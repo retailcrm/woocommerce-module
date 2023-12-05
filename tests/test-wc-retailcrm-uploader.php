@@ -109,7 +109,6 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $retailcrm_uploader = $this->getRetailcrmUploader($this->apiMock);
         $count_orders = $retailcrm_uploader->getCountOrders();
-        var_dump($count_orders);
         $this->assertInternalType('int', $count_orders);
     }
 
