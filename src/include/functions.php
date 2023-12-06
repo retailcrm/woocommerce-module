@@ -202,10 +202,3 @@ function useHpos()
     return class_exists(Automattic\WooCommerce\Utilities\OrderUtil::class)
         && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 }
-
-// TODO добавить правильно
-add_action('before_woocommerce_init', function() {
-    if (class_exists( Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
-        Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', 'retailcrm.php', true);
-    }
-});

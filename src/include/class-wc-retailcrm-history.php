@@ -1355,6 +1355,7 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                 if ($wcObject instanceof WC_Order) {
                     $wcObject->update_meta_data($metaKey, $crmData['customFields'][$customKey]);
+                    $wcObject->save_meta_data();
                 } else {
                     update_user_meta($wcObject->get_id(), $metaKey, $crmData['customFields'][$customKey]);
                 }

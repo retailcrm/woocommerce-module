@@ -211,4 +211,10 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     $plugin->register_deactivation_hook();
 
     add_action('plugins_loaded', ['WC_Integration_Retailcrm', 'get_instance'], 0);
+
+    add_action('before_woocommerce_init', function() {
+        if (class_exists( Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+            Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        }
+    });
 endif;
