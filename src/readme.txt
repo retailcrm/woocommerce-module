@@ -3,7 +3,7 @@ Contributors: Simla.com
 Donate link: https://www.simla.com
 Tags: Интеграция, Simla.com, simla
 Requires PHP: 7.0
-Requires at least: 5.3
+Requires at least: 6.0
 Tested up to: 6.4
 Stable tag: 4.7.0
 License: GPLv1 or later
@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.7.0 =
-* Added support WooCommerce 8.2 (HPOS)n
+* Added support WooCommerce 8.2 (HPOS)
 
 = 4.6.14 =
 * Fix module activation/deactivation
