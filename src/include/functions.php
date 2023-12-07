@@ -191,3 +191,14 @@ function writeBaseLogs($message)
 {
     WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
 }
+
+/**
+ * Checking the use of HPOS.
+ *
+ * @codeCoverageIgnore
+ */
+function useHpos()
+{
+    return class_exists(Automattic\WooCommerce\Utilities\OrderUtil::class)
+        && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+}

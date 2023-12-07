@@ -55,6 +55,8 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_order_create($retailcrm)
     {
+        $this->createTestOrder();
+
         if ($retailcrm) {
             $responseMock = $this->createResponseMock();
             $responseMockCustomers = $this->createResponseMock();
@@ -68,12 +70,11 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                 ]
             );
 
+            $this->setMockResponse($responseMock, 'isSuccessful', true);
             $this->setMockResponse($retailcrm, 'ordersCreate', $responseMock);
             $this->setMockResponse($retailcrm, 'customersCreate', $responseMock);
             $this->setMockResponse($retailcrm, 'customersList', $responseMockCustomers);
         }
-
-        $this->createTestOrder();
 
         $retailcrmOrders = $this->getRetailcrmOrders($retailcrm);
         $order = $retailcrmOrders->orderCreate($this->order->get_id());
@@ -132,6 +133,8 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function test_order_create_with_corporate_customer($retailcrm)
     {
+        $this->createTestOrder();
+
         if ($retailcrm) {
             $responseMock = $this->createResponseMock();
 
@@ -170,6 +173,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                 ]
             );
 
+            $this->setMockResponse($responseMock, 'isSuccessful', true);
             $this->setMockResponse($retailcrm, 'ordersCreate', $responseMock);
             $this->setMockResponse($retailcrm, 'getSingleSiteForKey', 'woo');
             $this->setMockResponse($retailcrm, 'customersCorporateCreate', $responseMockCustomerCorporate);
@@ -179,8 +183,6 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             $this->setMockResponse($retailcrm, 'getCorporateEnabled', true);
             $this->setMockResponse($retailcrm, 'customersCorporateCompanies', $responseMockCompany);
         }
-
-        $this->createTestOrder();
 
         $retailcrmOrders = $this->getRetailcrmOrders($retailcrm);
         $order           = $retailcrmOrders->orderCreate($this->order->get_id());
@@ -609,14 +611,12 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             }
         }
 
+        $this->order->add_meta_data('woo_order', 'test_custom_fields');
+        $this->order->add_meta_data('crm_phone', '1111122222');
+        $this->order->add_meta_data('crm_address_text', 'crm_address_text_test');
+        $this->order->add_meta_data('crm_customer_comment', 'crm_customer_comment_test');
+
         $this->order->save();
-
-        $orderId = $this->order->get_id();
-
-        update_post_meta($orderId, 'woo_order', 'test_custom_fields');
-        update_post_meta($orderId, 'crm_phone', '1111122222');
-        update_post_meta($orderId, 'crm_address_text', 'crm_address_text_test');
-        update_post_meta($orderId, 'crm_customer_comment', 'crm_customer_comment_test');
     }
 
     private function getResponseData($externalId)

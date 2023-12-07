@@ -100,27 +100,30 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
         } else {
             global $wpdb;
 
-            foreach (
-                [
+            $tables = [
+                useHpos() ? $wpdb->prefix . 'wc_orders' : '',
+                useHpos() ? $wpdb->prefix . 'wc_orders_meta' : '',
                 $wpdb->posts,
                 $wpdb->postmeta,
                 $wpdb->comments,
                 $wpdb->commentmeta,
                 $wpdb->term_relationships,
                 $wpdb->termmeta,
-                ] as $table
-            ) {
-                //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            ];
+
+            foreach ($tables as $table) {
+                if ('' === $table) {
+                    continue;
+                }
+
                 $wpdb->query("DELETE FROM {$table}");
             }
 
             foreach ([$wpdb->terms, $wpdb->term_taxonomy] as $table) {
-                //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $wpdb->query("DELETE FROM {$table} WHERE term_id != 1");
             }
 
             $wpdb->query("UPDATE {$wpdb->term_taxonomy} SET count = 0");
-
             $wpdb->query("DELETE FROM {$wpdb->users} WHERE ID != 1");
             $wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE user_id != 1");
         }

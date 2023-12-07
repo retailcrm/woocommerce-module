@@ -1,3 +1,6 @@
+## 2023-12-07 4.7.0
+* Added support WooCommerce 8.2 (HPOS)
+
 ## 2023-11-20 4.6.14
 * Fix module activation/deactivation
 

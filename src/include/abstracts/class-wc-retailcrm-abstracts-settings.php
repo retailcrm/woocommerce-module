@@ -144,11 +144,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     ),
                 ];
 
-                foreach (get_post_statuses() as $status_key => $status_value) {
-                    $this->form_fields['p_' . $status_key] = [
-                        'title'       => $status_value,
+                foreach (get_post_statuses() as $statusKey => $statusValue) {
+                    $this->form_fields['p_' . $statusKey] = [
+                        'title'       => $statusValue,
                         'label'       => ' ',
-                        'description' => '',
                         'class'       => 'checkbox',
                         'type'        => 'checkbox',
                         'desc_tip'    =>  true,

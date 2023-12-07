@@ -5,10 +5,10 @@
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.6.14
- * Tested up to: 6.2
+ * Version: 4.7.0
+ * Tested up to: 6.4
  * WC requires at least: 5.4
- * WC tested up to: 7.8
+ * WC tested up to: 8.3
  * Text Domain: retailcrm
  */
 
@@ -211,4 +211,10 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     $plugin->register_deactivation_hook();
 
     add_action('plugins_loaded', ['WC_Integration_Retailcrm', 'get_instance'], 0);
+
+    add_action('before_woocommerce_init', function() {
+        if (class_exists( Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+            Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        }
+    });
 endif;
