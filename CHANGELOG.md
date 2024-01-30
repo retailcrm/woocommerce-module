@@ -1,3 +1,6 @@
+## 2024-01-30 4.7.1
+* Fixed the error of displaying the 'Add' button to mapping custom fields
+
 ## 2023-12-07 4.7.0
 * Added support WooCommerce 8.2 (HPOS)
 
