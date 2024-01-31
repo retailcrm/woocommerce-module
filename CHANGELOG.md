@@ -1,3 +1,6 @@
+## 2024-01-31 4.7.2
+* Fixed error with send address by history
+
 ## 2024-01-30 4.7.1
 * Fixed the error of displaying the 'Add' button to mapping custom fields
 
