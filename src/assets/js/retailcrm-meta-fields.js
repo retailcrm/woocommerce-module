@@ -272,7 +272,9 @@ jQuery(function () {
     }
 
     RetailcrmMetaFields.prototype.fillSelects = function (data, entity, index) {
-        if (Object.keys(data.meta).length - 1 <= index || Object.keys(data.custom).length - 1 <= index) {
+        let allCountCrmFields = Object.keys(data.custom).length + Object.keys(data.crmDefault).length;
+
+        if (Object.keys(data.meta).length - 1 <= index ||  allCountCrmFields - 1 <= index) {
             if (entity === 'order') {
                 jQuery('#add-new-select-order-retailcrm').addClass('retailcrm-hidden')
             } else {
