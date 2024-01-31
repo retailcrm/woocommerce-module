@@ -765,7 +765,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             }
 
             $shippingAddress      = $order['delivery']['address'];
-            $shippingAddressLines = $this->getAddressLines($shippingAddress['text']);
+            $shippingAddressLines = $this->getAddressLines($shippingAddress['text'] ?? '');
 
             $addressShipping = [
                 'first_name' => $order['firstName'] ?? '',
@@ -779,7 +779,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 'country'    => $shippingAddress['countryIso'] ?? ''
             ];
 
-            $billingAddressLines = $this->getAddressLines($billingAddress['text']);
+            $billingAddressLines = $this->getAddressLines($billingAddress['text'] ?? '');
 
             $addressBilling = [
                 'first_name' => $contactOrCustomer['firstName'] ?? '',
@@ -1083,14 +1083,14 @@ if (!class_exists('WC_Retailcrm_History')) :
         /**
          * Returns data for address_1 and address_2(if exist data for this field) for WC order.
          *
-         * @param string|null $addressLine
+         * @param string $addressLine
          *
-         * @return mixed
+         * @return array|string
          */
         private function getAddressLines($addressLine)
         {
-            if ($addressLine === null) {
-                return null;
+            if ($addressLine === '') {
+                return '';
             }
 
             if (strpos($addressLine, WC_Retailcrm_Abstracts_Address::ADDRESS_LINE_DIVIDER) !== false) {
