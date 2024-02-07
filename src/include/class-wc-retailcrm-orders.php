@@ -91,6 +91,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->processOrder($wcOrder);
 
                 $response = $this->retailcrm->ordersCreate($this->order);
+                $response = apply_filters('retailcrm_order_create_after', $response, $wcOrder);
 
                 if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
                     return $response->getErrorString();
@@ -275,6 +276,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->processOrder($wcOrder, true);
 
                 $response = $this->retailcrm->ordersEdit($this->order);
+                $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
 
                 if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
                     $this->payment = $this->orderUpdatePaymentType($wcOrder);

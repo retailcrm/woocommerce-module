@@ -1,3 +1,6 @@
+## 2024-02-07 4.7.3
+* Added filters after creating and updating an order
+
 ## 2024-01-31 4.7.2
 * Fixed error with send address by history
 
