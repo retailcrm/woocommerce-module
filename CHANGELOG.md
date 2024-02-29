@@ -1,3 +1,6 @@
+## 2024-02-29 4.7.4
+* Fixed an error when transferring abandoned carts
+
 ## 2024-02-07 4.7.3
 * Added filters after creating and updating an order
 
