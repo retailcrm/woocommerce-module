@@ -119,7 +119,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             if ($this->get_option('abandoned_carts_enabled') === static::YES) {
-                $this->cart = new WC_Retailcrm_Cart($this->apiClient);
+                $this->cart = new WC_Retailcrm_Cart($this->apiClient, $this->settings);
 
                 add_action('woocommerce_add_to_cart', [$this, 'set_cart']);
                 add_action('woocommerce_after_cart_item_quantity_update', [$this, 'set_cart']);

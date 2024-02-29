@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.7.4 =
+* Fixed an error when transferring abandoned carts
+
 = 4.7.3 =
 * Added filters after creating and updating an order
 

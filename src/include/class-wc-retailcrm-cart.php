@@ -17,9 +17,12 @@ if (!class_exists('WC_Retailcrm_Carts')) :
         protected $apiClient;
         protected $dateFormat;
 
-        public function __construct($apiClient)
+        protected $settings;
+
+        public function __construct($apiClient, $settings)
         {
             $this->apiClient = $apiClient;
+            $this->settings = $settings;
             $this->dateFormat = 'Y-m-d H:i:sP';
         }
 
@@ -53,11 +56,13 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                     return $this->clearCart($customerId, $site, $isCartExist);
                 }
 
+                $useXmlId = isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] === WC_Retailcrm_Base::YES;
+
                 foreach ($cartItems as $item) {
                     $product = $item['data'];
 
                     $crmCart['items'][] = [
-                        'offer' => ['externalId' => $product->get_id()],
+                        'offer' =>  $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
                         'quantity' => $item['quantity'],
                         'createdAt' => $product->get_date_created()->date($this->dateFormat) ?? date($this->dateFormat),
                         'updatedAt' => $product->get_date_modified()->date($this->dateFormat) ?? date($this->dateFormat),

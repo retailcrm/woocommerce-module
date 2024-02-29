@@ -37,7 +37,7 @@ class WC_Retailcrm_Cart_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockResponse($this->apiMock, 'cartSet', $this->responseMock);
         $this->setMockResponse($this->apiMock, 'cartClear', $this->responseMock);
 
-        $this->cart = new WC_Retailcrm_Cart($this->apiMock);
+        $this->cart = new WC_Retailcrm_Cart($this->apiMock, $this->getOptions());
     }
 
     public function testApiGetCart()
