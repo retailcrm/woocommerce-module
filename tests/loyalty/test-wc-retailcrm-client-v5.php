@@ -57,9 +57,9 @@ class WC_Retailcrm_Loyalty_Client_Test extends WC_Retailcrm_Test_Case_Helper
     }
 
     /**
-     * @dataProvider requestPLData
+     * @dataProvider requestLoyaltyData
      */
-    public function testPLRequest($method, $parameters)
+    public function testLoyaltyRequest($method, $parameters)
     {
         /** @var WC_Retailcrm_Response $test */
         $test = call_user_func([$this->clientMock, $method], ...$parameters);
@@ -67,43 +67,43 @@ class WC_Retailcrm_Loyalty_Client_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertTrue($test->isSuccessful());
     }
 
-    public function requestPLData()
+    public function requestLoyaltyData()
     {
         return [
             [
-                'method' => 'createPLAccount',
+                'method' => 'createLoyaltyAccount',
                 'parameters' => [['test'], 'testSite']
             ],
             [
-                'method' => 'getPLClientInfo',
+                'method' => 'getLoyaltyClientInfo',
                 'parameters' => [1]
             ],
             [
-                'method' => 'activatePLAccount',
+                'method' => 'activateLoyaltyAccount',
                 'parameters' => [1]
             ],
             [
-                'method' => 'editPLAccount',
+                'method' => 'editLoyaltyAccount',
                 'parameters' => [1, ['test']]
             ],
             [
-                'method' => 'getPLAccountList',
+                'method' => 'getLoyaltyAccountList',
                 'parameters' => [['filter'], 20, 1]
             ],
             [
-                'method' => 'getListPL',
+                'method' => 'getListLoyalty',
                 'parameters' => [['filter'], 20, 1]
             ],
             [
-                'method' => 'getPL',
+                'method' => 'getLoyalty',
                 'parameters' => [1]
             ],
             [
-                'method' => 'chargeBonusPL',
+                'method' => 'chargeBonusLoyalty',
                 'parameters' => [1, 100, 'test']
             ],
             [
-                'method' => 'creditBonusPL',
+                'method' => 'creditBonusLoyalty',
                 'parameters' => [1, ['amount' => 100]]
             ],
             [
@@ -119,7 +119,7 @@ class WC_Retailcrm_Loyalty_Client_Test extends WC_Retailcrm_Test_Case_Helper
                 'parameters' => ['cursor', ['filter'], 20]
             ],
             [
-                'method' => 'calculateDiscountPL',
+                'method' => 'calculateDiscountLoyalty',
                 'parameters' => ['site', ['order'], 100]
             ],
             [

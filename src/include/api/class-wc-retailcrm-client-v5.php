@@ -2846,7 +2846,7 @@ class WC_Retailcrm_Client_V5
     /** Loyalty program */
 
     /** Customer registration in the loyalty program  */
-    public function createPLAccount(array $parameters, $site = null)
+    public function createLoyaltyAccount(array $parameters, $site = null)
     {
         if ([] === $parameters) {
             throw new InvalidArgumentException(
@@ -2862,35 +2862,35 @@ class WC_Retailcrm_Client_V5
     }
 
     /** Receiving information about participation in the loyalty program */
-    public function getPLClientInfo(int $clientIdPL)
+    public function getLoyaltyClientInfo(int $clientIdLoyalty)
     {
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdPL",
+            "/loyalty/account/$clientIdLoyalty",
             WC_Retailcrm_Request::METHOD_GET
         );
     }
 
     /** Activation of participation in the loyalty program */
-    public function activatePLAccount(int $clientIdPL)
+    public function activateLoyaltyAccount(int $clientIdLoyalty)
     {
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdPL/activate",
+            "/loyalty/account/$clientIdLoyalty/activate",
             WC_Retailcrm_Request::METHOD_POST
         );
     }
 
     /** Editing participation in the loyalty program */
-    public function editPLAccount(int $clientIdPL, array $parameters)
+    public function editLoyaltyAccount(int $clientIdLoyalty, array $parameters)
     {
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdPL/edit",
+            "/loyalty/account/$clientIdLoyalty/edit",
             WC_Retailcrm_Request::METHOD_POST,
-            ['id' => $clientIdPL, 'loyaltyAccount' => json_encode($parameters)]
+            ['id' => $clientIdLoyalty, 'loyaltyAccount' => json_encode($parameters)]
         );
     }
 
     /** List of participation in the loyalty program */
-    public function getPLAccountList(array $filter = [], $limit = null, $page = null)
+    public function getLoyaltyAccountList(array $filter = [], $limit = null, $page = null)
     {
         $parameters = $this->buildParameters($filter, $limit, $page);
 
@@ -2902,7 +2902,7 @@ class WC_Retailcrm_Client_V5
     }
 
     /** List of loyalty programs */
-    public function getListPL(array $filter = [], $limit = null, $page = null)
+    public function getListLoyalty(array $filter = [], $limit = null, $page = null)
     {
         $parameters = $this->buildParameters($filter, $limit, $page);
 
@@ -2914,25 +2914,25 @@ class WC_Retailcrm_Client_V5
     }
 
     /** Receiving information about the loyalty program */
-    public function getPL(int $idPL)
+    public function getLoyalty(int $idLoyalty)
     {
         return $this->client->makeRequest(
-            "/loyalty/loyalties/$idPL",
+            "/loyalty/loyalties/$idLoyalty",
             WC_Retailcrm_Request::METHOD_GET
         );
     }
 
     /** Charge bonus */
-    public function chargeBonusPL(int $clientIdPL, float $amount, string $comment = '')
+    public function chargeBonusLoyalty(int $clientIdLoyalty, float $amount, string $comment = '')
     {
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdPL/bonus/charge",
+            "/loyalty/account/$clientIdLoyalty/bonus/charge",
             WC_Retailcrm_Request::METHOD_POST,
             ['amount' => $amount, 'comment' => $comment]
         );
     }
 
-    public function creditBonusPL(int $clientIdPL, array $parameters)
+    public function creditBonusLoyalty(int $clientIdLoyalty, array $parameters)
     {
         if (!isset($parameters['amount'])) {
             throw new InvalidArgumentException(
@@ -2941,38 +2941,38 @@ class WC_Retailcrm_Client_V5
         }
 
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdPL/bonus/credit",
+            "/loyalty/account/$clientIdLoyalty/bonus/credit",
             WC_Retailcrm_Request::METHOD_POST,
             $parameters
         );
     }
 
     /** History of the client's bonus account */
-    public function getClientBonusHistory(int $clientIdPL, array $filter = [], $limit = null, $page = null)
+    public function getClientBonusHistory(int $clientIdLoyalty, array $filter = [], $limit = null, $page = null)
     {
         $parameters = $this->buildParameters($filter, $limit, $page);
-        $parameters['id'] = $clientIdPL;
+        $parameters['id'] = $clientIdLoyalty;
 
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdPL/bonus/operations",
+            "/loyalty/account/$clientIdLoyalty/bonus/operations",
             WC_Retailcrm_Request::METHOD_GET,
             $parameters
         );
     }
 
     public function getDetailClientBonus(
-        int $clientIdPL,
+        int $clientIdLoyalty,
         string $status,
         array $filter = [],
         $limit = null,
         $page = null
     ) {
         $parameters = $this->buildParameters($filter, $limit, $page);
-        $parameters['id'] = $clientIdPL;
+        $parameters['id'] = $clientIdLoyalty;
         $parameters['status'] = $status;
 
         return $this->client->makeRequest(
-            "/api/v5/loyalty/account/$clientIdPL/bonus/$status/details",
+            "/api/v5/loyalty/account/$clientIdLoyalty/bonus/$status/details",
             WC_Retailcrm_Request::METHOD_GET,
             $parameters
         );
@@ -2992,7 +2992,7 @@ class WC_Retailcrm_Client_V5
     }
 
     /** Maximum discount calculation */
-    public function calculateDiscountPL(string $site, array $order, float $bonuses)
+    public function calculateDiscountLoyalty(string $site, array $order, float $bonuses)
     {
         return $this->client->makeRequest(
             "/loyalty/calculate",
