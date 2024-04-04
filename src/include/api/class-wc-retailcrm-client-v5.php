@@ -2972,7 +2972,7 @@ class WC_Retailcrm_Client_V5
         $parameters['status'] = $status;
 
         return $this->client->makeRequest(
-            "/loyalty/account/$clientIdLoyalty/bonus/$status/details",
+            "/api/v5/loyalty/account/$clientIdLoyalty/bonus/$status/details",
             WC_Retailcrm_Request::METHOD_GET,
             $parameters
         );
