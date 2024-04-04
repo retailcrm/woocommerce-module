@@ -86,6 +86,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_generate_icml', [$this, 'generate_icml']);
             add_action('wp_ajax_upload_selected_orders', [$this, 'upload_selected_orders']);
             add_action('wp_ajax_clear_cron_tasks', [$this, 'clear_cron_tasks']);
+            add_action('wp_ajax_get_status_coupon', [$this, 'get_status_coupon']);
             add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
             add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
             add_action('user_register', [$this, 'create_customer'], 10, 2);
@@ -601,6 +602,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->include_js_scripts_for_admin();
         }
 
+        public function get_status_coupon()
+        {
+            echo json_encode(['coupon_status' => get_option('woocommerce_enable_coupons')]);
+
+            wp_die();
+        }
+
         /**
          * In this method we include CSS file
          *
@@ -634,7 +642,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function include_js_scripts_for_admin()
         {
-            $jsScripts     = ['retailcrm-export', 'retailcrm-cron-info','retailcrm-meta-fields'];
+            $jsScripts     = [
+                'retailcrm-export',
+                'retailcrm-cron-info',
+                'retailcrm-meta-fields',
+                'retailcrm-loyalty'
+            ];
+
             $wpAdminUrl    = ['url' => get_admin_url()];
             $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
 
