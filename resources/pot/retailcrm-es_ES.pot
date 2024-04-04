@@ -445,6 +445,30 @@ msgstr "Se requiere clave API con acceso a una tienda"
 msgid "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match"
 msgstr "La moneda del sitio web es distinto a la tienda del CRM. Para el funcionamiento correcto de la integración, las monedas del CMS y CRM deben coincid"
 
+msgid "Loyalty program"
+msgstr "Programa de fidelización"
+
+msgid "Activate program loyalty"
+msgstr "Activar el programa de fidelización"
+
+msgid "Enable this setting for activate program loyalty on site"
+msgstr "Active esta opción para activar el programa de fidelización en el sitio web"
+
+msgid "Terms of loyalty program"
+msgstr "Condiciones del programa de fidelidad"
+
+msgid "Insert the terms and conditions of the loyalty program"
+msgstr "Inserte las condiciones de participación en el programa de fidelidad"
+
+msgid "Conditions of personal data processing"
+msgstr "Condiciones del tratamiento de datos personales"
+
+msgid "Insert the terms and conditions for processing personal data"
+msgstr "Inserte las condiciones para el tratamiento de datos personales"
+
+msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
+msgstr "Para activar el programa de fidelización es necesario activar la opción <a href='?page=wc-settings'>'habilitar uso de cupones'</a>."
+
 msgid "Uploading services"
 msgstr "Descarga de servicios"
 
