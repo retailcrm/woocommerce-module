@@ -454,6 +454,111 @@ msgstr "Требуется API ключ с доступом к одному ма
 msgid "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match"
 msgstr "Валюта сайта отличается от валюты магазина в CRM. Для корректной работы интеграции, валюты в CRM и CMS должны совпадать"
 
+msgid "Loyalty program"
+msgstr "Программа лояльности"
+
+msgid "Activate program loyalty"
+msgstr "Активировать программу лояльности"
+
+msgid "Enable this setting for activate program loyalty on site"
+msgstr "Активируйте эту настройку для активации программы лояльности на сайте"
+
+msgid "Terms of loyalty program"
+msgstr "Условия программы лояльности"
+
+msgid "Insert the terms and conditions of the loyalty program"
+msgstr "Вставьте условия участия в программе лояльности"
+
+msgid "Conditions of personal data processing"
+msgstr "Условия обработки персональных данных"
+
+msgid "Insert the terms and conditions for processing personal data"
+msgstr "Вставьте условия обработки персональных данных"
+
+msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
+msgstr "Для активации программы лояльности необходимо активировать опцию <a href='?page=wc-settings'>'включить использование купонов'</a>"
+
+msgid "Bonus account"
+msgstr "Бонусный счёт"
+
+msgid "Participation ID: "
+msgstr "ID участия: "
+
+msgid "Current level: "
+msgstr "Текущий уровень: "
+
+msgid "Bonuses on the account: "
+msgstr "Бонусов на счёте: "
+
+msgid "Bonus card number: "
+msgstr "Номер бонусной карты: "
+
+msgid "Date of registration: "
+msgstr "Дата регистрации: "
+
+msgid "Current level rules"
+msgstr "Правила текущего уровня"
+
+msgid "Required amount of purchases to move to the next level: "
+msgstr "Необходимая сумма покупок для перехода на следующий уровень: "
+
+msgid "Activate participation in the loyalty program"
+msgstr "Активировать участие в программе лояльности"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "To register in the loyalty program, fill in the form:"
+msgstr "Для регистрации в программе лояльности заполните форму:"
+
+msgid " I agree with "
+msgstr " Я согласен с "
+
+msgid "loyalty program terms"
+msgstr "условиями программы лояльности"
+
+msgid "terms of personal data processing"
+msgstr "условиями обработки персональных данных"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Error while registering in the loyalty program. Try again later"
+msgstr "Ошибка при регистрации в программе лояльности. Попробуйте позже"
+
+msgid "The card is not linked"
+msgstr "Карта не привязана"
+
+msgid "Error while retrieving data. Try again later"
+msgstr "Ошибка при получении данных. Попробуйте позже"
+
+msgid "Error when activating the loyalty program. Try again later"
+msgstr "Ошибка при активации программы лояльности. Попробуйте позже"
+
+msgid "Enter the correct phone number"
+msgstr "Введите корректный номер телефона"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Ordinary products: accrual of 1 bonus for each %s %s"
+msgstr "Обычные товары: начисление 1 бонуса за каждые %s %s"
+
+msgid "Promotional products: accrual of 1 bonus for each %s %s"
+msgstr "Акционные товары: начисление 1 бонуса за каждые %s %s"
+
+msgid "Ordinary products: bonus accrual in the amount of %s%% of the purchase amount"
+msgstr "Обычные товары: начисление бонусов в размере %s%% от суммы покупки"
+
+msgid "Promotional products: bonus accrual in the amount of %s%% of the purchase amount"
+msgstr "Акционные товары: начисление бонусов в размере %s%% от суммы покупки"
+
+msgid "Ordinary products: %s%% discount"
+msgstr "Обычные товары: %s%% скидка"
+
+msgid "Promotional products: %s%% discount"
+msgstr "Акционные товары: %s%% скидка"
+
 msgid "Uploading services"
 msgstr "Выгрузка услуг"
 
