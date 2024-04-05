@@ -609,7 +609,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'coupon_status' => get_option('woocommerce_enable_coupons'),
                     'translate' => [
                         'coupon_warning' => __(
-                            'To activate the loyalty program it is necessary to activate the work with coupons!',
+                            "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>",
                             'retailcrm'
                         )
                     ]

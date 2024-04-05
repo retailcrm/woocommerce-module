@@ -475,5 +475,5 @@ msgstr "Условия обработки персональных данных"
 msgid "Insert the terms and conditions for processing personal data"
 msgstr "Вставьте условия обработки персональных данных"
 
-msgid "To activate the loyalty program it is necessary to activate the work with coupons!"
-msgstr "Для активации программы лояльности необходимо активировать работу с купонами!"
+msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
+msgstr "Для активации программы лояльности необходимо активировать опцию <a href='?page=wc-settings'>'включить использование купонов'</a>"

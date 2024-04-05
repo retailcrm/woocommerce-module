@@ -466,5 +466,5 @@ msgstr "Condiciones del tratamiento de datos personales"
 msgid "Insert the terms and conditions for processing personal data"
 msgstr "Inserte las condiciones para el tratamiento de datos personales"
 
-msgid "To activate the loyalty program it is necessary to activate the work with coupons!"
-msgstr "Para activar el programa de fidelidad es necesario activar el trabajo con cupones"
+msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
+msgstr "Para activar el programa de fidelización es necesario activar la opción <a href='?page=wc-settings'>'habilitar uso de cupones'</a>."

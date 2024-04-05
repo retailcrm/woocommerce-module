@@ -392,41 +392,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 }
 
                 /**
-                * Loyalty Program
-                */
-
-                $this->form_fields[] = [
-                    'title' => __('Loyalty program', 'retailcrm'),
-                    'type' => 'heading',
-                    'description' => '',
-                    'id' => 'loyalty_options'
-                ];
-
-                $this->form_fields['loyalty'] = [
-                    'label'       => __('Activate program loyalty', 'retailcrm'),
-                    'title'       => __('Loyalty program', 'retailcrm'),
-                    'class'       => 'checkbox',
-                    'type'        => 'checkbox',
-                    'description' => __('Enable this setting for activate program loyalty on site', 'retailcrm')
-                ];
-
-                $this->form_fields['loyalty_terms'] = [
-                    'title' => __('Terms of loyalty program', 'retailcrm'),
-                    'css' => 'width:400px; height:215px; resize: horizontal;',
-                    'type' => 'textarea',
-                    'id' => 'loyalty_terms',
-                    'placeholder' => __('Insert the terms and conditions of the loyalty program', 'retailcrm')
-                ];
-
-                $this->form_fields['loyalty_personal'] = [
-                    'title' => __('Conditions of personal data processing', 'retailcrm'),
-                    'css' => 'width:400px; height:215px; resize: horizontal;',
-                    'type' => 'textarea',
-                    'id' => 'loyalty_personal',
-                    'placeholder' => __('Insert the terms and conditions for processing personal data', 'retailcrm')
-                ];
-
-                /**
                  * Meta data options
                  */
                 $this->form_fields[] = [
@@ -615,6 +580,41 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'class'       => '',
                     'type'        => 'text',
                     'description' => __('WhatsApp chat will be opened with this contact', 'retailcrm')
+                ];
+
+                 /**
+                * Loyalty Program
+                */
+
+                $this->form_fields[] = [
+                    'title' => __('Loyalty program', 'retailcrm'),
+                    'type' => 'heading',
+                    'description' => '',
+                    'id' => 'loyalty_options'
+                ];
+
+                $this->form_fields['loyalty'] = [
+                    'label'       => __('Activate program loyalty', 'retailcrm'),
+                    'title'       => __('Loyalty program', 'retailcrm'),
+                    'class'       => 'checkbox',
+                    'type'        => 'checkbox',
+                    'description' => __('Enable this setting for activate program loyalty on site', 'retailcrm')
+                ];
+
+                $this->form_fields['loyalty_terms'] = [
+                    'title' => __('Terms of loyalty program', 'retailcrm'),
+                    'css' => 'width:400px; height:215px; resize: horizontal;',
+                    'type' => 'textarea',
+                    'id' => 'loyalty_terms',
+                    'placeholder' => __('Insert the terms and conditions of the loyalty program', 'retailcrm')
+                ];
+
+                $this->form_fields['loyalty_personal'] = [
+                    'title' => __('Conditions of personal data processing', 'retailcrm'),
+                    'css' => 'width:400px; height:215px; resize: horizontal;',
+                    'type' => 'textarea',
+                    'id' => 'loyalty_personal',
+                    'placeholder' => __('Insert the terms and conditions for processing personal data', 'retailcrm')
                 ];
 
                 /**
