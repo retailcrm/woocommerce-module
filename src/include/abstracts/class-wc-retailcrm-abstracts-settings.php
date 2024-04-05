@@ -117,6 +117,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 $this->form_fields['online_assistant'] = [
                     'title'       => __('Online assistant', 'retailcrm'),
+                    'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type'        => 'textarea',
                     'id'          => 'online_assistant',
                     'placeholder' => __('Insert the Online consultant code here', 'retailcrm')
@@ -411,6 +412,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 $this->form_fields['loyalty_terms'] = [
                     'title' => __('Terms of loyalty program', 'retailcrm'),
+                    'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type' => 'textarea',
                     'id' => 'loyalty_terms',
                     'placeholder' => __('Insert the terms and conditions of the loyalty program', 'retailcrm')
@@ -418,6 +420,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 $this->form_fields['loyalty_personal'] = [
                     'title' => __('Conditions of personal data processing', 'retailcrm'),
+                    'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type' => 'textarea',
                     'id' => 'loyalty_personal',
                     'placeholder' => __('Insert the terms and conditions for processing personal data', 'retailcrm')
