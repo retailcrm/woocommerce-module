@@ -44,10 +44,6 @@ class WC_Retailcrm_Loyalty_Client_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockResponse($this->apiMock, 'makeRequest', $this->responseMock);
 
         $this->clientMock = new \WC_Retailcrm_Client_V5('https://test@retailcrm.ru', 'test', 'test');
-       /* $this->clientMock = $this->getMockBuilder('\WC_Retailcrm_Client_V5')
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;*/
 
         $reflection = new ReflectionClass($this->clientMock);
         $reflection_property = $reflection->getProperty('client');
