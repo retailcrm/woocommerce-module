@@ -459,3 +459,27 @@ msgstr "Выгрузка услуг"
 
 msgid "Goods with the 'virtual' option enabled will be uploaded to Simla as services"
 msgstr "Товары с включенной опцией 'виртуальные' будут выгружаться в CRM как услуги"
+
+msgid "Loyalty program"
+msgstr "Программа лояльности"
+
+msgid "Activate program loyalty"
+msgstr "Активировать программу лояльности"
+
+msgid "Enable this setting for activate program loyalty on site"
+msgstr "Активируйте эту настройку для активации программы лояльности на сайте"
+
+msgid "Terms of loyalty program"
+msgstr "Условия программы лояльности"
+
+msgid "Insert the terms and conditions of the loyalty program"
+msgstr "Вставьте условия участия в программе лояльности"
+
+msgid "Conditions of personal data processing"
+msgstr "Условия обработки персональных данных"
+
+msgid "Insert the terms and conditions for processing personal data"
+msgstr "Вставьте условия обработки персональных данных"
+
+msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
+msgstr "Для активации программы лояльности необходимо активировать опцию <a href='?page=wc-settings'>'включить использование купонов'</a>"
