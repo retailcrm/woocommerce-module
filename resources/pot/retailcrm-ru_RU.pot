@@ -467,7 +467,7 @@ msgid "Terms of loyalty program"
 msgstr "Условия программы лояльности"
 
 msgid "Insert the terms and conditions of the loyalty program"
-msgstr "Вставьте условия c программой лояльности"
+msgstr "Вставьте условия участия в программе лояльности"
 
 msgid "Conditions of personal data processing"
 msgstr "Условия обработки персональных данных"
