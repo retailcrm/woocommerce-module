@@ -20,12 +20,16 @@ jQuery(function() {
         })
             .done(function (response) {
                 if (response.coupon_status !== 'yes') {
-                    alert('lol');
                     var checkElement = jQuery('#woocommerce_integration-retailcrm_loyalty');
                     checkElement.parent().css('color', 'red');
                     checkElement.css('border-color', 'red');
-                    checkElement.parent().parent().append("<p style='color: red'>Test</p>");
                     checkElement.prop('checked', false);
+
+                    if (!jQuery('#coupon_warning').length) {
+                        checkElement.parent().parent().append(
+                            "<p id='coupon_warning' style='color: red'>" + response.translate.coupon_warning + "</p>"
+                        );
+                    }
                 }
             })
     }

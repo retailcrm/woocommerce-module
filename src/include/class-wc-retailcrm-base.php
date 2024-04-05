@@ -604,7 +604,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function get_status_coupon()
         {
-            echo json_encode(['coupon_status' => get_option('woocommerce_enable_coupons')]);
+            echo json_encode(
+                [
+                    'coupon_status' => get_option('woocommerce_enable_coupons'),
+                    'translate' => [
+                        'coupon_warning' => __(
+                            'To activate the loyalty program it is necessary to activate the work with coupons!',
+                            'retailcrm'
+                        )
+                    ]
+                ]);
 
             wp_die();
         }
