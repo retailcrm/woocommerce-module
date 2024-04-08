@@ -33,6 +33,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var WC_Retailcrm_Cart */
         protected $cart;
 
+        /** @var WC_Retailcrm_Loyalty */
+        protected $loyalty;
+
         /**
          * Init and hook in the integration.
          *
@@ -100,6 +103,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
+
+            add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
+            add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
+            add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+            /*add_action('woocommerce_account_')*/
+
             // Subscribed hooks
             add_action('register_form', [$this, 'subscribe_register_form'], 99);
             add_action('woocommerce_register_form', [$this, 'subscribe_woocommerce_register_form'], 99);
@@ -127,6 +136,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_cart_item_removed', [$this, 'set_cart']);
                 add_action('woocommerce_cart_emptied', [$this, 'clear_cart']);
             }
+
+            $this->loyalty = new WC_Retailcrm_Loyalty($this->apiClient, $this->settings);
 
             // Deactivate hook
             add_action('retailcrm_deactivate', [$this, 'deactivate']);
@@ -812,6 +823,39 @@ if (!class_exists('WC_Retailcrm_Base')) {
             );
 
             wp_die();
+        }
+
+        public function add_loyalty_item($items)
+        {
+            $items['loyalty'] = __('Loyalty program');
+
+            return $items;
+        }
+
+        public function add_loyalty_endpoint()
+        {
+            add_rewrite_endpoint('loyalty', EP_PAGES);
+        }
+
+        public function show_loyalty()
+        {
+            global $wp;
+
+            $userId = get_current_user_id();
+
+            if (!isset($userId)) {
+                return;
+            }
+
+            $jsScript = 'retailcrm-loyalty-actions';
+            $loyaltyUrl = home_url(add_query_arg([], $wp->request));
+            $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
+
+            wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
+            wp_enqueue_script($jsScript, $jsScriptsPath . $jsScript . '.js', '', '', true);
+            wp_localize_script($jsScript, 'LoyaltyUrl', $loyaltyUrl);
+
+            echo $this->loyalty->getForm($userId);
         }
 
         /**
