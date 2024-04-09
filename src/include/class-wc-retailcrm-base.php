@@ -90,6 +90,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_upload_selected_orders', [$this, 'upload_selected_orders']);
             add_action('wp_ajax_clear_cron_tasks', [$this, 'clear_cron_tasks']);
             add_action('wp_ajax_get_status_coupon', [$this, 'get_status_coupon']);
+            add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
             add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
             add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
             add_action('user_register', [$this, 'create_customer'], 10, 2);
@@ -629,6 +630,33 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_die();
         }
 
+        public function register_customer_loyalty()
+        {
+            $phone = filter_input(INPUT_POST, 'phone');
+            $userId = filter_input(INPUT_POST, 'userId');
+
+            $site = $this->apiClient->getSingleSiteForKey();
+
+            if (empty($site)) {
+                writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
+            }
+
+            if (!$userId || !$phone) {
+                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: userId = ' . $userId ?? 'NULL' . ' phone = ' . $phone ?? 'NULL');
+                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
+            }
+
+            $response = $this->loyalty->registerCustomer($userId, $phone, $site);
+
+            if (!$response->isSuccessful()) {
+                writeBaseLogs('Error while registering in the loyalty program: ' . $response->getRawResponse());
+                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
+            }
+
+            wp_die();
+        }
+
         /**
          * In this method we include CSS file
          *
@@ -827,7 +855,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function add_loyalty_item($items)
         {
-            $items['loyalty'] = __('Loyalty program');
+            $items['loyalty'] = __('Loyalty program', 'retailcrm');
 
             return $items;
         }
@@ -839,8 +867,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function show_loyalty()
         {
-            global $wp;
-
             $userId = get_current_user_id();
 
             if (!isset($userId)) {
@@ -848,12 +874,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $jsScript = 'retailcrm-loyalty-actions';
-            $loyaltyUrl = home_url(add_query_arg([], $wp->request));
+            $loyaltyUrl = ['url' => get_admin_url()];
             $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
 
             wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
             wp_enqueue_script($jsScript, $jsScriptsPath . $jsScript . '.js', '', '', true);
             wp_localize_script($jsScript, 'LoyaltyUrl', $loyaltyUrl);
+            wp_localize_script($jsScript, 'customerId', $userId);
 
             echo $this->loyalty->getForm($userId);
         }

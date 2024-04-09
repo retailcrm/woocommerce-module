@@ -48,36 +48,91 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             if (isset($response['loyaltyAccounts'][0]) && (int)$loyaltyAccount['customer']['externalId'] === $userId) {
                 if ($loyaltyAccount['active'] === true) {
-                    $result = '
-                        <p>Бонусный счёт</p>
-                        <p>ID участия: TEST</p>
-                        <p>Статус участия: ТЕСТ</p>
-                        <p>Текущий уровень: ТЕСТ</p>
-                        <p>И так далее</p>
-                    ';
+                    $result = $this->getLoyaltyInfo($loyaltyAccount);
                 } else {
-                    $result = '
-                    <form>
-                        <input type="checkbox" id="loyaltyCheckbox" name="loyaltyCheckbox">
-                        <label for="loyaltyCheckbox">Активировать участие в программе лояльности</label>
-                        <br>
-                        <input type="submit" value="Отправить">
-                    </form>
-                    ';
+                    $result = sprintf(
+                        '
+                        <form id="loyaltyActivateForm" method="post">
+                            <input type="checkbox" id="loyaltyCheckbox" name="loyaltyCheckbox" required>
+                            <label for="loyaltyCheckbox">%s</label>
+                            <br>
+                            <input type="submit" value="%s">
+                        </form>',
+                        __('Activate participation in the loyalty program', 'retailcrm'),
+                        __('Send', 'retailcrm')
+                    );
                 }
             } else {
-                $result = '
-                <form action="register.php" method="post">
-                    <p>Для регистрации в Программе лояльности заполните форму:</p>
-                    <p><input type="checkbox" name="terms" id="terms"> Я согласен с <a href="terms.html">условиями программы лояльности</a>.</p>
-                    <p><input type="checkbox" name="privacy" id="privacy"> Я согласен с <a href="privacy.html">условиями обработки персональных данных</a>.</p>
-                    <p><input type="text" name="phone" id="phone" placeholder="Телефон"></p>
-                    <p><input type="submit" value="Отправить"></p>
-                </form>
-                ';
+                $result = sprintf(
+                    '
+                    <form id="loyaltyRegisterForm" method="post">
+                        <p>%s</p>
+                        <p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a href="terms.html">%s</a>.</p>
+                        <p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a href="privacy.html">%s</a>.</p>
+                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" required></p>
+                        <p><input type="submit" value="%s"></p>
+                    </form>',
+                    __('To register in the Loyalty Program, fill in the form:', 'retailcrm'),
+                    __(' I agree with ', 'retailcrm'),
+                    __('loyalty program terms', 'retailcrm'),
+                    __(' I agree with ', 'retailcrm'),
+                    __('terms of personal data processing', 'retailcrm'),
+                    __('Phone', 'retailcrm'),
+                    __('Send', 'retailcrm')
+                );
             }
 
            return $result;
+        }
+
+        public function registerCustomer(int $userId, string $phone, string $site): WC_Retailcrm_Response
+        {
+            $parameters = [
+                'phoneNumber' => $phone,
+                'customer' => [
+                    'externalId' => $userId
+                ]
+            ];
+
+            return $this->apiClient->createLoyaltyAccount($parameters, $site);
+        }
+
+        private function getLoyaltyInfo(array $loyaltyAccount)
+        {
+            $data = [
+                '<b>' . __('Bonus account', 'retailcrm') . '</b>',
+                __('Participation ID', 'retailcrm') . ': ' . $loyaltyAccount['id'],
+                __('Current level', 'retailcrm') . ': ' . $loyaltyAccount['level']['name'],
+                __('Bonuses on the account', 'retailcrm') . ': ' . $loyaltyAccount['amount'],
+                __('Bonus card number' , 'retailcrm') . ': ' . ($loyaltyAccount['cardNumber'] ?? __('The card is not linked', 'retailcrm')),
+                __('Date of registration', 'retailcrm') . ': ' . $loyaltyAccount['activatedAt'],
+                '<br>',
+                '<b>' . __('Current level rules', 'retailcrm') . '</b>',
+                __('Required amount of purchases to move to the next level', 'retailcrm') . ': ' . $loyaltyAccount['nextLevelSum'],
+            ];
+
+            switch ($loyaltyAccount['level']['type']) {
+                case 'bonus_converting':
+                    $data[] = __('Ordinary goods', 'retailcrm') . ': 1 ' . __('bonus for every', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSize'];
+                    $data[] = __('Promotional products', 'retailcrm') . ': 1 ' . __('bonus for every', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSizePromo'];
+                    break;
+                case 'bonus_percent':
+                    $data[] = __('Ordinary goods', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSize'] . '% ' . __('bonuses', 'retailcrm');
+                    $data[] = __('Promotional products', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSizePromo'] . '% ' . __('bonuses', 'retailcrm');
+                    break;
+                case 'discount':
+                    $data[] = __('Ordinary goods', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSize'] . '% ' . __('discount', 'retailcrm');
+                    $data[] = __('Promotional products', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSizePromo'] . '% ' . __('discount', 'retailcrm');
+                    break;
+            }
+
+            $result = '';
+
+            foreach ($data as $line) {
+                $result .= "<p style='line-height: 1'>$line</p>";
+            }
+
+            return $result;
         }
     }
 
