@@ -91,6 +91,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_clear_cron_tasks', [$this, 'clear_cron_tasks']);
             add_action('wp_ajax_get_status_coupon', [$this, 'get_status_coupon']);
             add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
+            add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
             add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
             add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
             add_action('user_register', [$this, 'create_customer'], 10, 2);
@@ -643,7 +644,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             if (!$userId || !$phone) {
-                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: userId = ' . $userId ?? 'NULL' . ' phone = ' . $phone ?? 'NULL');
+                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: userId = ' . ($userId ?? 'NULL') . ' phone = ' . ($phone ?? 'NULL'));
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
             }
 
@@ -651,6 +652,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (!$isSuccessful) {
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
+            } else {
+                echo json_encode(['isSuccessful' => true]);
+            }
+
+            wp_die();
+        }
+
+        public function activate_customer_loyalty()
+        {
+            $loyaltyId = filter_input(INPUT_POST, 'loyaltyId');
+
+            if (!$loyaltyId) {
+                writeBaseLogs('Errors when activate loyalty program. loyaltyId is missing');
+                echo json_encode(['error' => __('Error when activating the loyalty program. Try again later.', 'retailcrm')]);
+            }
+
+            $isSuccessful = $this->loyalty->activateLoyaltyCustomer($loyaltyId);
+
+            if (!$isSuccessful) {
+                echo json_encode(['error' => __('Error when activating the loyalty program. Try again later.', 'retailcrm')]);
             } else {
                 echo json_encode(['isSuccessful' => true]);
             }
@@ -885,10 +906,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $result = $this->loyalty->getForm($userId);
 
-            if (!isset($result)) {
+            if ([] === $result) {
                 echo '<p style="color: red">'. __('Error while retrieving data. Try again later.', 'retailcrm') . '</p>';
             } else {
-                echo $result;
+                wp_localize_script($jsScript, 'loyaltyId', $result['loyaltyId'] ?? null);
+                echo $result['form'];
             }
         }
 

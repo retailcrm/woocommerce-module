@@ -29,7 +29,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         public function getForm(int $userId)
         {
-            $result = null;
+            $result = [];
 
             $response = $this->apiClient->customersGet($userId);
 
@@ -55,22 +55,22 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             if (isset($response['loyaltyAccounts'][0]) && (int)$loyaltyAccount['customer']['externalId'] === $userId) {
                 if ($loyaltyAccount['active'] === true) {
-                    $result = $this->getLoyaltyInfo($loyaltyAccount);
+                    $result['form'] = $this->getLoyaltyInfo($loyaltyAccount);
                 } else {
-                    $result = sprintf(
+                    $result['form'] = sprintf(
                         '
                         <form id="loyaltyActivateForm" method="post">
-                            <input type="checkbox" id="loyaltyCheckbox" name="loyaltyCheckbox" required>
-                            <label for="loyaltyCheckbox">%s</label>
-                            <br>
+                            <p><input type="checkbox" id="loyaltyActiveCheckbox" name="loyaltyCheckbox" required> %s</p>
                             <input type="submit" value="%s">
                         </form>',
                         __('Activate participation in the loyalty program', 'retailcrm'),
                         __('Send', 'retailcrm')
                     );
+
+                    $result['loyaltyId'] = $loyaltyAccount['id'];
                 }
             } else {
-                $result = sprintf(
+                $result['form'] = sprintf(
                     '
                     <form id="loyaltyRegisterForm" method="post">
                         <p>%s</p>
@@ -111,6 +111,23 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $response->isSuccessful();
             } catch (Throwable $exception) {
                 writeBaseLogs('Exception while registering in the loyalty program: ' . $exception->getMessage());
+
+                return false;
+            }
+        }
+
+        public function activateLoyaltyCustomer(int $loyaltyId)
+        {
+            try {
+                $response = $this->apiClient->activateLoyaltyAccount($loyaltyId);
+
+                if (!$response->isSuccessful()) {
+                    writeBaseLogs('Error while registering in the loyalty program: ' . $response->getRawResponse());
+                }
+
+                return $response->isSuccessful();
+            } catch (Throwable $exception) {
+                writeBaseLogs('Exception while activate loyalty account: ' . $exception->getMessage());
 
                 return false;
             }
