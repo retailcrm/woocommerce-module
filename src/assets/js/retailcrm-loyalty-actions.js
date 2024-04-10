@@ -20,7 +20,7 @@ jQuery(function() {
         let phone = jQuery('#phoneLoyalty');
 
         if (!phone.val().match(/(?:\+|\d)[\d\-\(\) ]{7,}\d/)) {
-            phone.parent().append('<span style="color: red" id="warningLoyaltyPhone">test</span>')
+            phone.parent().append('<span style="color: red" id="warningLoyaltyPhone">' + messagePhone + '</span>')
 
             event.preventDefault();
             return false;

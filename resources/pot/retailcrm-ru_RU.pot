@@ -508,8 +508,8 @@ msgstr "Активировать участие в программе лояль
 msgid "Send"
 msgstr "Отправить"
 
-msgid "To register in the Loyalty Program, fill in the form:"
-msgstr "Для регистрации в Программе лояльности заполните форму:"
+msgid "To register in the loyalty program, fill in the form:"
+msgstr "Для регистрации в программе лояльности заполните форму:"
 
 msgid " I agree with "
 msgstr " Я согласен с "
@@ -523,8 +523,8 @@ msgstr "условиями обработки персональных данн�
 msgid "Phone"
 msgstr "Телефон"
 
-msgid "Error while registering in the loyalty program. Try again later."
-msgstr "Ошибка при регистрации в программе лояльности. Попробуйте позже."
+msgid "Error while registering in the loyalty program. Try again later"
+msgstr "Ошибка при регистрации в программе лояльности. Попробуйте позже"
 
 msgid "The card is not linked"
 msgstr "Карта не привязана"
@@ -535,8 +535,8 @@ msgstr "Обычные товары"
 msgid "Promotional products"
 msgstr "Акционные товары"
 
-msgid "bonus for every"
-msgstr "бонус за каждые"
+msgid "accrual of 1 bonus for each"
+msgstr "начисление 1 бонуса за каждые"
 
 msgid "of the purchase amount"
 msgstr "от суммы покупки"
@@ -547,8 +547,11 @@ msgstr "начисление бонусов в размере"
 msgid "discount"
 msgstr "скидка"
 
-msgid "Error while retrieving data. Try again later."
-msgstr "Ошибка при получении данных. Попробуйте позже."
+msgid "Error while retrieving data. Try again later"
+msgstr "Ошибка при получении данных. Попробуйте позже"
 
-msgid "Error when activating the loyalty program. Try again later."
-msgstr "Ошибка при активации программы лояльности. Попробуйте позже."
+msgid "Error when activating the loyalty program. Try again later"
+msgstr "Ошибка при активации программы лояльности. Попробуйте позже"
+
+msgid "Enter the correct phone number"
+msgstr "Введите корректный номер телефона"

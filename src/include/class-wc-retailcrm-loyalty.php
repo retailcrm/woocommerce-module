@@ -31,15 +31,15 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             $result = [];
 
-            $response = $this->apiClient->customersGet($userId);
-
-            if (!isset($response['customer']['id'])) {
-                return $result;
-            }
-
-            $filter['customerId'] = $response['customer']['id'];
-
             try {
+                $response = $this->apiClient->customersGet($userId);
+
+                if (!isset($response['customer']['id'])) {
+                    return $result;
+                }
+
+                $filter['customerId'] = $response['customer']['id'];
+
                 $response = $this->apiClient->getLoyaltyAccountList($filter);
             } catch (Throwable $exception) {
                 writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
@@ -79,7 +79,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                         <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" required></p>
                         <p><input type="submit" value="%s"></p>
                     </form>',
-                    __('To register in the Loyalty Program, fill in the form:', 'retailcrm'),
+                    __('To register in the loyalty program, fill in the form:', 'retailcrm'),
                     __(' I agree with ', 'retailcrm'),
                     __('loyalty program terms', 'retailcrm'),
                     __(' I agree with ', 'retailcrm'),
@@ -149,8 +149,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             switch ($loyaltyAccount['level']['type']) {
                 case 'bonus_converting':
-                    $data[] = __('Ordinary goods', 'retailcrm') . ': 1 ' . __('bonus for every', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSize'];
-                    $data[] = __('Promotional products', 'retailcrm') . ': 1 ' . __('bonus for every', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSizePromo'];
+                    $data[] = __('Ordinary goods', 'retailcrm') . ': ' . __('accrual of 1 bonus for each', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSize'] . ' ' . $loyaltyAccount['loyalty']['currency'];
+                    $data[] = __('Promotional products', 'retailcrm') . ': ' . __('accrual of 1 bonus for each', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSizePromo']. ' ' . $loyaltyAccount['loyalty']['currency'];
                     break;
                 case 'bonus_percent':
                     $data[] = __('Ordinary goods', 'retailcrm') . ': ' . __('bonus accrual in the amount of', 'retailcrm'). ' ' . $loyaltyAccount['level']['privilegeSize'] . '% ' . __('of the purchase amount', 'retailcrm');
