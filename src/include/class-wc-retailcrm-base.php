@@ -651,6 +651,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (!$isSuccessful) {
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
+            } else {
+                echo json_encode(['isSuccessful' => true]);
             }
 
             wp_die();
@@ -888,8 +890,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             } else {
                 echo $result;
             }
-
-            wp_die();
         }
 
         /**

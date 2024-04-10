@@ -42,9 +42,10 @@ jQuery(function() {
                     event.preventDefault();
                     return false;
                 } else {
-                    alert('success');
-                    return true;
+                    location.reload();
                 }
             })
+
+        event.preventDefault();
     });
 });
