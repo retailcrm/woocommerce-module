@@ -538,8 +538,14 @@ msgstr "Акционные товары"
 msgid "bonus for every"
 msgstr "бонус за каждые"
 
-msgid "bonuses"
-msgstr "бонусов"
+msgid "of the purchase amount"
+msgstr "от суммы покупки"
+
+msgid "bonus accrual in the amount of"
+msgstr "начисление бонусов в размере"
 
 msgid "discount"
 msgstr "скидка"
+
+msgid "Error while retrieving data. Try again later."
+msgstr "Ошибка при получении данных. Попробуйте позже."

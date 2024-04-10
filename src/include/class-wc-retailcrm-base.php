@@ -647,10 +647,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
             }
 
-            $response = $this->loyalty->registerCustomer($userId, $phone, $site);
+            $isSuccessful = $this->loyalty->registerCustomer($userId, $phone, $site);
 
-            if (!$response->isSuccessful()) {
-                writeBaseLogs('Error while registering in the loyalty program: ' . $response->getRawResponse());
+            if (!$isSuccessful) {
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later.', 'retailcrm')]);
             }
 
@@ -882,7 +881,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_localize_script($jsScript, 'LoyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'customerId', $userId);
 
-            echo $this->loyalty->getForm($userId);
+            $result = $this->loyalty->getForm($userId);
+
+            if (!isset($result)) {
+                echo '<p style="color: red">'. __('Error while retrieving data. Try again later.', 'retailcrm') . '</p>';
+            } else {
+                echo $result;
+            }
+
+            wp_die();
         }
 
         /**

@@ -29,7 +29,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         public function getForm(int $userId)
         {
-            $result = '';
+            $result = null;
 
             $response = $this->apiClient->customersGet($userId);
 
@@ -38,7 +38,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             $filter['customerId'] = $response['customer']['id'];
-            $response = $this->apiClient->getLoyaltyAccountList($filter);
+
+            try {
+                $response = $this->apiClient->getLoyaltyAccountList($filter);
+            } catch (Throwable $exception) {
+                writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
+
+                return $result;
+            }
 
             if (!$response->isSuccessful() || !$response->offsetExists('loyaltyAccounts')) {
                 return $result;
@@ -85,7 +92,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
            return $result;
         }
 
-        public function registerCustomer(int $userId, string $phone, string $site): WC_Retailcrm_Response
+        public function registerCustomer(int $userId, string $phone, string $site): bool
         {
             $parameters = [
                 'phoneNumber' => $phone,
@@ -94,7 +101,19 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 ]
             ];
 
-            return $this->apiClient->createLoyaltyAccount($parameters, $site);
+            try {
+                $response = $this->apiClient->createLoyaltyAccount($parameters, $site);
+
+                if (!$response->isSuccessful()) {
+                    writeBaseLogs('Error while registering in the loyalty program: ' . $response->getRawResponse());
+                }
+
+                return $response->isSuccessful();
+            } catch (Throwable $exception) {
+                writeBaseLogs('Exception while registering in the loyalty program: ' . $exception->getMessage());
+
+                return false;
+            }
         }
 
         private function getLoyaltyInfo(array $loyaltyAccount)
@@ -117,8 +136,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $data[] = __('Promotional products', 'retailcrm') . ': 1 ' . __('bonus for every', 'retailcrm') . ' '. $loyaltyAccount['level']['privilegeSizePromo'];
                     break;
                 case 'bonus_percent':
-                    $data[] = __('Ordinary goods', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSize'] . '% ' . __('bonuses', 'retailcrm');
-                    $data[] = __('Promotional products', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSizePromo'] . '% ' . __('bonuses', 'retailcrm');
+                    $data[] = __('Ordinary goods', 'retailcrm') . ': ' . __('bonus accrual in the amount of', 'retailcrm'). ' ' . $loyaltyAccount['level']['privilegeSize'] . '% ' . __('of the purchase amount', 'retailcrm');
+                    $data[] = __('Promotional products', 'retailcrm') . ': ' . __('bonus accrual in the amount of', 'retailcrm'). ' ' . $loyaltyAccount['level']['privilegeSizePromo'] . '% ' . __('of the purchase amount', 'retailcrm');
                     break;
                 case 'discount':
                     $data[] = __('Ordinary goods', 'retailcrm') . ': ' . $loyaltyAccount['level']['privilegeSize'] . '% ' . __('discount', 'retailcrm');
