@@ -555,3 +555,6 @@ msgstr "Ошибка при активации программы лояльно
 
 msgid "Enter the correct phone number"
 msgstr "Введите корректный номер телефона"
+
+msgid "Close"
+msgstr "Закрыть"

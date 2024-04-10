@@ -109,7 +109,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
             add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
             add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
-            /*add_action('woocommerce_account_')*/
 
             // Subscribed hooks
             add_action('register_form', [$this, 'subscribe_register_form'], 99);
@@ -898,6 +897,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $jsScript = 'retailcrm-loyalty-actions';
             $loyaltyUrl = ['url' => get_admin_url()];
             $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
+            $cssPath = plugins_url() . '/woo-retailcrm/assets/css/';
             $messagePhone = __('Enter the correct phone number', 'retailcrm');
 
             wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
@@ -905,6 +905,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_localize_script($jsScript, 'LoyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'customerId', $userId);
             wp_localize_script($jsScript, 'messagePhone', $messagePhone);
+            wp_localize_script($jsScript, 'termsLoyalty', $this->settings['loyalty_terms']);
+            wp_localize_script($jsScript, 'privacyLoyalty',  $this->settings['loyalty_personal']);
+
+            wp_register_style('retailcrm-loyalty-style', $cssPath . 'retailcrm-loyalty-style.css', false, '0.1');
+            wp_enqueue_style('retailcrm-loyalty-style');
 
             $result = $this->loyalty->getForm($userId);
 
@@ -915,6 +920,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 echo $result['form'];
             }
         }
+
 
         /**
          * Get custom fields with CRM

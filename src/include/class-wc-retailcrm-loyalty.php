@@ -74,18 +74,27 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     '
                     <form id="loyaltyRegisterForm" method="post">
                         <p>%s</p>
-                        <p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a href="terms.html">%s</a>.</p>
-                        <p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a href="privacy.html">%s</a>.</p>
+                        <p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a id="terms-popup" class="popup-open-loyalty" href="#">%s</a>.</p>
+                        <p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a id="privacy-popup" class="popup-open-loyalty" href="#">%s</a>.</p>
                         <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" required></p>
                         <p><input type="submit" value="%s"></p>
-                    </form>',
+                    </form>
+                    <div class="popup-fade-loyalty">
+                        <div class="popup-loyalty">
+                            <a class="popup-close-loyalty" href="#">%s</a>
+                            <br>
+                            <div id="popup-loyalty-text"></div>
+                        </div>		
+                    </div>
+                    ',
                     __('To register in the loyalty program, fill in the form:', 'retailcrm'),
                     __(' I agree with ', 'retailcrm'),
                     __('loyalty program terms', 'retailcrm'),
                     __(' I agree with ', 'retailcrm'),
                     __('terms of personal data processing', 'retailcrm'),
                     __('Phone', 'retailcrm'),
-                    __('Send', 'retailcrm')
+                    __('Send', 'retailcrm'),
+                    __('Close', 'retailcrm')
                 );
             }
 

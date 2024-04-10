@@ -79,4 +79,33 @@ jQuery(function() {
 
         event.preventDefault();
     });
+
+    jQuery('.popup-open-loyalty').click(function() {
+        if (jQuery(this).attr('id') === 'terms-popup') {
+            jQuery('#popup-loyalty-text').html(termsLoyalty);
+        } else {
+            jQuery('#popup-loyalty-text').html(privacyLoyalty);
+        }
+
+        jQuery('.popup-fade-loyalty').fadeIn();
+        return false;
+    });
+
+    jQuery('.popup-close-loyalty').click(function() {
+        jQuery(this).parents('.popup-fade-loyalty').fadeOut();
+        return false;
+    });
+
+    jQuery(document).keydown(function(e) {
+        if (e.keyCode === 27) {
+            e.stopPropagation();
+            jQuery('.popup-fade-loyalty').fadeOut();
+        }
+    });
+
+    jQuery('.popup-fade-loyalty').click(function(e) {
+        if (jQuery(e.target).closest('.popup-loyalty').length == 0) {
+            jQuery(this).fadeOut();
+        }
+    });
 });
