@@ -132,6 +132,11 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayHasKey('bind_by_sku', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('update_number', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('product_description', $this->baseRetailcrm->form_fields);
+
+        //loyalty
+        $this->assertArrayHasKey('loyalty', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('loyalty_terms', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('loyalty_personal', $this->baseRetailcrm->form_fields);
     }
 
     public function test_retailcrm_form_fields_value()
@@ -405,6 +410,18 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com#fragment'));
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com:12345'));
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com/test'));
+    }
+
+    public function test_get_status_coupon()
+    {
+        $result = $this->baseRetailcrm->get_status_coupon();
+        $result = json_decode($result);
+
+        $this->assertEquals('yes', $result['coupon_status']);
+        $this->assertEquals(
+            "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option",
+            $result['translate']['coupon_warning']
+        );
     }
 
     private function getJsonData($text)

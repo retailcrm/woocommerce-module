@@ -51,9 +51,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $result;
             }
 
-            $loyaltyAccount = $response['loyaltyAccounts'][0];
+            $loyaltyAccount = $response['loyaltyAccounts'][0] ?? null;
 
-            if (isset($response['loyaltyAccounts'][0]) && (int)$loyaltyAccount['customer']['externalId'] === $userId) {
+            if ($loyaltyAccount && (int) $loyaltyAccount['customer']['externalId'] === $userId) {
                 if ($loyaltyAccount['active'] === true) {
                     $result['form'] = $this->getLoyaltyInfo($loyaltyAccount);
                 } else {

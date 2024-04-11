@@ -90,8 +90,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_upload_selected_orders', [$this, 'upload_selected_orders']);
             add_action('wp_ajax_clear_cron_tasks', [$this, 'clear_cron_tasks']);
             add_action('wp_ajax_get_status_coupon', [$this, 'get_status_coupon']);
-            add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
-            add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
             add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
             add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
             add_action('user_register', [$this, 'create_customer'], 10, 2);
@@ -106,9 +104,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
 
-            add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
-            add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
-            add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+            if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === static::YES) {
+                add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
+                add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
+                add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
+                add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
+                add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+            }
 
             // Subscribed hooks
             add_action('register_form', [$this, 'subscribe_register_form'], 99);

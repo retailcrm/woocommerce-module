@@ -80,6 +80,9 @@ class WC_Retailcrm_Test_Case_Helper extends WC_Unit_Test_Case
             'product_description' => 'full',
             'stores_for_uploading' => ['woocommerce', 'main'],
             'woo_coupon_apply_field' => 'testField',
+            'loyalty' => 'yes',
+            'loyalty_terms' => 'Test terms',
+            'loyalty_personal' => 'Test privacy'
         ];
 
         update_option(WC_Retailcrm_Base::$option_key, $options);
