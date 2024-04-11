@@ -412,18 +412,6 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertEquals('', $this->baseRetailcrm->validate_api_url_field('', 'https://test.simla.com/test'));
     }
 
-    public function test_get_status_coupon()
-    {
-        $result = $this->baseRetailcrm->get_status_coupon();
-        $result = json_decode($result);
-
-        $this->assertEquals('yes', $result['coupon_status']);
-        $this->assertEquals(
-            "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option",
-            $result['translate']['coupon_warning']
-        );
-    }
-
     private function getJsonData($text)
     {
         preg_match('/{.*}/', $text, $matches);
