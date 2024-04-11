@@ -71,6 +71,20 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    public function testRegistrationLoyalty()
+    {
+        $result = $this->loyalty->registerCustomer(1, '89999999999', 'test');
+
+        $this->assertTrue($result);
+    }
+
+    public function testActivateLoyalty()
+    {
+        $result = $this->loyalty->activateLoyaltyCustomer(1);
+
+        $this->assertTrue($result);
+    }
+
     public function responseLoyalty()
     {
         return [
