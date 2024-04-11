@@ -100,7 +100,7 @@ jQuery(function() {
     });
 
     jQuery(document).keydown(function(e) {
-        if (e.keyCode === 27) {
+        if (e.keyCode === 27) { // Key Escape
             e.stopPropagation();
             jQuery('.popup-fade-loyalty').fadeOut();
         }

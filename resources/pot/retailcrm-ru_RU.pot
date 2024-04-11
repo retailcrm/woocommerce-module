@@ -481,26 +481,26 @@ msgstr "Для активации программы лояльности нео
 msgid "Bonus account"
 msgstr "Бонусный счёт"
 
-msgid "Participation ID"
-msgstr "ID участия"
+msgid "Participation ID: "
+msgstr "ID участия: "
 
-msgid "Current level"
-msgstr "Текущий уровень"
+msgid "Current level: "
+msgstr "Текущий уровень: "
 
-msgid "Bonuses on the account"
-msgstr "Бонусов на счёте"
+msgid "Bonuses on the account: "
+msgstr "Бонусов на счёте: "
 
-msgid "Bonus card number"
-msgstr "Номер бонусной карты"
+msgid "Bonus card number: "
+msgstr "Номер бонусной карты: "
 
-msgid "Date of registration"
-msgstr "Дата регистрации"
+msgid "Date of registration: "
+msgstr "Дата регистрации: "
 
 msgid "Current level rules"
 msgstr "Правила текущего уровня"
 
-msgid "Required amount of purchases to move to the next level"
-msgstr "Необходимая сумма покупок для перехода на следующий уровень"
+msgid "Required amount of purchases to move to the next level: "
+msgstr "Необходимая сумма покупок для перехода на следующий уровень: "
 
 msgid "Activate participation in the loyalty program"
 msgstr "Активировать участие в программе лояльности"
@@ -529,24 +529,6 @@ msgstr "Ошибка при регистрации в программе лоя�
 msgid "The card is not linked"
 msgstr "Карта не привязана"
 
-msgid "Ordinary goods"
-msgstr "Обычные товары"
-
-msgid "Promotional products"
-msgstr "Акционные товары"
-
-msgid "accrual of 1 bonus for each"
-msgstr "начисление 1 бонуса за каждые"
-
-msgid "of the purchase amount"
-msgstr "от суммы покупки"
-
-msgid "bonus accrual in the amount of"
-msgstr "начисление бонусов в размере"
-
-msgid "discount"
-msgstr "скидка"
-
 msgid "Error while retrieving data. Try again later"
 msgstr "Ошибка при получении данных. Попробуйте позже"
 
@@ -558,3 +540,21 @@ msgstr "Введите корректный номер телефона"
 
 msgid "Close"
 msgstr "Закрыть"
+
+msgid "Ordinary products: accrual of 1 bonus for each %s %s"
+msgstr "Обычные товары: начисление 1 бонуса за каждые %s %s"
+
+msgid "Promotional products: accrual of 1 bonus for each %s %s"
+msgstr "Акционные товары: начисление 1 бонуса за каждые %s %s"
+
+msgid "Ordinary products: bonus accrual in the amount of %s% of the purchase amount"
+msgstr "Обычные товары: начисление бонусов в размере %s% от суммы покупки"
+
+msgid "Promotional products: bonus accrual in the amount of %s% of the purchase amount"
+msgstr "Акционные товары: начисление бонусов в размере %s% от суммы покупки"
+
+msgid "Ordinary products: %s% discount"
+msgstr "Обычные товары: %s% скидка"
+
+msgid "Promotional products: %s% discount"
+msgstr "Акционные товары: %s% скидка"

@@ -636,22 +636,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $phone = filter_input(INPUT_POST, 'phone');
             $userId = filter_input(INPUT_POST, 'userId');
-
             $site = $this->apiClient->getSingleSiteForKey();
+            $isSuccessful = false;
 
-            if (empty($site)) {
-                writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
-                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
+            if (!empty($site) && $userId && $phone) {
+                $isSuccessful = $this->loyalty->registerCustomer($userId, $phone, $site);
             }
-
-            if (!$userId || !$phone) {
-                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: userId = ' . ($userId ?? 'NULL') . ' phone = ' . ($phone ?? 'NULL'));
-                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
-            }
-
-            $isSuccessful = $this->loyalty->registerCustomer($userId, $phone, $site);
 
             if (!$isSuccessful) {
+                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: ' .
+                    json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                );
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
             } else {
                 echo json_encode(['isSuccessful' => true]);
@@ -663,15 +658,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function activate_customer_loyalty()
         {
             $loyaltyId = filter_input(INPUT_POST, 'loyaltyId');
+            $isSuccessful = false;
 
-            if (!$loyaltyId) {
-                writeBaseLogs('Errors when activate loyalty program. loyaltyId is missing');
-                echo json_encode(['error' => __('Error when activating the loyalty program. Try again later', 'retailcrm')]);
+            if ($loyaltyId) {
+                $isSuccessful = $this->loyalty->activateLoyaltyCustomer($loyaltyId);
             }
 
-            $isSuccessful = $this->loyalty->activateLoyaltyCustomer($loyaltyId);
-
             if (!$isSuccessful) {
+                writeBaseLogs('Errors when activate loyalty program. Passed parameters: ' . json_encode(['loyaltyId' => $loyaltyId]));
                 echo json_encode(['error' => __('Error when activating the loyalty program. Try again later', 'retailcrm')]);
             } else {
                 echo json_encode(['isSuccessful' => true]);

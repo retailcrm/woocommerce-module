@@ -132,6 +132,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/validators/url-validator/class-wc-retailcrm-url-constraint.php'));
             require_once(self::checkCustomFile('include/validators/url-validator/class-wc-retailcrm-url-validator.php'));
             require_once(self::checkCustomFile('include/validators/class-wc-retailcrm-validator-exception.php'));
+            require_once(self::checkCustomFile('include/components/class-wc-retailcrm-loyalty-form.php'));
         }
 
         /**
