@@ -898,7 +898,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
             wp_enqueue_script($jsScript, $jsScriptsPath . $jsScript . '.js', '', '', true);
-            wp_localize_script($jsScript, 'LoyaltyUrl', $loyaltyUrl);
+            wp_localize_script($jsScript, 'loyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'customerId', $userId);
             wp_localize_script($jsScript, 'messagePhone', $messagePhone);
             wp_localize_script($jsScript, 'termsLoyalty', $this->settings['loyalty_terms']);

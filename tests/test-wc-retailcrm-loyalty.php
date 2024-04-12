@@ -87,34 +87,6 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function responseLoyalty()
     {
-        return [
-            [
-                'isSuccessful' => true,
-                'body' => json_encode(['loyaltyAccounts' => []]),
-                'expected' => 'id="loyaltyRegisterForm"'
-            ],
-            [
-                'isSuccessful' => true,
-                'body' => json_encode(
-                    [
-                        'loyaltyAccounts' => [
-                            0 => [
-                                'active' => false,
-                                'customer' => [
-                                    'externalId' => 1
-                                ],
-                                'id' => 1
-                            ]
-                        ]
-                    ]
-                ),
-                'expected' => 'id="loyaltyActivateForm"'
-            ],
-            [
-                'isSuccessful' => true,
-                'body' => json_encode(['loyaltyAccounts' => [0 => DataLoyaltyRetailCrm::getDataLoyalty()]]),
-                'expected' => 'accrual of 1 bonus for each'
-            ]
-        ];
+        return DataLoyaltyRetailCrm::getDataLoyalty();
     }
 }

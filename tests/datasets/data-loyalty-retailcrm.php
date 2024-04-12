@@ -19,24 +19,58 @@ class DataLoyaltyRetailCrm
     public static function getDataLoyalty()
     {
         return [
-            'id' => 1,
-            'level' => [
-                'name' => 'Test level',
-                'privilegeSize' => 5,
-                'privilegeSizePromo' => 3,
-                'type' => 'bonus_converting'
+            [
+                'isSuccessful' => true,
+                'body' => json_encode(['loyaltyAccounts' => []]),
+                'expected' => 'id="loyaltyRegisterForm"'
             ],
-            'amount' => 1000,
-            'cardNumber' => '12345',
-            'activatedAt' => '2024-04-10 15:00:00',
-            'nextLevelSum' => 15000,
-            'loyalty' => [
-                'currency' => 'USD'
+            [
+                'isSuccessful' => true,
+                'body' => json_encode(
+                    [
+                        'loyaltyAccounts' => [
+                            0 => [
+                                'active' => false,
+                                'customer' => [
+                                    'externalId' => 1
+                                ],
+                                'id' => 1
+                            ]
+                        ]
+                    ]
+                ),
+                'expected' => 'id="loyaltyActivateForm"'
             ],
-            'customer' => [
-                'externalId' => 1
+            [
+                'isSuccessful' => true,
+                'body' => json_encode(
+                    [
+                        'loyaltyAccounts' => [
+                            0 => [
+                                'id' => 1,
+                                'level' => [
+                                    'name' => 'Test level',
+                                    'privilegeSize' => 5,
+                                    'privilegeSizePromo' => 3,
+                                    'type' => 'bonus_converting'
+                                ],
+                                'amount' => 1000,
+                                'cardNumber' => '12345',
+                                'activatedAt' => '2024-04-10 15:00:00',
+                                'nextLevelSum' => 15000,
+                                'loyalty' => [
+                                    'currency' => 'USD'
+                                ],
+                                'customer' => [
+                                    'externalId' => 1
+                                ],
+                                'active' => true
+                            ]
+                        ]
+                    ]
+                ),
+                'expected' => 'Ordinary products: accrual of 1 bonus for each'
             ],
-            'active' => true
         ];
     }
 }
