@@ -67,12 +67,12 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $data[] = sprintf(__('Promotional products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo'], $loyaltyAccount['loyalty']['currency']);
                     break;
                 case 'bonus_percent':
-                    $data[] = sprintf(__('Ordinary products: bonus accrual in the amount of %s% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
-                    $data[] = sprintf(__('Promotional products: bonus accrual in the amount of %s% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
+                    $data[] = sprintf(__('Ordinary products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
+                    $data[] = sprintf(__('Promotional products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
                     break;
                 case 'discount':
-                    $data[] = sprintf(__('Ordinary products: %s% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
-                    $data[] = sprintf(__('Promotional products: %s% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
+                    $data[] = sprintf(__('Ordinary products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
+                    $data[] = sprintf(__('Promotional products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
                     break;
             }
 

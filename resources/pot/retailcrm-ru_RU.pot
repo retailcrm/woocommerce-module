@@ -547,14 +547,14 @@ msgstr "Обычные товары: начисление 1 бонуса за к
 msgid "Promotional products: accrual of 1 bonus for each %s %s"
 msgstr "Акционные товары: начисление 1 бонуса за каждые %s %s"
 
-msgid "Ordinary products: bonus accrual in the amount of %s% of the purchase amount"
-msgstr "Обычные товары: начисление бонусов в размере %s% от суммы покупки"
+msgid "Ordinary products: bonus accrual in the amount of %s%% of the purchase amount"
+msgstr "Обычные товары: начисление бонусов в размере %s%% от суммы покупки"
 
-msgid "Promotional products: bonus accrual in the amount of %s% of the purchase amount"
-msgstr "Акционные товары: начисление бонусов в размере %s% от суммы покупки"
+msgid "Promotional products: bonus accrual in the amount of %s%% of the purchase amount"
+msgstr "Акционные товары: начисление бонусов в размере %s%% от суммы покупки"
 
-msgid "Ordinary products: %s% discount"
-msgstr "Обычные товары: %s% скидка"
+msgid "Ordinary products: %s%% discount"
+msgstr "Обычные товары: %s%% скидка"
 
-msgid "Promotional products: %s% discount"
-msgstr "Акционные товары: %s% скидка"
+msgid "Promotional products: %s%% discount"
+msgstr "Акционные товары: %s%% скидка"
