@@ -903,7 +903,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_localize_script($jsScript, 'messagePhone', $messagePhone);
             wp_localize_script($jsScript, 'termsLoyalty', $this->settings['loyalty_terms']);
             wp_localize_script($jsScript, 'privacyLoyalty',  $this->settings['loyalty_personal']);
-
             wp_register_style('retailcrm-loyalty-style', $cssPath . 'retailcrm-loyalty-style.css', false, '0.1');
             wp_enqueue_style('retailcrm-loyalty-style');
 
