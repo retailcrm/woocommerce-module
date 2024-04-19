@@ -283,6 +283,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $retailCrmIcml = new WC_Retailcrm_Icml();
+
+            // Generate new ICML catalog, because change bind_by_sku
+            if (isset($_POST['useXmlId'])) {
+                $retailCrmIcml->changeBindBySku($_POST['useXmlId']);
+            }
+
             $retailCrmIcml->generate();
 
             $this->uploadCatalog($infoApiKey);
@@ -634,8 +640,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function include_js_scripts_for_admin()
         {
-            $jsScripts     = ['retailcrm-export', 'retailcrm-cron-info','retailcrm-meta-fields'];
-            $wpAdminUrl    = ['url' => get_admin_url()];
+            $jsScripts = [
+                'retailcrm-export',
+                'retailcrm-cron-info',
+                'retailcrm-meta-fields',
+                'retailcrm-module-settings',
+            ];
+
+            $wpAdminUrl = ['url' => get_admin_url()];
             $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
 
             foreach ($jsScripts as $scriptName) {

@@ -1,3 +1,6 @@
+## 2024-04-19 4.7.5
+* Added automatic catalog generation when changing "Activate the binding via sku (xml)"
+
 ## 2024-02-29 4.7.4
 * Fixed an error when transferring abandoned carts
 
