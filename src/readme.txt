@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.7.5 =
-* Added automatic catalog generation when changing "Activate the binding via sku (xml)"
+* Added automatic catalog generation when changing 'Activate the binding via sku (xml)'
 
 = 4.7.4 =
 * Fixed an error when transferring abandoned carts
