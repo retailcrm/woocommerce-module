@@ -27,9 +27,13 @@ if (!class_exists('WC_Retailcrm_Icml')) :
         ];
 
         protected $shop;
+
         protected $file;
+
         protected $tmpFile;
+
         protected $settings;
+
         protected $icmlWriter;
 
         /**
@@ -43,6 +47,11 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $this->tmpFile    = sprintf('%s.tmp', $this->file);
             $this->settings   = get_option(WC_Retailcrm_Base::$option_key);
             $this->icmlWriter = new WC_Retailcrm_Icml_Writer($this->tmpFile);
+        }
+
+        public function changeBindBySku($useXmlId)
+        {
+            $this->settings['bind_by_sku'] = $useXmlId;
         }
 
         /**
@@ -201,21 +210,21 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
             $dimensions = '';
 
-            if ($product->get_length() != '') {
+            if ($product->get_length() !== '') {
                 $dimensions = wc_get_dimension($product->get_length(), 'cm');
             }
 
-            if ($product->get_width() != '') {
+            if ($product->get_width() !== '') {
                 $dimensions .= '/' . wc_get_dimension($product->get_width(), 'cm');
             }
 
-            if ($product->get_height() != '') {
+            if ($product->get_height() !== '') {
                 $dimensions .= '/' . wc_get_dimension($product->get_height(), 'cm');
             }
 
             $weight = '';
 
-            if ($product->get_weight() != '') {
+            if ($product->get_weight() !== '') {
                 $weight = wc_get_weight($product->get_weight(), 'kg');
             }
 
@@ -246,7 +255,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'tax' => isset($tax) ? $tax['rate'] : 'none'
             ];
 
-            if ($product->get_sku() != '') {
+            if ($product->get_sku() !== '') {
                 $params[] = ['code' => 'article', 'name' => 'Article', 'value' => $product->get_sku()];
 
                 if (isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES) {
