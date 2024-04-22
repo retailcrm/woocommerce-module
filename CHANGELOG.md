@@ -1,3 +1,6 @@
+## 2024-04-22 4.7.6
+* Support WP 6.5
+
 ## 2024-04-19 4.7.5
 * Added automatic catalog generation when changing "Activate the binding via sku (xml)"
 
