@@ -121,6 +121,7 @@ if (!class_exists('WC_Retailcrm_Icml_Writer')) :
                 $this->writer->writeAttribute('id', $offer['id']);
                 $this->writer->writeAttribute('productId', $offer['productId']);
                 $this->writer->writeAttribute('quantity', (int) $offer['quantity'] ?? 0);
+                $this->writer->writeAttribute('type', $offer['type']);
 
                 if (isset($offer['categoryId'])) {
                     if (is_array($offer['categoryId'])) {
