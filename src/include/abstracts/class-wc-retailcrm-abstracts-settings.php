@@ -603,6 +603,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     ),
                 ];
 
+                $this->form_fields['icml_services'] = [
+                    'label' => __('Enabled', 'retailcrm'),
+                    'title' => __('Uploading services', 'retailcrm'),
+                    'class' => 'checkbox',
+                    'type' => 'checkbox',
+                    'desc_tip' => true,
+                    'description' => __(
+                        "When this option is enabled, all items of type 'virtual' will be considered services and uploaded to Simla.com",
+                        "retailcrm"
+                    ),
+                ];
+
                 $this->form_fields['icml'] = [
                     'label'       => __('Generating ICML', 'retailcrm'),
                     'title'       => __('Generating ICML catalog by wp-cron', 'retailcrm'),

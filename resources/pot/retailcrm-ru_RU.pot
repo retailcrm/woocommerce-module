@@ -453,3 +453,9 @@ msgstr "Требуется API ключ с доступом к одному ма
 
 msgid "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match"
 msgstr "Валюта сайта отличается от валюты магазина в CRM. Для корректной работы интеграции, валюты в CRM и CMS должны совпадать"
+
+msgid "Uploading services"
+msgstr "Выгрузка услуг"
+
+msgid "When this option is enabled, all items of type 'virtual' will be considered services and uploaded to Simla.com"
+msgstr "При включении опции, все элементы типа 'виртуальные' будут рассматриваться как услуги и загружаться в Simla.com"
