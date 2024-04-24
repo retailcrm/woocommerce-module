@@ -198,8 +198,8 @@ return [
         "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match" =>
             "La moneda del sitio web es distinto a la tienda del CRM. Para el funcionamiento correcto de la integración, las monedas del CMS y CRM deben coincid",
         "Uploading services" => "Descarga de servicios",
-        "When this option is enabled, all items of type 'virtual' will be considered services and uploaded to Simla.com" =>
-            "Si esta opción está activada, todos los elementos de tipo 'virtual' se tratarán como servicios y se cargarán en Simla.com"
+        "Goods with the 'virtual' option enabled will be uploaded to Simla as services" =>
+            "Los bienes con la opción 'virtual' activada se cargarán en Simla como servicios"
     ],
     "language" => "es",
     "x-generator" => "GlotPress/2.4.0-alpha",

@@ -457,5 +457,5 @@ msgstr "Валюта сайта отличается от валюты мага�
 msgid "Uploading services"
 msgstr "Выгрузка услуг"
 
-msgid "When this option is enabled, all items of type 'virtual' will be considered services and uploaded to Simla.com"
-msgstr "При включении опции, все элементы типа 'виртуальные' будут рассматриваться как услуги и загружаться в Simla.com"
+msgid "Goods with the 'virtual' option enabled will be uploaded to Simla as services"
+msgstr "Товары с включенной опцией 'виртуальные' будут выгружаться в CRM как услуги"

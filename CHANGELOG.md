@@ -1,5 +1,5 @@
 ## 2024-04-23 4.7.7
-* Support for services in ICML
+* Added transfer of services via ICML catalog
 
 ## 2024-04-22 4.7.6
 * Support WP 6.5

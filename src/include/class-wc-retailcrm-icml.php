@@ -50,8 +50,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $this->settings   = get_option(WC_Retailcrm_Base::$option_key);
             $this->icmlWriter = new WC_Retailcrm_Icml_Writer($this->tmpFile);
             $this->unloadServices = (
-                isset($this->settings['icml_services']) &&
-                $this->settings['icml_services'] === WC_Retailcrm_Base::YES
+                isset($this->settings['icml_unload_services'])
+                && $this->settings['icml_unload_services'] === WC_Retailcrm_Base::YES
             );
         }
 

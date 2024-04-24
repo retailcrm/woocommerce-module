@@ -62,23 +62,24 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
 
     private function createVirtualProduct()
     {
-        $product = wp_insert_post( array(
+        $product = wp_insert_post([
             'post_title'  => 'Dummy Product',
             'post_type'   => 'product',
             'post_status' => 'publish',
-        ) );
-        update_post_meta( $product, '_price', '10' );
-        update_post_meta( $product, '_regular_price', '10' );
-        update_post_meta( $product, '_sale_price', '' );
-        update_post_meta( $product, '_sku', 'DUMMY SKU' );
-        update_post_meta( $product, '_manage_stock', 'no' );
-        update_post_meta( $product, '_tax_status', 'taxable' );
-        update_post_meta( $product, '_downloadable', 'no' );
-        update_post_meta( $product, '_virtual', 'yes' );
-        update_post_meta( $product, '_stock_status', 'instock' );
-        update_post_meta( $product, '_weight', '1.1' );
-        wp_set_object_terms( $product, 'simple', 'product_type' );
+        ]);
 
-        return new WC_Product_Simple( $product );
+        update_post_meta($product, '_price', '10');
+        update_post_meta($product, '_regular_price', '10');
+        update_post_meta($product, '_sale_price', '');
+        update_post_meta($product, '_sku', 'DUMMY SKU');
+        update_post_meta($product, '_manage_stock', 'no');
+        update_post_meta($product, '_tax_status', 'taxable');
+        update_post_meta($product, '_downloadable', 'no');
+        update_post_meta($product, '_virtual', 'yes');
+        update_post_meta($product, '_stock_status', 'instock');
+        update_post_meta($product, '_weight', '1.1');
+        wp_set_object_terms($product, 'simple', 'product_type');
+
+        return new WC_Product_Simple($product);
     }
 }

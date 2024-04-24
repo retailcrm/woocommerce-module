@@ -197,8 +197,8 @@ return [
         "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match" =>
             "Валюта сайта отличается от валюты магазина в CRM. Для корректной работы интеграции, валюты в CRM и CMS должны совпадать",
         "Uploading services" => "Выгрузка услуг",
-        "When this option is enabled, all items of type 'virtual' will be considered services and uploaded to Simla.com" =>
-            "При включении опции, все элементы типа 'виртуальные' будут рассматриваться как услуги и загружаться в Simla.com"
+        "Goods with the 'virtual' option enabled will be uploaded to Simla as services" =>
+            "Товары с включенной опцией 'виртуальные' будут выгружаться в CRM как услуги"
     ],
     "language" => "ru",
     "x-generator" => "GlotPress/2.4.0-alpha",

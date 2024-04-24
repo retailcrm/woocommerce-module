@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.7.7 =
-* Support for services in ICML
+* Added transfer of services via ICML catalog
 
 = 4.7.6 =
 * Support WP 6.5

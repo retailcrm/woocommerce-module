@@ -448,5 +448,5 @@ msgstr "La moneda del sitio web es distinto a la tienda del CRM. Para el funcion
 msgid "Uploading services"
 msgstr "Descarga de servicios"
 
-msgid "When this option is enabled, all items of type 'virtual' will be considered services and uploaded to Simla.com"
-msgstr "Si esta opción está activada, todos los elementos de tipo 'virtual' se tratarán como servicios y se cargarán en Simla.com"
+msgid "Goods with the 'virtual' option enabled will be uploaded to Simla as services"
+msgstr "Los bienes con la opción 'virtual' activada se cargarán en Simla como servicios"
