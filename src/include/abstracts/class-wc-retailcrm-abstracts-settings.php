@@ -144,6 +144,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     ),
                 ];
 
+                $this->form_fields['icml_unload_services'] = [
+                    'label' => __('Enabled', 'retailcrm'),
+                    'title' => __('Uploading services', 'retailcrm'),
+                    'class' => 'checkbox',
+                    'type' => 'checkbox',
+                    'desc_tip' => true,
+                    'description' => __(
+                        "Goods with the 'virtual' option enabled will be uploaded to Simla as services",
+                        "retailcrm"
+                    ),
+                ];
+
                 foreach (get_post_statuses() as $statusKey => $statusValue) {
                     $this->form_fields['p_' . $statusKey] = [
                         'title'       => $statusValue,

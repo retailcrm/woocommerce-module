@@ -17,6 +17,9 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
     {
         WC_Helper_Product::create_simple_product();
         WC_Helper_Product::create_variation_product();
+
+        $this->createVirtualProduct();
+        $this->setOptions();
     }
 
     public function testGenerate()
@@ -35,9 +38,9 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertNotEmpty($xmlArray['shop']['categories']['category']);
         $this->assertCount(2, $xmlArray['shop']['categories']['category']);
         $this->assertNotEmpty($xmlArray['shop']['offers']['offer']);
-        $this->assertCount(7, $xmlArray['shop']['offers']['offer']);
         $this->assertNotEmpty($xmlArray['shop']['offers']['offer'][0]);
         $this->assertNotEmpty($xmlArray['shop']['offers']['offer'][1]);
+        $this->assertNotEmpty($xmlArray['shop']['offers']['offer'][2]);
 
         foreach ($xmlArray['shop']['offers']['offer'] as $product) {
             $this->assertNotEmpty($product['name']);
@@ -48,6 +51,35 @@ class WC_Retailcrm_Icml_Test extends WC_Retailcrm_Test_Case_Helper
             $this->assertNotEmpty($product['vatRate']);
             $this->assertEquals('none', $product['vatRate']);
             $this->assertContains('Dummy', $product['productName']);
+            $this->assertNotEmpty($product['@attributes']['type']);
         }
+
+        $attributesList = array_column($xmlArray['shop']['offers']['offer'], '@attributes');
+        $typeList = array_column($attributesList, 'type');
+
+        $this->assertContains('service', $typeList);
+    }
+
+    private function createVirtualProduct()
+    {
+        $product = wp_insert_post([
+            'post_title'  => 'Dummy Product',
+            'post_type'   => 'product',
+            'post_status' => 'publish',
+        ]);
+
+        update_post_meta($product, '_price', '10');
+        update_post_meta($product, '_regular_price', '10');
+        update_post_meta($product, '_sale_price', '');
+        update_post_meta($product, '_sku', 'DUMMY SKU');
+        update_post_meta($product, '_manage_stock', 'no');
+        update_post_meta($product, '_tax_status', 'taxable');
+        update_post_meta($product, '_downloadable', 'no');
+        update_post_meta($product, '_virtual', 'yes');
+        update_post_meta($product, '_stock_status', 'instock');
+        update_post_meta($product, '_weight', '1.1');
+        wp_set_object_terms($product, 'simple', 'product_type');
+
+        return new WC_Product_Simple($product);
     }
 }

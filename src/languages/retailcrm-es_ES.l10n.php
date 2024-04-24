@@ -197,6 +197,9 @@ return [
             "Se requiere clave API con acceso a una tienda",
         "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match" =>
             "La moneda del sitio web es distinto a la tienda del CRM. Para el funcionamiento correcto de la integración, las monedas del CMS y CRM deben coincid",
+        "Uploading services" => "Descarga de servicios",
+        "Goods with the 'virtual' option enabled will be uploaded to Simla as services" =>
+            "Los bienes con la opción 'virtual' activada se cargarán en Simla como servicios"
     ],
     "language" => "es",
     "x-generator" => "GlotPress/2.4.0-alpha",

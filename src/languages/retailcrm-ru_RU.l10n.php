@@ -196,6 +196,9 @@ return [
             "Требуется API ключ с доступом к одному магазину",
         "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match" =>
             "Валюта сайта отличается от валюты магазина в CRM. Для корректной работы интеграции, валюты в CRM и CMS должны совпадать",
+        "Uploading services" => "Выгрузка услуг",
+        "Goods with the 'virtual' option enabled will be uploaded to Simla as services" =>
+            "Товары с включенной опцией 'виртуальные' будут выгружаться в CRM как услуги"
     ],
     "language" => "ru",
     "x-generator" => "GlotPress/2.4.0-alpha",

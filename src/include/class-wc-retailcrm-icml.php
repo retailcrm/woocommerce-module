@@ -36,6 +36,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
         protected $icmlWriter;
 
+        protected $unloadServices = false;
+
         /**
          * WC_Retailcrm_Icml constructor.
          *
@@ -47,6 +49,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $this->tmpFile    = sprintf('%s.tmp', $this->file);
             $this->settings   = get_option(WC_Retailcrm_Base::$option_key);
             $this->icmlWriter = new WC_Retailcrm_Icml_Writer($this->tmpFile);
+            $this->unloadServices = (
+                isset($this->settings['icml_unload_services'])
+                && $this->settings['icml_unload_services'] === WC_Retailcrm_Base::YES
+            );
         }
 
         public function changeBindBySku($useXmlId)
@@ -252,7 +258,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'categoryId' => $termList,
                 'dimensions' => $dimensions,
                 'weight' => $weight,
-                'tax' => isset($tax) ? $tax['rate'] : 'none'
+                'tax' => isset($tax) ? $tax['rate'] : 'none',
+                'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product',
             ];
 
             if ($product->get_sku() !== '') {

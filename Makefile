@@ -47,4 +47,3 @@ coverage:
 
 build_archive:
 	zip -r $(ARCHIVE_NAME) ./src/*
-
