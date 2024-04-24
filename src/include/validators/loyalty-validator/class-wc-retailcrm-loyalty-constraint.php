@@ -14,7 +14,18 @@ if (!class_exists('WC_Retailcrm_Loyalty_Constraint')) :
      */
     class WC_Retailcrm_Loyalty_Constraint
     {
-        /** @var string  */
-        public $err = 'error';
+        public $notFoundCrmUser = 'User not found in the system';
+
+        public $errorFoundLoyalty = 'Error when searching for participation in loyalty programs';
+
+        public $notFoundActiveParticipation = 'No active participation in the loyalty program was detected';
+
+        public $notExistBonuses = 'No bonuses for debiting';
+
+        public $notFoundLoyalty = 'Loyalty program not found';
+
+        public $loyaltyInactive = 'Loyalty program is not active';
+
+        public $loyaltyBlocked = 'Loyalty program blocked';
     }
 endif;
