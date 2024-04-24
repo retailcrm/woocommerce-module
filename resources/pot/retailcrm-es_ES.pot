@@ -474,3 +474,27 @@ msgstr "Descarga de servicios"
 
 msgid "Goods with the 'virtual' option enabled will be uploaded to Simla as services"
 msgstr "Los bienes con la opción 'virtual' activada se cargarán en Simla como servicios"
+
+msgid "User not found in the system"
+msgstr "Usuario no encontrado en el sistema"
+
+msgid "Error when searching for participation in loyalty programs"
+msgstr "Error al buscar la participación en programas de fidelización"
+
+msgid "No active participation in the loyalty program was detected"
+msgstr "No se detectó ninguna participación activa en el programa de fidelización"
+
+msgid "No bonuses for debiting"
+msgstr "Sin bonificaciones por adeudo"
+
+msgid "Loyalty program not found"
+msgstr "Programa de fidelización no encontrado"
+
+msgid "Loyalty program is not active"
+msgstr "El programa de fidelización no está activo"
+
+msgid "Loyalty program blocked"
+msgstr "Programa de fidelización bloqueado"
+
+msgid "This user is a corporate person"
+msgstr "Este usuario es una persona jurídica"

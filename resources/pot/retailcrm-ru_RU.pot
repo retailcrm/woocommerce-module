@@ -669,3 +669,27 @@ msgstr "Обычные товары: %s%% скидка"
 
 msgid "Promotional products: %s%% discount"
 msgstr "Акционные товары: %s%% скидка"
+
+msgid "User not found in the system"
+msgstr "Пользователь не найден в системе"
+
+msgid "Error when searching for participation in loyalty programs"
+msgstr "Ошибка при поиске участия в программах лояльности"
+
+msgid "No active participation in the loyalty program was detected"
+msgstr "Активного участия в программе лояльности не обнаружено"
+
+msgid "No bonuses for debiting"
+msgstr "Бонусы на списание отсутствуют"
+
+msgid "Loyalty program not found"
+msgstr "Программа лояльности не найдена"
+
+msgid "Loyalty program is not active"
+msgstr "Программа лояльности не активна"
+
+msgid "Loyalty program blocked"
+msgstr "Программа лояльности заблокирована"
+
+msgid "This user is a corporate person"
+msgstr "Данный пользователь является корпоратиным лицом"

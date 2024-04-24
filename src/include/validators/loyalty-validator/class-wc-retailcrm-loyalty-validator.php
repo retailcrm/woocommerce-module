@@ -30,7 +30,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
             $result = false;
 
             try {
-                $crmUser = $this->getUser($userId);
+                $crmUser = $this->checkUser($userId);
                 //add check customer corporate
                 $actualAccount = $this->getLoyaltyAccount($crmUser['id']);
                 $this->checkActiveLoyalty($actualAccount['loyalty']['id']);
@@ -47,12 +47,18 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
         /**
          * @throws ValidatorException
          */
-        private function getUser($userId)
+        private function checkUser($userId)
         {
             $responseUser = $this->apiClient->customersGet($userId);
 
             if (!isset($responseUser['customer']['id'])) {
                 throw new ValidatorException($this->notFoundCrmUser, 400);
+            }
+
+            $customer = new WC_Customer($userId);
+
+            if (!empty($customer->get_shipping_company())) {
+                throw new ValidatorException($this->isCorporateUser, 400);
             }
 
             return $responseUser['customer'];

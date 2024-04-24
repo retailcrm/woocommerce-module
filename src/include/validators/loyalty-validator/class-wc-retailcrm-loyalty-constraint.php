@@ -27,5 +27,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Constraint')) :
         public $loyaltyInactive = 'Loyalty program is not active';
 
         public $loyaltyBlocked = 'Loyalty program blocked';
+
+        public $isCorporateUser = 'This user is a corporate person';
     }
 endif;
