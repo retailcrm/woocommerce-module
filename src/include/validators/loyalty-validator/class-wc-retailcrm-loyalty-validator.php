@@ -17,12 +17,9 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
         /** @var WC_Retailcrm_Client_V5 */
         protected $apiClient;
 
-        protected $settings;
-
-        public function __construct($apiClient, $settings)
+        public function __construct($apiClient)
         {
             $this->apiClient = $apiClient;
-            $this->settings = $settings;
         }
 
         public function checkAccount(int $userId)
@@ -31,10 +28,8 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
             try {
                 $crmUser = $this->checkUser($userId);
-                //add check customer corporate
                 $actualAccount = $this->getLoyaltyAccount($crmUser['id']);
                 $this->checkActiveLoyalty($actualAccount['loyalty']['id']);
-
             } catch (Throwable $exception) {
                 if ($exception instanceof ValidatorException) {
                     WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'retailcrm')) . "userId: $userId");
