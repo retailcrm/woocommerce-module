@@ -24,19 +24,19 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
         public function checkAccount(int $userId)
         {
-            $result = false;
-
             try {
                 $crmUser = $this->checkUser($userId);
                 $actualAccount = $this->getLoyaltyAccount($crmUser['id']);
                 $this->checkActiveLoyalty($actualAccount['loyalty']['id']);
+
+                return $actualAccount;
+            } catch (ValidatorException $exception) {
+                WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'retailcrm')) . "userId: $userId");
             } catch (Throwable $exception) {
-                if ($exception instanceof ValidatorException) {
-                    WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'retailcrm')) . "userId: $userId");
-                } else {
-                    WC_Admin_Settings::add_error($exception->getMessage());
-                }
+                WC_Admin_Settings::add_error($exception->getMessage());
             }
+
+            return false;
         }
 
         /**
