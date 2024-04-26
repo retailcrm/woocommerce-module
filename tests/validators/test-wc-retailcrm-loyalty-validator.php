@@ -1,5 +1,7 @@
 <?php
 
+use datasets\DataLoyaltyRetailCrm;
+
 class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
 {
     protected $responseMock;
@@ -31,59 +33,59 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         $this->corpClient->save();
     }
 
-    /** @dataProvider dataCheckUser */
-    public function testCheckUser($responseApiMethod, $wcUserType, $throwMessage)
+    /** @dataProvider DataLoyaltyRetailCrm::dataCheckUser() */
+    public function testCheckUser($responseApiMethod, $wcUserType, $throwMessage, $isCorpActive)
     {
         $this->setResponseMock();
         $this->setApiMock('customersGet', $responseApiMethod);
 
-        $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock);
+        $validator = new WC_Retailcrm_Loyalty_Validator($isCorpActive);
         $method = $this->getPrivateMethod('checkUser', $validator);
 
         $wcUserId = $wcUserType === 'individual' ? $this->individualClient->get_id() : $this->corpClient->get_id();
 
         try {
-            $result = $method->invokeArgs($validator, [$wcUserId]);
+            $method->invokeArgs($validator, [$wcUserId]);
 
             if ($throwMessage) {
                 $this->fail('ValidatorException was not thrown');
             } else {
-                $this->assertEquals($responseApiMethod['customer']['id'], $result['id']);
+                $this->assertTrue(true);
             }
         } catch (ValidatorException $exception) {
             $this->assertEquals($throwMessage, $exception->getMessage());
         }
     }
 
-    /** @dataProvider dataLoyaltyAccount */
+    /** @dataProvider DataLoyaltyRetailCrm::dataLoyaltyAccount() */
     public function testGetLoyaltyAccount($responseMock, $throwMessage)
     {
         $this->setResponseMock($responseMock);
         $this->setApiMock('getLoyaltyAccountList', $this->responseMock);
 
-        $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock);
+        $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock, true);
         $method = $this->getPrivateMethod('getLoyaltyAccount', $validator);
 
         try {
-            $result = $method->invokeArgs($validator, [777]);
+            $method->invokeArgs($validator, [777]);
 
             if ($throwMessage) {
                 $this->fail('ValidatorException was not thrown');
             } else {
-                $this->assertNotEmpty($result);
+                $this->assertTrue(true);
             }
         } catch (ValidatorException $exception) {
             $this->assertEquals($throwMessage, $exception->getMessage());
         }
     }
 
-    /** @dataProvider dataCheckActiveLoyalty */
+    /** @dataProvider DataLoyaltyRetailCrm::dataCheckActiveLoyalty() */
     public function testCheckActivateLoyalty($responseMock, $throwMessage)
     {
         $this->setResponseMock($responseMock);
         $this->setApiMock('getLoyalty', $this->responseMock);
 
-        $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock);
+        $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock, true);
         $method = $this->getPrivateMethod('checkActiveLoyalty', $validator);
 
         try {
@@ -97,76 +99,6 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         } catch (ValidatorException $exception) {
             $this->assertEquals($throwMessage, $exception->getMessage());
         }
-    }
-
-
-    public function dataCheckUser()
-    {
-        return [
-            [
-                'responseApiMethod' => [],
-                'wcUserType' => 'individual',
-                'throwMessage' => 'User not found in the system'
-            ],
-            [
-                'responseApiMethod' => ['customer' => ['id' => 1]],
-                'wcUserType' => 'corp',
-                'throwMessage' => 'This user is a corporate person'
-            ],
-            [
-                'responseApiMethod' => ['customer' => ['id' => 1]],
-                'wcUserType' => 'individual',
-                'throwMessage' => null
-            ],
-        ];
-    }
-
-    public function dataLoyaltyAccount()
-    {
-        return [
-            [
-                'responseMock' => ['success' => true],
-                'throwMessage' => 'Error when searching for participation in loyalty programs'
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyaltyAccounts' => []],
-                'throwMessage' => 'No active participation in the loyalty program was detected'
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyaltyAccounts' => [['active' => true, 'amount' => 0, 'level' => ['type' => 'bonus_converting']]]],
-                'throwMessage' => 'No bonuses for debiting'
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyaltyAccounts' => [['active' => true, 'amount' => 0, 'level' => ['type' => 'discount']]]],
-                'throwMessage' => null
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyaltyAccounts' => [['active' => true, 'amount' => 100, 'level' => ['type' => 'bonus_converting']]]],
-                'throwMessage' => null
-            ],
-        ];
-    }
-
-    public function dataCheckActiveLoyalty()
-    {
-        return [
-            [
-                'responseMock' => ['success' => true],
-                'throwMessage' => 'Loyalty program not found'
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyalty' => ['active' => false]],
-                'throwMessage' => 'Loyalty program is not active'
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyalty' => ['active' => true, 'blocked' => true]],
-                'throwMessage' => 'Loyalty program blocked'
-            ],
-            [
-                'responseMock' => ['success' => true, 'loyalty' => ['active' => true, 'blocked' => false]],
-                'throwMessage' => null
-            ]
-        ];
     }
 
     private function setResponseMock($response = ['success' => true])

@@ -73,4 +73,82 @@ class DataLoyaltyRetailCrm
             ],
         ];
     }
+
+    public static function dataCheckUser()
+    {
+        return [
+            [
+                'responseApiMethod' => [],
+                'wcUserType' => 'individual',
+                'throwMessage' => 'User not found in the system',
+                'isCorpActive' => false
+            ],
+            [
+                'responseApiMethod' => ['customer' => ['id' => 1]],
+                'wcUserType' => 'corp',
+                'throwMessage' => 'This user is a corporate person',
+                'isCorpActive' => true,
+            ],
+            [
+                'responseApiMethod' => ['customer' => ['id' => 1]],
+                'wcUserType' => 'corp',
+                'throwMessage' => null,
+                'isCorpActive' => false,
+            ],
+            [
+                'responseApiMethod' => ['customer' => ['id' => 1]],
+                'wcUserType' => 'individual',
+                'throwMessage' => null,
+                'isCorpActive' => true,
+            ],
+        ];
+    }
+
+    public static function dataLoyaltyAccount()
+    {
+        return [
+            [
+                'responseMock' => ['success' => true],
+                'throwMessage' => 'Error when searching for participation in loyalty programs'
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyaltyAccounts' => []],
+                'throwMessage' => 'No active participation in the loyalty program was detected'
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyaltyAccounts' => [['active' => true, 'amount' => 0, 'level' => ['type' => 'bonus_converting']]]],
+                'throwMessage' => 'No bonuses for debiting'
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyaltyAccounts' => [['active' => true, 'amount' => 0, 'level' => ['type' => 'discount']]]],
+                'throwMessage' => null
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyaltyAccounts' => [['active' => true, 'amount' => 100, 'level' => ['type' => 'bonus_converting']]]],
+                'throwMessage' => null
+            ],
+        ];
+    }
+
+    public static function dataCheckActiveLoyalty()
+    {
+        return [
+            [
+                'responseMock' => ['success' => true],
+                'throwMessage' => 'Loyalty program not found'
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyalty' => ['active' => false]],
+                'throwMessage' => 'Loyalty program is not active'
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyalty' => ['active' => true, 'blocked' => true]],
+                'throwMessage' => 'Loyalty program blocked'
+            ],
+            [
+                'responseMock' => ['success' => true, 'loyalty' => ['active' => true, 'blocked' => false]],
+                'throwMessage' => null
+            ]
+        ];
+    }
 }

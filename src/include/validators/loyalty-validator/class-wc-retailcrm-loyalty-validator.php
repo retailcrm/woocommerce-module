@@ -16,20 +16,24 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
     {
         /** @var WC_Retailcrm_Client_V5 */
         protected $apiClient;
+        protected $crmUser;
+        protected $loyaltyAccount;
+        protected $isActiveCorp;
 
-        public function __construct($apiClient)
+        public function __construct($apiClient, $isActiveCorp)
         {
             $this->apiClient = $apiClient;
+            $this->isActiveCorp = $isActiveCorp;
         }
 
-        public function checkAccount(int $userId)
+        public function checkAccount(int $userId): bool
         {
             try {
-                $crmUser = $this->checkUser($userId);
-                $actualAccount = $this->getLoyaltyAccount($crmUser['id']);
-                $this->checkActiveLoyalty($actualAccount['loyalty']['id']);
+                $this->checkUser($userId);
+                $this->checkLoyaltyAccount($this->crmUser['id']);
+                $this->checkActiveLoyalty($this->loyaltyAccount['loyalty']['id']);
 
-                return $actualAccount;
+                return true;
             } catch (ValidatorException $exception) {
                 WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'retailcrm')) . "userId: $userId");
             } catch (Throwable $exception) {
@@ -52,17 +56,17 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
             $customer = new WC_Customer($userId);
 
-            if (!empty($customer->get_shipping_company())) {
+            if ($this->isActiveCorp && !empty($customer->get_shipping_company())) {
                 throw new ValidatorException($this->isCorporateUser, 400);
             }
 
-            return $responseUser['customer'];
+            $this->crmUser = $responseUser['customer'];
         }
 
         /**
          * @throws ValidatorException
          */
-        private function getLoyaltyAccount($crmUserId)
+        private function checkLoyaltyAccount($crmUserId)
         {
             $filter['customerId'] = $crmUserId;
             $responseLoyalty = $this->apiClient->getLoyaltyAccountList($filter);
@@ -87,7 +91,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
                throw new ValidatorException($this->notExistBonuses, 400);
             }
 
-            return $actualAccount;
+            $this->loyaltyAccount = $actualAccount;
         }
 
         /**
