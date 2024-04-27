@@ -33,13 +33,13 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         $this->corpClient->save();
     }
 
-    /** @dataProvider DataLoyaltyRetailCrm::dataCheckUser() */
+    /** @dataProvider datasets\DataLoyaltyRetailCrm::dataCheckUser() */
     public function testCheckUser($responseApiMethod, $wcUserType, $throwMessage, $isCorpActive)
     {
         $this->setResponseMock();
         $this->setApiMock('customersGet', $responseApiMethod);
 
-        $validator = new WC_Retailcrm_Loyalty_Validator($isCorpActive);
+        $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock, $isCorpActive);
         $method = $this->getPrivateMethod('checkUser', $validator);
 
         $wcUserId = $wcUserType === 'individual' ? $this->individualClient->get_id() : $this->corpClient->get_id();
@@ -57,14 +57,14 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-    /** @dataProvider DataLoyaltyRetailCrm::dataLoyaltyAccount() */
+    /** @dataProvider datasets\DataLoyaltyRetailCrm::dataLoyaltyAccount() */
     public function testGetLoyaltyAccount($responseMock, $throwMessage)
     {
         $this->setResponseMock($responseMock);
         $this->setApiMock('getLoyaltyAccountList', $this->responseMock);
 
         $validator = new WC_Retailcrm_Loyalty_Validator($this->apiMock, true);
-        $method = $this->getPrivateMethod('getLoyaltyAccount', $validator);
+        $method = $this->getPrivateMethod('checkLoyaltyAccount', $validator);
 
         try {
             $method->invokeArgs($validator, [777]);
@@ -79,7 +79,7 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-    /** @dataProvider DataLoyaltyRetailCrm::dataCheckActiveLoyalty() */
+    /** @dataProvider datasets\DataLoyaltyRetailCrm::dataCheckActiveLoyalty() */
     public function testCheckActivateLoyalty($responseMock, $throwMessage)
     {
         $this->setResponseMock($responseMock);
