@@ -110,6 +110,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
                 add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
                 add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+
+                // Add coupon hooks for loyalty program
+                add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
+                add_action('woocommerce_add_to_cart', [$this, 'set_cart_loyalty'], 11, 1);
+                add_action('woocommerce_after_cart_item_quantity_update', [$this, 'set_cart_loyalty'], 11, 1);
+                add_action('woocommerce_cart_item_removed', [$this, 'set_cart_loyalty'], 11, 1);
+                add_action('woocommerce_cart_emptied', [$this, 'clear_cart_loyalty'], 11, 1);
             }
 
             // Subscribed hooks
@@ -678,6 +685,65 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             wp_die();
+        }
+
+        public function coupon_info()
+        {
+            global $woocommerce;
+
+            try {
+                $site = $this->apiClient->getSingleSiteForKey();
+                $cartItems = $woocommerce->cart->get_cart();
+                $customerId = $woocommerce->customer->get_id();
+
+                if (!$customerId || !$cartItems) {
+                    return;
+                }
+
+                $validator = new WC_Retailcrm_Loyalty_Validator($this->apiClient, $this->settings['corporate_enabled'] ?? static::NO);
+
+                if (!$validator->checkAccount($customerId)) {
+                    return;
+                }
+
+                $lpDiscountSum = $this->loyalty->getDiscountLp($cartItems, $site, $customerId);
+
+                if ($lpDiscountSum === 0) {
+                    return;
+                }
+
+                $coupon = new WC_Coupon();
+
+                //$coupon->set_individual_use(true); // запрещает использование других купонов одноврменно с этим
+                $coupon->set_usage_limit(0);
+                $coupon->set_amount($lpDiscountSum);
+                $coupon->set_email_restrictions($woocommerce->customer->get_email());
+                $coupon->set_code('pl' . mt_rand());
+                $coupon->save();
+
+                echo '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function set_cart_loyalty()
+        {
+            global $woocommerce;
+
+            try {
+                //$woocommerce->cart;
+
+                foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
+                    if (strpos($code, 'pl') !== false) { //заменить на регулярное выражение ^lp\d+$
+                        $woocommerce->cart->remove_coupon($code);
+                    }
+                }
+
+                return;
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
         }
 
         /**

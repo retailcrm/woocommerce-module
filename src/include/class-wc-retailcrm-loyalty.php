@@ -116,6 +116,45 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return false;
             }
         }
+
+        public function getDiscountLp($cartItems, $site, $customerId)
+        {
+            $order = [
+              'site' => $site,
+              'customer' => ['externalId' => $customerId],
+              'privilegeType' => 'loyalty_level'
+            ];
+
+            $useXmlId = isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] === WC_Retailcrm_Base::YES;
+
+            foreach ($cartItems as $item) {
+                $product = $item['data'];
+
+                $order['items'][] = [
+                    'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
+                    'quantity' => $item['quantity'],
+                    'initialPrice' => wc_get_price_including_tax($product)
+                ];
+            }
+
+            $response = $this->apiClient->calculateDiscountLoyalty($site, $order);
+
+            if (!$response->isSuccessful() || !isset($response['calculations'])) {
+                return 0;
+            }
+
+            $discount = 0;
+
+            foreach ($response['calculations'] as $calculate) {
+                if ($calculate['privilegeType'] !== 'loyalty_level') {
+                    continue;
+                }
+
+                $discount = $calculate['discount'] !== 0 ? $calculate['discount'] : $calculate['maxChargeBonuses'];
+            }
+
+            return $discount;
+        }
     }
 
 endif;
