@@ -113,10 +113,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                 // Add coupon hooks for loyalty program
                 add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
-                add_action('woocommerce_add_to_cart', [$this, 'set_cart_loyalty'], 11, 1);
-                add_action('woocommerce_after_cart_item_quantity_update', [$this, 'set_cart_loyalty'], 11, 1);
-                add_action('woocommerce_cart_item_removed', [$this, 'set_cart_loyalty'], 11, 1);
-                add_action('woocommerce_cart_emptied', [$this, 'clear_cart_loyalty'], 11, 1);
+                //Remove coupons when cart changes
+                add_action('woocommerce_add_to_cart', [$this, 'delete_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_after_cart_item_quantity_update', [$this, 'delete_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_cart_item_removed', [$this, 'delete_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_before_cart_empted', [$this, 'delete_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_removed_coupon', [$this, 'removed_loyalty_coupon'], 11, 1);
             }
 
             // Subscribed hooks
@@ -696,6 +698,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $cartItems = $woocommerce->cart->get_cart();
                 $customerId = $woocommerce->customer->get_id();
 
+                $resultString = '';
+
                 if (!$customerId || !$cartItems) {
                     return;
                 }
@@ -712,35 +716,93 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     return;
                 }
 
+                $couponsLp = [];
+                // Check exists used loyalty coupons
+                foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
+                    if (preg_match('/^pl\d+$/m', $code) === 1) {
+                        $couponsLp[] = $code;
+                    }
+                }
+
+                //If one loyalty coupon is used, not generate a new one
+                // if more than 1 loyalty coupon is used, delete all coupons
+                if (count($couponsLp) === 1) {
+                    return;
+                }
+
+                if (count($couponsLp) > 1) {
+                    foreach ($couponsLp as $code) {
+                        $woocommerce->cart->remove_coupon($code);
+
+                        $coupon = new WC_Coupon($code);
+
+                        $coupon->delete(true);
+                    }
+                }
+
+                //Check the existence of loyalty coupons and delete them
+                $coupons = $this->loyalty->getCouponLoyalty($woocommerce->customer->get_email());
+                $loyaltyInfo = $this->loyalty->getLoyaltyAccounts($customerId);
+
+                if (!isset($loyaltyInfo['loyaltyAccounts'][0])) {
+                    return;
+                }
+
+                if ($loyaltyInfo['loyaltyAccounts'][0]['level']['type'] === 'discount') {
+                    $resultString .= '<div style="background: #05ff13;">' . 'Предоставляется скидка в ' . $lpDiscountSum . $loyaltyInfo['loyaltyAccounts'][0]['loyalty']['currency'] . '</div>';
+                } else {
+                    $resultString .= '<div style="background: #05ff13;">' . 'Возможно списать ' . $lpDiscountSum . ' бонусов' . '</div>';
+                }
+
+                foreach ($coupons as $item) {
+                    $coupon = new WC_Coupon($item['code']);
+
+                    $coupon->delete(true);
+                }
+
+                //Generate new coupon
                 $coupon = new WC_Coupon();
 
-                //$coupon->set_individual_use(true); // запрещает использование других купонов одноврменно с этим
+                //$coupon->set_individual_use(true); // запрещает использование других купонов одноврeменно с этим
                 $coupon->set_usage_limit(0);
                 $coupon->set_amount($lpDiscountSum);
                 $coupon->set_email_restrictions($woocommerce->customer->get_email());
                 $coupon->set_code('pl' . mt_rand());
                 $coupon->save();
 
-                echo '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
+                echo $resultString . '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
             } catch (Throwable $exception) {
                 writeBaseLogs($exception->getMessage());
             }
         }
 
-        public function set_cart_loyalty()
+        public function delete_loyalty_coupon()
         {
             global $woocommerce;
 
             try {
-                //$woocommerce->cart;
-
                 foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
-                    if (strpos($code, 'pl') !== false) { //заменить на регулярное выражение ^lp\d+$
+                    if (preg_match('/^pl\d+$/m', $code) === 1) {
                         $woocommerce->cart->remove_coupon($code);
+
+                        $coupon = new WC_Coupon($code);
+
+                        $coupon->delete(true);
                     }
                 }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
 
-                return;
+        public function removed_loyalty_coupon($couponCode)
+        {
+            try {
+                if (preg_match('/^pl\d+$/m', $couponCode) === 1) {
+                    $coupon = new WC_Coupon($couponCode);
+
+                    $coupon->delete(true);
+                }
             } catch (Throwable $exception) {
                 writeBaseLogs($exception->getMessage());
             }

@@ -40,22 +40,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $result = [];
 
             try {
-                $response = $this->apiClient->customersGet($userId);
-
-                if (!isset($response['customer']['id'])) {
-                    return $result;
-                }
-
-                $filter['customerId'] = $response['customer']['id'];
-
-                $response = $this->apiClient->getLoyaltyAccountList($filter);
+                $response = $this->getLoyaltyAccounts($userId);
             } catch (Throwable $exception) {
                 writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
 
-                return $result;
-            }
-
-            if (!$response->isSuccessful() || !$response->offsetExists('loyaltyAccounts')) {
                 return $result;
             }
 
@@ -154,6 +142,40 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             return $discount;
+        }
+
+        public function getLoyaltyAccounts(int $userId)
+        {
+            $response = $this->apiClient->customersGet($userId);
+
+            if (!isset($response['customer']['id'])) {
+                return [];
+            }
+
+            $filter['customerId'] = $response['customer']['id'];
+
+            $response = $this->apiClient->getLoyaltyAccountList($filter);
+
+            if (!$response->isSuccessful() || !$response->offsetExists('loyaltyAccounts')) {
+                return null;
+            }
+
+            return $response;
+        }
+
+        public function getCouponLoyalty($email)
+        {
+            global $wpdb;
+
+            return $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT posts.post_name code FROM {$wpdb->prefix}posts AS posts
+                            LEFT JOIN {$wpdb->prefix}postmeta AS postmeta ON posts.ID = postmeta.post_id
+                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE 'pl%'
+                            AND postmeta.meta_key = 'customer_email' AND postmeta.meta_value LIKE %s",
+                    '%' . $email . '%'
+                ), ARRAY_A
+            );
         }
     }
 
