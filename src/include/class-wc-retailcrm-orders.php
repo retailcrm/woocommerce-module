@@ -87,8 +87,28 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->order_payment->resetData();
 
                 $wcOrder = wc_get_order($orderId);
+                $coupons = $wcOrder->get_coupons();
+                $discountLp = 0;
+
+                foreach ($coupons as $coupon) {
+                    $code = $coupon->get_code();
+
+                    if (preg_match('/^pl\d+$/m', $code) !== 1) {
+                        continue;
+                    }
+
+                    $discountLp = $coupon->get_discount();
+                    $wcOrder->remove_coupon($code);
+                    $objectCoupon = new WC_Coupon($code);
+                    $objectCoupon->delete(true);
+
+                    break;
+                }
+
+                $wcOrder->recalculate_coupons();
 
                 $this->processOrder($wcOrder);
+                $this->order['privilegeType'] = 'loyalty_level';
 
                 $response = $this->retailcrm->ordersCreate($this->order);
 
@@ -98,6 +118,37 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
                     return $response->getErrorString();
                 }
+
+                $response = $this->retailcrm->applyBonusToOrder('woo', ['externalId' => $this->order['externalId']], (float) $discountLp);
+
+                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
+                    return $response->getErrorString();
+                }
+
+                $wcItems = $wcOrder->get_items();
+
+                foreach ($response['order']['items'] as $item) {
+                    $externalId = $item['externalIds'][0]['value'];
+                    $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+
+                    if (isset($wcItems[(int) $externalId])) {
+
+                        $discountLoyaltyTotal = 0;
+
+                        foreach ($item['discounts'] as $discount) {
+                            if ($discount['type'] === 'bonus_charge') {
+                                $discountLoyaltyTotal += $discount['amount'];
+                            }
+                        }
+
+                        $wcItem = $wcItems[(int) $externalId];
+                        $wcItem->set_total($wcItem->get_total() - $discountLoyaltyTotal);
+                        $wcItem->calculate_taxes();
+                        $wcItem->save();
+                    }
+                }
+
+                $wcOrder->calculate_totals();
             } catch (Throwable $exception) {
                 writeBaseLogs(
                     sprintf(
