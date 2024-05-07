@@ -105,7 +105,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
         }
 
-        public function getDiscountLp($cartItems, $site, $customerId)
+        private function getDiscountLp($cartItems, $site, $customerId)
         {
             $order = [
               'site' => $site,
@@ -121,7 +121,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $order['items'][] = [
                     'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
                     'quantity' => $item['quantity'],
-                    'initialPrice' => wc_get_price_including_tax($product)
+                    'initialPrice' => wc_get_price_including_tax($product),
+                    'discountManualAmount' => ($item['line_subtotal'] - $item['line_total']) / $item['quantity']
                 ];
             }
 
@@ -138,13 +139,13 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     continue;
                 }
 
-                $discount = $calculate['discount'] !== 0 ? $calculate['discount'] : $calculate['maxChargeBonuses'];
+                $discount = /*$calculate['discount'] !== 0 ? $calculate['discount'] :*/ $calculate['maxChargeBonuses'];
             }
 
             return $discount;
         }
 
-        public function getLoyaltyAccounts(int $userId)
+        private function getLoyaltyAccounts(int $userId)
         {
             $response = $this->apiClient->customersGet($userId);
 
@@ -161,6 +162,116 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             return $response;
+        }
+
+        public function createLoyaltyCoupon($refreshCoupon = false)
+        {
+            global $woocommerce;
+
+            $site = $this->apiClient->getSingleSiteForKey();
+            $cartItems = $woocommerce->cart->get_cart();
+            $customerId = $woocommerce->customer ? $woocommerce->customer->get_id() : null;
+
+            $resultString = '';
+
+            if (!$customerId || !$cartItems) {
+                return null;
+            }
+
+            $couponsLp = [];
+            // Check exists used loyalty coupons
+            foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
+                if (preg_match('/^pl\d+$/m', $code) === 1) {
+                    $couponsLp[] = $code;
+                }
+            }
+
+            // if you need to refresh coupon that does not exist
+            if (count($couponsLp) === 0 && $refreshCoupon) {
+                return null;
+            }
+
+            //If one loyalty coupon is used, not generate a new one
+            if (count($couponsLp) === 1 && !$refreshCoupon) {
+                return null;
+            }
+
+            // if more than 1 loyalty coupon is used, delete all coupons
+            if (count($couponsLp) > 1 || $refreshCoupon) {
+                foreach ($couponsLp as $code) {
+                    $woocommerce->cart->remove_coupon($code);
+
+                    $coupon = new WC_Coupon($code);
+
+                    $coupon->delete(true);
+                }
+            }
+
+            $validator = new WC_Retailcrm_Loyalty_Validator($this->apiClient, $this->settings['corporate_enabled'] ?? WC_Retailcrm_Base::NO);
+
+            if (!$validator->checkAccount($customerId)) {
+                return null;
+            }
+
+            $lpDiscountSum = $this->getDiscountLp($woocommerce->cart->get_cart(), $site, $customerId);
+
+            if ($lpDiscountSum === 0) {
+                return null;
+            }
+
+            //Check the existence of loyalty coupons and delete them
+            $coupons = $this->getCouponLoyalty($woocommerce->customer->get_email());
+
+            foreach ($coupons as $item) {
+                $coupon = new WC_Coupon($item['code']);
+
+                $coupon->delete(true);
+            }
+
+            //Generate new coupon
+            $coupon = new WC_Coupon();
+
+            //$coupon->set_individual_use(true); // запрещает использование других купонов одноврeменно с этим
+            $coupon->set_usage_limit(0);
+            $coupon->set_amount($lpDiscountSum);
+            $coupon->set_email_restrictions($woocommerce->customer->get_email());
+            $coupon->set_code('pl' . mt_rand());
+            $coupon->save();
+
+            if ($refreshCoupon) {
+                $woocommerce->cart->apply_coupon($coupon->get_code());
+
+                return $resultString;
+            }
+
+            $loyaltyInfo = $this->getLoyaltyAccounts($customerId);
+
+            if (!isset($loyaltyInfo['loyaltyAccounts'][0])) {
+                return null;
+            }
+
+            if ($loyaltyInfo['loyaltyAccounts'][0]['level']['type'] === 'discount') {
+                $resultString .= '<div style="background: #05ff13;">' . 'Предоставляется скидка в ' . $lpDiscountSum . $loyaltyInfo['loyaltyAccounts'][0]['loyalty']['currency'] . '</div>';
+            } else {
+                $resultString .= '<div style="background: #05ff13;">' . 'Возможно списать ' . $lpDiscountSum . ' бонусов' . '</div>';
+            }
+
+            return $resultString . '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
+        }
+
+        public function deleteAppliedLoyaltyCoupon()
+        {
+            global $woocommerce;
+
+            foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
+                if (preg_match('/^pl\d+$/m', $code) === 1) {
+                    $woocommerce->cart->remove_coupon($code);
+
+                    $coupon = new WC_Coupon($code);
+
+                    $coupon->delete(true);
+                }
+            }
         }
 
         public function getCouponLoyalty($email)
