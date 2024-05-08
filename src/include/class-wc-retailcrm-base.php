@@ -117,7 +117,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_add_to_cart', [$this, 'refresh_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_after_cart_item_quantity_update', [$this, 'refresh_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_cart_item_removed', [$this, 'refresh_loyalty_coupon'], 11, 1);
-                add_action('woocommerce_before_cart_empted', [$this, 'delete_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_before_cart_empted', [$this, 'clear_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_removed_coupon', [$this, 'removed_coupon'], 11, 1);
                 add_action('woocommerce_applied_coupon', [$this, 'applied_coupon'], 11, 1);
             }
@@ -712,10 +712,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-        public function delete_loyalty_coupon()
+        public function clear_loyalty_coupon()
         {
             try {
-                $this->loyalty->deleteAppliedLoyaltyCoupon();
+                $this->loyalty->clearLoyaltyCoupon();
             } catch (Throwable $exception) {
                 writeBaseLogs($exception->getMessage());
             }
@@ -724,11 +724,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function removed_coupon($couponCode)
         {
             try {
-                if (preg_match('/^pl\d+$/m', $couponCode) === 1) {
-                    $coupon = new WC_Coupon($couponCode);
-
-                    $coupon->delete(true);
-                } else {
+                if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
                     $this->loyalty->createLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
@@ -739,7 +735,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function applied_coupon($couponCode)
         {
             try {
-                if (preg_match('/^pl\d+$/m', $couponCode) !== 1) {
+                if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
                     $this->loyalty->createLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {

@@ -16,9 +16,12 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
     {
         /** @var WC_Retailcrm_Client_V5 */
         protected $apiClient;
-        protected $crmUser;
-        protected $loyaltyAccount;
+
         protected $isActiveCorp;
+
+        public $crmUser;
+
+        public $loyaltyAccount;
 
         public function __construct($apiClient, $isActiveCorp)
         {

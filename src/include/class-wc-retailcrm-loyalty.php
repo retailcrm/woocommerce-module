@@ -134,7 +134,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $discount = 0;
 
-            //Checking if the loyalty discount is a percentage discount
+            //Checking if the loyalty discount is a percent discount
             foreach ($response['order']['items'] as $item) {
                 if (!isset($item['discounts'])) {
                     continue;
@@ -197,7 +197,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $couponsLp = [];
             // Check exists used loyalty coupons
             foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
-                if (preg_match('/^pl\d+$/m', $code) === 1) {
+                if ($this->isLoyaltyCoupon($code)) {
                     $couponsLp[] = $code;
                 }
             }
@@ -249,7 +249,6 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             //Generate new coupon
             $coupon = new WC_Coupon();
 
-            //$coupon->set_individual_use(true); // запрещает использование других купонов одноврeменно с этим
             $coupon->set_usage_limit(0);
             $coupon->set_amount($lpDiscountSum);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
@@ -262,14 +261,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $resultString;
             }
 
-            $loyaltyInfo = $this->getLoyaltyAccounts($customerId);
-
-            if (!isset($loyaltyInfo['loyaltyAccounts'][0])) {
-                return null;
-            }
-
             //If a percentage discount, automatically apply a loyalty coupon
-            if ($loyaltyInfo['loyaltyAccounts'][0]['level']['type'] === 'discount') {
+            if ($validator->loyaltyAccount['level']['type'] === 'discount') {
                 $woocommerce->cart->apply_coupon($coupon->get_code());
 
                 return $resultString;
@@ -280,12 +273,12 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return $resultString . '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
         }
 
-        public function deleteAppliedLoyaltyCoupon()
+        public function clearLoyaltyCoupon()
         {
             global $woocommerce;
 
             foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
-                if (preg_match('/^pl\d+$/m', $code) === 1) {
+                if ($this->isLoyaltyCoupon($code)) {
                     $woocommerce->cart->remove_coupon($code);
 
                     $coupon = new WC_Coupon($code);
@@ -293,6 +286,24 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $coupon->delete(true);
                 }
             }
+        }
+
+        public function deleteLoyaltyCoupon($couponCode)
+        {
+            if ($this->isLoyaltyCoupon($couponCode)) {
+                $coupon = new WC_Coupon($couponCode);
+
+                $coupon->delete(true);
+
+                return true;
+            }
+
+            return  false;
+        }
+
+        public function isLoyaltyCoupon($couponCode): bool
+        {
+            return preg_match('/^pl\d+$/m', $couponCode) === 1;
         }
 
         public function getCouponLoyalty($email)
