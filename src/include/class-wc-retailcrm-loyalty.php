@@ -134,12 +134,28 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $discount = 0;
 
-            foreach ($response['calculations'] as $calculate) {
-                if ($calculate['privilegeType'] !== 'loyalty_level') {
+            //Checking if the loyalty discount is a percentage discount
+            foreach ($response['order']['items'] as $item) {
+                if (!isset($item['discounts'])) {
                     continue;
                 }
 
-                $discount = /*$calculate['discount'] !== 0 ? $calculate['discount'] :*/ $calculate['maxChargeBonuses'];
+                foreach ($item['discounts'] as $discountItem) {
+                    if ($discountItem['type'] === 'loyalty_level') {
+                        $discount += $discountItem['amount'];
+                    }
+                }
+            }
+
+            //If the discount has already been given, do not work with points deduction
+            if ($discount === 0) {
+                foreach ($response['calculations'] as $calculate) {
+                    if ($calculate['privilegeType'] !== 'loyalty_level') {
+                        continue;
+                    }
+
+                    $discount = $calculate['maxChargeBonuses'];
+                }
             }
 
             return $discount;
@@ -205,6 +221,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
                     $coupon->delete(true);
                 }
+
+                $woocommerce->cart->calculate_totals();
             }
 
             $validator = new WC_Retailcrm_Loyalty_Validator($this->apiClient, $this->settings['corporate_enabled'] ?? WC_Retailcrm_Base::NO);

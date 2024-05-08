@@ -124,7 +124,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 if (isset($discountLp) && $discountLp > 0) {
-                    $this->applyLoyaltyDiscount($wcOrder, $discountLp);
+                    $this->applyLoyaltyDiscount($wcOrder, $discountLp, $response['order']);
                 }
             } catch (Throwable $exception) {
                 writeBaseLogs(
@@ -691,17 +691,36 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             return $discountLp;
         }
 
-        private function applyLoyaltyDiscount(&$wcOrder, $discountLp)
+        private function applyLoyaltyDiscount(&$wcOrder, $discountLp, $createdOrder)
         {
-            $response = $this->retailcrm->applyBonusToOrder('woo', ['externalId' => $this->order['externalId']], (float) $discountLp);
+            $isPercentDiscount = false;
+            $items = [];
 
-            if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
-                return $response->getErrorString();
+            // Verification of automatic creation of the percentage discount of the loyalty program
+            foreach ($createdOrder['items'] as $item) {
+                foreach ($item['discounts'] as $discount) {
+                    if ($discount['type'] === 'loyalty_level') {
+                        $isPercentDiscount = true;
+                        $items = $createdOrder['items'];
+
+                        break 2;
+                    }
+                }
+            }
+
+            if (!$isPercentDiscount) {
+                $response = $this->retailcrm->applyBonusToOrder($createdOrder['site'], ['externalId' => $this->order['externalId']], (float) $discountLp);
+
+                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
+                    return $response->getErrorString();
+                }
+
+                $items = $response['order']['items'];
             }
 
             $wcItems = $wcOrder->get_items();
 
-            foreach ($response['order']['items'] as $item) {
+            foreach ($items as $item) {
                 $externalId = $item['externalIds'][0]['value'];
                 $externalId = preg_replace('/^\d+\_/m', '', $externalId);
 
@@ -710,7 +729,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $discountLoyaltyTotal = 0;
 
                     foreach ($item['discounts'] as $discount) {
-                        if ($discount['type'] === 'bonus_charge') {
+                        if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
                             $discountLoyaltyTotal += $discount['amount'];
                         }
                     }
