@@ -268,11 +268,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return null;
             }
 
+            //If a percentage discount, automatically apply a loyalty coupon
             if ($loyaltyInfo['loyaltyAccounts'][0]['level']['type'] === 'discount') {
-                $resultString .= '<div style="background: #05ff13;">' . 'Предоставляется скидка в ' . $lpDiscountSum . $loyaltyInfo['loyaltyAccounts'][0]['loyalty']['currency'] . '</div>';
-            } else {
-                $resultString .= '<div style="background: #05ff13;">' . 'Возможно списать ' . $lpDiscountSum . ' бонусов' . '</div>';
+                $woocommerce->cart->apply_coupon($coupon->get_code());
+
+                return $resultString;
             }
+
+            $resultString .= '<div style="background: #05ff13;">' . 'Возможно списать ' . $lpDiscountSum . ' бонусов' . '</div>';
 
             return $resultString . '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
         }
