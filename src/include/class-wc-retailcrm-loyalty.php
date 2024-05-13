@@ -378,7 +378,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             if (!$isPercentDiscount) {
-                $response = $this->retailcrm->applyBonusToOrder($createdOrder['site'], ['externalId' => $this->order['externalId']], (float) $discountLp);
+                $response = $this->apiClient->applyBonusToOrder($createdOrder['site'], ['externalId' => $createdOrder['externalId']], (float) $discountLp);
 
                 if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
                     return $response->getErrorString();
