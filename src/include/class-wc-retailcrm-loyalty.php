@@ -320,6 +320,98 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 ), ARRAY_A
             );
         }
+
+        public function deleteLoyaltyCouponInOrder(&$wcOrder)
+        {
+            $discountLp = 0;
+            $coupons = $wcOrder->get_coupons();
+
+            foreach ($coupons as $coupon) {
+                $code = $coupon->get_code();
+
+                if (preg_match('/^pl\d+$/m', $code) !== 1) {
+                    continue;
+                }
+
+                $discountLp = $coupon->get_discount();
+                $wcOrder->remove_coupon($code);
+                $objectCoupon = new WC_Coupon($code);
+                $objectCoupon->delete(true);
+
+                $wcOrder->recalculate_coupons();
+                break;
+            }
+
+            return $discountLp;
+        }
+
+        public function isValidUser($wcUser)
+        {
+            if (!$wcUser
+                || (
+                    isset($this->settings['corporate_enabled'])
+                    && $this->settings['corporate_enabled'] === WC_Retailcrm_Base::YES
+                    && !empty($wcUser->get_shipping_company())
+                )
+            ) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public function applyLoyaltyDiscount(&$wcOrder, $discountLp, $createdOrder)
+        {
+            $isPercentDiscount = false;
+            $items = [];
+
+            // Verification of automatic creation of the percentage discount of the loyalty program
+            foreach ($createdOrder['items'] as $item) {
+                foreach ($item['discounts'] as $discount) {
+                    if ($discount['type'] === 'loyalty_level') {
+                        $isPercentDiscount = true;
+                        $items = $createdOrder['items'];
+
+                        break 2;
+                    }
+                }
+            }
+
+            if (!$isPercentDiscount) {
+                $response = $this->retailcrm->applyBonusToOrder($createdOrder['site'], ['externalId' => $this->order['externalId']], (float) $discountLp);
+
+                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
+                    return $response->getErrorString();
+                }
+
+                $items = $response['order']['items'];
+            }
+
+            $wcItems = $wcOrder->get_items();
+
+            foreach ($items as $item) {
+                $externalId = $item['externalIds'][0]['value'];
+                $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+
+                if (isset($wcItems[(int) $externalId])) {
+
+                    $discountLoyaltyTotal = 0;
+
+                    foreach ($item['discounts'] as $discount) {
+                        if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                            $discountLoyaltyTotal += $discount['amount'];
+                        }
+                    }
+
+                    $wcItem = $wcItems[(int) $externalId];
+                    $wcItem->set_total($wcItem->get_total() - $discountLoyaltyTotal);
+                    $wcItem->calculate_taxes();
+                    $wcItem->save();
+                }
+            }
+
+            $wcOrder->calculate_totals();
+        }
     }
 
 endif;
