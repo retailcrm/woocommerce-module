@@ -104,10 +104,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
                     if (!$this->loyalty->isValidUser($wcUser) && $discountLp > 0) {
                         writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
-                        wp_die();
+                        wp_die();//TODO удаление скидки вместо отмены заказа.
+                    } else {
+                        $privilegeType = 'loyalty_level';
                     }
-
-                    $privilegeType = 'loyalty_level';
                 }
 
                 $this->processOrder($wcOrder);

@@ -1,7 +1,4 @@
 <?php
-
-namespace datasets;
-
 /**
  * PHP version 7.0
  *
@@ -148,6 +145,182 @@ class DataLoyaltyRetailCrm
             [
                 'responseMock' => ['success' => true, 'loyalty' => ['active' => true, 'blocked' => false]],
                 'throwMessage' => null
+            ]
+        ];
+    }
+
+    public static function createProducts()
+    {
+        $product1 = new WC_Product();
+        $product1->set_name('Test product 1');
+        $product1->set_sku('test1' . mt_rand());
+        $product1->set_regular_price('200');
+        $product1->set_sale_price('200');
+        $product1->save();
+
+        $product2 = new WC_Product();
+        $product2->set_name('Test product 2');
+        $product2->set_sku('test2' . mt_rand());
+        $product2->set_regular_price('100');
+        $product2->set_sale_price('50');
+        $product2->save();
+
+        return [$product1, $product2];
+    }
+
+    public static function getDataCalculation()
+    {
+        return [
+            [
+                'response' => [
+                    'calculations' => [],
+                    'order' => [
+                        'items' => [
+                            [
+                                'discounts' => [
+                                    [
+                                        'type' => 'loyalty_level',
+                                        'amount' => 20
+                                    ],
+                                ]
+                            ],
+                            [
+                                'discounts' => [
+                                    [
+                                        'type' => 'loyalty_level',
+                                        'amount' => 20
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => 40
+            ],
+            [
+                'response' => [
+                    'calculations' => [
+                        [
+                            'privilegeType' => 'test'
+                        ],
+                        [
+                            'privilegeType' => 'loyalty_level',
+                            'maxChargeBonuses' => 50
+                        ]
+                    ],
+                    'order' => [
+                        'items' => [['discounts' => null], ['discounts' => null]],
+                    ]
+                ],
+                'expected' => 50
+            ]
+        ];
+    }
+
+    public static function dataCheckLoyaltyCoupon()
+    {
+        return [
+            [
+                'code' => 'pl49844894548',
+                'expected' => true
+            ],
+            [
+                'code' => '56556446548484',
+                'expected' => false
+            ],
+            [
+                'code' => 'dfhdfh54655pl',
+                'expected' => false
+            ],
+            [
+                'code' => '654844pl18498',
+                'expected' => false
+            ]
+        ];
+    }
+
+    public static function dataGetEmailsForPersonalCoupon()
+    {
+        $data = [
+            [
+                'email' => 'test1@gmail.com'
+            ],
+            [
+                'email' => 'test2@gmail.com'
+            ]
+        ];
+
+        $coupon = new WC_Coupon();
+
+        $coupon->set_usage_limit(0);
+        $coupon->set_amount(100);
+        $coupon->set_email_restrictions('test1@gmail.com');
+        $coupon->set_code('pl' . mt_rand());
+        $coupon->save();
+
+        $data[0]['expectedCode'] = $coupon->get_code();
+
+        $coupon = new WC_Coupon();
+
+        $coupon->set_usage_limit(0);
+        $coupon->set_amount(100);
+        $coupon->set_email_restrictions('test2@gmail.com');
+        $coupon->set_code('pl' . mt_rand());
+        $coupon->save();
+
+        $data[1]['expectedCode'] = $coupon->get_code();
+
+        $data[2] = [
+            'email' => 'test3@gmail.com',
+            'expectedCode' => false
+        ];
+
+        return $data;
+    }
+
+    public static function dataValidUser()
+    {
+        $customer = new WC_Customer();
+
+        $customer->set_first_name('Tester 1');
+        $customer->set_last_name('Tester 1');
+        $customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
+        $customer->set_password('password');
+        $customer->set_billing_phone('89000000000');
+        $customer->set_date_created(date('Y-m-d H:i:s'));
+        $customer->save();
+
+        $customer1 = new WC_Customer();
+
+        $customer1->set_first_name('Tester 1');
+        $customer1->set_last_name('Tester 1');
+        $customer1->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
+        $customer1->set_password('password');
+        $customer1->set_billing_phone('89000000000');
+        $customer1->set_date_created(date('Y-m-d H:i:s'));
+        $customer1->set_shipping_company('OOO TEST');
+        $customer1->save();
+
+        return [
+            [
+                'customer' => $customer,
+                'corporate_enabled' => 'yes',
+                'expected' => true
+            ],
+            [
+                'customer' => $customer1,
+                'corporate_enabled' => 'yes',
+                'expected' => false
+            ],
+            [
+                'customer' => $customer1,
+                'corporate_enabled' => 'no',
+                'expected' => true
+            ],
+            [
+                'customer' => null,
+                'corporate_enabled' => 'yes',
+                'expected' => false
             ]
         ];
     }

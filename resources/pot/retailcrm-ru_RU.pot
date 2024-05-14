@@ -588,3 +588,12 @@ msgstr "Программа лояльности заблокирована"
 
 msgid "This user is a corporate person"
 msgstr "Данный пользователь является корпоратиным лицом"
+
+msgid "It is possible to write off"
+msgstr "Возможно списать"
+
+msgid "bonuses"
+msgstr "бонусов"
+
+msgid "Your coupon:"
+msgstr "Ваш купон:"

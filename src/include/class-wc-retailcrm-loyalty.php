@@ -252,7 +252,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $coupon->set_usage_limit(0);
             $coupon->set_amount($lpDiscountSum);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
-            $coupon->set_code('pl' . mt_rand());
+            $coupon->set_code('pl' . mt_rand());//TODO pl to loyalty
             $coupon->save();
 
             if ($refreshCoupon) {
@@ -268,9 +268,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $resultString;
             }
 
-            $resultString .= '<div style="background: #05ff13;">' . 'Возможно списать ' . $lpDiscountSum . ' бонусов' . '</div>';
+            $resultString .= '<div style="background: #05ff13;">' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum . ' ' . __('bonuses', 'retailcrm') . '</div>';
 
-            return $resultString . '<div style="background: #05ff13;">' . 'Your coupon: ' . $coupon->get_code() . '</div>';
+            return $resultString . '<div style="background: #05ff13;">' . __('Your coupon:', 'retailcrm') . ' ' . $coupon->get_code() . '</div>';
         }
 
         public function clearLoyaltyCoupon()
@@ -321,7 +321,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             );
         }
 
-        public function deleteLoyaltyCouponInOrder(&$wcOrder)
+        public function deleteLoyaltyCouponInOrder($wcOrder)
         {
             $discountLp = 0;
             $coupons = $wcOrder->get_coupons();
@@ -360,7 +360,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return true;
         }
 
-        public function applyLoyaltyDiscount(&$wcOrder, $discountLp, $createdOrder)
+        public function applyLoyaltyDiscount($wcOrder, $discountLp, $createdOrder)
         {
             $isPercentDiscount = false;
             $items = [];
@@ -391,10 +391,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             foreach ($items as $item) {
                 $externalId = $item['externalIds'][0]['value'];
-                $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+                $externalId = preg_replace('/^\d+\_/m', '', $externalId);//TODO проверить типы товаров
 
                 if (isset($wcItems[(int) $externalId])) {
-
                     $discountLoyaltyTotal = 0;
 
                     foreach ($item['discounts'] as $discount) {
