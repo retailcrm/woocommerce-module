@@ -27,12 +27,18 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         /** @var WC_Retailcrm_Loyalty_Form */
         protected $loyaltyForm;
 
+        protected $validator;
+
         public function __construct($apiClient, $settings)
         {
             $this->apiClient = $apiClient;
             $this->settings = $settings;
             $this->dateFormat = 'Y-m-d H:i:sP';
             $this->loyaltyForm = new WC_Retailcrm_Loyalty_Form();
+            $this->validator = new WC_Retailcrm_Loyalty_Validator(
+                $this->apiClient,
+                    $this->settings['corporate_enabled'] ?? WC_Retailcrm_Base::NO
+            );
         }
 
         public function getForm(int $userId)
@@ -225,9 +231,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $woocommerce->cart->calculate_totals();
             }
 
-            $validator = new WC_Retailcrm_Loyalty_Validator($this->apiClient, $this->settings['corporate_enabled'] ?? WC_Retailcrm_Base::NO);
-
-            if (!$validator->checkAccount($customerId)) {
+            if (!$this->validator->checkAccount($customerId)) {
                 return null;
             }
 
@@ -262,7 +266,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             //If a percentage discount, automatically apply a loyalty coupon
-            if ($validator->loyaltyAccount['level']['type'] === 'discount') {
+            if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
                 $woocommerce->cart->apply_coupon($coupon->get_code());
 
                 return $resultString;

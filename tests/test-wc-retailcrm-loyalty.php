@@ -43,13 +43,14 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Client_V5')
             ->disableOriginalConstructor()
-            ->setMethods(['customersGet', 'getLoyaltyAccountList', 'createLoyaltyAccount', 'activateLoyaltyAccount', 'calculateDiscountLoyalty'])
+            ->setMethods(['customersGet', 'getLoyaltyAccountList', 'createLoyaltyAccount', 'activateLoyaltyAccount', 'calculateDiscountLoyalty', 'getSingleSiteForKey'])
             ->getMock()
         ;
 
         $this->setMockResponse($this->apiMock, 'customersGet', ['customer' => ['id' => 1]]);
         $this->setMockResponse($this->apiMock, 'createLoyaltyAccount', $this->responseMock);
         $this->setMockResponse($this->apiMock, 'activateLoyaltyAccount', $this->responseMock);
+        $this->setMockResponse($this->apiMock, 'getSingleSiteForKey', 'woo');
 
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
     }
@@ -149,18 +150,87 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-    /**
-     * @group loyalty
-     */
-    public function testCreateLoyaltyCoupon()
+    public function testCreateLoyaltyCouponWithoutAppliedCoupon()
     {
+        $products = DataLoyaltyRetailCrm::createProducts();
+        $user = DataLoyaltyRetailcrm::createUsers()[0];
+
+        $cart = new WC_Cart();
+        $cart->add_to_cart($products[0]->get_id());
+        $cart->add_to_cart($products[1]->get_id());
+
         $woocommerce = wc();
-        var_dump($woocommerce->cart);
-        /*$woocommerce->cart = 'test';
-        var_dump($woocommerce->cart);*/
-        //die();
-        $this->loyalty->createLoyaltyCoupon(false);
+        $woocommerce->cart = $cart;
+        $woocommerce->customer = $user;
+
+        $validatorMock = $this->getMockBuilder('\WC_Retailcrm_Loyalty_Validator')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $this->setMockResponse($validatorMock, 'checkAccount', true);
+        $validatorMock->loyaltyAccount['level']['type'] = 'loyalty_level';
+
+        $responseCalculation = DataLoyaltyRetailCrm::getDataCalculation()[1];
+        $responseMock = new WC_Retailcrm_Response(200, json_encode($responseCalculation['response']));
+        $this->setMockResponse($this->apiMock, 'calculateDiscountLoyalty', $responseMock);
+
+        $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
+        $reflection = new \ReflectionClass($this->loyalty);
+        $reflection_property = $reflection->getProperty('validator');
+        $reflection_property->setAccessible(true);
+        $reflection_property->setValue($this->loyalty, $validatorMock);
+
+        $GLOBALS['woocommerce'] = $woocommerce;
+        $result = $this->loyalty->createLoyaltyCoupon();
+
+        $this->assertNotEmpty($result);
+        $this->assertNotEmpty($this->loyalty->getCouponLoyalty($woocommerce->customer->get_email()));
     }
+
+    public function testCreateLoyaltyCouponWithPercentDiscount()
+    {
+        $products = DataLoyaltyRetailCrm::createProducts();
+        $user = DataLoyaltyRetailcrm::createUsers()[0];
+
+        $cart = new WC_Cart();
+        $cart->add_to_cart($products[0]->get_id());
+        $cart->add_to_cart($products[1]->get_id());
+
+        $woocommerce = wc();
+        $woocommerce->cart = $cart;
+        $woocommerce->customer = $user;
+
+        $validatorMock = $this->getMockBuilder('\WC_Retailcrm_Loyalty_Validator')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+        $this->setMockResponse($validatorMock, 'checkAccount', true);
+        $validatorMock->loyaltyAccount['level']['type'] = 'discount';
+
+        $responseCalculation = DataLoyaltyRetailCrm::getDataCalculation()[1];
+        $responseMock = new WC_Retailcrm_Response(200, json_encode($responseCalculation['response']));
+        $this->setMockResponse($this->apiMock, 'calculateDiscountLoyalty', $responseMock);
+
+        $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
+        $reflection = new \ReflectionClass($this->loyalty);
+        $reflection_property = $reflection->getProperty('validator');
+        $reflection_property->setAccessible(true);
+        $reflection_property->setValue($this->loyalty, $validatorMock);
+
+        $GLOBALS['woocommerce'] = $woocommerce;
+        $result = $this->loyalty->createLoyaltyCoupon();
+
+        $this->assertEmpty($result);
+        $this->assertNotEmpty($this->loyalty->getCouponLoyalty($woocommerce->customer->get_email()));
+        $this->assertNotEmpty($woocommerce->cart->get_coupons());
+    }
+
+    public function testCreateLoyaltyCouponWithRefreshCoupon()
+    {
+
+    }
+
+
 
     private function getPrivateMethod($method, $class)
     {

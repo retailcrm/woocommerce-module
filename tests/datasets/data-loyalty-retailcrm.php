@@ -250,26 +250,9 @@ class DataLoyaltyRetailCrm
             ]
         ];
 
-        $coupon = new WC_Coupon();
-
-        $coupon->set_usage_limit(0);
-        $coupon->set_amount(100);
-        $coupon->set_email_restrictions('test1@gmail.com');
-        $coupon->set_code('pl' . mt_rand());
-        $coupon->save();
-
-        $data[0]['expectedCode'] = $coupon->get_code();
-
-        $coupon = new WC_Coupon();
-
-        $coupon->set_usage_limit(0);
-        $coupon->set_amount(100);
-        $coupon->set_email_restrictions('test2@gmail.com');
-        $coupon->set_code('pl' . mt_rand());
-        $coupon->save();
-
-        $data[1]['expectedCode'] = $coupon->get_code();
-
+        $coupons = self::createCoupons();
+        $data[0]['expectedCode'] = $coupons[0]->get_code();
+        $data[1]['expectedCode'] = $coupons[1]->get_code();
         $data[2] = [
             'email' => 'test3@gmail.com',
             'expectedCode' => false
@@ -279,6 +262,34 @@ class DataLoyaltyRetailCrm
     }
 
     public static function dataValidUser()
+    {
+        $users = self::createUsers();
+
+        return [
+            [
+                'customer' => $users[0],
+                'corporate_enabled' => 'yes',
+                'expected' => true
+            ],
+            [
+                'customer' => $users[1],
+                'corporate_enabled' => 'yes',
+                'expected' => false
+            ],
+            [
+                'customer' => $users[1],
+                'corporate_enabled' => 'no',
+                'expected' => true
+            ],
+            [
+                'customer' => null,
+                'corporate_enabled' => 'yes',
+                'expected' => false
+            ]
+        ];
+    }
+
+    public static function createUsers()
     {
         $customer = new WC_Customer();
 
@@ -301,27 +312,27 @@ class DataLoyaltyRetailCrm
         $customer1->set_shipping_company('OOO TEST');
         $customer1->save();
 
-        return [
-            [
-                'customer' => $customer,
-                'corporate_enabled' => 'yes',
-                'expected' => true
-            ],
-            [
-                'customer' => $customer1,
-                'corporate_enabled' => 'yes',
-                'expected' => false
-            ],
-            [
-                'customer' => $customer1,
-                'corporate_enabled' => 'no',
-                'expected' => true
-            ],
-            [
-                'customer' => null,
-                'corporate_enabled' => 'yes',
-                'expected' => false
-            ]
-        ];
+        return [$customer, $customer1];
+    }
+
+    public static function createCoupons($email1 = 'test1@gmail.com', $email2 = 'test2@gmail.com')
+    {
+        $coupon = new WC_Coupon();
+
+        $coupon->set_usage_limit(0);
+        $coupon->set_amount(100);
+        $coupon->set_email_restrictions($email1);
+        $coupon->set_code('pl' . mt_rand());
+        $coupon->save();
+
+        $coupon1 = new WC_Coupon();
+
+        $coupon1->set_usage_limit(0);
+        $coupon1->set_amount(100);
+        $coupon1->set_email_restrictions($email2);
+        $coupon1->set_code('pl' . mt_rand());
+        $coupon1->save();
+
+        return [$coupon, $coupon1];
     }
 }
