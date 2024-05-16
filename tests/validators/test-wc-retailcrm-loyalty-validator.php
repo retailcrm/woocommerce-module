@@ -29,7 +29,7 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         $this->corpClient->set_password('password');
         $this->corpClient->set_billing_phone('89000000000');
         $this->corpClient->set_date_created(date('Y-m-d H:i:s'));
-        $this->corpClient->set_shipping_company('TEST COMPANY');
+        $this->corpClient->set_billing_company('TEST COMPANY');
         $this->corpClient->save();
     }
 

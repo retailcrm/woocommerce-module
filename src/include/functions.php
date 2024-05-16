@@ -202,3 +202,8 @@ function useHpos()
     return class_exists(Automattic\WooCommerce\Utilities\OrderUtil::class)
         && Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
 }
+
+function isLoyaltyActivate($settings)
+{
+    return isset($settings['loyalty']) && $settings['loyalty'] === WC_Retailcrm_Base::YES;
+}

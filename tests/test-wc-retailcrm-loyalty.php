@@ -89,7 +89,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
     /**
      * @dataProvider DataLoyaltyRetailCrm::getDataCalculation()
      */
-    public function testGetDiscountLp($response, $expected)
+    public function testGetDiscountLoyalty($response, $expected)
     {
         $responseMock = new WC_Retailcrm_Response(200, json_encode($response));
         $this->setMockResponse($this->apiMock, 'calculateDiscountLoyalty', $responseMock);
@@ -98,7 +98,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
 
-        $method = $this->getPrivateMethod('getDiscountLp', $this->loyalty);
+        $method = $this->getPrivateMethod('getDiscountLoyalty', $this->loyalty);
 
         $discount = $method->invokeArgs($this->loyalty, [$cartItems, 'test', 1]);
         $this->assertEquals($expected, $discount);
@@ -119,11 +119,16 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
     /**
      * @dataProvider DataLoyaltyRetailCrm::dataValidUser();
      */
-    public function testIsValidUser($customer, $corporate_enabled, $expected)
+    public function testIsValidOrder($customer, $corporate_enabled, $expected, $orderCorporate)
     {
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, ['corporate_enabled' => $corporate_enabled]);
+        $wcOrder = new WC_Order();
 
-        $this->assertEquals($expected, $this->loyalty->isValidUser($customer));
+        if ($orderCorporate) {
+            $wcOrder->set_billing_company('OOO TEST');
+        }
+
+        $this->assertEquals($expected, $this->loyalty->isValidOrder($customer, $wcOrder));
     }
 
     /**
@@ -238,7 +243,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         $coupon->set_usage_limit(0);
         $coupon->set_amount('50');
         $coupon->set_email_restrictions($user->get_email());
-        $coupon->set_code('pl' . mt_rand());
+        $coupon->set_code('loyalty' . mt_rand());
         $coupon->save();
         $cart->apply_coupon($coupon->get_code());
 
@@ -285,7 +290,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         $coupon->set_usage_limit(0);
         $coupon->set_amount('50');
         $coupon->set_email_restrictions($user->get_email());
-        $coupon->set_code('pl' . mt_rand());
+        $coupon->set_code('loyalty' . mt_rand());
         $coupon->save();
 
         $wcOrder = wc_create_order([

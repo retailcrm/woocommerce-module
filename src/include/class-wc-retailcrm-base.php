@@ -104,7 +104,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
 
-            if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === static::YES) {
+            if (isLoyaltyActivate($this->settings)) {
                 add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
                 add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
@@ -118,8 +118,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_after_cart_item_quantity_update', [$this, 'refresh_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_cart_item_removed', [$this, 'refresh_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_before_cart_empted', [$this, 'clear_loyalty_coupon'], 11, 1);
-                add_action('woocommerce_removed_coupon', [$this, 'removed_coupon'], 11, 1);
-                add_action('woocommerce_applied_coupon', [$this, 'applied_coupon'], 11, 1);
+                add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
+                add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
             }
 
             // Subscribed hooks
@@ -721,7 +721,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-        public function removed_coupon($couponCode)
+        public function remove_coupon($couponCode)
         {
             try {
                 if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
@@ -732,7 +732,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-        public function applied_coupon($couponCode)
+        public function apply_coupon($couponCode)
         {
             try {
                 if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {

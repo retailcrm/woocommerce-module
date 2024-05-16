@@ -67,9 +67,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             $this->orders = $orders;
             $this->order_payment = $order_payment;
 
-            if (isset($this->retailcrm_settings['loyalty'])
-                && $this->retailcrm_settings['loyalty'] === WC_Retailcrm_Base::YES
-            ) {
+            if (isLoyaltyActivate($retailcrm_settings)) {
                 $this->loyalty = new WC_Retailcrm_Loyalty($retailcrm, $retailcrm_settings);
             }
 
@@ -102,9 +100,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
                     $wcUser = $wcOrder->get_user();
 
-                    if (!$this->loyalty->isValidUser($wcUser) && $discountLp > 0) {
+                    if (!$this->loyalty->isValidOrder($wcUser, $wcOrder) && $discountLp > 0) {
                         writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
-                        wp_die();//TODO удаление скидки вместо отмены заказа.
+
+                        $discountLp = 0;
                     } else {
                         $privilegeType = 'loyalty_level';
                     }

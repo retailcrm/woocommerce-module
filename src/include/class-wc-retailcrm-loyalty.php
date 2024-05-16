@@ -111,7 +111,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
         }
 
-        private function getDiscountLp($cartItems, $site, $customerId)
+        private function getDiscountLoyalty($cartItems, $site, $customerId)
         {
             $order = [
               'site' => $site,
@@ -235,7 +235,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return null;
             }
 
-            $lpDiscountSum = $this->getDiscountLp($woocommerce->cart->get_cart(), $site, $customerId);
+            $lpDiscountSum = $this->getDiscountLoyalty($woocommerce->cart->get_cart(), $site, $customerId);
 
             if ($lpDiscountSum === 0) {
                 return null;
@@ -256,7 +256,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $coupon->set_usage_limit(0);
             $coupon->set_amount($lpDiscountSum);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
-            $coupon->set_code('pl' . mt_rand());//TODO pl to loyalty
+            $coupon->set_code('loyalty' . mt_rand());
             $coupon->save();
 
             if ($refreshCoupon) {
@@ -307,7 +307,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         public function isLoyaltyCoupon($couponCode): bool
         {
-            return preg_match('/^pl\d+$/m', $couponCode) === 1;
+            return preg_match('/^loyalty\d+$/m', $couponCode) === 1;
         }
 
         public function getCouponLoyalty($email)
@@ -318,7 +318,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $wpdb->prepare(
                     "SELECT posts.post_name code FROM {$wpdb->prefix}posts AS posts
                             LEFT JOIN {$wpdb->prefix}postmeta AS postmeta ON posts.ID = postmeta.post_id
-                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE 'pl%'
+                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE 'loyalty%'
                             AND postmeta.meta_key = 'customer_email' AND postmeta.meta_value LIKE %s",
                     '%' . $email . '%'
                 ), ARRAY_A
@@ -333,35 +333,32 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             foreach ($coupons as $coupon) {
                 $code = $coupon->get_code();
 
-                if (preg_match('/^pl\d+$/m', $code) !== 1) {
-                    continue;
+                if ($this->isLoyaltyCoupon($code)) {
+                    $discountLp = $coupon->get_discount();
+                    $wcOrder->remove_coupon($code);
+                    $objectCoupon = new WC_Coupon($code);
+                    $objectCoupon->delete(true);
+
+                    $wcOrder->recalculate_coupons();
+                    break;
                 }
-
-                $discountLp = $coupon->get_discount();
-                $wcOrder->remove_coupon($code);
-                $objectCoupon = new WC_Coupon($code);
-                $objectCoupon->delete(true);
-
-                $wcOrder->recalculate_coupons();
-                break;
             }
 
             return $discountLp;
         }
 
-        public function isValidUser($wcUser)
+        public function isValidOrder($wcUser, $wcOrder)
         {
-            if (!$wcUser
+            return !(!$wcUser
                 || (
                     isset($this->settings['corporate_enabled'])
                     && $this->settings['corporate_enabled'] === WC_Retailcrm_Base::YES
-                    && !empty($wcUser->get_shipping_company())
-                )
-            ) {
-                return false;
-            }
-
-            return true;
+                    && (
+                        !empty($wcUser->get_billing_company())
+                        || !empty($wcOrder->get_billing_company())
+                    )
+                ))
+            ;
         }
 
         public function applyLoyaltyDiscount($wcOrder, $discountLp, $createdOrder)
@@ -395,7 +392,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             foreach ($items as $item) {
                 $externalId = $item['externalIds'][0]['value'];
-                $externalId = preg_replace('/^\d+\_/m', '', $externalId);//TODO проверить типы товаров
+                $externalId = preg_replace('/^\d+\_/m', '', $externalId);
 
                 if (isset($wcItems[(int) $externalId])) {
                     $discountLoyaltyTotal = 0;

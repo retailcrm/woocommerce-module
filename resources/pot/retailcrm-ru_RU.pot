@@ -572,10 +572,10 @@ msgid "Error when searching for participation in loyalty programs"
 msgstr "Ошибка при поиске участия в программах лояльности"
 
 msgid "No active participation in the loyalty program was detected"
-msgstr "Активного участия в программе лояльности не обнаружено"
+msgstr "Не обнаружено активного участия в программе лояльности"
 
 msgid "No bonuses for debiting"
-msgstr "Бонусы на списание отсутствуют"
+msgstr "Нет бонусов для списания"
 
 msgid "Loyalty program not found"
 msgstr "Программа лояльности не найдена"

@@ -221,7 +221,7 @@ class DataLoyaltyRetailCrm
     {
         return [
             [
-                'code' => 'pl49844894548',
+                'code' => 'loyalty49844894548',
                 'expected' => true
             ],
             [
@@ -269,22 +269,33 @@ class DataLoyaltyRetailCrm
             [
                 'customer' => $users[0],
                 'corporate_enabled' => 'yes',
-                'expected' => true
+                'expected' => true,
+                'orderCorporate' => false
             ],
             [
                 'customer' => $users[1],
                 'corporate_enabled' => 'yes',
-                'expected' => false
+                'expected' => false,
+                'orderCorporate' => false
             ],
             [
                 'customer' => $users[1],
                 'corporate_enabled' => 'no',
-                'expected' => true
+                'expected' => true,
+                'orderCorporate' => false
             ],
             [
                 'customer' => null,
                 'corporate_enabled' => 'yes',
-                'expected' => false
+                'expected' => false,
+                'orderCorporate' => false
+
+            ],
+            [
+                'customer' => $users[0],
+                'corporate_enabled' => 'yes',
+                'expected' => false,
+                'orderCorporate' => true
             ]
         ];
     }
@@ -309,7 +320,7 @@ class DataLoyaltyRetailCrm
         $customer1->set_password('password');
         $customer1->set_billing_phone('89000000000');
         $customer1->set_date_created(date('Y-m-d H:i:s'));
-        $customer1->set_shipping_company('OOO TEST');
+        $customer1->set_billing_company('OOO TEST');
         $customer1->save();
 
         return [$customer, $customer1];
@@ -322,7 +333,7 @@ class DataLoyaltyRetailCrm
         $coupon->set_usage_limit(0);
         $coupon->set_amount(100);
         $coupon->set_email_restrictions($email1);
-        $coupon->set_code('pl' . mt_rand());
+        $coupon->set_code('loyalty' . mt_rand());
         $coupon->save();
 
         $coupon1 = new WC_Coupon();
@@ -330,7 +341,7 @@ class DataLoyaltyRetailCrm
         $coupon1->set_usage_limit(0);
         $coupon1->set_amount(100);
         $coupon1->set_email_restrictions($email2);
-        $coupon1->set_code('pl' . mt_rand());
+        $coupon1->set_code('loyalty' . mt_rand());
         $coupon1->save();
 
         return [$coupon, $coupon1];
