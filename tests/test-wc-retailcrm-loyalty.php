@@ -134,11 +134,21 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
     /**
      * @dataProvider DataLoyaltyRetailCrm::dataGetEmailsForPersonalCoupon()
      */
-    public function testGetCouponLoyalty($email, $expectedCode)
+    public function testGetCouponLoyalty($email, $code)
     {
+        if ($code) {
+            $coupon = new WC_Coupon();
+
+            $coupon->set_usage_limit(0);
+            $coupon->set_amount(100);
+            $coupon->set_email_restrictions($email);
+            $coupon->set_code($code);
+            $coupon->save();
+        }
+
         $coupons = $this->loyalty->getCouponLoyalty($email);
 
-        if (!$coupons && $expectedCode === false) {
+        if (!$coupons && $code === false) {
             $this->assertTrue(true);
         } else {
             $result = false;
@@ -147,7 +157,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
                 $coupon = new WC_Coupon($item['code']);
                 $result = true;
 
-                $this->assertTrue($expectedCode === $item['code']);
+                $this->assertTrue($code === $item['code']);
                 $coupon->delete(true);
             }
 

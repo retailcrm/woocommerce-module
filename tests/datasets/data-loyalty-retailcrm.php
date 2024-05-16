@@ -78,25 +78,25 @@ class DataLoyaltyRetailCrm
                 'responseApiMethod' => [],
                 'wcUserType' => 'individual',
                 'throwMessage' => 'User not found in the system',
-                'isCorpActive' => false
+                'isCorpActive' => 'no'
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'corp',
                 'throwMessage' => 'This user is a corporate person',
-                'isCorpActive' => true,
+                'isCorpActive' => 'yes',
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'corp',
                 'throwMessage' => null,
-                'isCorpActive' => false,
+                'isCorpActive' => 'no',
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'individual',
                 'throwMessage' => null,
-                'isCorpActive' => true,
+                'isCorpActive' => 'yes',
             ],
         ];
     }
@@ -241,24 +241,20 @@ class DataLoyaltyRetailCrm
 
     public static function dataGetEmailsForPersonalCoupon()
     {
-        $data = [
+        return [
             [
-                'email' => 'test1@gmail.com'
+                'email' => 'test1@gmail.com',
+                'code' => 'loyalty' . mt_rand()
             ],
             [
-                'email' => 'test2@gmail.com'
+                'email' => 'test2@gmail.com',
+                'code' => 'loyalty' . mt_rand()
+            ],
+            [
+                'email' => 'test3@gmail.com',
+                'expectedCode' => false
             ]
         ];
-
-        $coupons = self::createCoupons();
-        $data[0]['expectedCode'] = $coupons[0]->get_code();
-        $data[1]['expectedCode'] = $coupons[1]->get_code();
-        $data[2] = [
-            'email' => 'test3@gmail.com',
-            'expectedCode' => false
-        ];
-
-        return $data;
     }
 
     public static function dataValidUser()
