@@ -1,6 +1,6 @@
 <?php
 
-use datasets\DataLoyaltyRetailCrm;
+use DataLoyaltyRetailCrm;
 
 class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
 {
@@ -29,11 +29,13 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         $this->corpClient->set_password('password');
         $this->corpClient->set_billing_phone('89000000000');
         $this->corpClient->set_date_created(date('Y-m-d H:i:s'));
-        $this->corpClient->set_shipping_company('TEST COMPANY');
+        $this->corpClient->set_billing_company('TEST COMPANY');
         $this->corpClient->save();
     }
 
-    /** @dataProvider datasets\DataLoyaltyRetailCrm::dataCheckUser() */
+    /**
+     * @dataProvider DataLoyaltyRetailCrm::dataCheckUser()
+     */
     public function testCheckUser($responseApiMethod, $wcUserType, $throwMessage, $isCorpActive)
     {
         $this->setResponseMock();
@@ -57,7 +59,7 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-    /** @dataProvider datasets\DataLoyaltyRetailCrm::dataLoyaltyAccount() */
+    /** @dataProvider DataLoyaltyRetailCrm::dataLoyaltyAccount() */
     public function testGetLoyaltyAccount($responseMock, $throwMessage)
     {
         $this->setResponseMock($responseMock);
@@ -79,7 +81,7 @@ class WC_Retailcrm_Loyalty_Validator_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
-    /** @dataProvider datasets\DataLoyaltyRetailCrm::dataCheckActiveLoyalty() */
+    /** @dataProvider DataLoyaltyRetailCrm::dataCheckActiveLoyalty() */
     public function testCheckActivateLoyalty($responseMock, $throwMessage)
     {
         $this->setResponseMock($responseMock);

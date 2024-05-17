@@ -27,12 +27,18 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         /** @var WC_Retailcrm_Loyalty_Form */
         protected $loyaltyForm;
 
+        protected $validator;
+
         public function __construct($apiClient, $settings)
         {
             $this->apiClient = $apiClient;
             $this->settings = $settings;
             $this->dateFormat = 'Y-m-d H:i:sP';
             $this->loyaltyForm = new WC_Retailcrm_Loyalty_Form();
+            $this->validator = new WC_Retailcrm_Loyalty_Validator(
+                $this->apiClient,
+                isCorporateUserActivate($this->settings)
+            );
         }
 
         public function getForm(int $userId)
@@ -40,22 +46,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $result = [];
 
             try {
-                $response = $this->apiClient->customersGet($userId);
-
-                if (!isset($response['customer']['id'])) {
-                    return $result;
-                }
-
-                $filter['customerId'] = $response['customer']['id'];
-
-                $response = $this->apiClient->getLoyaltyAccountList($filter);
+                $response = $this->getLoyaltyAccounts($userId);
             } catch (Throwable $exception) {
                 writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
 
-                return $result;
-            }
-
-            if (!$response->isSuccessful() || !$response->offsetExists('loyaltyAccounts')) {
                 return $result;
             }
 
@@ -115,6 +109,298 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
                 return false;
             }
+        }
+
+        private function getDiscountLoyalty($cartItems, $site, $customerId)
+        {
+            $order = [
+              'site' => $site,
+              'customer' => ['externalId' => $customerId],
+              'privilegeType' => 'loyalty_level'
+            ];
+
+            $useXmlId = isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] === WC_Retailcrm_Base::YES;
+
+            foreach ($cartItems as $item) {
+                $product = $item['data'];
+
+                $order['items'][] = [
+                    'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
+                    'quantity' => $item['quantity'],
+                    'initialPrice' => wc_get_price_including_tax($product),
+                    'discountManualAmount' => ($item['line_subtotal'] - $item['line_total']) / $item['quantity']
+                ];
+            }
+
+            $response = $this->apiClient->calculateDiscountLoyalty($site, $order);
+
+            if (!$response->isSuccessful() || !isset($response['calculations'])) {
+                return 0;
+            }
+
+            $discount = 0;
+
+            //Checking if the loyalty discount is a percent discount
+            foreach ($response['order']['items'] as $item) {
+                if (!isset($item['discounts'])) {
+                    continue;
+                }
+
+                foreach ($item['discounts'] as $discountItem) {
+                    if ($discountItem['type'] === 'loyalty_level') {
+                        $discount += $discountItem['amount'];
+                    }
+                }
+            }
+
+            //If the discount has already been given, do not work with points deduction
+            if ($discount === 0) {
+                foreach ($response['calculations'] as $calculate) {
+                    if ($calculate['privilegeType'] !== 'loyalty_level') {
+                        continue;
+                    }
+
+                    $discount = $calculate['maxChargeBonuses'];
+                }
+            }
+
+            return $discount;
+        }
+
+        private function getLoyaltyAccounts(int $userId)
+        {
+            $response = $this->apiClient->customersGet($userId);
+
+            if (!isset($response['customer']['id'])) {
+                return [];
+            }
+
+            $filter['customerId'] = $response['customer']['id'];
+
+            $response = $this->apiClient->getLoyaltyAccountList($filter);
+
+            if (!$response->isSuccessful() || !$response->offsetExists('loyaltyAccounts')) {
+                return null;
+            }
+
+            return $response;
+        }
+
+        public function createLoyaltyCoupon($refreshCoupon = false)
+        {
+            global $woocommerce;
+
+            $site = $this->apiClient->getSingleSiteForKey();
+            $cartItems = $woocommerce->cart->get_cart();
+            $customerId = $woocommerce->customer ? $woocommerce->customer->get_id() : null;
+
+            $resultString = '';
+
+            if (!$customerId || !$cartItems) {
+                return null;
+            }
+
+            $couponsLp = [];
+            // Check exists used loyalty coupons
+            foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
+                if ($this->isLoyaltyCoupon($code)) {
+                    $couponsLp[] = $code;
+                }
+            }
+
+            // if you need to refresh coupon that does not exist
+            if (count($couponsLp) === 0 && $refreshCoupon) {
+                return null;
+            }
+
+            //If one loyalty coupon is used, not generate a new one
+            if (count($couponsLp) === 1 && !$refreshCoupon) {
+                return null;
+            }
+
+            // if more than 1 loyalty coupon is used, delete all coupons
+            if (count($couponsLp) > 1 || $refreshCoupon) {
+                foreach ($couponsLp as $code) {
+                    $woocommerce->cart->remove_coupon($code);
+
+                    $coupon = new WC_Coupon($code);
+
+                    $coupon->delete(true);
+                }
+
+                $woocommerce->cart->calculate_totals();
+            }
+
+            if (!$this->validator->checkAccount($customerId)) {
+                return null;
+            }
+
+            $lpDiscountSum = $this->getDiscountLoyalty($woocommerce->cart->get_cart(), $site, $customerId);
+
+            if ($lpDiscountSum === 0) {
+                return null;
+            }
+
+            //Check the existence of loyalty coupons and delete them
+            $coupons = $this->getCouponLoyalty($woocommerce->customer->get_email());
+
+            foreach ($coupons as $item) {
+                $coupon = new WC_Coupon($item['code']);
+
+                $coupon->delete(true);
+            }
+
+            //Generate new coupon
+            $coupon = new WC_Coupon();
+
+            $coupon->set_usage_limit(0);
+            $coupon->set_amount($lpDiscountSum);
+            $coupon->set_email_restrictions($woocommerce->customer->get_email());
+            $coupon->set_code('loyalty' . mt_rand());
+            $coupon->save();
+
+            if ($refreshCoupon) {
+                $woocommerce->cart->apply_coupon($coupon->get_code());
+
+                return $resultString;
+            }
+
+            //If a percentage discount, automatically apply a loyalty coupon
+            if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
+                $woocommerce->cart->apply_coupon($coupon->get_code());
+
+                return $resultString;
+            }
+
+            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum . ' ' . __('bonuses', 'retailcrm') . '</b></div>';
+            return $resultString. '<div style="text-align: left;"><b>' . __('Use coupon:', 'retailcrm') . ' <u><i>' . $coupon->get_code() . '</i></u></i></b></div>';
+        }
+
+        public function clearLoyaltyCoupon()
+        {
+            global $woocommerce;
+
+            foreach ($woocommerce->cart->get_coupons() as $code => $coupon) {
+                if ($this->isLoyaltyCoupon($code)) {
+                    $woocommerce->cart->remove_coupon($code);
+
+                    $coupon = new WC_Coupon($code);
+
+                    $coupon->delete(true);
+                }
+            }
+        }
+
+        public function deleteLoyaltyCoupon($couponCode)
+        {
+            if ($this->isLoyaltyCoupon($couponCode)) {
+                $coupon = new WC_Coupon($couponCode);
+
+                $coupon->delete(true);
+
+                return true;
+            }
+
+            return  false;
+        }
+
+        public function isLoyaltyCoupon($couponCode): bool
+        {
+            return preg_match('/^loyalty\d+$/m', $couponCode) === 1;
+        }
+
+        public function getCouponLoyalty($email)
+        {
+            global $wpdb;
+
+            return $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT posts.post_name code FROM {$wpdb->prefix}posts AS posts
+                            LEFT JOIN {$wpdb->prefix}postmeta AS postmeta ON posts.ID = postmeta.post_id
+                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE 'loyalty%'
+                            AND postmeta.meta_key = 'customer_email' AND postmeta.meta_value LIKE %s",
+                    '%' . $email . '%'
+                ), ARRAY_A
+            );
+        }
+
+        public function deleteLoyaltyCouponInOrder($wcOrder)
+        {
+            $discountLp = 0;
+            $coupons = $wcOrder->get_coupons();
+
+            foreach ($coupons as $coupon) {
+                $code = $coupon->get_code();
+
+                if ($this->isLoyaltyCoupon($code)) {
+                    $discountLp = $coupon->get_discount();
+                    $wcOrder->remove_coupon($code);
+                    $objectCoupon = new WC_Coupon($code);
+                    $objectCoupon->delete(true);
+
+                    $wcOrder->recalculate_coupons();
+                    break;
+                }
+            }
+
+            return $discountLp;
+        }
+
+        public function isValidOrder($wcUser, $wcOrder)
+        {
+            return !(!$wcUser || (isCorporateUserActivate($this->settings) && isCorporateOrder($wcUser, $wcOrder)));
+        }
+
+        public function applyLoyaltyDiscount($wcOrder, $discountLp, $createdOrder)
+        {
+            $isPercentDiscount = false;
+            $items = [];
+
+            // Verification of automatic creation of the percentage discount of the loyalty program
+            foreach ($createdOrder['items'] as $item) {
+                foreach ($item['discounts'] as $discount) {
+                    if ($discount['type'] === 'loyalty_level') {
+                        $isPercentDiscount = true;
+                        $items = $createdOrder['items'];
+
+                        break 2;
+                    }
+                }
+            }
+
+            if (!$isPercentDiscount) {
+                $response = $this->apiClient->applyBonusToOrder($createdOrder['site'], ['externalId' => $createdOrder['externalId']], (float) $discountLp);
+
+                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
+                    return $response->getErrorString();
+                }
+
+                $items = $response['order']['items'];
+            }
+
+            $wcItems = $wcOrder->get_items();
+
+            foreach ($items as $item) {
+                $externalId = $item['externalIds'][0]['value'];
+                $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+
+                if (isset($wcItems[(int) $externalId])) {
+                    $discountLoyaltyTotal = 0;
+
+                    foreach ($item['discounts'] as $discount) {
+                        if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                            $discountLoyaltyTotal += $discount['amount'];
+                        }
+                    }
+
+                    $wcItem = $wcItems[(int) $externalId];
+                    $wcItem->set_total($wcItem->get_total() - $discountLoyaltyTotal);
+                    $wcItem->calculate_taxes();
+                    $wcItem->save();
+                }
+            }
+
+            $wcOrder->calculate_totals();
         }
     }
 

@@ -17,6 +17,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         /** @var bool|WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5 */
         protected $retailcrm;
 
+        /** @var WC_Retailcrm_Loyalty|null */
+        protected $loyalty = null;
+
         /** @var array */
         protected $retailcrm_settings;
 
@@ -64,6 +67,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             $this->orders = $orders;
             $this->order_payment = $order_payment;
 
+            if (isLoyaltyActivate($retailcrm_settings)) {
+                $this->loyalty = new WC_Retailcrm_Loyalty($retailcrm, $retailcrm_settings);
+            }
+
             if (!empty($retailcrm_settings['order-meta-data-retailcrm'])) {
                 $this->customFields = json_decode($retailcrm_settings['order-meta-data-retailcrm'], true);
             }
@@ -87,8 +94,25 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->order_payment->resetData();
 
                 $wcOrder = wc_get_order($orderId);
+                $privilegeType = 'none';
+
+                if ($this->loyalty) {
+                    $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
+                    $wcUser = $wcOrder->get_user();
+
+                    if (!$this->loyalty->isValidOrder($wcUser, $wcOrder)) {
+                        if ($discountLp > 0) {
+                            writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
+                        }
+
+                        $discountLp = 0;
+                    } else {
+                        $privilegeType = 'loyalty_level';
+                    }
+                }
 
                 $this->processOrder($wcOrder);
+                $this->order['privilegeType'] = $privilegeType;
 
                 $response = $this->retailcrm->ordersCreate($this->order);
 
@@ -97,6 +121,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
                 if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
                     return $response->getErrorString();
+                }
+
+                if (isset($discountLp) && $discountLp > 0) {
+                    $this->loyalty->applyLoyaltyDiscount($wcOrder, $discountLp, $response['order']);
                 }
             } catch (Throwable $exception) {
                 writeBaseLogs(

@@ -1,7 +1,4 @@
 <?php
-
-namespace datasets;
-
 /**
  * PHP version 7.0
  *
@@ -87,19 +84,19 @@ class DataLoyaltyRetailCrm
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'corp',
                 'throwMessage' => 'This user is a corporate person',
-                'isCorpActive' => true,
+                'isCorpActive' => true
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'corp',
                 'throwMessage' => null,
-                'isCorpActive' => false,
+                'isCorpActive' => false
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'individual',
                 'throwMessage' => null,
-                'isCorpActive' => true,
+                'isCorpActive' => true
             ],
         ];
     }
@@ -150,5 +147,199 @@ class DataLoyaltyRetailCrm
                 'throwMessage' => null
             ]
         ];
+    }
+
+    public static function createProducts()
+    {
+        $product1 = new WC_Product();
+        $product1->set_name('Test product 1');
+        $product1->set_sku('test1' . mt_rand());
+        $product1->set_regular_price('200');
+        $product1->set_sale_price('200');
+        $product1->save();
+
+        $product2 = new WC_Product();
+        $product2->set_name('Test product 2');
+        $product2->set_sku('test2' . mt_rand());
+        $product2->set_regular_price('100');
+        $product2->set_sale_price('50');
+        $product2->save();
+
+        return [$product1, $product2];
+    }
+
+    public static function getDataCalculation()
+    {
+        return [
+            [
+                'response' => [
+                    'calculations' => [],
+                    'order' => [
+                        'items' => [
+                            [
+                                'discounts' => [
+                                    [
+                                        'type' => 'loyalty_level',
+                                        'amount' => 20
+                                    ],
+                                ]
+                            ],
+                            [
+                                'discounts' => [
+                                    [
+                                        'type' => 'loyalty_level',
+                                        'amount' => 20
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'expected' => 40
+            ],
+            [
+                'response' => [
+                    'calculations' => [
+                        [
+                            'privilegeType' => 'test'
+                        ],
+                        [
+                            'privilegeType' => 'loyalty_level',
+                            'maxChargeBonuses' => 50
+                        ]
+                    ],
+                    'order' => [
+                        'items' => [['discounts' => null], ['discounts' => null]],
+                    ]
+                ],
+                'expected' => 50
+            ]
+        ];
+    }
+
+    public static function dataCheckLoyaltyCoupon()
+    {
+        return [
+            [
+                'code' => 'loyalty49844894548',
+                'expected' => true
+            ],
+            [
+                'code' => '56556446548484',
+                'expected' => false
+            ],
+            [
+                'code' => 'dfhdfh54655pl',
+                'expected' => false
+            ],
+            [
+                'code' => '654844pl18498',
+                'expected' => false
+            ]
+        ];
+    }
+
+    public static function dataGetEmailsForPersonalCoupon()
+    {
+        return [
+            [
+                'email' => 'test1@gmail.com',
+                'code' => 'loyalty' . mt_rand()
+            ],
+            [
+                'email' => 'test2@gmail.com',
+                'code' => 'loyalty' . mt_rand()
+            ],
+            [
+                'email' => 'test3@gmail.com',
+                'expectedCode' => false
+            ]
+        ];
+    }
+
+    public static function dataValidUser()
+    {
+        $users = self::createUsers();
+
+        return [
+            [
+                'customer' => $users[0],
+                'corporate_enabled' => 'yes',
+                'expected' => true,
+                'orderCorporate' => false
+            ],
+            [
+                'customer' => $users[1],
+                'corporate_enabled' => 'yes',
+                'expected' => false,
+                'orderCorporate' => false
+            ],
+            [
+                'customer' => $users[1],
+                'corporate_enabled' => 'no',
+                'expected' => true,
+                'orderCorporate' => false
+            ],
+            [
+                'customer' => null,
+                'corporate_enabled' => 'yes',
+                'expected' => false,
+                'orderCorporate' => false
+
+            ],
+            [
+                'customer' => $users[0],
+                'corporate_enabled' => 'yes',
+                'expected' => false,
+                'orderCorporate' => true
+            ]
+        ];
+    }
+
+    public static function createUsers()
+    {
+        $customer = new WC_Customer();
+
+        $customer->set_first_name('Tester 1');
+        $customer->set_last_name('Tester 1');
+        $customer->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
+        $customer->set_password('password');
+        $customer->set_billing_phone('89000000000');
+        $customer->set_date_created(date('Y-m-d H:i:s'));
+        $customer->save();
+
+        $customer1 = new WC_Customer();
+
+        $customer1->set_first_name('Tester 1');
+        $customer1->set_last_name('Tester 1');
+        $customer1->set_email(uniqid(md5(date('Y-m-d H:i:s'))) . '@mail.com');
+        $customer1->set_password('password');
+        $customer1->set_billing_phone('89000000000');
+        $customer1->set_date_created(date('Y-m-d H:i:s'));
+        $customer1->set_billing_company('OOO TEST');
+        $customer1->save();
+
+        return [$customer, $customer1];
+    }
+
+    public static function createCoupons($email1 = 'test1@gmail.com', $email2 = 'test2@gmail.com')
+    {
+        $coupon = new WC_Coupon();
+
+        $coupon->set_usage_limit(0);
+        $coupon->set_amount(100);
+        $coupon->set_email_restrictions($email1);
+        $coupon->set_code('loyalty' . mt_rand());
+        $coupon->save();
+
+        $coupon1 = new WC_Coupon();
+
+        $coupon1->set_usage_limit(0);
+        $coupon1->set_amount(100);
+        $coupon1->set_email_restrictions($email2);
+        $coupon1->set_code('loyalty' . mt_rand());
+        $coupon1->save();
+
+        return [$coupon, $coupon1];
     }
 }
