@@ -16,9 +16,12 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
     {
         /** @var WC_Retailcrm_Client_V5 */
         protected $apiClient;
-        protected $crmUser;
-        protected $loyaltyAccount;
+
         protected $isActiveCorp;
+
+        public $customer;
+
+        public $loyaltyAccount;
 
         public function __construct($apiClient, $isActiveCorp)
         {
@@ -30,7 +33,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
         {
             try {
                 $this->checkUser($userId);
-                $this->checkLoyaltyAccount($this->crmUser['id']);
+                $this->checkLoyaltyAccount($this->customer['id']);
                 $this->checkActiveLoyalty($this->loyaltyAccount['loyalty']['id']);
 
                 return true;
@@ -56,19 +59,19 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
             $customer = new WC_Customer($userId);
 
-            if ($this->isActiveCorp && !empty($customer->get_shipping_company())) {
+            if ($this->isActiveCorp && !empty($customer->get_billing_company())) {
                 throw new ValidatorException($this->isCorporateUser, 400);
             }
 
-            $this->crmUser = $responseUser['customer'];
+            $this->customer = $responseUser['customer'];
         }
 
         /**
          * @throws ValidatorException
          */
-        private function checkLoyaltyAccount($crmUserId)
+        private function checkLoyaltyAccount($customerId)
         {
-            $filter['customerId'] = $crmUserId;
+            $filter['customerId'] = $customerId;
             $responseLoyalty = $this->apiClient->getLoyaltyAccountList($filter);
 
             if (!$responseLoyalty->isSuccessful() || !$responseLoyalty->offsetExists('loyaltyAccounts')) {

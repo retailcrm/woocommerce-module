@@ -116,7 +116,7 @@ class WC_Retailcrm_Loyalty_Client_Test extends WC_Retailcrm_Test_Case_Helper
             ],
             [
                 'method' => 'calculateDiscountLoyalty',
-                'parameters' => ['site', ['order'], 100]
+                'parameters' => ['site', ['order']]
             ],
             [
                 'method' => 'applyBonusToOrder',

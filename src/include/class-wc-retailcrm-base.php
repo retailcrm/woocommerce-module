@@ -104,12 +104,22 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
 
-            if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === static::YES) {
+            if (isLoyaltyActivate($this->settings)) {
                 add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
                 add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
                 add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
                 add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+
+                // Add coupon hooks for loyalty program
+                add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
+                //Remove coupons when cart changes
+                add_action('woocommerce_add_to_cart', [$this, 'refresh_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_after_cart_item_quantity_update', [$this, 'refresh_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_cart_item_removed', [$this, 'refresh_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_before_cart_empted', [$this, 'clear_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
+                add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
             }
 
             // Subscribed hooks
@@ -678,6 +688,59 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             wp_die();
+        }
+
+        public function coupon_info()
+        {
+            try {
+                $result = $this->loyalty->createLoyaltyCoupon();
+
+                if ($result) {
+                    echo  $result;
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function refresh_loyalty_coupon()
+        {
+            try {
+                $this->loyalty->createLoyaltyCoupon(true);
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function clear_loyalty_coupon()
+        {
+            try {
+                $this->loyalty->clearLoyaltyCoupon();
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function remove_coupon($couponCode)
+        {
+            try {
+                if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
+                    $this->loyalty->createLoyaltyCoupon(true);
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function apply_coupon($couponCode)
+        {
+            try {
+                if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
+                    $this->loyalty->createLoyaltyCoupon(true);
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
         }
 
         /**

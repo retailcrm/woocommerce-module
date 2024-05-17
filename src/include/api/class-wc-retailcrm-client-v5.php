@@ -2992,12 +2992,12 @@ class WC_Retailcrm_Client_V5
     }
 
     /** Maximum discount calculation */
-    public function calculateDiscountLoyalty(string $site, array $order, float $bonuses)
+    public function calculateDiscountLoyalty(string $site, array $order)
     {
         return $this->client->makeRequest(
             "/loyalty/calculate",
             WC_Retailcrm_Request::METHOD_POST,
-            ['site' => $site, 'order' => json_encode($order), 'bonuses' => $bonuses]
+            ['site' => $site, 'order' => json_encode($order)]
         );
     }
 
