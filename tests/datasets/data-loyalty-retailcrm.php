@@ -78,25 +78,25 @@ class DataLoyaltyRetailCrm
                 'responseApiMethod' => [],
                 'wcUserType' => 'individual',
                 'throwMessage' => 'User not found in the system',
-                'isCorpActive' => 'no'
+                'isCorpActive' => false
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'corp',
                 'throwMessage' => 'This user is a corporate person',
-                'isCorpActive' => 'yes',
+                'isCorpActive' => true
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'corp',
                 'throwMessage' => null,
-                'isCorpActive' => 'no',
+                'isCorpActive' => false
             ],
             [
                 'responseApiMethod' => ['customer' => ['id' => 1]],
                 'wcUserType' => 'individual',
                 'throwMessage' => null,
-                'isCorpActive' => 'yes',
+                'isCorpActive' => true
             ],
         ];
     }

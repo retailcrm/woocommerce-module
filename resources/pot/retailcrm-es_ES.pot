@@ -586,5 +586,5 @@ msgstr "Es posible debitar"
 msgid "bonuses"
 msgstr "bonos"
 
-msgid "Your coupon:"
-msgstr "Tu cupón:"
+msgid "Use coupon:"
+msgstr "Utiliza el cupón:"

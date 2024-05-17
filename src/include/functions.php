@@ -207,3 +207,13 @@ function isLoyaltyActivate($settings)
 {
     return isset($settings['loyalty']) && $settings['loyalty'] === WC_Retailcrm_Base::YES;
 }
+
+function isCorporateUserActivate($settings)
+{
+    return isset($settings['corporate_enabled']) && $settings['corporate_enabled'] === WC_Retailcrm_Base::YES;
+}
+
+function isCorporateOrder($wcUser, $wcOrder)
+{
+    return !empty($wcUser->get_billing_company()) || !empty($wcOrder->get_billing_company());
+}

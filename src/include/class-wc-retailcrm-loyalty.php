@@ -37,7 +37,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $this->loyaltyForm = new WC_Retailcrm_Loyalty_Form();
             $this->validator = new WC_Retailcrm_Loyalty_Validator(
                 $this->apiClient,
-                    $this->settings['corporate_enabled'] ?? WC_Retailcrm_Base::NO
+                isCorporateUserActivate($this->settings)
             );
         }
 
@@ -272,9 +272,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $resultString;
             }
 
-            $resultString .= '<div style="background: #05ff13;">' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum . ' ' . __('bonuses', 'retailcrm') . '</div>';
-
-            return $resultString . '<div style="background: #05ff13;">' . __('Your coupon:', 'retailcrm') . ' ' . $coupon->get_code() . '</div>';
+            $resultString .= ' <div style="text-align: left; line-height: 2"><b>' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum . ' ' . __('bonuses', 'retailcrm') . '</b></div>';
+            return $resultString. '<div style="text-align: left;"><b>' . __('Use coupon:', 'retailcrm') . ' <u><i>' . $coupon->get_code() . '</i></u></i></b></div>';
         }
 
         public function clearLoyaltyCoupon()
@@ -349,16 +348,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         public function isValidOrder($wcUser, $wcOrder)
         {
-            return !(!$wcUser
-                || (
-                    isset($this->settings['corporate_enabled'])
-                    && $this->settings['corporate_enabled'] === WC_Retailcrm_Base::YES
-                    && (
-                        !empty($wcUser->get_billing_company())
-                        || !empty($wcOrder->get_billing_company())
-                    )
-                ))
-            ;
+            return !(!$wcUser || (isCorporateUserActivate($this->settings) && isCorporateOrder($wcUser, $wcOrder)));
         }
 
         public function applyLoyaltyDiscount($wcOrder, $discountLp, $createdOrder)

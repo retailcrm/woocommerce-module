@@ -246,7 +246,7 @@ return [
         "This user is a corporate person" => "Este usuario es una persona jurídica",
         "It is possible to write off" => "Es posible debitar",
         "bonuses" => "bonificaciones",
-        "Your coupon:" => "Tu cupón:",
+        "Use coupon:" => "Utiliza el cupón:",
     ],
     "language" => "es",
     "x-generator" => "GlotPress/2.4.0-alpha",

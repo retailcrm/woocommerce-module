@@ -595,5 +595,5 @@ msgstr "Возможно списать"
 msgid "bonuses"
 msgstr "бонусов"
 
-msgid "Your coupon:"
-msgstr "Ваш купон:"
+msgid "Use coupon:"
+msgstr "Используйте купон:"

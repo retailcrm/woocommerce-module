@@ -245,7 +245,7 @@ return [
         "This user is a corporate person" => "Этот пользователь является корпоративным лицом",
         "It is possible to write off" => "Возможно списать",
         "bonuses" => "бонусов",
-        "Your coupon:" => "Ваш купон:",
+        "Use coupon:" => "Используйте купон:",
     ],
     "language" => "ru",
     "x-generator" => "GlotPress/2.4.0-alpha",

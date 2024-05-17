@@ -100,8 +100,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
                     $wcUser = $wcOrder->get_user();
 
-                    if (!$this->loyalty->isValidOrder($wcUser, $wcOrder) && $discountLp > 0) {
-                        writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
+                    if (!$this->loyalty->isValidOrder($wcUser, $wcOrder)) {
+                        if ($discountLp > 0) {
+                            writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
+                        }
 
                         $discountLp = 0;
                     } else {

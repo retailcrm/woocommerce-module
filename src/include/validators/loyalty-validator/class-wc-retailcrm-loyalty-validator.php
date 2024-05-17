@@ -59,7 +59,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
             $customer = new WC_Customer($userId);
 
-            if ($this->isActiveCorp === WC_Retailcrm_Base::YES && !empty($customer->get_billing_company())) {
+            if ($this->isActiveCorp && !empty($customer->get_billing_company())) {
                 throw new ValidatorException($this->isCorporateUser, 400);
             }
 
