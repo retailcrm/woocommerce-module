@@ -384,7 +384,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
          * @return void
          * @throws \Exception
          */
-        protected function processOrder($order, $update = false)
+        protected function processOrder($order, $update = false)//TODO Возможно ли по хуку передать доп данные? Например что это приминеение бонусов к новому заказу
         {
             if (!$order instanceof WC_Order) {
                 return;
@@ -448,13 +448,49 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             $orderData['delivery']['address'] = $this->order_address->build($order)->getData();
             $orderItems = [];
+            $crmItems = []; // необходимо для обновления торговой позиции (определения кол-ва списываемых бонусов)
+            $loyaltyDiscountType = null; // вид скидки
+
+            if ($this->loyalty && $update) {
+                $response = $this->retailcrm->ordersGet($order->get_id());
+
+                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
+                    writeBaseLogs('Process order: Error when receiving an order from the crm. Order Id: ' . $order->get_id());
+
+                    $crmOrder = null;
+                } else {
+                    $crmOrder = $response['order'] ?? null;
+                }
+            }
+
+            if ($crmOrder) {
+                foreach ($crmOrder['items'] as $item) {
+                    $externalId = $item['externalids'][0]['value'];
+                    $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+                    $crmItems[$externalId] = $item;
+
+                    if (!$loyaltyDiscountType) {
+                        foreach ($item['discounts'] as $discount) {
+                            if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                                $loyaltyDiscountType = $discount['type'];
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                unset($crmOrder);
+            }
 
             /** @var WC_Order_Item_Product $item */
-            foreach ($order->get_items() as $item) {
-                $orderItems[] = $this->order_item->build($item)->getData();
+            foreach ($order->get_items() as $id => $item) {
+                $crmItem = $crmItems[$id] ?? null;
+                $orderItems[] = $this->order_item->build($item, $crmItem)->getData();
 
                 $this->order_item->resetData();
             }
+
+            unset($crmItems, $crmItem);
 
             $orderData['items'] = $orderItems;
             $orderData['discountManualAmount']  = 0;

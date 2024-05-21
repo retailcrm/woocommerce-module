@@ -43,13 +43,13 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      *
      * @return self
      */
-    public function build($item)
+    public function build($item, $crmItem = null)
     {
         $decimalPlaces = wc_get_price_decimals();
 
         // Calculate price and discount
         $price         = $this->calculatePrice($item, $decimalPlaces);
-        $discountPrice = $this->calculateDiscount($item, $price, $decimalPlaces);
+        $discountPrice = $this->calculateDiscount($item, $price, $decimalPlaces, $crmItem);
 
         $data['productName']  = $item['name'];
         $data['initialPrice'] = $price;
@@ -115,9 +115,28 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      *
      * @return float|int
      */
-    private function calculateDiscount(WC_Order_Item_Product $item, $price, int $decimalPlaces)
-    {
-        $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+    private function calculateDiscount(
+        WC_Order_Item_Product $item,
+        $price,
+        int $decimalPlaces,
+        $crmItem = null,
+        $loyaltyDiscountType = null // по идее не нужно, т.к. если новая позиция, автоматом придет ответ по истории со скидкой
+    ) {
+        if ($crmItem) {
+            $loyaltyDiscount = 0;
+
+            foreach ($item['discounts'] as $discount) {
+                if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                    $loyaltyDiscount += $discount['amount'];
+                    break;
+                }
+            }
+
+            $productPrice = $item->get_total() ? $item->get_total() + $loyaltyDiscount / $item->get_quantity() : 0;
+        } else {
+            $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+        }
+
         $productTax    = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
         $itemPrice     = $productPrice + $productTax;
 
