@@ -125,7 +125,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         if ($crmItem) {
             $loyaltyDiscount = 0;
 
-            foreach ($item['discounts'] as $discount) {
+            foreach ($crmItem['discounts'] as $discount) {
                 if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
                     $loyaltyDiscount += $discount['amount'];
                     break;

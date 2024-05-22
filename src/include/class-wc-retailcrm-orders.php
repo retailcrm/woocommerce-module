@@ -465,7 +465,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             if ($crmOrder) {
                 foreach ($crmOrder['items'] as $item) {
-                    $externalId = $item['externalids'][0]['value'];
+                    $externalId = $item['externalIds'][0]['value'];
                     $externalId = preg_replace('/^\d+\_/m', '', $externalId);
                     $crmItems[$externalId] = $item;
 
