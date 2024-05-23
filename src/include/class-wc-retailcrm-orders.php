@@ -44,6 +44,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         /** @var array */
         private $order = [];
 
+        /** @var bool */
+        private $cancelBonus = false;
+
+        /** @var float */
+        private $appliedBonuses = 0;
+
         /** @var array */
         private $payment = [];
 
@@ -305,7 +311,19 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
                 $this->processOrder($wcOrder, true);
 
-                $response = $this->retailcrm->ordersEdit($this->order);
+                if ($this->cancelBonus) {
+                    $this->cancelBonus = false;
+                    $this->order_item->cancelBonus = false;
+
+                    $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
+
+                    $response = $this->retailcrm->ordersEdit($this->order);
+
+                    $wcOrder->calculate_totals();
+                } else {
+                    $response = $this->retailcrm->ordersEdit($this->order);
+                }
+
 
                 // Allows you to verify order changes and perform additional actions
                 $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
@@ -450,6 +468,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             $orderItems = [];
             $crmItems = []; // необходимо для обновления торговой позиции (определения кол-ва списываемых бонусов)
             $loyaltyDiscountType = null; // вид скидки
+            $wcItems = $order->get_items();
 
             if ($this->loyalty && $update) {
                 $response = $this->retailcrm->ordersGet($order->get_id());
@@ -460,6 +479,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $crmOrder = null;
                 } else {
                     $crmOrder = $response['order'] ?? null;
+                    $this->appliedBonuses = $crmOrder['bonusesChargeTotal'] ?? 0;
                 }
             }
 
@@ -479,15 +499,15 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     }
                 }
 
-                unset($crmOrder);
+                $this->cancelBonus = $this->order_item->isCancelBonus($wcItems, $crmItems);
             }
 
             /** @var WC_Order_Item_Product $item */
-            foreach ($order->get_items() as $id => $item) {
+            foreach ($wcItems as $id => $item) {
                 $crmItem = $crmItems[$id] ?? null;
                 $orderItems[] = $this->order_item->build($item, $crmItem)->getData();
 
-                $this->order_item->resetData();
+                $this->order_item->resetData($this->cancelBonus);
             }
 
             unset($crmItems, $crmItem);

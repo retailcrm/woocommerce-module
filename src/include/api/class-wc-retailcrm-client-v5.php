@@ -3011,12 +3011,12 @@ class WC_Retailcrm_Client_V5
         );
     }
 
-    public function cancelBonusOrder(string $site, array $order)
+    public function cancelBonusOrder(array $order)
     {
         return $this->client->makeRequest(
             "/orders/loyalty/cancel-bonus-operations",
             WC_Retailcrm_Request::METHOD_POST,
-            ['site' => $site, 'order' => json_encode($order)]
+            ['order' => json_encode($order)]
         );
     }
 

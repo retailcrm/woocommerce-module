@@ -28,6 +28,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     protected $settings = [];
 
+    /** @var bool */
+    public $cancelBonus = false;
+
     /**
      * WC_Retailcrm_Order_Item constructor.
      *
@@ -128,11 +131,21 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             foreach ($crmItem['discounts'] as $discount) {
                 if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
                     $loyaltyDiscount += $discount['amount'];
+
                     break;
                 }
             }
 
-            $productPrice = $item->get_total() ? $item->get_total() + $loyaltyDiscount / $item->get_quantity() : 0;
+            if ($item->get_total()) {
+                $productPrice =  ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
+            } else {
+                $productPrice = 0;
+            }
+
+            if ($this->cancelBonus) {
+                $item->set_total($item->get_total() + $loyaltyDiscount);
+                $item->calculate_taxes();
+            }
         } else {
             $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
         }
@@ -146,7 +159,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
     /**
      * Reset item data.
      */
-    public function resetData()
+    public function resetData($cancelBonus)
     {
         $this->data = [
             'offer' => [],
@@ -154,5 +167,32 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             'initialPrice' => 0.00,
             'quantity' => 0.00
         ];
+
+        $this->cancelBonus = $cancelBonus;
+    }
+
+    public function isCancelBonus($wcItems, $crmItems): bool
+    {
+        if (count($wcItems) !== count($crmItems)) {
+            $this->cancelBonus = true;
+
+            return true;
+        }
+
+        foreach ($wcItems as $id => $item) {
+            if (!isset($crmItems[$id])) {
+                $this->cancelBonus = true;
+
+                return true;
+            }
+
+            if ($item->get_quantity() !== $crmItems[$id]['quantity']) {
+                $this->cancelBonus = true;
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

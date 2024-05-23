@@ -396,7 +396,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $wcItem = $wcItems[(int) $externalId];
                     $wcItem->set_total($wcItem->get_total() - $discountLoyaltyTotal);
                     $wcItem->calculate_taxes();
-                    $wcItem->save();
+                    $wcItem->save();// TODO Возможно это не нужно вводить, т.к. calculate_totals автоматом пересчитает
                 }
             }
 
