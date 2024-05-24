@@ -130,7 +130,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 if (isset($discountLp) && $discountLp > 0) {
-                    $this->loyalty->applyLoyaltyDiscount($wcOrder, $discountLp, $response['order']);
+                    $this->loyalty->applyLoyaltyDiscount($wcOrder, $response['order'], $discountLp);
                 }
             } catch (Throwable $exception) {
                 writeBaseLogs(
@@ -315,21 +315,43 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $this->cancelBonus = false;
                     $this->order_item->cancelBonus = false;
 
-                    $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
+                    $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);// проверка response
 
                     $response = $this->retailcrm->ordersEdit($this->order);
 
-                    $wcOrder->calculate_totals();
+                    $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
+
+                    if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                        $this->payment = $this->orderUpdatePaymentType($wcOrder);
+
+                       /* $responseCalculate = $this->retailcrm->calculateDiscountLoyalty(
+                            $response['order']['site'],
+                            $this->order,
+                            $this->appliedBonuses
+                        );
+
+                        if (!$responseCalculate instanceof WC_Retailcrm_Response || !$responseCalculate->isSuccessful()) {
+                            $this->appliedBonuses = 0;
+                        }*/
+
+                        $result = $this->loyalty->applyLoyaltyDiscount($wcOrder, $response['order'], $this->appliedBonuses);
+
+                        if (is_string($result)) {
+                            writeBaseLogs($result);
+                            $wcOrder->calculate_totals();
+                        }
+                    } else {
+                        $wcOrder->calculate_totals();
+                    }
                 } else {
                     $response = $this->retailcrm->ordersEdit($this->order);
-                }
 
+                    // Allows you to verify order changes and perform additional actions
+                    $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
 
-                // Allows you to verify order changes and perform additional actions
-                $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
-
-                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
-                    $this->payment = $this->orderUpdatePaymentType($wcOrder);
+                    if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                        $this->payment = $this->orderUpdatePaymentType($wcOrder);
+                    }
                 }
             } catch (Throwable $exception) {
                 writeBaseLogs(

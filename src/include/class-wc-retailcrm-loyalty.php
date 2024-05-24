@@ -351,7 +351,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return !(!$wcUser || (isCorporateUserActivate($this->settings) && isCorporateOrder($wcUser, $wcOrder)));
         }
 
-        public function applyLoyaltyDiscount($wcOrder, $discountLp, $createdOrder)
+        public function applyLoyaltyDiscount($wcOrder, $createdOrder, $discountLp = 0)
         {
             $isPercentDiscount = false;
             $items = [];

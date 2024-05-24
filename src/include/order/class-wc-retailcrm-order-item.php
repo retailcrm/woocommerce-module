@@ -137,14 +137,19 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             }
 
             if ($item->get_total()) {
-                $productPrice =  ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
+                $productPrice = ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
             } else {
                 $productPrice = 0;
             }
 
-            if ($this->cancelBonus) {
+            if ($this->cancelBonus && $productPrice > $price) {
+                $productPrice = $item->get_total() / $item->get_quantity();
+            } elseif ($this->cancelBonus) {
                 $item->set_total($item->get_total() + $loyaltyDiscount);
                 $item->calculate_taxes();
+                $item->save();
+            } elseif ($productPrice > $price) {
+                $productPrice = $item->get_total() / $item->get_quantity();
             }
         } else {
             $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
@@ -173,6 +178,8 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
     public function isCancelBonus($wcItems, $crmItems): bool
     {
+        $loyaltyDiscount = 0;
+
         if (count($wcItems) !== count($crmItems)) {
             $this->cancelBonus = true;
 
@@ -187,6 +194,20 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             }
 
             if ($item->get_quantity() !== $crmItems[$id]['quantity']) {
+                $this->cancelBonus = true;
+
+                return true;
+            }
+
+            foreach ($crmItems[$id]['discounts'] as $discount) {
+                if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                    $loyaltyDiscount += $discount['amount'];
+
+                    break;
+                }
+            }
+
+            if (($item->get_total() + $loyaltyDiscount) > $item->get_subtotal()) {
                 $this->cancelBonus = true;
 
                 return true;
