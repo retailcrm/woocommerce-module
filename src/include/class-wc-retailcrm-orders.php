@@ -323,26 +323,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
                     if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
                         $this->payment = $this->orderUpdatePaymentType($wcOrder);
-
-                       /* $responseCalculate = $this->retailcrm->calculateDiscountLoyalty(
-                            $response['order']['site'],
-                            $this->order,
-                            $this->appliedBonuses
-                        );
-
-                        if (!$responseCalculate instanceof WC_Retailcrm_Response || !$responseCalculate->isSuccessful()) {
-                            $this->appliedBonuses = 0;
-                        }*/
-
-                        $result = $this->loyalty->applyLoyaltyDiscount($wcOrder, $response['order'], $this->appliedBonuses);
-
-                        if (is_string($result)) {
-                            writeBaseLogs($result);
-                            $wcOrder->calculate_totals();
-                        }
-                    } else {
-                        $wcOrder->calculate_totals();
                     }
+
+                    $wcOrder->calculate_totals();
                 } else {
                     $response = $this->retailcrm->ordersEdit($this->order);
 

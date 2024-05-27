@@ -136,11 +136,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
                 }
             }
 
-            if ($item->get_total()) {
-                $productPrice = ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
-            } else {
-                $productPrice = 0;
-            }
+            $productPrice = ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
 
             if ($this->cancelBonus && $productPrice > $price) {
                 $productPrice = $item->get_total() / $item->get_quantity();
@@ -148,6 +144,8 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
                 $item->set_total($item->get_total() + $loyaltyDiscount);
                 $item->calculate_taxes();
                 $item->save();
+
+                $productPrice = $item->get_total() / $item->get_quantity();
             } elseif ($productPrice > $price) {
                 $productPrice = $item->get_total() / $item->get_quantity();
             }
