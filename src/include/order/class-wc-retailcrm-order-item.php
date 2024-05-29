@@ -29,7 +29,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
     protected $settings = [];
 
     /** @var bool */
-    public $cancelBonus = false;
+    public $cancelLoyalty = false;
 
     /**
      * WC_Retailcrm_Order_Item constructor.
@@ -122,8 +122,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         WC_Order_Item_Product $item,
         $price,
         int $decimalPlaces,
-        $crmItem = null,
-        $loyaltyDiscountType = null // по идее не нужно, т.к. если новая позиция, автоматом придет ответ по истории со скидкой
+        $crmItem = null
     ) {
         if ($crmItem) {
             $loyaltyDiscount = 0;
@@ -138,15 +137,13 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
             $productPrice = ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
 
-            if ($this->cancelBonus && $productPrice > $price) {
-                $productPrice = $item->get_total() / $item->get_quantity();
-            } elseif ($this->cancelBonus) {
-                $item->set_total($item->get_total() + $loyaltyDiscount);
-                $item->calculate_taxes();
-                $item->save();
+            if ($this->cancelLoyalty) {
+                if ($item->get_total() + $loyaltyDiscount <= $item->get_subtotal()) {
+                    $item->set_total($item->get_total() + $loyaltyDiscount);
+                    $item->calculate_taxes();
+                    $item->save();
+                }
 
-                $productPrice = $item->get_total() / $item->get_quantity();
-            } elseif ($productPrice > $price) {
                 $productPrice = $item->get_total() / $item->get_quantity();
             }
         } else {
@@ -162,7 +159,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
     /**
      * Reset item data.
      */
-    public function resetData($cancelBonus)
+    public function resetData($cancelLoyalty)
     {
         $this->data = [
             'offer' => [],
@@ -171,28 +168,28 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             'quantity' => 0.00
         ];
 
-        $this->cancelBonus = $cancelBonus;
+        $this->cancelLoyalty = $cancelLoyalty;
     }
 
-    public function isCancelBonus($wcItems, $crmItems): bool
+    public function isCancelLoyalty($wcItems, $crmItems): bool
     {
         $loyaltyDiscount = 0;
 
         if (count($wcItems) !== count($crmItems)) {
-            $this->cancelBonus = true;
+            $this->cancelLoyalty = true;
 
             return true;
         }
 
         foreach ($wcItems as $id => $item) {
             if (!isset($crmItems[$id])) {
-                $this->cancelBonus = true;
+                $this->cancelLoyalty = true;
 
                 return true;
             }
 
             if ($item->get_quantity() !== $crmItems[$id]['quantity']) {
-                $this->cancelBonus = true;
+                $this->cancelLoyalty = true;
 
                 return true;
             }
@@ -206,7 +203,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             }
 
             if (($item->get_total() + $loyaltyDiscount) > $item->get_subtotal()) {
-                $this->cancelBonus = true;
+                $this->cancelLoyalty = true;
 
                 return true;
             }

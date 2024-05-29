@@ -378,9 +378,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $items = $response['order']['items'];
             }
 
+            $this->calculateLoyaltyDiscount($wcOrder, $items);
+        }
+
+        public function calculateLoyaltyDiscount($wcOrder, $orderItems)
+        {
             $wcItems = $wcOrder->get_items();
 
-            foreach ($items as $item) {
+            foreach ($orderItems as $item) {
                 $externalId = $item['externalIds'][0]['value'];
                 $externalId = preg_replace('/^\d+\_/m', '', $externalId);
 
@@ -401,6 +406,39 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             $wcOrder->calculate_totals();
+        }
+
+        public function getCrmItemsInfo($orderExternalId)
+        {
+            $discountType = null;
+            $crmItems = [];
+
+            $response = $this->apiClient->ordersGet($orderExternalId);
+
+            if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
+                writeBaseLogs('Process order: Error when receiving an order from the crm. Order Id: ' . $orderExternalId);
+
+                return [];
+            }
+
+            if (isset($response['order'])) {
+                foreach ($response['order']['items'] as $item) {
+                    $externalId = $item['externalIds'][0]['value'];
+                    $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+                    $crmItems[$externalId] = $item;
+
+                    if (!$discountType) {
+                        foreach ($item['discounts'] as $discount) {
+                            if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                                $discountType = $discount['type'];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ['items' => $crmItems, 'discountType' => $discountType];
         }
     }
 

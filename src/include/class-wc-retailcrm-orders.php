@@ -45,10 +45,10 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         private $order = [];
 
         /** @var bool */
-        private $cancelBonus = false;
+        private $cancelLoyalty = false;
 
-        /** @var float */
-        private $appliedBonuses = 0;
+        /** @var string */
+        private $loyaltyDiscountType = '';
 
         /** @var array */
         private $payment = [];
@@ -308,32 +308,30 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             try {
                 $wcOrder = wc_get_order($orderId);
+                $needRecalculate = false;
 
                 $this->processOrder($wcOrder, true);
 
-                if ($this->cancelBonus) {
-                    $this->cancelBonus = false;
-                    $this->order_item->cancelBonus = false;
+                if ($this->cancelLoyalty) {
+                    $this->cancelLoyalty = false;
+                    $this->order_item->cancelLoyalty = false;
+                    $needRecalculate = true;
 
-                    $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);// проверка response
-
-                    $response = $this->retailcrm->ordersEdit($this->order);
-
-                    $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
-
-                    if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
-                        $this->payment = $this->orderUpdatePaymentType($wcOrder);
+                    if ($this->loyaltyDiscountType === 'bonus_charge') {
+                        $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
+                    } else {
+                        $this->order['privilegeType'] = 'none';
                     }
+                }
 
-                    $wcOrder->calculate_totals();
-                } else {
-                    $response = $this->retailcrm->ordersEdit($this->order);
+                $response = $this->retailcrm->ordersEdit($this->order);
+                $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
 
-                    // Allows you to verify order changes and perform additional actions
-                    $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
+                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                    $this->payment = $this->orderUpdatePaymentType($wcOrder);
 
-                    if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
-                        $this->payment = $this->orderUpdatePaymentType($wcOrder);
+                    if ($needRecalculate) {
+                        $this->loyalty->calculateLoyaltyDiscount($wcOrder, $response['order']['items']);
                     }
                 }
             } catch (Throwable $exception) {
@@ -407,7 +405,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
          * @return void
          * @throws \Exception
          */
-        protected function processOrder($order, $update = false)//TODO Возможно ли по хуку передать доп данные? Например что это приминеение бонусов к новому заказу
+        protected function processOrder($order, $update = false)
         {
             if (!$order instanceof WC_Order) {
                 return;
@@ -470,41 +468,20 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             }
 
             $orderData['delivery']['address'] = $this->order_address->build($order)->getData();
+
             $orderItems = [];
-            $crmItems = []; // необходимо для обновления торговой позиции (определения кол-ва списываемых бонусов)
-            $loyaltyDiscountType = null; // вид скидки
+            $crmItems = [];
             $wcItems = $order->get_items();
 
             if ($this->loyalty && $update) {
-                $response = $this->retailcrm->ordersGet($order->get_id());
+                $result = $this->loyalty->getCrmItemsInfo($order->get_id());
 
-                if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
-                    writeBaseLogs('Process order: Error when receiving an order from the crm. Order Id: ' . $order->get_id());
+                if ($result !== []) {
+                    $crmItems = $result['items'];
 
-                    $crmOrder = null;
-                } else {
-                    $crmOrder = $response['order'] ?? null;
-                    $this->appliedBonuses = $crmOrder['bonusesChargeTotal'] ?? 0;
+                    $this->cancelLoyalty = $this->order_item->isCancelLoyalty($wcItems, $crmItems);
+                    $this->loyaltyDiscountType = $result['discountType'];
                 }
-            }
-
-            if ($crmOrder) {
-                foreach ($crmOrder['items'] as $item) {
-                    $externalId = $item['externalIds'][0]['value'];
-                    $externalId = preg_replace('/^\d+\_/m', '', $externalId);
-                    $crmItems[$externalId] = $item;
-
-                    if (!$loyaltyDiscountType) {
-                        foreach ($item['discounts'] as $discount) {
-                            if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
-                                $loyaltyDiscountType = $discount['type'];
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                $this->cancelBonus = $this->order_item->isCancelBonus($wcItems, $crmItems);
             }
 
             /** @var WC_Order_Item_Product $item */
@@ -512,7 +489,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $crmItem = $crmItems[$id] ?? null;
                 $orderItems[] = $this->order_item->build($item, $crmItem)->getData();
 
-                $this->order_item->resetData($this->cancelBonus);
+                $this->order_item->resetData($this->cancelLoyalty);
             }
 
             unset($crmItems, $crmItem);
