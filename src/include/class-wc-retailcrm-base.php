@@ -563,20 +563,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return;
             }
 
-         /*   as_schedule_single_action(
-                time() + 2, // when to run? 5 seconds later
-                'action_update_order', // the hook name
-                array( $order_id ), // arguments to pass to the hook and the function
-                'updateOrder', // group name, could be any string
-                true // should be unique? – yes
-            );*/
             $this->orders->updateOrder($order_id);
-
-            /*if (!wp_next_scheduled('action_update_order', [$order_id])) {
-                wp_schedule_single_event( time() + 2, 'action_update_order', [$order_id] );
-            }*/
-
-            //$this->orders->updateOrder($order_id);
         }
 
         /**

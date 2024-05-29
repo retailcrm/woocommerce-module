@@ -317,10 +317,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $this->order_item->cancelLoyalty = false;
                     $needRecalculate = true;
 
+                    if ($this->loyaltyDiscountType === 'loyalty_level') {
+                        $this->order['privilegeType'] = 'none';
+                    }
+
                     if ($this->loyaltyDiscountType === 'bonus_charge') {
                         $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
-                    } else {
-                        $this->order['privilegeType'] = 'none';
                     }
                 }
 
