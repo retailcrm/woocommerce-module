@@ -209,7 +209,6 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
      * @param $retailcrm
      *
      * @throws Exception
-     * @group loyalty
      * @dataProvider dataProviderUpdateOrder
      */
     public function test_update_order($isSuccessful, $retailcrm)
