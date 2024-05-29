@@ -567,7 +567,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                 'is_successful' => true,
                 'retailcrm' => $this->apiMock
             ],
-            /*[
+            [
                 'is_successful' => true,
                 'retailcrm' => false
             ],
@@ -578,7 +578,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             [
                 'is_successful' => false,
                 'retailcrm' => $this->apiMock
-            ]*/
+            ]
         ];
     }
 
