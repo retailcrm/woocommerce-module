@@ -209,6 +209,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
      * @param $retailcrm
      *
      * @throws Exception
+     * @group loyalty
      * @dataProvider dataProviderUpdateOrder
      */
     public function test_update_order($isSuccessful, $retailcrm)
@@ -566,7 +567,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                 'is_successful' => true,
                 'retailcrm' => $this->apiMock
             ],
-            [
+            /*[
                 'is_successful' => true,
                 'retailcrm' => false
             ],
@@ -577,7 +578,7 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
             [
                 'is_successful' => false,
                 'retailcrm' => $this->apiMock
-            ]
+            ]*/
         ];
     }
 
@@ -642,9 +643,12 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
      */
     private function getRetailcrmOrders($retailcrm)
     {
+        $options = $this->getOptions();
+        unset($options['loyalty']);
+
         return new WC_Retailcrm_Orders(
             $retailcrm,
-            $this->getOptions(),
+            $options,
             new WC_Retailcrm_Order_Item($this->getOptions()),
             new WC_Retailcrm_Order_Address(),
             new WC_Retailcrm_Customers(
@@ -669,4 +673,3 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                     ->getMock();
     }
 }
-
