@@ -113,28 +113,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         private function getDiscountLoyalty($cartItems, $site, $customerId)
         {
-            $order = [
-              'site' => $site,
-              'customer' => ['externalId' => $customerId],
-              'privilegeType' => 'loyalty_level'
-            ];
+            $response = $this->calculateDiscountLoyalty($cartItems, $site, $customerId);
 
-            $useXmlId = isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] === WC_Retailcrm_Base::YES;
-
-            foreach ($cartItems as $item) {
-                $product = $item['data'];
-
-                $order['items'][] = [
-                    'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
-                    'quantity' => $item['quantity'],
-                    'initialPrice' => wc_get_price_including_tax($product),
-                    'discountManualAmount' => ($item['line_subtotal'] - $item['line_total']) / $item['quantity']
-                ];
-            }
-
-            $response = $this->apiClient->calculateDiscountLoyalty($site, $order);
-
-            if (!$response->isSuccessful() || !isset($response['calculations'])) {
+            if ($response === 0) {
                 return 0;
             }
 
@@ -454,6 +435,98 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             return ['items' => $crmItems, 'discountType' => $discountType];
+        }
+
+        public function calculateDiscountLoyalty($cartItems, $site, $customerId, $bonuses = 0)
+        {
+            $order = [
+                'site' => $site,
+                'customer' => ['externalId' => $customerId],
+                'privilegeType' => 'loyalty_level'
+            ];
+
+            $useXmlId = isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] === WC_Retailcrm_Base::YES;
+
+            foreach ($cartItems as $item) {
+                $product = $item['data'];
+
+                $order['items'][] = [
+                    'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
+                    'quantity' => $item['quantity'],
+                    'initialPrice' => wc_get_price_including_tax($product),
+                    'discountManualAmount' => ($item['line_subtotal'] - $item['line_total']) / $item['quantity']
+                ];
+            }
+
+            $response = $this->apiClient->calculateDiscountLoyalty($site, $order, (float) $bonuses);
+
+            if (!$response->isSuccessful() || !isset($response['calculations'])) {
+                return 0;
+            }
+
+            return $response;
+        }
+
+        public function getCreditBonuses(): string
+        {
+            global $woocommerce;
+
+            $customerId = $woocommerce->customer ? $woocommerce->customer->get_id() : null;
+            $site = $this->apiClient->getSingleSiteForKey();
+
+            if (!$customerId || !$woocommerce->cart || !$woocommerce->cart->get_cart() || !$site) {
+                return '';
+            }
+
+            $loyaltyCoupon = null;
+            $coupons = $woocommerce->cart->get_applied_coupons();
+
+            foreach ($coupons as $coupon) {
+                if ($this->isLoyaltyCoupon($coupon)) {
+                    $loyaltyCoupon = new WC_Coupon($coupon);
+
+                    $woocommerce->cart->remove_coupon($coupon);
+                    $woocommerce->cart->calculate_totals();
+
+                    break;
+                }
+            }
+
+            if ($loyaltyCoupon) {
+                $chargeBonuses = $loyaltyCoupon->get_amount();
+            }
+
+            $cartItems = $woocommerce->cart->get_cart();
+            $response = $this->calculateDiscountLoyalty($cartItems, $site, $customerId, $chargeBonuses ?? 0);
+
+            if ($loyaltyCoupon) {
+                $coupon = new WC_Coupon();
+                $coupon->set_usage_limit(0);
+                $coupon->set_amount($loyaltyCoupon->get_amount());
+                $coupon->set_email_restrictions($loyaltyCoupon->get_email_restrictions());
+                $coupon->set_code($loyaltyCoupon->get_code());
+                $coupon->save();
+
+                $woocommerce->cart->apply_coupon($coupon->get_code());
+                $woocommerce->cart->calculate_totals();
+            }
+
+            if ($response === 0) {
+                return '';
+            }
+
+            $creditBonuses = $response['order']['bonusesCreditTotal'];
+
+            if ($creditBonuses) {
+                return $this->getHtmlCreditBonuses($creditBonuses);
+            }
+
+            return '';
+        }
+
+        private function getHtmlCreditBonuses($creditBonuses)
+        {
+            return '<b style="font-size: large">По завершению заказа будет начислено баллов: <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
         }
     }
 

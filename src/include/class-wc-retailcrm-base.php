@@ -120,6 +120,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_before_cart_empted', [$this, 'clear_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
                 add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
+                add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
             }
 
             // Subscribed hooks
@@ -741,6 +742,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             } catch (Throwable $exception) {
                 writeBaseLogs($exception->getMessage());
             }
+        }
+
+        public function reviewCreditBonus()
+        {
+            echo $this->loyalty->getCreditBonuses();
         }
 
         /**
