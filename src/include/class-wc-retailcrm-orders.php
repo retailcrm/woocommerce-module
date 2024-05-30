@@ -100,9 +100,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->order_payment->resetData();
 
                 $wcOrder = wc_get_order($orderId);
-                $privilegeType = 'none';
 
                 if ($this->loyalty) {
+                    $privilegeType = 'none';
                     $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
                     $wcUser = $wcOrder->get_user();
 
@@ -112,13 +112,17 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                         }
 
                         $discountLp = 0;
-                    } else {
+                        $privilegeType = 'none';
+                    } elseif ($this->loyalty->isValidUser($wcUser)) {
                         $privilegeType = 'loyalty_level';
                     }
                 }
 
                 $this->processOrder($wcOrder);
-                $this->order['privilegeType'] = $privilegeType;
+
+                if (isset($privilegeType)) {
+                    $this->order['privilegeType'] = $privilegeType;
+                }
 
                 $response = $this->retailcrm->ordersCreate($this->order);
 
@@ -322,7 +326,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     }
 
                     if ($this->loyaltyDiscountType === 'bonus_charge') {
-                        $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
+                        $responseCancelBonus = $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
+
+                        if (!$responseCancelBonus instanceof WC_Retailcrm_Response || !$responseCancelBonus->isSuccessful()) {
+                            writeBaseLogs('Error when canceling bonuses');
+
+                            return null;
+                        }
                     }
                 }
 
