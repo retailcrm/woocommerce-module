@@ -104,16 +104,20 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 if ($this->loyalty) {
                     $privilegeType = 'none';
                     $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
-                    $wcUser = $wcOrder->get_user();
+                    $data = $wcOrder->get_data();
 
-                    if (!$this->loyalty->isValidOrder($wcUser, $wcOrder)) {
+                    if (isset($data['customer_id'])) {
+                        $wcCustomer = new WC_Customer($data['customer_id']);
+                    }
+
+                    if (!$this->loyalty->isValidOrder($wcCustomer ?? null, $wcOrder)) {
                         if ($discountLp > 0) {
                             writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
                         }
 
                         $discountLp = 0;
                         $privilegeType = 'none';
-                    } elseif ($this->loyalty->isValidUser($wcUser)) {
+                    } elseif ($this->loyalty->isValidUser($wcCustomer ?? null)) {
                         $privilegeType = 'loyalty_level';
                     }
                 }

@@ -346,25 +346,19 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return $discountLp;
         }
 
-        public function isValidOrder($wcUser, $wcOrder)
+        public function isValidOrder($wcCustomer, $wcOrder)
         {
-            if (!$wcUser) {
-                return false;
-            }
-
-            $wcCustomer = new WC_Customer($wcUser->ID);
-
             return !(!$wcCustomer || (isCorporateUserActivate($this->settings) && isCorporateOrder($wcCustomer, $wcOrder)));
         }
 
-        public function isValidUser($wcUser)
+        public function isValidUser($wcCustomer)
         {
-            if (empty($wcUser)) {
+            if (empty($wcCustomer)) {
                 return false;
             }
 
             try {
-                $response = $this->getLoyaltyAccounts($wcUser->ID);
+                $response = $this->getLoyaltyAccounts($wcCustomer->get_id());
             } catch (Throwable $exception) {
                 writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
 

@@ -121,12 +121,6 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
      */
     public function testIsValidOrder($customer, $corporate_enabled, $expected, $orderCorporate)
     {
-        $wp_user = null;
-
-        if ($customer) {
-            $wp_user = get_user_by('ID', $customer->get_id());
-        }
-
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, ['corporate_enabled' => $corporate_enabled]);
         $wcOrder = new WC_Order();
 
@@ -134,7 +128,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
             $wcOrder->set_billing_company('OOO TEST');
         }
 
-        $this->assertEquals($expected, $this->loyalty->isValidOrder($wp_user, $wcOrder));
+        $this->assertEquals($expected, $this->loyalty->isValidOrder($customer, $wcOrder));
     }
 
     /**
