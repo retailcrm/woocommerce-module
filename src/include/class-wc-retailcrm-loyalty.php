@@ -526,7 +526,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         private function getHtmlCreditBonuses($creditBonuses)
         {
-            return '<b style="font-size: large">По завершению заказа будет начислено баллов: <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
+            return '<b style="font-size: large">' . __("Points will be awarded upon completion of the order:", 'retailcrm') . ' <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
         }
     }
 

@@ -246,6 +246,7 @@ return [
         "It is possible to write off" => "Возможно списать",
         "bonuses" => "бонусов",
         "Use coupon:" => "Используйте купон:",
+        "Points will be awarded upon completion of the order:" => "По завершению заказа будет начислено баллов:",
     ],
     "language" => "ru",
     "x-generator" => "GlotPress/2.4.0-alpha",
