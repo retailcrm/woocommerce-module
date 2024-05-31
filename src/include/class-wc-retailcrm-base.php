@@ -746,7 +746,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function reviewCreditBonus()
         {
-            echo $this->loyalty->getCreditBonuses();
+            $resultHtml = $this->loyalty->getCreditBonuses();
+
+            if ($resultHtml) {
+                echo $resultHtml;
+            }
         }
 
         /**
