@@ -330,6 +330,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $products = DataLoyaltyRetailCrm::createProducts();
         $user = DataLoyaltyRetailcrm::createUsers()[0];
+        $discountLoyalty = 50;
 
         $wcOrder = wc_create_order([
             'status'        => null,
@@ -391,7 +392,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockResponse($this->apiMock, 'applyBonusToOrder', $response);
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
 
-        $this->loyalty->applyLoyaltyDiscount($wcOrder, $createdCrmOrderResponse, 50);
+        $this->loyalty->applyLoyaltyDiscount($wcOrder, $createdCrmOrderResponse, $discountLoyalty);
 
         foreach ($wcOrder->get_items() as $id => $item) {
             $this->assertNotEquals($item->get_total(), $currentItemsPrice[$id]);
@@ -456,7 +457,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
             ]
         ];
 
-        $this->loyalty->applyLoyaltyDiscount($wcOrder, $createdCrmOrderResponse, 0);
+        $this->loyalty->applyLoyaltyDiscount($wcOrder, $createdCrmOrderResponse);
 
         foreach ($wcOrder->get_items() as $id => $item) {
             $this->assertNotEquals($item->get_total(), $currentItemsPrice[$id]);

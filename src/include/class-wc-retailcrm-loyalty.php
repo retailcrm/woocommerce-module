@@ -432,24 +432,22 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $response = $this->apiClient->ordersGet($orderExternalId);
 
-            if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful()) {
-                writeBaseLogs('Process order: Error when receiving an order from the crm. Order Id: ' . $orderExternalId);
+            if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful() || !isset($response['order'])) {
+                writeBaseLogs('Process order: Error when receiving an order from the CRM. Order Id: ' . $orderExternalId);
 
                 return [];
             }
 
-            if (isset($response['order'])) {
-                foreach ($response['order']['items'] as $item) {
-                    $externalId = $item['externalIds'][0]['value'];
-                    $externalId = preg_replace('/^\d+\_/m', '', $externalId);
-                    $crmItems[$externalId] = $item;
+            foreach ($response['order']['items'] as $item) {
+                $externalId = $item['externalIds'][0]['value'];
+                $externalId = preg_replace('/^\d+\_/m', '', $externalId);
+                $crmItems[$externalId] = $item;
 
-                    if (!$discountType) {
-                        foreach ($item['discounts'] as $discount) {
-                            if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
-                                $discountType = $discount['type'];
-                                break;
-                            }
+                if (!$discountType) {
+                    foreach ($item['discounts'] as $discount) {
+                        if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                            $discountType = $discount['type'];
+                            break;
                         }
                     }
                 }

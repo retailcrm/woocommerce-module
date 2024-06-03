@@ -115,7 +115,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      * @param WC_Order_Item_Product $item
      * @param $price
      * @param int $decimalPlaces Price rounding from WC settings
-     *
+     * @param array|null $crmItem Current trade position in CRM
      * @return float|int
      */
     private function calculateDiscount(
@@ -135,6 +135,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
                 }
             }
 
+            /**
+             * The loyalty program discount is calculated within the CRM system. It must be deleted during transfer to avoid duplication.
+             */
             $productPrice = ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
 
             if ($this->cancelLoyalty) {
@@ -171,10 +174,19 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $this->cancelLoyalty = $cancelLoyalty;
     }
 
+    /**
+     * Checking whether the loyalty program discount needs to be canceled. (Changing the sales items in the order)
+     *
+     * @param array $wcItems
+     * @param array $crmItems
+     *
+     * @return bool
+     */
     public function isCancelLoyalty($wcItems, $crmItems): bool
     {
         $loyaltyDiscount = 0;
 
+        /** If the number of sales items does not match */
         if (count($wcItems) !== count($crmItems)) {
             $this->cancelLoyalty = true;
 
@@ -182,12 +194,14 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         }
 
         foreach ($wcItems as $id => $item) {
+            /** If a trading position has been added/deleted */
             if (!isset($crmItems[$id])) {
                 $this->cancelLoyalty = true;
 
                 return true;
             }
 
+            /** If the quantity of goods in a trade item does not match */
             if ($item->get_quantity() !== $crmItems[$id]['quantity']) {
                 $this->cancelLoyalty = true;
 
@@ -202,6 +216,10 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
                 }
             }
 
+            /**
+             *If the sum of the trade item including discounts and loyalty program discount exceeds the cost without discounts.
+             * (Occurs when recalculating an order, deleting/adding coupons)
+             */
             if (($item->get_total() + $loyaltyDiscount) > $item->get_subtotal()) {
                 $this->cancelLoyalty = true;
 
