@@ -344,7 +344,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $response = $this->retailcrm->ordersEdit($this->order);
                 $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
 
-                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful() && isset($response['order'])) {
                     $this->payment = $this->orderUpdatePaymentType($wcOrder);
 
                     if ($needRecalculate) {
