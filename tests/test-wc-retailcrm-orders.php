@@ -642,9 +642,12 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
      */
     private function getRetailcrmOrders($retailcrm)
     {
+        $options = $this->getOptions();
+        unset($options['loyalty']);
+
         return new WC_Retailcrm_Orders(
             $retailcrm,
-            $this->getOptions(),
+            $options,
             new WC_Retailcrm_Order_Item($this->getOptions()),
             new WC_Retailcrm_Order_Address(),
             new WC_Retailcrm_Customers(
@@ -669,4 +672,3 @@ class WC_Retailcrm_Orders_Test extends WC_Retailcrm_Test_Case_Helper
                     ->getMock();
     }
 }
-

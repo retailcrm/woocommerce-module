@@ -213,7 +213,7 @@ function isCorporateUserActivate($settings)
     return isset($settings['corporate_enabled']) && $settings['corporate_enabled'] === WC_Retailcrm_Base::YES;
 }
 
-function isCorporateOrder($wcUser, $wcOrder)
+function isCorporateOrder($wcCustomer, $wcOrder)
 {
-    return !empty($wcUser->get_billing_company()) || !empty($wcOrder->get_billing_company());
+    return !empty($wcCustomer->get_billing_company()) || !empty($wcOrder->get_billing_company());
 }

@@ -124,7 +124,7 @@ class WC_Retailcrm_Loyalty_Client_Test extends WC_Retailcrm_Test_Case_Helper
             ],
             [
                 'method' => 'cancelBonusOrder',
-                'parameters' => ['site', ['order']]
+                'parameters' => [['order']]
             ],
         ];
     }

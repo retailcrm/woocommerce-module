@@ -44,6 +44,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
         /** @var array */
         private $order = [];
 
+        /** @var bool */
+        private $cancelLoyalty = false;
+
+        /** @var string */
+        private $loyaltyDiscountType = '';
+
         /** @var array */
         private $payment = [];
 
@@ -94,25 +100,34 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $this->order_payment->resetData();
 
                 $wcOrder = wc_get_order($orderId);
-                $privilegeType = 'none';
 
                 if ($this->loyalty) {
+                    $wcCustomer = null;
+                    $privilegeType = 'none';
                     $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
-                    $wcUser = $wcOrder->get_user();
+                    $dataOrder = $wcOrder->get_data();
 
-                    if (!$this->loyalty->isValidOrder($wcUser, $wcOrder)) {
+                    if (isset($dataOrder['customer_id'])) {
+                        $wcCustomer = new WC_Customer($dataOrder['customer_id']) ?? null;
+                    }
+
+                    if (!$this->loyalty->isValidOrder($wcCustomer, $wcOrder)) {
                         if ($discountLp > 0) {
                             writeBaseLogs('The user does not meet the requirements for working with the loyalty program. Order Id: ' . $orderId);
                         }
 
                         $discountLp = 0;
-                    } else {
+                        $privilegeType = 'none';
+                    } elseif ($this->loyalty->isValidUser($wcCustomer)) {
                         $privilegeType = 'loyalty_level';
                     }
                 }
 
                 $this->processOrder($wcOrder);
-                $this->order['privilegeType'] = $privilegeType;
+
+                if (isset($privilegeType)) {
+                    $this->order['privilegeType'] = $privilegeType;
+                }
 
                 $response = $this->retailcrm->ordersCreate($this->order);
 
@@ -124,7 +139,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 if (isset($discountLp) && $discountLp > 0) {
-                    $this->loyalty->applyLoyaltyDiscount($wcOrder, $discountLp, $response['order']);
+                    $this->loyalty->applyLoyaltyDiscount($wcOrder, $response['order'], $discountLp);
                 }
             } catch (Throwable $exception) {
                 writeBaseLogs(
@@ -302,16 +317,39 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             try {
                 $wcOrder = wc_get_order($orderId);
+                $needRecalculate = false;
 
                 $this->processOrder($wcOrder, true);
 
-                $response = $this->retailcrm->ordersEdit($this->order);
+                if ($this->cancelLoyalty) {
+                    $this->cancelLoyalty = false;
+                    $this->order_item->cancelLoyalty = false;
+                    $needRecalculate = true;
 
-                // Allows you to verify order changes and perform additional actions
+                    if ($this->loyaltyDiscountType === 'loyalty_level') {
+                        $this->order['privilegeType'] = 'none';
+                    }
+
+                    if ($this->loyaltyDiscountType === 'bonus_charge') {
+                        $responseCancelBonus = $this->retailcrm->cancelBonusOrder(['externalId' => $this->order['externalId']]);
+
+                        if (!$responseCancelBonus instanceof WC_Retailcrm_Response || !$responseCancelBonus->isSuccessful()) {
+                            writeBaseLogs('Error when canceling bonuses');
+
+                            return null;
+                        }
+                    }
+                }
+
+                $response = $this->retailcrm->ordersEdit($this->order);
                 $response = apply_filters('retailcrm_order_update_after', $response, $wcOrder);
 
-                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful()) {
+                if ($response instanceof WC_Retailcrm_Response && $response->isSuccessful() && isset($response['order'])) {
                     $this->payment = $this->orderUpdatePaymentType($wcOrder);
+
+                    if ($needRecalculate) {
+                        $this->loyalty->calculateLoyaltyDiscount($wcOrder, $response['order']['items']);
+                    }
                 }
             } catch (Throwable $exception) {
                 writeBaseLogs(
@@ -447,14 +485,31 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             }
 
             $orderData['delivery']['address'] = $this->order_address->build($order)->getData();
+
             $orderItems = [];
+            $crmItems = [];
+            $wcItems = $order->get_items();
+
+            if ($this->loyalty && $update) {
+                $result = $this->loyalty->getCrmItemsInfo($order->get_id());
+
+                if ($result !== []) {
+                    $crmItems = $result['items'];
+
+                    $this->cancelLoyalty = $this->order_item->isCancelLoyalty($wcItems, $crmItems);
+                    $this->loyaltyDiscountType = $result['discountType'];
+                }
+            }
 
             /** @var WC_Order_Item_Product $item */
-            foreach ($order->get_items() as $item) {
-                $orderItems[] = $this->order_item->build($item)->getData();
+            foreach ($wcItems as $id => $item) {
+                $crmItem = $crmItems[$id] ?? null;
+                $orderItems[] = $this->order_item->build($item, $crmItem)->getData();
 
-                $this->order_item->resetData();
+                $this->order_item->resetData($this->cancelLoyalty);
             }
+
+            unset($crmItems, $crmItem);
 
             $orderData['items'] = $orderItems;
             $orderData['discountManualAmount']  = 0;
