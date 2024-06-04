@@ -247,6 +247,7 @@ return [
         "It is possible to write off" => "Es posible debitar",
         "bonuses" => "bonificaciones",
         "Use coupon:" => "Utiliza el cupón:",
+        "Points will be awarded upon completion of the order:" => "Los puntos se concederán al finalizar el pedido:",
     ],
     "language" => "es",
     "x-generator" => "GlotPress/2.4.0-alpha",

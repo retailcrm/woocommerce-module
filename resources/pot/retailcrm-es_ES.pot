@@ -588,3 +588,6 @@ msgstr "bonos"
 
 msgid "Use coupon:"
 msgstr "Utiliza el cupón:"
+
+msgid "Points will be awarded upon completion of the order:"
+msgstr "Los puntos se concederán al finalizar el pedido:"
