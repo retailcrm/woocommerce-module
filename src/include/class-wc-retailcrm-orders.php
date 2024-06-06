@@ -496,7 +496,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 if ($result !== []) {
                     $crmItems = $result['items'];
 
-                    $this->cancelLoyalty = $this->order_item->isCancelLoyalty($wcItems, $crmItems);
+                    if ($result['discountType'] !== null && in_array($order->get_status(), ['cancelled', 'refunded'])) {
+                        $this->cancelLoyalty = true;
+                        $this->order_item->cancelLoyalty = true;
+                    } else {
+                        $this->cancelLoyalty = $this->order_item->isCancelLoyalty($wcItems, $crmItems);
+                    }
+
                     $this->loyaltyDiscountType = $result['discountType'];
                 }
             }
