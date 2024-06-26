@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.7.8 =
-* Fixed transfer of abandoned cart
+* Added passing link field for abandoned baskets
 
 = 4.7.7 =
 * Added transfer of services via ICML catalog
