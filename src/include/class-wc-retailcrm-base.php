@@ -105,7 +105,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
 
             if (isLoyaltyActivate($this->settings)) {
-                add_action('action_update_order', [$this, 'action_update_order'], 11, 1);
                 add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
                 add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
@@ -122,18 +121,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
                 add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
                 add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
-
-                if (
-                    !$this->get_option('deactivate_update_order')
-                    || $this->get_option('deactivate_update_order') == static::NO
-                ) {
-                    add_action('woocommerce_update_order', [$this, 'update_order_loyalty'], 11, 1);
-                }
-            } elseif (
-                !$this->get_option('deactivate_update_order')
-                || $this->get_option('deactivate_update_order') == static::NO
-            ) {
-                add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
             }
 
             // Subscribed hooks
@@ -146,6 +133,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     [$this, 'subscribe_woocommerce_before_checkout_registration_form'],
                     99
                 );
+            }
+
+            if (
+                !$this->get_option('deactivate_update_order')
+                || $this->get_option('deactivate_update_order') == static::NO
+            ) {
+                add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
             }
 
             if ($this->get_option('abandoned_carts_enabled') === static::YES) {
@@ -566,26 +560,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function update_order($order_id)
         {
-            if (WC_Retailcrm_Plugin::history_running() === true) {
+            if (
+                WC_Retailcrm_Plugin::history_running() === true
+                || did_action('woocommerce_checkout_order_processed')
+                || did_action('woocommerce_new_order')
+            ) {
                 return;
             }
 
-            $this->orders->updateOrder($order_id);
-        }
-
-        public function update_order_loyalty($order_id)
-        {
-            if (WC_Retailcrm_Plugin::history_running() === true) {
-                return;
-            }
-
-            if (!wp_next_scheduled('action_update_order', [$order_id])) {
-                wp_schedule_single_event(time() + 3, 'action_update_order', [$order_id] );
-            }
-        }
-
-        public function action_update_order($order_id)
-        {
             $this->orders->updateOrder($order_id);
         }
 
