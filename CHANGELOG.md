@@ -1,3 +1,6 @@
+## 2024-06-26 4.7.8
+* Added passing link field for abandoned baskets
+
 ## 2024-04-23 4.7.7
 * Added transfer of services via ICML catalog
 
