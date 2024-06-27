@@ -36,6 +36,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var WC_Retailcrm_Loyalty */
         protected $loyalty;
 
+        /** @var array */
+        protected $updatedOrderId = [];
+
         /**
          * Init and hook in the integration.
          *
@@ -139,7 +142,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 !$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
             ) {
-                add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
+                add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
+                add_action('shutdown', [$this, 'update_order'], -1);
             }
 
             if ($this->get_option('abandoned_carts_enabled') === static::YES) {
@@ -558,7 +562,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @throws \Exception
          */
-        public function update_order($order_id)
+        public function take_update_order($order_id)
         {
             if (
                 WC_Retailcrm_Plugin::history_running() === true
@@ -568,7 +572,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return;
             }
 
-            $this->orders->updateOrder($order_id);
+            $this->updatedOrderId[$order_id] = $order_id;
+        }
+
+        public function update_order()
+        {
+            if ($this->updatedOrderId !== []) {
+                foreach ($this->updatedOrderId as $orderId) {
+                    $this->orders->updateOrder($orderId);
+                }
+            }
         }
 
         /**
