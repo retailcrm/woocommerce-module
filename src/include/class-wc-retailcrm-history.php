@@ -276,7 +276,8 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 $orderEditData = [];
 
                                 if (
-                                    $order['number'] != $wcOrderNumber
+                                    isset($order['number'])
+                                    && $order['number'] != $wcOrderNumber
                                     && isset($this->retailcrmSettings['update_number'])
                                     && $this->retailcrmSettings['update_number'] == WC_Retailcrm_Base::YES
                                 ) {

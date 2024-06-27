@@ -1,3 +1,6 @@
+## 2024-06-27 4.7.9
+* Fixed undefined array key number in order history
+
 ## 2024-06-26 4.7.8
 * Added passing link field for abandoned baskets
 
