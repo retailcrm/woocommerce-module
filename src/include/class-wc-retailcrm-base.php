@@ -145,6 +145,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             ) {
                 add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
                 add_action('shutdown', [$this, 'update_order'], -1);
+                add_action('woocommerce_saved_order_items', [$this, 'update_order_items'], 10, 1);
             }
 
             if ($this->get_option('abandoned_carts_enabled') === static::YES) {
@@ -583,6 +584,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     $this->orders->updateOrder($orderId);
                 }
             }
+        }
+
+        public function update_order_items($orderId)
+        {
+            $this->orders->updateOrder($orderId);
         }
 
         public function trash_order_action($id)
