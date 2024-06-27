@@ -309,7 +309,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
          * @return WC_Order $order | null
          * @throws \Exception
          */
-        public function updateOrder($orderId)
+        public function updateOrder($orderId, $statusTrash = false)
         {
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
@@ -319,7 +319,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $wcOrder = wc_get_order($orderId);
                 $needRecalculate = false;
 
-                $this->processOrder($wcOrder, true);
+                $this->processOrder($wcOrder, true, $statusTrash);
 
                 if ($this->cancelLoyalty) {
                     $this->cancelLoyalty = false;
@@ -422,7 +422,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
          * @return void
          * @throws \Exception
          */
-        protected function processOrder($order, $update = false)
+        protected function processOrder($order, $update = false, $statusTrash = false)
         {
             if (!$order instanceof WC_Order) {
                 return;
@@ -496,7 +496,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 if ($result !== []) {
                     $crmItems = $result['items'];
 
-                    if ($result['discountType'] !== null && in_array($order->get_status(), ['cancelled', 'refunded'])) {
+                    if (
+                        $statusTrash
+                        || (
+                            $result['discountType'] !== null
+                            && in_array($order->get_status(), ['cancelled', 'refunded'])
+                        )
+                    ) {
                         $this->cancelLoyalty = true;
                         $this->order_item->cancelLoyalty = true;
                     } else {

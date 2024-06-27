@@ -124,6 +124,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
                 add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
                 add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
+                add_action('wp_trash_post', [$this, 'trash_order_action'], 10, 1);
             }
 
             // Subscribed hooks
@@ -581,6 +582,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 foreach ($this->updatedOrderId as $orderId) {
                     $this->orders->updateOrder($orderId);
                 }
+            }
+        }
+
+        public function trash_order_action($id)
+        {
+            if ('shop_order' == get_post_type($id)) {
+                $this->orders->updateOrder($id, true);
             }
         }
 
