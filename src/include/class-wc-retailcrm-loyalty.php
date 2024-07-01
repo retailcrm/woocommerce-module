@@ -474,7 +474,13 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $customerId = $woocommerce->customer ? $woocommerce->customer->get_id() : null;
             $site = $this->apiClient->getSingleSiteForKey();
 
-            if (!$customerId || !$woocommerce->cart || !$woocommerce->cart->get_cart() || !$site) {
+            if (
+                !$customerId
+                || !$woocommerce->cart
+                || !$woocommerce->cart->get_cart()
+                || !$site
+                || !$this->validator->checkAccount($customerId)
+            ) {
                 return '';
             }
 
