@@ -184,8 +184,6 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     public function isCancelLoyalty($wcItems, $crmItems): bool
     {
-        $loyaltyDiscount = 0;
-
         /** If the number of sales items does not match */
         if (count($wcItems) !== count($crmItems)) {
             $this->cancelLoyalty = true;
@@ -194,6 +192,8 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         }
 
         foreach ($wcItems as $id => $item) {
+            $loyaltyDiscount = 0;
+
             /** If a trading position has been added/deleted */
             if (!isset($crmItems[$id])) {
                 $this->cancelLoyalty = true;
@@ -210,7 +210,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
             foreach ($crmItems[$id]['discounts'] as $discount) {
                 if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
-                    $loyaltyDiscount += $discount['amount'];
+                    $loyaltyDiscount = $discount['amount'];
 
                     break;
                 }

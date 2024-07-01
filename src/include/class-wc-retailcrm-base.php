@@ -36,6 +36,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var WC_Retailcrm_Loyalty */
         protected $loyalty;
 
+        /** @var array */
+        protected $updatedOrderId = [];
+
         /**
          * Init and hook in the integration.
          *
@@ -121,7 +124,23 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
                 add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
                 add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
+                add_action('wp_trash_post', [$this, 'trash_order_action'], 10, 1);
+
+                if (
+                    !$this->get_option('deactivate_update_order')
+                    || $this->get_option('deactivate_update_order') == static::NO
+                ) {
+                    add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
+                    add_action('shutdown', [$this, 'update_order_loyalty'], -1);
+                    add_action('woocommerce_saved_order_items', [$this, 'update_order_items'], 10, 1);
+                }
+            } elseif (
+                !$this->get_option('deactivate_update_order')
+                || $this->get_option('deactivate_update_order') == static::NO
+            ) {
+                add_action('woocommerce_update_order', [$this, 'update_order'], 10, 1);
             }
+
 
             // Subscribed hooks
             add_action('register_form', [$this, 'subscribe_register_form'], 99);
@@ -133,13 +152,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     [$this, 'subscribe_woocommerce_before_checkout_registration_form'],
                     99
                 );
-            }
-
-            if (
-                !$this->get_option('deactivate_update_order')
-                || $this->get_option('deactivate_update_order') == static::NO
-            ) {
-                add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
             }
 
             if ($this->get_option('abandoned_carts_enabled') === static::YES) {
@@ -549,6 +561,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
+        public function update_order($orderId)
+        {
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
+            $this->orders->updateOrder($orderId);
+        }
+
         /**
          * Edit order in retailCRM
          *
@@ -558,13 +579,38 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @throws \Exception
          */
-        public function update_order($order_id)
+        public function take_update_order($order_id)
         {
-            if (WC_Retailcrm_Plugin::history_running() === true) {
+            if (
+                WC_Retailcrm_Plugin::history_running() === true
+                || did_action('woocommerce_checkout_order_processed')
+                || did_action('woocommerce_new_order')
+            ) {
                 return;
             }
 
-            $this->orders->updateOrder($order_id);
+            $this->updatedOrderId[$order_id] = $order_id;
+        }
+
+        public function update_order_loyalty()
+        {
+            if ($this->updatedOrderId !== []) {
+                foreach ($this->updatedOrderId as $orderId) {
+                    $this->orders->updateOrder($orderId);
+                }
+            }
+        }
+
+        public function update_order_items($orderId)
+        {
+            $this->orders->updateOrder($orderId);
+        }
+
+        public function trash_order_action($id)
+        {
+            if ('shop_order' == get_post_type($id)) {
+                $this->orders->updateOrder($id, true);
+            }
         }
 
         /**
