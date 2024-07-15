@@ -33,6 +33,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var WC_Retailcrm_Cart */
         protected $cart;
 
+        /** @var WC_Retailcrm_Loyalty */
+        protected $loyalty;
+
+        /** @var array */
+        protected $updatedOrderId = [];
+
         /**
          * Init and hook in the integration.
          *
@@ -86,6 +92,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_ajax_generate_icml', [$this, 'generate_icml']);
             add_action('wp_ajax_upload_selected_orders', [$this, 'upload_selected_orders']);
             add_action('wp_ajax_clear_cron_tasks', [$this, 'clear_cron_tasks']);
+            add_action('wp_ajax_get_status_coupon', [$this, 'get_status_coupon']);
             add_action('admin_print_footer_scripts', [$this, 'ajax_generate_icml'], 99);
             add_action('woocommerce_update_customer', [$this, 'update_customer'], 10, 1);
             add_action('user_register', [$this, 'create_customer'], 10, 2);
@@ -99,6 +106,42 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
+
+            if (isLoyaltyActivate($this->settings)) {
+                add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
+                add_action('wp_ajax_activate_customer_loyalty', [$this, 'activate_customer_loyalty']);
+                add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
+                add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
+                add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+
+                // Add coupon hooks for loyalty program
+                add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
+                //Remove coupons when cart changes
+                add_action('woocommerce_add_to_cart', [$this, 'refresh_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_after_cart_item_quantity_update', [$this, 'refresh_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_cart_item_removed', [$this, 'refresh_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_before_cart_empted', [$this, 'clear_loyalty_coupon'], 11, 1);
+                add_action('woocommerce_removed_coupon', [$this, 'remove_coupon'], 11, 1);
+                add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
+                add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
+                add_action('wp_trash_post', [$this, 'trash_order_action'], 10, 1);
+
+                if (
+                    !$this->get_option('deactivate_update_order')
+                    || $this->get_option('deactivate_update_order') == static::NO
+                ) {
+                    add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
+                    add_action('shutdown', [$this, 'update_order_loyalty'], -1);
+                    add_action('woocommerce_saved_order_items', [$this, 'update_order_items'], 10, 1);
+                }
+            } elseif (
+                !$this->get_option('deactivate_update_order')
+                || $this->get_option('deactivate_update_order') == static::NO
+            ) {
+                add_action('woocommerce_update_order', [$this, 'update_order'], 10, 1);
+            }
+
+
             // Subscribed hooks
             add_action('register_form', [$this, 'subscribe_register_form'], 99);
             add_action('woocommerce_register_form', [$this, 'subscribe_woocommerce_register_form'], 99);
@@ -111,13 +154,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 );
             }
 
-            if (
-                !$this->get_option('deactivate_update_order')
-                || $this->get_option('deactivate_update_order') == static::NO
-            ) {
-                add_action('woocommerce_update_order', [$this, 'update_order'], 11, 1);
-            }
-
             if ($this->get_option('abandoned_carts_enabled') === static::YES) {
                 $this->cart = new WC_Retailcrm_Cart($this->apiClient, $this->settings);
 
@@ -126,6 +162,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_cart_item_removed', [$this, 'set_cart']);
                 add_action('woocommerce_cart_emptied', [$this, 'clear_cart']);
             }
+
+            $this->loyalty = new WC_Retailcrm_Loyalty($this->apiClient, $this->settings);
 
             // Deactivate hook
             add_action('retailcrm_deactivate', [$this, 'deactivate']);
@@ -523,6 +561,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
+        public function update_order($orderId)
+        {
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                return;
+            }
+
+            $this->orders->updateOrder($orderId);
+        }
+
         /**
          * Edit order in retailCRM
          *
@@ -532,13 +579,38 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @throws \Exception
          */
-        public function update_order($order_id)
+        public function take_update_order($order_id)
         {
-            if (WC_Retailcrm_Plugin::history_running() === true) {
+            if (
+                WC_Retailcrm_Plugin::history_running() === true
+                || did_action('woocommerce_checkout_order_processed')
+                || did_action('woocommerce_new_order')
+            ) {
                 return;
             }
 
-            $this->orders->updateOrder($order_id);
+            $this->updatedOrderId[$order_id] = $order_id;
+        }
+
+        public function update_order_loyalty()
+        {
+            if ($this->updatedOrderId !== []) {
+                foreach ($this->updatedOrderId as $orderId) {
+                    $this->orders->updateOrder($orderId);
+                }
+            }
+        }
+
+        public function update_order_items($orderId)
+        {
+            $this->orders->updateOrder($orderId);
+        }
+
+        public function trash_order_action($id)
+        {
+            if ('shop_order' == get_post_type($id)) {
+                $this->orders->updateOrder($id, true);
+            }
         }
 
         /**
@@ -607,6 +679,126 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->include_js_scripts_for_admin();
         }
 
+        public function get_status_coupon()
+        {
+            echo json_encode(
+                [
+                    'coupon_status' => get_option('woocommerce_enable_coupons'),
+                    'translate' => [
+                        'coupon_warning' => __(
+                            "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>",
+                            'retailcrm'
+                        )
+                    ]
+                ]);
+
+            wp_die();
+        }
+
+        public function register_customer_loyalty()
+        {
+            $phone = filter_input(INPUT_POST, 'phone');
+            $userId = filter_input(INPUT_POST, 'userId');
+            $site = $this->apiClient->getSingleSiteForKey();
+            $isSuccessful = false;
+
+            if (!empty($site) && $userId && $phone) {
+                $isSuccessful = $this->loyalty->registerCustomer($userId, $phone, $site);
+            }
+
+            if (!$isSuccessful) {
+                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: ' .
+                    json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                );
+                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
+            } else {
+                echo json_encode(['isSuccessful' => true]);
+            }
+
+            wp_die();
+        }
+
+        public function activate_customer_loyalty()
+        {
+            $loyaltyId = filter_input(INPUT_POST, 'loyaltyId');
+            $isSuccessful = false;
+
+            if ($loyaltyId) {
+                $isSuccessful = $this->loyalty->activateLoyaltyCustomer($loyaltyId);
+            }
+
+            if (!$isSuccessful) {
+                writeBaseLogs('Errors when activate loyalty program. Passed parameters: ' . json_encode(['loyaltyId' => $loyaltyId]));
+                echo json_encode(['error' => __('Error when activating the loyalty program. Try again later', 'retailcrm')]);
+            } else {
+                echo json_encode(['isSuccessful' => true]);
+            }
+
+            wp_die();
+        }
+
+        public function coupon_info()
+        {
+            try {
+                $result = $this->loyalty->createLoyaltyCoupon();
+
+                if ($result) {
+                    echo  $result;
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function refresh_loyalty_coupon()
+        {
+            try {
+                $this->loyalty->createLoyaltyCoupon(true);
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function clear_loyalty_coupon()
+        {
+            try {
+                $this->loyalty->clearLoyaltyCoupon();
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function remove_coupon($couponCode)
+        {
+            try {
+                if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
+                    $this->loyalty->createLoyaltyCoupon(true);
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function apply_coupon($couponCode)
+        {
+            try {
+                if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
+                    $this->loyalty->createLoyaltyCoupon(true);
+                }
+            } catch (Throwable $exception) {
+                writeBaseLogs($exception->getMessage());
+            }
+        }
+
+        public function reviewCreditBonus()
+        {
+            $resultHtml = $this->loyalty->getCreditBonuses();
+
+            if ($resultHtml) {
+                echo $resultHtml;
+            }
+        }
+
         /**
          * In this method we include CSS file
          *
@@ -645,9 +837,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'retailcrm-cron-info',
                 'retailcrm-meta-fields',
                 'retailcrm-module-settings',
+                'retailcrm-loyalty'
             ];
 
-            $wpAdminUrl = ['url' => get_admin_url()];
+            $wpAdminUrl    = ['url' => get_admin_url()];
             $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
 
             foreach ($jsScripts as $scriptName) {
@@ -802,6 +995,53 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             wp_die();
         }
+
+        public function add_loyalty_item($items)
+        {
+            $items['loyalty'] = __('Loyalty program', 'retailcrm');
+
+            return $items;
+        }
+
+        public function add_loyalty_endpoint()
+        {
+            add_rewrite_endpoint('loyalty', EP_PAGES);
+        }
+
+        public function show_loyalty()
+        {
+            $userId = get_current_user_id();
+
+            if (!isset($userId)) {
+                return;
+            }
+
+            $jsScript = 'retailcrm-loyalty-actions';
+            $loyaltyUrl = ['url' => get_admin_url()];
+            $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
+            $cssPath = plugins_url() . '/woo-retailcrm/assets/css/';
+            $messagePhone = __('Enter the correct phone number', 'retailcrm');
+
+            wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
+            wp_enqueue_script($jsScript, $jsScriptsPath . $jsScript . '.js', '', '', true);
+            wp_localize_script($jsScript, 'loyaltyUrl', $loyaltyUrl);
+            wp_localize_script($jsScript, 'customerId', $userId);
+            wp_localize_script($jsScript, 'messagePhone', $messagePhone);
+            wp_localize_script($jsScript, 'termsLoyalty', $this->settings['loyalty_terms']);
+            wp_localize_script($jsScript, 'privacyLoyalty',  $this->settings['loyalty_personal']);
+            wp_register_style('retailcrm-loyalty-style', $cssPath . 'retailcrm-loyalty-style.css', false, '0.1');
+            wp_enqueue_style('retailcrm-loyalty-style');
+
+            $result = $this->loyalty->getForm($userId);
+
+            if ([] === $result) {
+                echo '<p style="color: red">'. __('Error while retrieving data. Try again later', 'retailcrm') . '</p>';
+            } else {
+                wp_localize_script($jsScript, 'loyaltyId', $result['loyaltyId'] ?? null);
+                echo $result['form'];
+            }
+        }
+
 
         /**
          * Get custom fields with CRM

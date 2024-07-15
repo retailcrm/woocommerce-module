@@ -5,7 +5,7 @@
  * Description: Integration plugin for WooCommerce & Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.7.9
+ * Version: 4.8.0
  * Tested up to: 6.5
  * Requires Plugins: woocommerce
  * WC requires at least: 5.4
@@ -121,6 +121,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/icml/class-wc-retailcrm-icml-writer.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-orders.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-cart.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-loyalty.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-customers.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-inventories.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-history.php'));
@@ -132,6 +133,9 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/validators/url-validator/class-wc-retailcrm-url-constraint.php'));
             require_once(self::checkCustomFile('include/validators/url-validator/class-wc-retailcrm-url-validator.php'));
             require_once(self::checkCustomFile('include/validators/class-wc-retailcrm-validator-exception.php'));
+            require_once(self::checkCustomFile('include/components/class-wc-retailcrm-loyalty-form.php'));
+            require_once(self::checkCustomFile('include/validators/loyalty-validator/class-wc-retailcrm-loyalty-constraint.php'));
+            require_once(self::checkCustomFile('include/validators/loyalty-validator/class-wc-retailcrm-loyalty-validator.php'));
         }
 
         /**

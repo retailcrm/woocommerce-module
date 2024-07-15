@@ -445,8 +445,149 @@ msgstr "Se requiere clave API con acceso a una tienda"
 msgid "The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match"
 msgstr "La moneda del sitio web es distinto a la tienda del CRM. Para el funcionamiento correcto de la integración, las monedas del CMS y CRM deben coincid"
 
+msgid "Loyalty program"
+msgstr "Programa de fidelización"
+
+msgid "Activate program loyalty"
+msgstr "Activar programa de fidelización"
+
+msgid "Enable this setting for activate program loyalty on site"
+msgstr "Activa esta configuración para activar programa de fidelización en la página web"
+
+msgid "Terms of loyalty program"
+msgstr "Condiciones del programa de fidelización"
+
+msgid "Insert the terms and conditions of the loyalty program"
+msgstr "Introduce las condiciones del programa de fidelización"
+
+msgid "Conditions of personal data processing"
+msgstr "Condiciones de procesamiento de datos personales"
+
+msgid "Insert the terms and conditions for processing personal data"
+msgstr "Introduce las condiciones para el procesamiento de datos personales"
+
+msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
+msgstr "Para activar el programa de fidelización es necesario activar la opción <a href='?page=wc-settings'>'habilitar el uso de cupones'</a>"
+
+msgid "Bonus account"
+msgstr "Cuenta de bonos"
+
+msgid "Participation ID: "
+msgstr "ID de participación: "
+
+msgid "Current level: "
+msgstr "Nivel actual: "
+
+msgid "Bonuses on the account: "
+msgstr "Bonos en la cuenta: "
+
+msgid "Bonus card number: "
+msgstr "Número de tarjeta de bonos: "
+
+msgid "Date of registration: "
+msgstr "Fecha de registro: "
+
+msgid "Current level rules"
+msgstr "Reglas del nivel actual"
+
+msgid "Required amount of purchases to move to the next level: "
+msgstr "Cantidad de compras necesarias para pasar al siguiente nivel: "
+
+msgid "Activate participation in the loyalty program"
+msgstr "Activar participación en el programa de fidelización"
+
+msgid "Send"
+msgstr "Enviar"
+
+msgid "To register in the loyalty program, fill in the form:"
+msgstr "Para registrarse en el programa de fidelización, rellena el formulario:"
+
+msgid " I agree with "
+msgstr " Estoy de acuerdo con "
+
+msgid "loyalty program terms"
+msgstr "términos del programa de fidelización"
+
+msgid "terms of personal data processing"
+msgstr "términos de procesamiento de datos personales"
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Error while registering in the loyalty program. Try again later"
+msgstr "Error al registrarse en el programa de fidelización. Inténtalo de nuevo más tarde"
+
+msgid "The card is not linked"
+msgstr "La tarjeta no está vinculada"
+
+msgid "Error while retrieving data. Try again later"
+msgstr "Error al recuperar los datos. Inténtalo de nuevo más tarde"
+
+msgid "Error when activating the loyalty program. Try again later"
+msgstr "Error al activar el programa de fidelización. Inténtalo de nuevo más tarde"
+
+msgid "Enter the correct phone number"
+msgstr "Introduce el número de teléfono correcto"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Ordinary products: accrual of 1 bonus for each %s %s"
+msgstr "Productos ordinarios: acumulación de 1 bono por cada %s %s"
+
+msgid "Promotional products: accrual of 1 bonus for each %s %s"
+msgstr "Productos promocionales: acumulación de 1 bono por cada %s %s"
+
+msgid "Ordinary products: bonus accrual in the amount of %s%% of the purchase amount"
+msgstr "Productos ordinarios: acumulación de bonos en la cantidad de %s%% de la suma de la compra"
+
+msgid "Promotional products: bonus accrual in the amount of %s%% of the purchase amount"
+msgstr "Productos promocionales: acumulación de bonos en la cantidad de %s%% de la suma de la compra"
+
+msgid "Ordinary products: %s%% discount"
+msgstr "Productos ordinarios: %s%% de descuento"
+
+msgid "Promotional products: %s%% discount"
+msgstr "Productos promocionales: %s%% de descuento"
+
 msgid "Uploading services"
-msgstr "Descarga de servicios"
+msgstr "Subida de servicios"
 
 msgid "Goods with the 'virtual' option enabled will be uploaded to Simla as services"
-msgstr "Los bienes con la opción 'virtual' activada se cargarán en Simla como servicios"
+msgstr "Los productos con la opción 'virtual' activada se subirán a Simla como servicios"
+
+msgid "User not found in the system"
+msgstr "Usuario no encontrado en el sistema"
+
+msgid "Error when searching for participation in loyalty programs"
+msgstr "Error al buscar la participación en programas de fidelización"
+
+msgid "No active participation in the loyalty program was detected"
+msgstr "No se detectó la participación activa en el programa de fidelización"
+
+msgid "No bonuses for debiting"
+msgstr "No hay bonos para debitar"
+
+msgid "Loyalty program not found"
+msgstr "Programa de fidelización no encontrado"
+
+msgid "Loyalty program is not active"
+msgstr "Programa de fidelización no está activo"
+
+msgid "Loyalty program blocked"
+msgstr "Programa de fidelización bloqueado"
+
+msgid "This user is a corporate person"
+msgstr "Este usuario es una persona jurídica"
+
+msgid "It is possible to write off"
+msgstr "Es posible debitar"
+
+msgid "bonuses"
+msgstr "bonos"
+
+msgid "Use coupon:"
+msgstr "Utiliza el cupón:"
+
+msgid "Points will be awarded upon completion of the order:"
+msgstr "Los puntos se concederán al finalizar el pedido:"

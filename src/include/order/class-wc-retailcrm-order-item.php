@@ -28,6 +28,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     protected $settings = [];
 
+    /** @var bool */
+    public $cancelLoyalty = false;
+
     /**
      * WC_Retailcrm_Order_Item constructor.
      *
@@ -43,13 +46,13 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      *
      * @return self
      */
-    public function build($item)
+    public function build($item, $crmItem = null)
     {
         $decimalPlaces = wc_get_price_decimals();
 
         // Calculate price and discount
         $price         = $this->calculatePrice($item, $decimalPlaces);
-        $discountPrice = $this->calculateDiscount($item, $price, $decimalPlaces);
+        $discountPrice = $this->calculateDiscount($item, $price, $decimalPlaces, $crmItem);
 
         $data['productName']  = $item['name'];
         $data['initialPrice'] = $price;
@@ -112,12 +115,44 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      * @param WC_Order_Item_Product $item
      * @param $price
      * @param int $decimalPlaces Price rounding from WC settings
-     *
+     * @param array|null $crmItem Current trade position in CRM
      * @return float|int
      */
-    private function calculateDiscount(WC_Order_Item_Product $item, $price, int $decimalPlaces)
-    {
-        $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+    private function calculateDiscount(
+        WC_Order_Item_Product $item,
+        $price,
+        int $decimalPlaces,
+        $crmItem = null
+    ) {
+        if ($crmItem) {
+            $loyaltyDiscount = 0;
+
+            foreach ($crmItem['discounts'] as $discount) {
+                if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                    $loyaltyDiscount += $discount['amount'];
+
+                    break;
+                }
+            }
+
+            /**
+             * The loyalty program discount is calculated within the CRM system. It must be deleted during transfer to avoid duplication.
+             */
+            $productPrice = ($item->get_total() / $item->get_quantity()) + ($loyaltyDiscount / $crmItem['quantity']);
+
+            if ($this->cancelLoyalty) {
+                if ($item->get_total() + $loyaltyDiscount <= $item->get_subtotal()) {
+                    $item->set_total($item->get_total() + $loyaltyDiscount);
+                    $item->calculate_taxes();
+                    $item->save();
+                }
+
+                $productPrice = $item->get_total() / $item->get_quantity();
+            }
+        } else {
+            $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+        }
+
         $productTax    = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
         $itemPrice     = $productPrice + $productTax;
 
@@ -127,7 +162,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
     /**
      * Reset item data.
      */
-    public function resetData()
+    public function resetData($cancelLoyalty)
     {
         $this->data = [
             'offer' => [],
@@ -135,5 +170,63 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             'initialPrice' => 0.00,
             'quantity' => 0.00
         ];
+
+        $this->cancelLoyalty = $cancelLoyalty;
+    }
+
+    /**
+     * Checking whether the loyalty program discount needs to be canceled. (Changing the sales items in the order)
+     *
+     * @param array $wcItems
+     * @param array $crmItems
+     *
+     * @return bool
+     */
+    public function isCancelLoyalty($wcItems, $crmItems): bool
+    {
+        /** If the number of sales items does not match */
+        if (count($wcItems) !== count($crmItems)) {
+            $this->cancelLoyalty = true;
+
+            return true;
+        }
+
+        foreach ($wcItems as $id => $item) {
+            $loyaltyDiscount = 0;
+
+            /** If a trading position has been added/deleted */
+            if (!isset($crmItems[$id])) {
+                $this->cancelLoyalty = true;
+
+                return true;
+            }
+
+            /** If the quantity of goods in a trade item does not match */
+            if ($item->get_quantity() !== $crmItems[$id]['quantity']) {
+                $this->cancelLoyalty = true;
+
+                return true;
+            }
+
+            foreach ($crmItems[$id]['discounts'] as $discount) {
+                if (in_array($discount['type'], ['bonus_charge', 'loyalty_level'])) {
+                    $loyaltyDiscount = $discount['amount'];
+
+                    break;
+                }
+            }
+
+            /**
+             *If the sum of the trade item including discounts and loyalty program discount exceeds the cost without discounts.
+             * (Occurs when recalculating an order, deleting/adding coupons)
+             */
+            if (($item->get_total() + $loyaltyDiscount) > $item->get_subtotal()) {
+                $this->cancelLoyalty = true;
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

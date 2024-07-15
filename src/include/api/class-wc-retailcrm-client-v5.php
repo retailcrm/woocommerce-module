@@ -169,17 +169,7 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/customers-corporate',
@@ -273,17 +263,7 @@ class WC_Retailcrm_Client_V5
      */
     public function customersCorporateNotesList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/customers-corporate/notes',
@@ -421,17 +401,8 @@ class WC_Retailcrm_Client_V5
     ) {
         $this->checkIdParameter($by);
 
-        $parameters = ['by' => $by];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
+        $parameters['by'] = $by;
 
         return $this->client->makeRequest(
             "/customers-corporate/$id/addresses",
@@ -537,17 +508,8 @@ class WC_Retailcrm_Client_V5
     ) {
         $this->checkIdParameter($by);
 
-        $parameters = ['by' => $by];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
+        $parameters['by'] = $by;
 
         return $this->client->makeRequest(
             "/customers-corporate/$id/companies",
@@ -640,17 +602,8 @@ class WC_Retailcrm_Client_V5
     ) {
         $this->checkIdParameter($by);
 
-        $parameters = ['by' => $by];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
+        $parameters['by'] = $by;
 
         return $this->client->makeRequest(
             "/customers-corporate/$id/contacts",
@@ -769,17 +722,7 @@ class WC_Retailcrm_Client_V5
      */
     public function usersList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/users',
@@ -840,17 +783,7 @@ class WC_Retailcrm_Client_V5
      */
     public function segmentsList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/segments',
@@ -870,17 +803,7 @@ class WC_Retailcrm_Client_V5
      */
     public function customFieldsList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/custom-fields',
@@ -994,17 +917,7 @@ class WC_Retailcrm_Client_V5
      */
     public function customDictionariesList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/custom-fields/dictionaries',
@@ -1101,17 +1014,7 @@ class WC_Retailcrm_Client_V5
      */
     public function ordersList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/orders',
@@ -1445,17 +1348,7 @@ class WC_Retailcrm_Client_V5
      */
     public function customersList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/customers',
@@ -1666,16 +1559,8 @@ class WC_Retailcrm_Client_V5
      */
     public function customersNotesList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
+
         return $this->client->makeRequest(
             '/customers/notes',
             WC_Retailcrm_Request::METHOD_GET,
@@ -1748,17 +1633,7 @@ class WC_Retailcrm_Client_V5
      */
     public function ordersPacksList(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/orders/packs',
@@ -1899,17 +1774,7 @@ class WC_Retailcrm_Client_V5
      */
     public function tasksList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/tasks',
@@ -2008,17 +1873,7 @@ class WC_Retailcrm_Client_V5
      */
     public function storeProductsGroups(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/store/product-groups',
@@ -2042,17 +1897,7 @@ class WC_Retailcrm_Client_V5
      */
     public function storeInventories(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/store/inventories',
@@ -2180,17 +2025,7 @@ class WC_Retailcrm_Client_V5
      */
     public function storeProducts(array $filter = [], $page = null, $limit = null)
     {
-        $parameters = [];
-
-        if (count($filter)) {
-            $parameters['filter'] = $filter;
-        }
-        if (null !== $page) {
-            $parameters['page'] = (int) $page;
-        }
-        if (null !== $limit) {
-            $parameters['limit'] = (int) $limit;
-        }
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/store/products',
@@ -3008,6 +2843,183 @@ class WC_Retailcrm_Client_V5
         );
     }
 
+    /** Loyalty program */
+
+    /** Customer registration in the loyalty program  */
+    public function createLoyaltyAccount(array $parameters, $site = null)
+    {
+        if ([] === $parameters) {
+            throw new InvalidArgumentException(
+                'Parameter `parameters` must contains a data'
+            );
+        }
+
+        return $this->client->makeRequest(
+            '/loyalty/account/create',
+            WC_Retailcrm_Request::METHOD_POST,
+            $this->fillSite($site, ['loyaltyAccount' => json_encode($parameters)])
+        );
+    }
+
+    /** Receiving information about participation in the loyalty program */
+    public function getLoyaltyClientInfo(int $clientIdLoyalty)
+    {
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty",
+            WC_Retailcrm_Request::METHOD_GET
+        );
+    }
+
+    /** Activation of participation in the loyalty program */
+    public function activateLoyaltyAccount(int $clientIdLoyalty)
+    {
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty/activate",
+            WC_Retailcrm_Request::METHOD_POST
+        );
+    }
+
+    /** Editing participation in the loyalty program */
+    public function editLoyaltyAccount(int $clientIdLoyalty, array $parameters)
+    {
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty/edit",
+            WC_Retailcrm_Request::METHOD_POST,
+            ['id' => $clientIdLoyalty, 'loyaltyAccount' => json_encode($parameters)]
+        );
+    }
+
+    /** List of participation in the loyalty program */
+    public function getLoyaltyAccountList(array $filter = [], $limit = null, $page = null)
+    {
+        $parameters = $this->buildParameters($filter, $limit, $page);
+
+        return $this->client->makeRequest(
+            '/loyalty/accounts',
+            WC_Retailcrm_Request::METHOD_GET,
+            $parameters
+        );
+    }
+
+    /** List of loyalty programs */
+    public function getListLoyalty(array $filter = [], $limit = null, $page = null)
+    {
+        $parameters = $this->buildParameters($filter, $limit, $page);
+
+        return $this->client->makeRequest(
+            '/loyalty/loyalties',
+            WC_Retailcrm_Request::METHOD_GET,
+            $parameters
+        );
+    }
+
+    /** Receiving information about the loyalty program */
+    public function getLoyalty(int $idLoyalty)
+    {
+        return $this->client->makeRequest(
+            "/loyalty/loyalties/$idLoyalty",
+            WC_Retailcrm_Request::METHOD_GET
+        );
+    }
+
+    /** Charge bonus */
+    public function chargeBonusLoyalty(int $clientIdLoyalty, float $amount, string $comment = '')
+    {
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty/bonus/charge",
+            WC_Retailcrm_Request::METHOD_POST,
+            ['amount' => $amount, 'comment' => $comment]
+        );
+    }
+
+    public function creditBonusLoyalty(int $clientIdLoyalty, array $parameters)
+    {
+        if (!isset($parameters['amount'])) {
+            throw new InvalidArgumentException(
+                'Parameter `amount` does not exist'
+            );
+        }
+
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty/bonus/credit",
+            WC_Retailcrm_Request::METHOD_POST,
+            $parameters
+        );
+    }
+
+    /** History of the client's bonus account */
+    public function getClientBonusHistory(int $clientIdLoyalty, array $filter = [], $limit = null, $page = null)
+    {
+        $parameters = $this->buildParameters($filter, $limit, $page);
+        $parameters['id'] = $clientIdLoyalty;
+
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty/bonus/operations",
+            WC_Retailcrm_Request::METHOD_GET,
+            $parameters
+        );
+    }
+
+    public function getDetailClientBonus(
+        int $clientIdLoyalty,
+        string $status,
+        array $filter = [],
+        $limit = null,
+        $page = null
+    ) {
+        $parameters = $this->buildParameters($filter, $limit, $page);
+        $parameters['id'] = $clientIdLoyalty;
+        $parameters['status'] = $status;
+
+        return $this->client->makeRequest(
+            "/loyalty/account/$clientIdLoyalty/bonus/$status/details",
+            WC_Retailcrm_Request::METHOD_GET,
+            $parameters
+        );
+    }
+
+    /** Bonus account history for all participants */
+    public function getBonusHistory(string $cursor, array $filter = [], $limit = null)
+    {
+        $parameters = $this->buildParameters($filter, $limit);
+        $parameters['cursor'] = $cursor;
+
+        return $this->client->makeRequest(
+            "/loyalty/bonus/operations",
+            WC_Retailcrm_Request::METHOD_GET,
+            $parameters
+        );
+    }
+
+    /** Maximum discount calculation */
+    public function calculateDiscountLoyalty(string $site, array $order, $bonuses = 0)
+    {
+        return $this->client->makeRequest(
+            "/loyalty/calculate",
+            WC_Retailcrm_Request::METHOD_POST,
+            ['site' => $site, 'order' => json_encode($order), 'bonuses' => $bonuses]
+        );
+    }
+
+    /** Application of bonuses under the loyalty program */
+    public function applyBonusToOrder(string $site, array $order, float $bonuses)
+    {
+        return $this->client->makeRequest(
+            "/orders/loyalty/apply",
+            WC_Retailcrm_Request::METHOD_POST,
+            ['site' => $site, 'order' => json_encode($order), 'bonuses' => $bonuses]
+        );
+    }
+
+    public function cancelBonusOrder(array $order)
+    {
+        return $this->client->makeRequest(
+            "/orders/loyalty/cancel-bonus-operations",
+            WC_Retailcrm_Request::METHOD_POST,
+            ['order' => json_encode($order)]
+        );
+    }
+
     /**
      * Update CRM basic statistic
      *
@@ -3120,5 +3132,24 @@ class WC_Retailcrm_Client_V5
         }
 
         return $params;
+    }
+
+    protected function buildParameters(array $filter = [], $limit = null, $page = null): array
+    {
+        $parameters = [];
+
+        if (count($filter)) {
+            $parameters['filter'] = $filter;
+        }
+
+        if (isset($page)) {
+            $parameters['page'] = (int) $page;
+        }
+
+        if (isset($limit)) {
+            $parameters['limit'] = (int) $limit;
+        }
+
+        return $parameters;
     }
 }
