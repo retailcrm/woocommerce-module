@@ -343,9 +343,9 @@ jobs:
           prerelease: false
       - name: Deploy
         env:
-          SVNREPOURL: ${{ secrets.SVNREPOURL }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          SVNREPOURL: ::add-mask::${{ secrets.SVNREPOURL }}
+          USERNAME: ::add-mask::${{ secrets.USERNAME }}
+          PASSWORD: ::add-mask::${{ secrets.PASSWORD }}
         run: |
           make svn_clone
           make svn_push
