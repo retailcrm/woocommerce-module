@@ -1,3 +1,6 @@
+## 2024-07-15 4.8.0
+* Added loyalty program
+
 ## 2024-06-27 4.7.9
 * Fixed undefined array key number in order history
 
