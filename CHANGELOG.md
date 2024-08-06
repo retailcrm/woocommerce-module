@@ -1,3 +1,6 @@
+## 2024-08-06 4.8.1
+* Fix filtering of api query results
+
 ## 2024-07-15 4.8.0
 * Added loyalty program
 
