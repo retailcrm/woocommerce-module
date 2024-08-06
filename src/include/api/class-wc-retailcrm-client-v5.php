@@ -2892,7 +2892,7 @@ class WC_Retailcrm_Client_V5
     /** List of participation in the loyalty program */
     public function getLoyaltyAccountList(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = $this->buildParameters($filter, $limit, $page);
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/loyalty/accounts',
@@ -2904,7 +2904,7 @@ class WC_Retailcrm_Client_V5
     /** List of loyalty programs */
     public function getListLoyalty(array $filter = [], $limit = null, $page = null)
     {
-        $parameters = $this->buildParameters($filter, $limit, $page);
+        $parameters = $this->buildParameters($filter, $page, $limit);
 
         return $this->client->makeRequest(
             '/loyalty/loyalties',
@@ -2950,7 +2950,7 @@ class WC_Retailcrm_Client_V5
     /** History of the client's bonus account */
     public function getClientBonusHistory(int $clientIdLoyalty, array $filter = [], $limit = null, $page = null)
     {
-        $parameters = $this->buildParameters($filter, $limit, $page);
+        $parameters = $this->buildParameters($filter, $page, $limit);
         $parameters['id'] = $clientIdLoyalty;
 
         return $this->client->makeRequest(
@@ -2967,7 +2967,7 @@ class WC_Retailcrm_Client_V5
         $limit = null,
         $page = null
     ) {
-        $parameters = $this->buildParameters($filter, $limit, $page);
+        $parameters = $this->buildParameters($filter, $page, $limit);
         $parameters['id'] = $clientIdLoyalty;
         $parameters['status'] = $status;
 
@@ -2981,7 +2981,7 @@ class WC_Retailcrm_Client_V5
     /** Bonus account history for all participants */
     public function getBonusHistory(string $cursor, array $filter = [], $limit = null)
     {
-        $parameters = $this->buildParameters($filter, $limit);
+        $parameters = $this->buildParameters($filter, null, $limit);
         $parameters['cursor'] = $cursor;
 
         return $this->client->makeRequest(
@@ -3134,7 +3134,7 @@ class WC_Retailcrm_Client_V5
         return $params;
     }
 
-    protected function buildParameters(array $filter = [], $limit = null, $page = null): array
+    protected function buildParameters(array $filter = [], $page = null, $limit = null): array
     {
         $parameters = [];
 
