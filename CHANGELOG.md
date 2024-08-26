@@ -1,3 +1,6 @@
+## 2024-08-26 4.8.2
+* Corrects directory path for customized main plugin file
+
 ## 2024-08-06 4.8.1
 * Fix filtering of api query results
 
