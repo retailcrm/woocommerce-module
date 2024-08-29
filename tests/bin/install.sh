@@ -47,6 +47,8 @@ install_wp() {
   download https://wordpress.org/${ARCHIVE_NAME}.tar.gz  /tmp/wordpress.tar.gz
   tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
   download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
+  mkdir -p $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default
+  cp /code/src/assets/default/default_meta_fields.txt $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default/
 }
 
 install_woocommerce() {
