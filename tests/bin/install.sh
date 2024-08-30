@@ -39,6 +39,8 @@ download() {
 
 install_wp() {
   if [ -d $WP_CORE_DIR ]; then
+    mkdir -p $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default
+    cp -n $PWD/src/assets/default/default_meta_fields.txt $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default/
     return;
   fi
 
@@ -48,7 +50,7 @@ install_wp() {
   tar --strip-components=1 -zxmf /tmp/wordpress.tar.gz -C $WP_CORE_DIR
   download https://raw.github.com/markoheijnen/wp-mysqli/master/db.php $WP_CORE_DIR/wp-content/db.php
   mkdir -p $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default
-  cp /code/src/assets/default/default_meta_fields.txt $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default/
+  cp -n $PWD/src/assets/default/default_meta_fields.txt $WP_CORE_DIR/wp-content/plugins/woo-retailcrm/assets/default/
 }
 
 install_woocommerce() {
