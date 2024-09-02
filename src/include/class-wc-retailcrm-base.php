@@ -18,6 +18,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
      */
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
+        const ASSETS_DIR = '/woo-retailcrm/assets';
+
         /** @var WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5|bool */
         protected $apiClient;
 
@@ -808,7 +810,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function include_css_files_for_admin()
         {
-            $path =  plugins_url() . '/woo-retailcrm/assets/css/';
+            $path =  plugins_url() . self::ASSETS_DIR . '/css/';
 
             // Include style for export
             wp_register_style('retailcrm-export-style', $path . 'progress-bar.min.css', false, '0.1');
@@ -841,7 +843,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             ];
 
             $wpAdminUrl    = ['url' => get_admin_url()];
-            $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
+            $jsScriptsPath =  plugins_url() . self::ASSETS_DIR . '/js/';
 
             foreach ($jsScripts as $scriptName) {
                 wp_register_script($scriptName, $jsScriptsPath . $scriptName . '.js', false, '0.1');
@@ -861,7 +863,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function include_whatsapp_icon_style()
         {
-            wp_register_style('whatsapp_icon_style', plugins_url() . '/woo-retailcrm/assets/css/whatsapp-icon.min.css', false, '0.1');
+            wp_register_style('whatsapp_icon_style', plugins_url() . self::ASSETS_DIR . '/css/whatsapp-icon.min.css', false, '0.1');
             wp_enqueue_style('whatsapp_icon_style');
         }
 
@@ -1018,8 +1020,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $jsScript = 'retailcrm-loyalty-actions';
             $loyaltyUrl = ['url' => get_admin_url()];
-            $jsScriptsPath =  plugins_url() . '/woo-retailcrm/assets/js/';
-            $cssPath = plugins_url() . '/woo-retailcrm/assets/css/';
+            $jsScriptsPath =  plugins_url() . self::ASSETS_DIR . '/js/';
+            $cssPath = plugins_url() . self::ASSETS_DIR . '/css/';
             $messagePhone = __('Enter the correct phone number', 'retailcrm');
 
             wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
@@ -1082,13 +1084,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $metaData = ['default_retailcrm' => __('Select value', 'retailcrm')];
             $sqlQuery = "SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`";
             $defaultMetaFields = file(
-                __DIR__ . '/../assets/default/default_meta_fields.txt',
+                WP_PLUGIN_DIR . self::ASSETS_DIR . '/default/default_meta_fields.txt',
                 FILE_IGNORE_NEW_LINES
             );
 
             foreach ($wpdb->get_results($sqlQuery) as $metaValue) {
                 $metaData[$metaValue->meta_key] = $metaValue->meta_key;
             }
+
+            $defaultMetaFields = apply_filters('retailcrm_change_default_meta_fields', $defaultMetaFields);
 
             return array_diff($metaData, $defaultMetaFields);
         }
