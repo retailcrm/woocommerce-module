@@ -1,5 +1,6 @@
 ## 2024-08-26 4.8.2
-* Corrects directory path for customized main plugin file
+* Fixed base file customization issue
+* Added a hook to update the list of meta fields
 
 ## 2024-08-06 4.8.1
 * Fix filtering of api query results
