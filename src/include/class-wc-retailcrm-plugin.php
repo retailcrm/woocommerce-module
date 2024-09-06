@@ -58,6 +58,10 @@ class WC_Retailcrm_Plugin
                 'fiveteen_minutes' => [
                     'interval' => 900, // seconds
                     'display'  => __('Every 15 minutes')
+                ],
+                'four_hours' => [
+                    'interval' => 14400, //seconds
+                    'display' => __('Every 4 hours')
                 ]
             ],
             apply_filters('retailcrm_add_cron_interval', $schedules)

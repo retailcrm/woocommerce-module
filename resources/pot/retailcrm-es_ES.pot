@@ -591,3 +591,9 @@ msgstr "Utiliza el cupón:"
 
 msgid "Points will be awarded upon completion of the order:"
 msgstr "Los puntos se concederán al finalizar el pedido:"
+
+msgid "Upload of current prices of offers"
+msgstr "Carga de los precios actuales de las ofertas"
+
+msgid "Every 4 hours"
+msgstr "Cada 4 horas"

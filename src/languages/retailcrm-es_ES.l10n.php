@@ -248,6 +248,8 @@ return [
         "bonuses" => "bonificaciones",
         "Use coupon:" => "Utiliza el cupón:",
         "Points will be awarded upon completion of the order:" => "Los puntos se concederán al finalizar el pedido:",
+        "Upload of current prices of offers" => "Upload of current prices of offers",
+        "Every 4 hours" => "Cada 4 horas"
     ],
     "language" => "es",
     "x-generator" => "GlotPress/2.4.0-alpha",

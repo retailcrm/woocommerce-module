@@ -600,3 +600,9 @@ msgstr "Используйте купон:"
 
 msgid "Points will be awarded upon completion of the order:"
 msgstr "По завершению заказа будет начислено баллов:"
+
+msgid "Upload of current prices of offers"
+msgstr "Выгрузка текущих цен торговых предложений"
+
+msgid "Every 4 hours"
+msgstr "Каждые 4 часа"

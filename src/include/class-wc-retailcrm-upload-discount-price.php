@@ -27,6 +27,10 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
         public function upload()
         {
+            if (!$this->activeLoyalty) {
+                return;
+            }
+
             $error = $this->uploadSettings();
 
             if ($error !== '') {
@@ -85,7 +89,10 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
                     foreach ($chunks as $chunk) {
                         $this->apiClient->storePricesUpload($chunk, $this->site);
+                        time_nanosleep(0, 200000000);
                     }
+
+                    unset($chunks);
                 } catch (\Throwable $exception) {
                     writeBaseLogs($exception->getMessage() . PHP_EOL . $exception->getTraceAsString());
 
