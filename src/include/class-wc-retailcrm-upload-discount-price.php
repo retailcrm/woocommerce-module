@@ -31,6 +31,8 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
             if ($error !== '') {
                 writeBaseLogs($error);
+
+                return;
             }
 
             $productStatuses = $this->getProductStatuses();
@@ -41,7 +43,6 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
             $page = 1;
             $requestData = [];
-            $counter = 0;
 
             do {
                 $products = wc_get_products(
@@ -74,29 +75,16 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                                 }
 
                                 $requestData[] = $this->getOfferData($childProduct);
-                                ++$counter;
                             }
                         } else {
                             $requestData[] = $this->getOfferData($offer);
-                            ++$counter;
                         }
                     }
 
-                    if ($counter > 250) {
-                        $chunks = array_chunk($requestData, 250);
-                        $lastKeyChunk = key(end($chunks));
+                    $chunks = array_chunk($requestData, 250);
 
-
-                        if ($lastKeyChunk !== 0) {
-                            $requestData = $chunks[$lastKeyChunk];
-                            $counter = count($requestData);
-
-                            unset($chunks[$lastKeyChunk]);
-                        }
-
-                        foreach ($chunks as $chunk) {
-                            $this->apiClient->storePricesUpload($chunk, $this->site);
-                        }
+                    foreach ($chunks as $chunk) {
+                        $this->apiClient->storePricesUpload($chunk, $this->site);
                     }
                 } catch (\Throwable $exception) {
                     writeBaseLogs($exception->getMessage() . PHP_EOL . $exception->getTraceAsString());
