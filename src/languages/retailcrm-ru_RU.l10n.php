@@ -248,7 +248,11 @@ return [
         "Use coupon:" => "Используйте купон:",
         "Points will be awarded upon completion of the order:" => "По завершению заказа будет начислено баллов:",
         "Upload of current prices of offers" => "Выгрузка текущих цен торговых предложений",
-        "Every 4 hours" => "Каждые 4 часа"
+        "Every 4 hours" => "Каждые 4 часа",
+        "Upload prices now" => "Выгрузить цены сейчас",
+        "Uploaded discount price" => "Выгрузка акционных цен",
+        "This functionality loads the promotional prices offers into Simla.com" => "Эта функция загружает акционные цены торговых предложений в Simla.com",
+        "Promotional prices unloaded" => "Акционные цены выгружены"
     ],
     "language" => "ru",
     "x-generator" => "GlotPress/2.4.0-alpha",

@@ -128,6 +128,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
                 add_action('wp_trash_post', [$this, 'trash_order_action'], 10, 1);
                 add_action('retailcrm_loyalty_upload_price', [$this, 'upload_loyalty_price']);
+                add_action('admin_print_footer_scripts', [$this, 'ajax_upload_loyalty_price'], 99);
+                add_action('wp_ajax_upload_loyalty_price', [$this, 'upload_loyalty_price']);
 
                 if (
                     !$this->get_option('deactivate_update_order')
@@ -385,8 +387,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
-
-            $infoApiKey = $this->apiClient->credentials();
 
             $discountPriceUpload = new WC_Retailcrm_Upload_Discount_Price($this->apiClient);
             $discountPriceUpload->upload();

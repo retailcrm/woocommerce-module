@@ -249,7 +249,11 @@ return [
         "Use coupon:" => "Utiliza el cupón:",
         "Points will be awarded upon completion of the order:" => "Los puntos se concederán al finalizar el pedido:",
         "Upload of current prices of offers" => "Upload of current prices of offers",
-        "Every 4 hours" => "Cada 4 horas"
+        "Every 4 hours" => "Cada 4 horas",
+        "Upload prices now" => "Descargar precios ahora",
+        "Uploaded discount price" => "Descarga de precios promocionales",
+        "This functionality loads the promotional prices offers into Simla.com" => "Esta función carga los precios promocionales de las ofertas comerciales en Simla.com",
+        "Promotional prices unloaded" => "Se han cargado los precios promocionales"
     ],
     "language" => "es",
     "x-generator" => "GlotPress/2.4.0-alpha",

@@ -597,3 +597,15 @@ msgstr "Carga de los precios actuales de las ofertas"
 
 msgid "Every 4 hours"
 msgstr "Cada 4 horas"
+
+msgid "Upload prices now"
+msgstr "Descargar precios ahora"
+
+msgid "Uploaded discount price"
+msgstr "Descarga de precios promocionales"
+
+msgid "This functionality loads the promotional prices offers into Simla.com"
+msgstr "Esta función carga los precios promocionales de las ofertas comerciales en Simla.com"
+
+msgid "Promotional prices unloaded"
+msgstr "Se han cargado los precios promocionales"

@@ -606,3 +606,15 @@ msgstr "Выгрузка текущих цен торговых предложе
 
 msgid "Every 4 hours"
 msgstr "Каждые 4 часа"
+
+msgid "Upload prices now"
+msgstr "Выгрузить цены сейчас"
+
+msgid "Uploaded discount price"
+msgstr "Выгрузка акционных цен"
+
+msgid "This functionality loads the promotional prices offers into Simla.com"
+msgstr "Эта функция загружает акционные цены торговых предложений в Simla.com"
+
+msgid "Promotional prices unloaded"
+msgstr "Акционные цены выгружены"
