@@ -120,6 +120,10 @@ class WC_Retailcrm_Plugin
         if (wp_next_scheduled('retailcrm_inventories')) {
             wp_clear_scheduled_hook('retailcrm_inventories');
         }
+
+        if (wp_next_scheduled('retailcrm_loyalty_upload_price')) {
+            wp_clear_scheduled_hook('retailcrm_loyalty_upload_price');
+        }
     }
 
     /**

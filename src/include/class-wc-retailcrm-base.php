@@ -380,6 +380,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
+        public function upload_loyalty_price()
+        {
+            if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+
+            $infoApiKey = $this->apiClient->credentials();
+
+            $discountPriceUpload = new WC_Retailcrm_Upload_Discount_Price($this->apiClient);
+            $discountPriceUpload->upload();
+        }
+
         /**
          * Get history
          *
