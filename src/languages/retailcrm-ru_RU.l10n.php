@@ -252,7 +252,10 @@ return [
         "Upload prices now" => "Выгрузить цены сейчас",
         "Uploaded discount price" => "Выгрузка акционных цен",
         "This functionality loads the promotional prices offers into Simla.com" => "Эта функция загружает акционные цены торговых предложений в Simla.com",
-        "Promotional prices unloaded" => "Акционные цены выгружены"
+        "Promotional prices unloaded" => "Акционные цены выгружены",
+        "Woocommerce promotional price" => "Акционная цена Woocommerce",
+        "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)" =>
+            "Акционный тип цены для магазина Woocommerce, сгенерированный автоматически. Необходим для корректной работы синхронизации при включенной программы лояльности (Не удалять. Не деактивировать)"
     ],
     "language" => "ru",
     "x-generator" => "GlotPress/2.4.0-alpha",

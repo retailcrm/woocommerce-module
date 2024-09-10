@@ -98,6 +98,8 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
                     return;
                 }
+
+                ++$page;
             } while ($page <= $products->max_num_pages);
         }
 
@@ -164,9 +166,11 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
             if ($discountPriceType === null) {
                 $discountPriceType = [
                     'code' => self::DISCOUNT_TYPE_PRICE,
-                    'name' => 'Акционная цена Woocommerce',
+                    'name' => __('Woocommerce promotional price', 'retailcrm'),
                     'active' => true,
-                    'description' => 'Акционный тип цены для магазина Woocommerce, сгенерированный автоматически. Необходим для корректной работы синхронизации при включенной программы лояльности (Не удалять. Не деактивировать)',
+                    'description' => __('Promotional price type for Woocommerce store, generated automatically.
+                     Necessary for correct synchronization work when loyalty program is enabled
+                      (Do not delete. Do not deactivate)', 'retailcrm'),
                     'ordering' => 999
                 ];
 

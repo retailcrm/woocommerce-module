@@ -618,3 +618,9 @@ msgstr "Эта функция загружает акционные цены т�
 
 msgid "Promotional prices unloaded"
 msgstr "Акционные цены выгружены"
+
+msgid "Woocommerce promotional price"
+msgstr "Акционная цена Woocommerce"
+
+msgid "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)"
+msgstr "Акционный тип цены для магазина Woocommerce, сгенерированный автоматически. Необходим для корректной работы синхронизации при включенной программы лояльности (Не удалять. Не деактивировать)"

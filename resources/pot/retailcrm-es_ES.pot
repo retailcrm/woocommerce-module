@@ -609,3 +609,9 @@ msgstr "Esta función carga los precios promocionales de las ofertas comerciales
 
 msgid "Promotional prices unloaded"
 msgstr "Se han cargado los precios promocionales"
+
+msgid "Woocommerce promotional price"
+msgstr "Precio promocional Woocommerce"
+
+msgid "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)"
+msgstr "Tipo de precio promocional para la tienda Woocommerce, generado automáticamente. Necesario para el correcto funcionamiento de la sincronización cuando el programa de fidelización está habilitado (No eliminar. No desactivar)"

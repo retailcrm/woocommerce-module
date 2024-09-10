@@ -136,6 +136,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/components/class-wc-retailcrm-loyalty-form.php'));
             require_once(self::checkCustomFile('include/validators/loyalty-validator/class-wc-retailcrm-loyalty-constraint.php'));
             require_once(self::checkCustomFile('include/validators/loyalty-validator/class-wc-retailcrm-loyalty-validator.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-upload-discount-price.php'));
         }
 
         /**
