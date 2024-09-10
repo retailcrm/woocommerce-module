@@ -109,8 +109,10 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                 'externalId' => $product->get_id(),
                 'site' => $this->site,
                 'prices' => [
-                    'code' => self::DISCOUNT_TYPE_PRICE,
-                    'price' => wc_get_price_including_tax($product)
+                    [
+                        'code' => self::DISCOUNT_TYPE_PRICE,
+                        'price' => wc_get_price_including_tax($product)
+                    ]
                 ]
             ];
         }
@@ -194,6 +196,14 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
                 if (!$response instanceof WC_Retailcrm_Response || !$response['success']) {
                     return 'Error creating price type';
+                }
+            } elseif ($discountPriceType['active'] === false) {
+                $discountPriceType['active'] = true;
+
+                $response = $this->apiClient->editPriceType($discountPriceType);
+
+                if (!$response instanceof WC_Retailcrm_Response || !$response['success']) {
+                    return 'Error activate price type';
                 }
             }
 
