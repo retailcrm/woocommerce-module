@@ -1,3 +1,6 @@
+## 2024-09-11 4.8.3
+* Added loyalty program coupon entry in the form by click
+
 ## 2024-08-26 4.8.2
 * Fixed base file customization issue
 * Added a hook to update the list of meta fields

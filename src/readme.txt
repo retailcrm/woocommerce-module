@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 7.0
 Requires at least: 5.3
 Tested up to: 6.5
-Stable tag: 4.8.2
+Stable tag: 4.8.3
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.8.3 =
+* Added loyalty program coupon entry in the form by click
+
 = 4.8.2 =
 * Fixed base file customization issue
 * Added a hook to update the list of meta fields
