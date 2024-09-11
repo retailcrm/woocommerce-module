@@ -78,10 +78,18 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                                     continue;
                                 }
 
-                                $requestData[] = $this->getOfferData($childProduct);
+                                $sendOffer = $this->getOfferData($childProduct);
+
+                                if ($sendOffer !== []) {
+                                    $requestData[] = $sendOffer;
+                                }
                             }
                         } else {
-                            $requestData[] = $this->getOfferData($offer);
+                            $sendOffer = $this->getOfferData($offer);
+
+                            if ($sendOffer !== []) {
+                                $requestData[] = $sendOffer;
+                            }
                         }
                     }
 
@@ -105,13 +113,20 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
         private function getOfferData(WC_Product $product)
         {
+            $currentPrice = wc_get_price_including_tax($product);
+            $defaultPrice = wc_get_price_including_tax($product, ["price" => $product->get_regular_price()]);
+
+            if ($currentPrice === $defaultPrice) {
+                return [];
+            }
+
             return [
                 'externalId' => $product->get_id(),
                 'site' => $this->site,
                 'prices' => [
                     [
                         'code' => self::DISCOUNT_TYPE_PRICE,
-                        'price' => wc_get_price_including_tax($product)
+                        'price' => $currentPrice
                     ]
                 ]
             ];
