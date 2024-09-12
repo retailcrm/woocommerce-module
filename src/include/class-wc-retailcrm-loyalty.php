@@ -254,7 +254,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum . ' ' . __('bonuses', 'retailcrm') . '</b></div>';
-            return $resultString. '<div style="text-align: left;"><b>' . __('Use coupon:', 'retailcrm') . ' <u><i>' . $coupon->get_code() . '</i></u></i></b></div>';
+            return $resultString. '<div style="text-align: left;"><b>' . __('Use coupon:', 'retailcrm') . ' <u><i style="cursor: grab" id="input_loyalty_code" onclick="inputLoyaltyCode()">' . $coupon->get_code() . '</i></u></i></b></div>';
         }
 
         public function clearLoyaltyCoupon()

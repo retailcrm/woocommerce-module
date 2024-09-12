@@ -747,6 +747,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 if ($result) {
                     echo  $result;
                 }
+
+                $jsScriptPath = plugins_url() . self::ASSETS_DIR . '/js/retailcrm-loyalty-cart.js';
+                $wpAdminUrl = ['url' => get_admin_url()];
+
+                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, '0.1');
+                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', '', true);
+                wp_localize_script('retailcrm-loyalty-cart', 'AdminUrl', $wpAdminUrl);
             } catch (Throwable $exception) {
                 writeBaseLogs($exception->getMessage());
             }
