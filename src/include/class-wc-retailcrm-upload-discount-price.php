@@ -188,7 +188,8 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                     'description' => __('Promotional price type for Woocommerce store, generated automatically.
                      Necessary for correct synchronization work when loyalty program is enabled
                       (Do not delete. Do not deactivate)', 'retailcrm'),
-                    'ordering' => 999
+                    'ordering' => 999,
+                    'promo' => true
                 ];
 
                 if (isset($defaultPrice['geo'])) {
@@ -212,8 +213,9 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                 if (!$response instanceof WC_Retailcrm_Response || !$response['success']) {
                     return 'Error creating price type';
                 }
-            } elseif ($discountPriceType['active'] === false) {
+            } elseif ($discountPriceType['active'] === false || $discountPriceType['promo'] === false) {
                 $discountPriceType['active'] = true;
+                $discountPriceType['promo'] = true;
 
                 $response = $this->apiClient->editPriceType($discountPriceType);
 
