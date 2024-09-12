@@ -450,11 +450,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             foreach ($cartItems as $item) {
                 $product = $item['data'];
 
+                $productRegularPrice = wc_get_price_including_tax($product, ["price" => $product->get_regular_price()]);
+                $discount = $productRegularPrice - ($item['line_total'] / $item['quantity']);
+
                 $order['items'][] = [
                     'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
                     'quantity' => $item['quantity'],
-                    'initialPrice' => wc_get_price_including_tax($product),
-                    'discountManualAmount' => ($item['line_subtotal'] - $item['line_total']) / $item['quantity']
+                    'initialPrice' => $productRegularPrice,
+                    'discountManualAmount' => $discount
                 ];
             }
 
