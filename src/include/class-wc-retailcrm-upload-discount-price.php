@@ -58,7 +58,12 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                     ]
                 );
 
-                wp_cache_flush_runtime();
+                /** WP version >= 6 */
+                if (function_exists('wp_cache_flush_runtime')) {
+                    wp_cache_flush_runtime();
+                } else {
+                    wp_cache_flush();
+                }
 
                 if (empty($products)) {
                     writeBaseLogs('Can`t get products!');
@@ -147,7 +152,9 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
         private function uploadSettings()
         {
-            if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
+            if (!$this->apiClient instanceof WC_Retailcrm_Proxy
+                && !$this->apiClient instanceof WC_Retailcrm_Client_V5
+            ) {
                return 'API client has not been initialized';
             }
 
