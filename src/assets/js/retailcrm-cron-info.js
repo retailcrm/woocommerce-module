@@ -16,7 +16,7 @@ jQuery(function () {
         this.history = 0;
         this.inventories = 0;
         this.messageSuccessful = '';
-        this.loyalty_upload_price = 0;
+        this.loyaltyUploadPrice = 0;
 
         this.adminUrl = AdminUrl.url;
 
@@ -34,14 +34,14 @@ jQuery(function () {
                 _this.icml = response.icml;
                 _this.inventories = response.inventories;
                 _this.messageSuccessful = response.translate.tr_successful;
-                _this.loyalty_upload_price = response.loyalty_upload_price
+                _this.loyaltyUploadPrice = response.loyaltyUploadPrice
 
                 _this.displayInfoAboutCron(
                     response.translate.tr_td_cron,
                     response.translate.tr_td_icml,
                     response.translate.tr_td_history,
                     response.translate.tr_td_inventories,
-                    response.translate.tr_td_loyalty_upload_price
+                    response.translate.tr_td_loyaltyUploadPrice
                 );
             })
 
@@ -50,7 +50,7 @@ jQuery(function () {
         jQuery(this.submitButton).click(this.clearCronTasks);
     }
 
-    RetailcrmCronInfo.prototype.displayInfoAboutCron = function (cron, icml, history, inventories, loyalty_upload_price) {
+    RetailcrmCronInfo.prototype.displayInfoAboutCron = function (cron, icml, history, inventories, loyaltyUploadPrice) {
         this.table = jQuery(this.title).next();
         this.table.append('<tbody class="retail-debug-info"></tbody>');
         this.infoTable = jQuery('tbody[class="retail-debug-info"]').get(0);
@@ -59,7 +59,7 @@ jQuery(function () {
         jQuery(this.infoTable).append("<tr><td>" + icml + "</td><td> " + this.icml + "</td></tr>");
         jQuery(this.infoTable).append("<tr><td>" + history + "</td><td> " + this.history + "</td></tr>");
         jQuery(this.infoTable).append("<tr><td>" + inventories + "</td><td> " + this.inventories + "</td></tr>");
-        jQuery(this.infoTable).append("<tr><td>" + loyalty_upload_price + "</td><td>" + this.loyalty_upload_price + "</td></tr>");
+        jQuery(this.infoTable).append("<tr><td>" + loyaltyUploadPrice + "</td><td>" + this.loyaltyUploadPrice + "</td></tr>");
     }
 
     RetailcrmCronInfo.prototype.clearCronTasks = function () {

@@ -969,7 +969,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'tr_td_history'     => __('Syncing history', 'retailcrm'),
                 'tr_successful'     => __('Cron tasks cleared', 'retailcrm'),
                 'tr_td_inventories' => __('Syncing inventories', 'retailcrm'),
-                'tr_td_loyalty_upload_price' => __('Upload of current prices of offers', 'retailcrm')
+                'tr_td_loyaltyUploadPrice' => __('Unloading promotional prices of offers', 'retailcrm')
             ];
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
@@ -994,7 +994,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'icml'        => $icml,
                     'inventories' => $inventories,
                     'translate'   => $translate,
-                    'loyalty_upload_price' => $loyaltyUploadPrice
+                    'loyaltyUploadPrice' => $loyaltyUploadPrice
                 ]
             );
 
