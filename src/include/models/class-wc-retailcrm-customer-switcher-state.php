@@ -170,12 +170,12 @@ class WC_Retailcrm_Customer_Switcher_State
         }
 
         if (!empty($this->newCustomer) && !empty($this->newContact)) {
-            WC_Retailcrm_Logger::debug(
+            WC_Retailcrm_Logger::info(
                 __METHOD__,
-                array(
-                    'State data (customer and contact):' . PHP_EOL,
-                    $this->getNewCustomer(),
-                    $this->getNewContact()
+                sprintf(
+                    'State data - customer: %s and contact: %s',
+                    json_encode($this->getNewCustomer()),
+                    json_encode($this->getNewContact())
                 )
             );
             throw new \InvalidArgumentException(

@@ -33,7 +33,10 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
 
             $this->setDataFields($customerAddress);
         } else {
-            WC_Retailcrm_Logger::add('Error Customer address is empty');
+            WC_Retailcrm_Logger::error(
+                __METHOD__,
+                'Error Customer address is empty. Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+            );
         }
 
         return $this;

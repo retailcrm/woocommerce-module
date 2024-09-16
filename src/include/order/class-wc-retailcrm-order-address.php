@@ -31,7 +31,7 @@ class WC_Retailcrm_Order_Address extends WC_Retailcrm_Abstracts_Address
 
             $this->setDataFields($orderAddress);
         } else {
-            WC_Retailcrm_Logger::add('Error: Order address is empty');
+            WC_Retailcrm_Logger::error(__METHOD__, 'Error: Order address is empty');
         }
 
         return $this;

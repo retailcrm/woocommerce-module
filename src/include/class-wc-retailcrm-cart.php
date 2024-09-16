@@ -80,7 +80,11 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                 $setResponse = $this->apiClient->cartSet($crmCart, $site);
                 $isSuccessful = $setResponse->isSuccessful() && !empty($setResponse['success']);
             } catch (Throwable $exception) {
-                writeBaseLogs('Error process cart: ' . $exception->getMessage());
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    'Error process cart: ' . $exception->getMessage(),
+                    WC_Retailcrm_Logger::TYPE[2]
+                );
             }
 
             return $isSuccessful;
@@ -97,7 +101,11 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                     $isSuccessful = $clearResponse->isSuccessful() && !empty($clearResponse['success']);
                 }
             } catch (Throwable $exception) {
-                writeBaseLogs('Error clear cart: ' . $exception->getMessage());
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    'Error clear cart: ' . $exception->getMessage(),
+                    WC_Retailcrm_Logger::TYPE[2])
+                ;
             }
 
             return $isSuccessful;

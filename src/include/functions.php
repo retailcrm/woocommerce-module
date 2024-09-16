@@ -189,7 +189,7 @@ function calculatePriceExcludingTax($priceIncludingTax, $rate)
  */
 function writeBaseLogs($message)
 {
-    WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
+    WC_Retailcrm_Logger::info(__METHOD__, $message);
 }
 
 /**

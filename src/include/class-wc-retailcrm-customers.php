@@ -98,6 +98,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
+            WC_Retailcrm_Logger::info(__METHOD__, 'WC_Customer: ' . $customerId);
 
             $wcCustomer = new WC_Customer($customerId);
             $email      = $wcCustomer->get_billing_email();
@@ -107,7 +108,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             if (empty($email)) {
-                WC_Retailcrm_Logger::add('Error: Customer email is empty, externalId: ' . $wcCustomer->get_id());
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    'Error: Customer email is empty, externalId: ' . $wcCustomer->get_id()
+                );
 
                 return null;
             } else {
@@ -133,7 +137,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                         ->getResult()
                         ->save();
 
-                    WC_Retailcrm_Logger::add('Customer was edited, externalId: ' . $wcCustomer->get_id());
+                    WC_Retailcrm_Logger::info(__METHOD__, 'Customer was edited, externalId: ' . $wcCustomer->get_id());
                 }
             } else {
                 $this->createCustomer($customerId);
@@ -142,8 +146,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     ? 'The client has agreed to receive promotional newsletter, email: '
                     : 'The client refused to receive promotional newsletters, email: ';
 
-                WC_Retailcrm_Logger::addCaller('subscribe', $message . $email);
-                WC_Retailcrm_Logger::add('Customer was created, externalId: ' . $wcCustomer->get_id());
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    sprintf('Customer was created, externalId: %s. %s', $wcCustomer->get_id(), $message . $email)
+                );
             }
         }
 
@@ -168,10 +174,15 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             }
 
             if (!$customer instanceof WC_Customer) {
+                WC_Retailcrm_Logger::error(__METHOD__, 'Customer not found');
+
                 return null;
             }
 
             if ($this->isCustomer($customer)) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__, 'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                );
                 $this->processCustomer($customer, $order);
                 $response = $this->retailcrm->customersCreate($this->customer);
 
@@ -200,6 +211,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $customer = $this->wcCustomerGet($customerId);
 
             if ($this->isCustomer($customer)) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__, 'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                );
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
             }
@@ -225,6 +239,11 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $customer = $this->wcCustomerGet($customerId);
 
             if ($this->isCustomer($customer)) {
+                WC_Retailcrm_Logger::info(__METHOD__, sprintf(
+                    'WC_Customer: %s. CRM_Customer ID: %s',
+                    WC_Retailcrm_Logger::formatWCObject($customer),
+                    $crmCustomerId)
+                );
                 $this->processCustomer($customer);
                 $this->customer['id'] = $crmCustomerId;
                 $this->retailcrm->customersEdit($this->customer, 'id');
@@ -368,6 +387,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
          */
         public function processCustomerForUpload($customer)
         {
+            WC_Retailcrm_Logger::info(
+                __METHOD__, 'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+            );
             $this->processCustomer($customer);
         }
 
@@ -674,6 +696,15 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $new_customer->set_last_name($order->get_billing_last_name());
             $new_customer->set_email($order->get_billing_email());
             $new_customer->set_date_created($order->get_date_created());
+
+            WC_Retailcrm_Logger::info(__METHOD__,'New customer: ', json_encode(
+                [
+                    'firstName' => $new_customer->get_first_name(),
+                    'lastName' => $new_customer->get_last_name(),
+                    'email' => $new_customer->get_email(),
+                    'created' => $new_customer->get_date_created()
+                ]
+            ));
 
             return $new_customer;
         }

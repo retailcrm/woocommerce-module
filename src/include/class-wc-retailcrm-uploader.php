@@ -60,6 +60,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         public function uploadSelectedOrders()
         {
             $ids = $_GET['order_ids_retailcrm'];
+            WC_Retailcrm_Logger::info(__METHOD__, 'IDs: ' . json_encode($ids));
 
             if (!empty($ids)) {
                 preg_match_all('/\d+/', $ids, $matches);
@@ -81,6 +82,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         public function uploadArchiveOrders($page, $ids = [])
         {
+            WC_Retailcrm_Logger::info(__METHOD__, 'IDs: ' . implode(', ', $ids));
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
@@ -223,13 +225,11 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 return;
             }
 
-            WC_Retailcrm_Logger::add('Errors while uploading these orders');
+            WC_Retailcrm_Logger::error(__METHOD__, 'Errors while uploading these orders');
 
             foreach ($errors as $orderId => $error) {
-                WC_Retailcrm_Logger::add(sprintf("[%d] => %s", $orderId, $error));
+                WC_Retailcrm_Logger::error(__METHOD__, sprintf("[%d] => %s", $orderId, $error));
             }
-
-            WC_Retailcrm_Logger::add('==================================');
         }
     }
 }//end if

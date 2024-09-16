@@ -38,25 +38,20 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
             return $this->corporateEnabled;
         }
 
-        private static function reduceErrors($errors)
-        {
-            $result = '';
-
-            foreach ($errors as $key => $error) {
-                $result .= " [$key] => $error";
-            }
-
-            return $result;
-        }
-
         /**
          * Response will be omitted in debug logs for those methods
          *
          * @return string[]
          */
-        private function methodsWithoutDebugResponse()
+        private function methodsWithoutFullResponse()
         {
-            $methodsList = array('statusesList', 'paymentTypesList', 'deliveryTypesList', 'orderMethodsList');
+            $methodsList = array(
+                'statusesList',
+                'paymentTypesList',
+                'deliveryTypesList',
+                'orderMethodsList',
+                'storesList'
+            );
 
             foreach ($methodsList as $key => $method) {
                 $method = get_class($this->retailcrm) . '::' . $method;
@@ -68,71 +63,67 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
 
         public function __call($method, $arguments)
         {
-            $result = '';
             $response = null;
             $called = sprintf('%s::%s', get_class($this->retailcrm), $method);
 
             try {
-                WC_Retailcrm_Logger::debug(
-                    $called,
-                    array(empty($arguments) ? '[no params]' : print_r($arguments, true))
+                WC_Retailcrm_Logger::info(
+                    $method,
+                    empty($arguments) ? '[no params]' : json_encode($arguments), WC_Retailcrm_Logger::TYPE[0]
                 );
                 /** @var \WC_Retailcrm_Response $response */
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
 
                 if (is_string($response)) {
-                    WC_Retailcrm_Logger::debug($called, array($response));
+                    WC_Retailcrm_Logger::info($method, $response, WC_Retailcrm_Logger::TYPE[1]);
                     return $response;
                 }
 
                 if (empty($response)) {
-                    WC_Retailcrm_Logger::add(sprintf("[%s] null (no response whatsoever)", $called));
+                    WC_Retailcrm_Logger::error(
+                        $method,
+                        sprintf("[%s] null (no response whatsoever)", $called),
+                        WC_Retailcrm_Logger::TYPE[1]
+                    );
+
                     return null;
                 }
 
                 if ($response->isSuccessful()) {
                     // Don't print long lists in debug logs (errors while calling this will be easy to detect anyway)
                     // Also don't call useless array_map at all while debug mode is off.
-                    if (retailcrm_is_debug()) {
-                        if (in_array(
-                            $called,
-                            $this->methodsWithoutDebugResponse()
-                        )) {
-                            WC_Retailcrm_Logger::debug($called, array('[request was successful, but response is omitted]'));
-                        } else {
-                            WC_Retailcrm_Logger::debug($called, array($response->getRawResponse()));
-                        }
+                    if (in_array(
+                        $called,
+                        $this->methodsWithoutFullResponse()
+                    )) {
+                        WC_Retailcrm_Logger::info(
+                            $method,
+                            'Ok [request was successful, but response is omitted]',
+                            WC_Retailcrm_Logger::TYPE[1]
+                        );
+                    } else {
+                        WC_Retailcrm_Logger::info(
+                            $method,
+                            'Ok ' . $response->getRawResponse(),
+                            WC_Retailcrm_Logger::TYPE[1]
+                        );
                     }
 
-                    $result = ' Ok';
                 } else {
-                    $result = sprintf(
-                        $called ." : Error: [HTTP-code %s] %s",
+                    WC_Retailcrm_Logger::error($method, sprintf(
+                        "Error: [HTTP-code %s] %s %s",
                         $response->getStatusCode(),
-                        $response->getErrorString()
+                        $response->getErrorString(),
+                        $response->getRawResponse()),
+                        WC_Retailcrm_Logger::TYPE[1]
                     );
-
-                    if (isset($response['errors'])) {
-                        $result .= self::reduceErrors($response['errors']);
-                    }
-
-                    WC_Retailcrm_Logger::debug($called, array($response->getErrorString()));
-                    WC_Retailcrm_Logger::debug($called, array($response->getRawResponse()));
                 }
-
-                WC_Retailcrm_Logger::add(sprintf("[%s] %s", $called, $result));
             } catch (WC_Retailcrm_Exception_Curl $exception) {
-                WC_Retailcrm_Logger::debug(get_class($this->retailcrm).'::'.$called, array($exception->getMessage()));
-                WC_Retailcrm_Logger::debug('', array($exception->getTraceAsString()));
-                WC_Retailcrm_Logger::add(sprintf("[%s] %s - %s", $called, $exception->getMessage(), $result));
+                WC_Retailcrm_Logger::error($method, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
             } catch (WC_Retailcrm_Exception_Json $exception) {
-                WC_Retailcrm_Logger::debug(get_class($this->retailcrm).'::'.$called, array($exception->getMessage()));
-                WC_Retailcrm_Logger::debug('', array($exception->getTraceAsString()));
-                WC_Retailcrm_Logger::add(sprintf("[%s] %s - %s", $called, $exception->getMessage(), $result));
+                WC_Retailcrm_Logger::error($method, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
             } catch (InvalidArgumentException $exception) {
-                WC_Retailcrm_Logger::debug(get_class($this->retailcrm).'::'.$called, array($exception->getMessage()));
-                WC_Retailcrm_Logger::debug('', array($exception->getTraceAsString()));
-                WC_Retailcrm_Logger::add(sprintf("[%s] %s - %s", $called, $exception->getMessage(), $result));
+                WC_Retailcrm_Logger::error($method, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
             }
 
             return !empty($response) ? $response : new WC_Retailcrm_Response(900, '{}');
