@@ -180,7 +180,8 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                         "state" => $object->get_shipping_state(),
                         "postcode" => $object->get_shipping_postcode(),
                         "country" => $object->get_shipping_country(),
-                        "phone" => $object->get_shipping_phone()
+                        "phone" => method_exists($object, 'get_shipping_phone')
+                            ? $object->get_shipping_phone() : $object->get_billing_phone(),
                     ],
                     'email' => $object->get_billing_email(),
                     'payment_method_title' => $object->get_payment_method_title(),
@@ -205,7 +206,8 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                         "state" => $object->get_shipping_state(),
                         "postcode" => $object->get_shipping_postcode(),
                         "country" => $object->get_shipping_country(),
-                        "phone" => $object->get_shipping_phone()
+                        "phone" => method_exists($object, 'get_shipping_phone')
+                            ? $object->get_shipping_phone() : $object->get_billing_phone(),
                     ],
                 ]);
             }
