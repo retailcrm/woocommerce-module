@@ -629,7 +629,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'title'       => __('Loyalty program', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting for activate program loyalty on site', 'retailcrm')
+                    'description' => '<b style="color: red">' . __('Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in documentation', 'retailcrm') . '<\b>'
                 ];
 
                 $this->form_fields['loyalty_terms'] = [

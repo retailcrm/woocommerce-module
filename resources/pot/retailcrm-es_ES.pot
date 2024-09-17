@@ -451,8 +451,8 @@ msgstr "Programa de fidelización"
 msgid "Activate program loyalty"
 msgstr "Activar programa de fidelización"
 
-msgid "Enable this setting for activate program loyalty on site"
-msgstr "Activa esta configuración para activar programa de fidelización en la página web"
+msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in documentation"
+msgstr "¡Atención! Al activar el programa de fidelización, cambia el método de generación del catálogo ICML. Detalles en la documentación"
 
 msgid "Terms of loyalty program"
 msgstr "Condiciones del programa de fidelización"

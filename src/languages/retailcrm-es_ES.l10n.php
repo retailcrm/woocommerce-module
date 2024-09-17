@@ -202,7 +202,7 @@ return [
             "Los bienes con la opción 'virtual' activada se cargarán en Simla como servicios",
         "Loyalty program" => "Programa de fidelización",
         "Activate program loyalty" => "Activar programa de fidelización",
-        "Enable this setting for activate program loyalty on site" => "Activa esta configuración para activar el programa de fidelización en la página web",
+        "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in documentation" => "¡Atención! Al activar el programa de fidelización, cambia el método de generación del catálogo ICML. Detalles en la documentación",
         "Terms of loyalty program" => "Condiciones del programa de fidelización",
         "Insert the terms and conditions of the loyalty program" => "Inserte las condiciones del programa de fidelización",
         "Conditions of personal data processing" => "Condiciones de procesamiento de datos personales",

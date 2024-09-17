@@ -201,7 +201,7 @@ return [
             "Товары с включенной опцией 'виртуальные' будут выгружаться в CRM как услуги",
         "Loyalty program" => "Программа лояльности",
         "Activate program loyalty" => "Активировать программу лояльности",
-        "Enable this setting for activate program loyalty on site" => "Активируйте эту настройку для активации программы лояльности на сайте",
+        "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in documentation" => "Внимание! При активации программы лояльности, изменяется способ генерации ICML каталога. Подробности в документации",
         "Terms of loyalty program" => "Условия программы лояльности",
         "Insert the terms and conditions of the loyalty program" => "Вставьте условия участия в программе лояльности",
         "Conditions of personal data processing" => "Условия обработки персональных данных",
