@@ -460,8 +460,11 @@ msgstr "Программа лояльности"
 msgid "Activate program loyalty"
 msgstr "Активировать программу лояльности"
 
-msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in documentation"
-msgstr "Внимание! При активации программы лояльности, изменяется способ генерации ICML каталога. Подробности в документации"
+msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in"
+msgstr "Внимание! При активации программы лояльности, изменяется способ генерации ICML каталога. Подробности в"
+
+msgid "<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>"
+msgstr "<a href='https://docs.retailcrm.ru/Users/Integration/SiteModules/WooCommerce/PLWoocommerce#h-2'>документации программы лояльности</a>"
 
 msgid "Terms of loyalty program"
 msgstr "Условия программы лояльности"

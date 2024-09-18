@@ -451,8 +451,11 @@ msgstr "Programa de fidelización"
 msgid "Activate program loyalty"
 msgstr "Activar programa de fidelización"
 
-msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in documentation"
-msgstr "¡Atención! Al activar el programa de fidelización, cambia el método de generación del catálogo ICML. Detalles en la documentación"
+msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in"
+msgstr "¡Atención! Al activar el programa de fidelización, cambia el método de generación del catálogo ICML. Detalles en la"
+
+msgid "<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>"
+msgstr "<a href='https://docs.simla.com/es/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentación del programa de fidelización</a>"
 
 msgid "Terms of loyalty program"
 msgstr "Condiciones del programa de fidelización"
