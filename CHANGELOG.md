@@ -1,3 +1,6 @@
+## 2024-09-13 4.8.4
+* Updated work with promotional items when loyalty program is enabled
+
 ## 2024-09-11 4.8.3
 * Added loyalty program coupon entry in the form by click
 

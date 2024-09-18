@@ -3037,6 +3037,23 @@ class WC_Retailcrm_Client_V5
         );
     }
 
+    public function getPriceTypes()
+    {
+        return $this->client->makeRequest(
+            '/reference/price-types',
+            WC_Retailcrm_Request::METHOD_GET
+        );
+    }
+
+    public function editPriceType($priceType)
+    {
+        return $this->client->makeRequest(
+            sprintf('/reference/price-types/%s/edit', $priceType['code']),
+            WC_Retailcrm_Request::METHOD_POST,
+            ['priceType' => json_encode($priceType)]
+        );
+    }
+
     /**
      * Return current site
      *

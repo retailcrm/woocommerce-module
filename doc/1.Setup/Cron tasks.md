@@ -14,6 +14,7 @@
     'icml' => 'three_hours',
     'history' => 'five_minutes',
     'inventories' => 'fiveteen_minutes',
+    'loyalty_upload_price' => 'four_hours'
 ]
 ```
 > Важно! При использовании фильтра **retailcrm_cron_schedules**, можно использовать ключи: 'icml', 'history', 'inventories'.
@@ -49,5 +50,3 @@ function change_cron_tasks($cronTasks)
     return $cronTasks;
 }
 ```
-
-

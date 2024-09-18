@@ -72,6 +72,25 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <?php
     }
 
+    public function ajax_upload_loyalty_price()
+    {
+        $ajax_url = admin_url('admin-ajax.php');
+        ?>
+        <script type="text/javascript">
+            jQuery('#upload-loyalty-price-retailcrm').bind('click', function () {
+                jQuery.ajax({
+                    type: "POST",
+                    url: '<?php echo $ajax_url; ?>?action=upload_loyalty_price',
+                    success: function (response) {
+                        alert('<?php echo __('Promotional prices unloaded', 'retailcrm');?>');
+                        console.log('AJAX response : ', response);
+                    }
+                });
+            })
+        </script>
+        <?php
+    }
+
     /**
      * Initialize integration settings form fields.
      */
@@ -610,7 +629,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'title'       => __('Loyalty program', 'retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting for activate program loyalty on site', 'retailcrm')
+                    'description' => '<b style="color: red">' .
+                     __('Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in', 'retailcrm') .
+                      ' <\b>' . __("<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>", "retailcrm")
                 ];
 
                 $this->form_fields['loyalty_terms'] = [
@@ -647,6 +668,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'                => 'icml-retailcrm',
                     'description'       => __(
                         'This functionality allows to generate ICML products catalog for uploading to Simla.com',
+                        'retailcrm'
+                    ),
+                ];
+
+                $this->form_fields[] = [
+                    'label' => __('Upload prices now', 'retailcrm'),
+                    'title' => __('Uploaded discount price', 'retailcrm'),
+                    'type' => 'button',
+                    'desc_tip' => true,
+                    'id' => 'upload-loyalty-price-retailcrm',
+                    'description' => __(
+                        'This functionality loads the promotional prices offers into Simla.com',
                         'retailcrm'
                     ),
                 ];

@@ -106,7 +106,12 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
      */
     private function calculatePrice(WC_Order_Item_Product $item, int $decimalPlaces)
     {
-        $price = ($item['line_subtotal'] / $item->get_quantity()) + ($item['line_subtotal_tax'] / $item->get_quantity());
+        if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === WC_Retailcrm_Base::YES) {
+            $product = $item->get_product();
+            $price = wc_get_price_including_tax($product, ["price" => $product->get_regular_price()]);
+        } else {
+            $price = ($item['line_subtotal'] / $item->get_quantity()) + ($item['line_subtotal_tax'] / $item->get_quantity());
+        }
 
         return round($price, $decimalPlaces);
     }
@@ -124,7 +129,8 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         int $decimalPlaces,
         $crmItem = null
     ) {
-        if ($crmItem) {
+
+        if ($crmItem && isset($this->settings['loyalty']) && $this->settings['loyalty'] === WC_Retailcrm_Base::YES) {
             $loyaltyDiscount = 0;
 
             foreach ($crmItem['discounts'] as $discount) {

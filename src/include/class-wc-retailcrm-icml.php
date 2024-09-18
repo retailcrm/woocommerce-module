@@ -38,6 +38,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
         protected $unloadServices = false;
 
+        protected $activeLoyalty = false;
+
         /**
          * WC_Retailcrm_Icml constructor.
          *
@@ -53,6 +55,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 isset($this->settings['icml_unload_services'])
                 && $this->settings['icml_unload_services'] === WC_Retailcrm_Base::YES
             );
+
+            if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === WC_Retailcrm_Base::YES) {
+                $this->activeLoyalty = true;
+            }
         }
 
         public function changeBindBySku($useXmlId)
@@ -251,7 +257,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
                 'name' => $product->get_name(),
                 'productName' => ($product->get_parent_id() > 0) ? $parent->get_title() : $product->get_title(),
-                'price' => wc_get_price_including_tax($product),
+                'price' => $this->activeLoyalty
+                    ? wc_get_price_including_tax($product, ["price" => $product->get_regular_price()])
+                    : wc_get_price_including_tax($product)
+                ,
                 'picture' => $images,
                 'url' => ($product->get_parent_id() > 0) ? $parent->get_permalink() : $product->get_permalink(),
                 'quantity' => $quantity,

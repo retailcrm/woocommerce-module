@@ -127,6 +127,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('woocommerce_applied_coupon', [$this, 'apply_coupon'], 11, 1);
                 add_action('woocommerce_review_order_before_payment', [$this, 'reviewCreditBonus'], 11, 1);
                 add_action('wp_trash_post', [$this, 'trash_order_action'], 10, 1);
+                add_action('retailcrm_loyalty_upload_price', [$this, 'upload_loyalty_price']);
+                add_action('admin_print_footer_scripts', [$this, 'ajax_upload_loyalty_price'], 99);
+                add_action('wp_ajax_upload_loyalty_price', [$this, 'upload_loyalty_price']);
 
                 if (
                     !$this->get_option('deactivate_update_order')
@@ -190,12 +193,23 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function api_sanitized($settings)
         {
+            $isLoyaltyUploadPrice = false;
+
+            if (
+                isset($settings['icml'], $settings['loyalty'])
+                && $settings['icml'] === static::YES
+                && $settings['loyalty'] === static::YES
+            ) {
+                $isLoyaltyUploadPrice = true;
+            }
+
             $timeInterval = apply_filters(
                 'retailcrm_cron_schedules',
                 [
                     'icml' => 'three_hours',
                     'history' => 'five_minutes',
                     'inventories' => 'fiveteen_minutes',
+                    'loyalty_upload_price' => 'four_hours'
                 ]
             );
 
@@ -221,6 +235,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 }
             } elseif (isset($settings['icml']) && $settings['icml'] == static::NO) {
                 wp_clear_scheduled_hook('retailcrm_icml');
+            }
+
+            if ($isLoyaltyUploadPrice && !wp_next_scheduled('retailcrm_loyalty_upload_price')) {
+                wp_schedule_event(time(), $timeInterval['loyalty_upload_price'], 'retailcrm_loyalty_upload_price');
+            } elseif (!$isLoyaltyUploadPrice) {
+                wp_clear_scheduled_hook('retailcrm_loyalty_upload_price');
             }
 
             if (!$this->get_errors() && !get_option('retailcrm_active_in_crm')) {
@@ -268,6 +288,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_clear_scheduled_hook('retailcrm_icml');
             wp_clear_scheduled_hook('retailcrm_history');
             wp_clear_scheduled_hook('retailcrm_inventories');
+            wp_clear_scheduled_hook('retailcrm_loyalty_upload_price');
 
             //Add new cron tasks
             $this->api_sanitized($this->settings);
@@ -359,6 +380,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     );
                 }
             }
+        }
+
+        public function upload_loyalty_price()
+        {
+            if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
+                return null;
+            }
+
+            $discountPriceUpload = new WC_Retailcrm_Upload_Discount_Price($this->apiClient);
+            $discountPriceUpload->upload();
         }
 
         /**
@@ -930,12 +961,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $icml         = $defaultValue;
             $history      = $defaultValue;
             $inventories  = $defaultValue;
+            $loyaltyUploadPrice = $defaultValue;
+
             $translate    = [
                 'tr_td_cron'        => __('Cron launches', 'retailcrm'),
                 'tr_td_icml'        => __('Generation ICML', 'retailcrm'),
                 'tr_td_history'     => __('Syncing history', 'retailcrm'),
                 'tr_successful'     => __('Cron tasks cleared', 'retailcrm'),
                 'tr_td_inventories' => __('Syncing inventories', 'retailcrm'),
+                'tr_td_loyaltyUploadPrice' => __('Unloading promotional prices of offers', 'retailcrm')
             ];
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
@@ -944,6 +978,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (isset($this->settings['icml']) && $this->settings['icml'] == static::YES) {
                 $icml = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
+
+                if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === static::YES) {
+                    $loyaltyUploadPrice = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_loyalty_upload_price'));
+                }
             }
 
             if (isset($this->settings['sync']) && $this->settings['sync'] == static::YES) {
@@ -956,6 +994,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'icml'        => $icml,
                     'inventories' => $inventories,
                     'translate'   => $translate,
+                    'loyaltyUploadPrice' => $loyaltyUploadPrice
                 ]
             );
 

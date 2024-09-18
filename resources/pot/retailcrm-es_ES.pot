@@ -451,8 +451,11 @@ msgstr "Programa de fidelización"
 msgid "Activate program loyalty"
 msgstr "Activar programa de fidelización"
 
-msgid "Enable this setting for activate program loyalty on site"
-msgstr "Activa esta configuración para activar programa de fidelización en la página web"
+msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in"
+msgstr "¡Atención! Al activar el programa de fidelización, cambia el método de generación del catálogo ICML. Detalles en la"
+
+msgid "<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>"
+msgstr "<a href='https://docs.simla.com/es/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentación del programa de fidelización</a>"
 
 msgid "Terms of loyalty program"
 msgstr "Condiciones del programa de fidelización"
@@ -591,3 +594,27 @@ msgstr "Utiliza el cupón:"
 
 msgid "Points will be awarded upon completion of the order:"
 msgstr "Los puntos se concederán al finalizar el pedido:"
+
+msgid "Unloading promotional prices of offers"
+msgstr "Descarga de precios promocionales de ofertas comerciales"
+
+msgid "Every 4 hours"
+msgstr "Cada 4 horas"
+
+msgid "Upload prices now"
+msgstr "Descargar precios ahora"
+
+msgid "Uploaded discount price"
+msgstr "Descarga de precios promocionales"
+
+msgid "This functionality loads the promotional prices offers into Simla.com"
+msgstr "Esta función carga los precios promocionales de las ofertas comerciales en Simla.com"
+
+msgid "Promotional prices unloaded"
+msgstr "Se han cargado los precios promocionales"
+
+msgid "Woocommerce promotional price"
+msgstr "Precio promocional Woocommerce"
+
+msgid "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)"
+msgstr "Tipo de precio promocional para la tienda Woocommerce, generado automáticamente. Necesario para el correcto funcionamiento de la sincronización cuando el programa de fidelización está habilitado (No eliminar. No desactivar)"

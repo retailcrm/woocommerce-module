@@ -460,8 +460,11 @@ msgstr "Программа лояльности"
 msgid "Activate program loyalty"
 msgstr "Активировать программу лояльности"
 
-msgid "Enable this setting for activate program loyalty on site"
-msgstr "Активируйте эту настройку для активации программы лояльности на сайте"
+msgid "Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in"
+msgstr "Внимание! При активации программы лояльности, изменяется способ генерации ICML каталога. Подробности в"
+
+msgid "<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>"
+msgstr "<a href='https://docs.retailcrm.ru/Users/Integration/SiteModules/WooCommerce/PLWoocommerce#h-2'>документации программы лояльности</a>"
 
 msgid "Terms of loyalty program"
 msgstr "Условия программы лояльности"
@@ -600,3 +603,27 @@ msgstr "Используйте купон:"
 
 msgid "Points will be awarded upon completion of the order:"
 msgstr "По завершению заказа будет начислено баллов:"
+
+msgid "Unloading promotional prices of offers"
+msgstr "Выгрузка акционных цен торговых предложений"
+
+msgid "Every 4 hours"
+msgstr "Каждые 4 часа"
+
+msgid "Upload prices now"
+msgstr "Выгрузить цены сейчас"
+
+msgid "Uploaded discount price"
+msgstr "Выгрузка акционных цен"
+
+msgid "This functionality loads the promotional prices offers into Simla.com"
+msgstr "Эта функция загружает акционные цены торговых предложений в Simla.com"
+
+msgid "Promotional prices unloaded"
+msgstr "Акционные цены выгружены"
+
+msgid "Woocommerce promotional price"
+msgstr "Акционная цена Woocommerce"
+
+msgid "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)"
+msgstr "Акционный тип цены для магазина Woocommerce, сгенерированный автоматически. Необходим для корректной работы синхронизации при включенной программы лояльности (Не удалять. Не деактивировать)"
