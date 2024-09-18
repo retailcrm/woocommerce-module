@@ -53,7 +53,7 @@ class WC_Retailcrm_Customer_Corporate_Address extends WC_Retailcrm_Abstracts_Add
         } else {
             WC_Retailcrm_Logger::error(
                 __METHOD__,
-                sprintf('Error: Corporate Customer %s address is empty.', $customer->get_id()),
+                'Error: Corporate Customer address is empty.',
                 null,
                 ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
             );

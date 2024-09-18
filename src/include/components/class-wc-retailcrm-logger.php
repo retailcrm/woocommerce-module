@@ -217,7 +217,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                 ];
             }
 
-            return method_exists($object, 'get_data') ? (array_filter($object->get_data())) : $object;
+            return method_exists($object, 'get_data') ? (array_filter($object->get_data())) : [$object];
         }
     }
 endif;

@@ -65,7 +65,7 @@ class WC_Retailcrm_Customer_Switcher_Result
     {
         WC_Retailcrm_Logger::info(
             __METHOD__,
-            sprintf('Saving WC_Customer %s and WC_Order %s', $this->wcCustomer->get_id(), $this->wcOrder->get_id()),
+            'Saving WC_Customer and WC_Order',
             null,
             [
                 'wc_customer' => WC_Retailcrm_Logger::formatWCObject($this->wcCustomer),
