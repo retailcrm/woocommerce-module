@@ -50,8 +50,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    'Exception get loyalty accounts: ' . $exception->getMessage(),
-                    WC_Retailcrm_Logger::TYPE[2]
+                    sprintf(
+                        'Exception get loyalty accounts: %s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
 
                 return $result;
@@ -97,8 +103,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    'Exception while registering in the loyalty program: ' . $exception->getMessage(),
-                    WC_Retailcrm_Logger::TYPE[2]
+                    sprintf(
+                        'Exception while registering in the loyalty program: %s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
 
                 return false;
@@ -121,8 +133,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    'Exception while activate loyalty account: ' . $exception->getMessage(),
-                    WC_Retailcrm_Logger::TYPE[2]
+                    sprintf(
+                        'Exception while activate loyalty account: %s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
 
                 return false;
@@ -361,8 +379,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    'Exception get loyalty accounts: ' . $exception->getMessage(),
-                    WC_Retailcrm_Logger::TYPE[2]
+                    sprintf(
+                        'Exception get loyalty accounts: %s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
 
                 return false;

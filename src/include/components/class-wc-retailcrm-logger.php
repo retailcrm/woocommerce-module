@@ -19,11 +19,11 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
         /** @var string */
         const HANDLE = 'retailcrm';
 
-        const TYPE = array(
-            0 => 'REQUEST',
-            1 => 'RESPONSE',
-            2 => 'EXCEPTION'
-        );
+        const TYPE = [
+            'req' => 'REQUEST',
+            'res' => 'RESPONSE',
+            'exc' => 'EXCEPTION',
+        ];
 
         /**
          * @var \WC_Logger_Interface $instance
@@ -64,7 +64,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          *
          * @return \WC_Logger_Interface
          */
-        private static function getInstance()
+        private static function getInstance(): WC_Logger_Interface
         {
             if (empty(static::$instance)) {
                 static::$instance = new WC_Logger(self::$additionalHandlers);
@@ -95,7 +95,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             }
         }
 
-        private static function getIdentifier()
+        private static function getIdentifier(): string
         {
             if (empty(static::$logIdentifier)) {
                 static::$logIdentifier = substr(uniqid('', false), -8);
@@ -104,7 +104,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             return static::$logIdentifier;
         }
 
-        private static function getStartTime()
+        private static function getStartTime(): float
         {
             if (empty(static::$startTime)) {
                 static::$startTime = microtime(true);
@@ -145,7 +145,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          * @param string|null $type
          * @param string|null $level
          */
-        private static function log(string $method, string $message, $type = null, $level = null)
+        private static function log(string $method, string $message, $type = null, $level = 'info')
         {
             $time = self::getStartTime();
             $context = ['time' => round((microtime(true) - $time), 3), 'source' => self::HANDLE];
@@ -159,7 +159,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                 $message
             );
 
-            self::getInstance()->log($level ?? 'info', $message, $context);
+            self::getInstance()->log($level, $message, $context);
         }
 
         public static function formatWCObject($object): string
@@ -171,20 +171,21 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                     'date_modified' => $object->get_date_modified(),
                     'total' => $object->get_total(),
                     'shipping' => [
-                        "first_name" => $object->get_shipping_first_name(),
-                        "last_name" => $object->get_shipping_last_name(),
-                        "company" => $object->get_shipping_company(),
-                        "address_1" => $object->get_shipping_address_1(),
-                        "address_2" => $object->get_shipping_address_2(),
-                        "city" => $object->get_shipping_city(),
-                        "state" => $object->get_shipping_state(),
-                        "postcode" => $object->get_shipping_postcode(),
-                        "country" => $object->get_shipping_country(),
-                        "phone" => method_exists($object, 'get_shipping_phone')
+                        'first_name' => $object->get_shipping_first_name(),
+                        'last_name' => $object->get_shipping_last_name(),
+                        'company' => $object->get_shipping_company(),
+                        'address_1' => $object->get_shipping_address_1(),
+                        'address_2' => $object->get_shipping_address_2(),
+                        'city' => $object->get_shipping_city(),
+                        'state' => $object->get_shipping_state(),
+                        'postcode' => $object->get_shipping_postcode(),
+                        'country' => $object->get_shipping_country(),
+                        'phone' => method_exists($object, 'get_shipping_phone')
                             ? $object->get_shipping_phone() : $object->get_billing_phone(),
                     ],
                     'email' => $object->get_billing_email(),
                     'payment_method_title' => $object->get_payment_method_title(),
+                    'date_paid' => $object->get_date_paid(),
                 ]);
             }
 
@@ -197,16 +198,16 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                     'role' => $object->get_role(),
                     'username' => $object->get_username(),
                     'shipping' => [
-                        "first_name" => $object->get_shipping_first_name(),
-                        "last_name" => $object->get_shipping_last_name(),
-                        "company" => $object->get_shipping_company(),
-                        "address_1" => $object->get_shipping_address_1(),
-                        "address_2" => $object->get_shipping_address_2(),
-                        "city" => $object->get_shipping_city(),
-                        "state" => $object->get_shipping_state(),
-                        "postcode" => $object->get_shipping_postcode(),
-                        "country" => $object->get_shipping_country(),
-                        "phone" => method_exists($object, 'get_shipping_phone')
+                        'first_name' => $object->get_shipping_first_name(),
+                        'last_name' => $object->get_shipping_last_name(),
+                        'company' => $object->get_shipping_company(),
+                        'address_1' => $object->get_shipping_address_1(),
+                        'address_2' => $object->get_shipping_address_2(),
+                        'city' => $object->get_shipping_city(),
+                        'state' => $object->get_shipping_state(),
+                        'postcode' => $object->get_shipping_postcode(),
+                        'country' => $object->get_shipping_country(),
+                        'phone' => method_exists($object, 'get_shipping_phone')
                             ? $object->get_shipping_phone() : $object->get_billing_phone(),
                     ],
                 ]);

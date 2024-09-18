@@ -178,6 +178,7 @@ class WC_Retailcrm_Customer_Switcher_State
                     json_encode($this->getNewContact())
                 )
             );
+
             throw new \InvalidArgumentException(
                 'Too much data in state - cannot determine which customer should be used.'
             );

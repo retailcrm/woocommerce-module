@@ -366,6 +366,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         private function uploadCatalog($infoApiKey)
         {
             WC_Retailcrm_Logger::info(__METHOD__, 'Add task for automatically upload catalog in CRM');
+
             if ($infoApiKey->isSuccessful() && !empty($infoApiKey['scopes'])) {
                 if (!in_array('analytics_write', $infoApiKey['scopes'])) {
                     WC_Retailcrm_Logger::error(
@@ -381,7 +382,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 if ($statisticUpdate->isSuccessful()) {
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
-                        'Catalog generated, task automatically upload added to CRM'
+                        'Catalog generated, upload task added to CRM'
                     );
                 } else {
                     WC_Retailcrm_Logger::error(
@@ -482,6 +483,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function create_customer($customerId)
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__, $customerId);
+
             if (WC_Retailcrm_Plugin::history_running() === true) {
                 return;
             }
@@ -536,9 +538,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function create_order($order_id)
         {
+            WC_Retailcrm_Logger::setEntry(__FUNCTION__, $order_id);
+
             if (is_admin()) {
-                WC_Retailcrm_Logger::setEntry(__FUNCTION__, $order_id);
+                WC_Retailcrm_Logger::info(__METHOD__, 'Creation is from admin panel');
                 $this->retailcrm_process_order($order_id);
+            } else {
+                WC_Retailcrm_Logger::info(__METHOD__, 'Creation is not from admin panel, skip');
             }
         }
 
@@ -587,7 +593,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     }
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(__METHOD__, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
         }
 
@@ -641,7 +657,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    $exception->getMessage()
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
         }
@@ -649,7 +672,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function update_order($orderId)
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__, $orderId);
+
             if (WC_Retailcrm_Plugin::history_running() === true) {
+                WC_Retailcrm_Logger::info(__METHOD__, 'History in progress, skip');
+
                 return;
             }
 
@@ -668,11 +694,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function take_update_order($order_id)
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__, $order_id);
+
             if (
                 WC_Retailcrm_Plugin::history_running() === true
                 || did_action('woocommerce_checkout_order_processed')
                 || did_action('woocommerce_new_order')
             ) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    'History in progress or already did actions (woocommerce_checkout_order_processed;woocommerce_new_order), skip'
+                );
+
                 return;
             }
 
@@ -682,6 +714,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function update_order_loyalty()
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__);
+
             if ($this->updatedOrderId !== []) {
                 foreach ($this->updatedOrderId as $orderId) {
                     $this->orders->updateOrder($orderId);
@@ -799,8 +832,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!$isSuccessful) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    'Errors when registering a loyalty program. Passed parameters: ' .
-                    json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                    sprintf(
+                        'Errors when registering a loyalty program. Passed parameters: %s',
+                        json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                    )
                 );
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
             } else {
@@ -850,7 +885,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', '', true);
                 wp_localize_script('retailcrm-loyalty-cart', 'AdminUrl', $wpAdminUrl);
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(__METHOD__, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
         }
 
@@ -861,7 +906,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
             try {
                 $this->loyalty->createLoyaltyCoupon(true);
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(__METHOD__, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
         }
 
@@ -872,31 +927,63 @@ if (!class_exists('WC_Retailcrm_Base')) {
             try {
                 $this->loyalty->clearLoyaltyCoupon();
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(__METHOD__, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
         }
 
         public function remove_coupon($couponCode)
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__);
+
             try {
                 if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
                     $this->loyalty->createLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(__METHOD__, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
         }
 
         public function apply_coupon($couponCode)
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__);
+
             try {
                 if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
                     $this->loyalty->createLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(__METHOD__, $exception->getMessage(), WC_Retailcrm_Logger::TYPE[2]);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        '%s - Exception in file %s on line %s Trace: %s',
+                        $exception->getMessage(),
+                        $exception->getFile(),
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
+                    ),
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
         }
 
@@ -1080,6 +1167,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
+
             WC_Retailcrm_Logger::setEntry(__FUNCTION__);
 
             $orderMetaData        = $this->getMetaData('order');
@@ -1136,6 +1224,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!isset($userId)) {
                 return;
             }
+
             WC_Retailcrm_Logger::setEntry(__FUNCTION__);
 
             $jsScript = 'retailcrm-loyalty-actions';

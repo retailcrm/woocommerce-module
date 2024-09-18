@@ -95,6 +95,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
+
             WC_Retailcrm_Logger::info(__METHOD__, 'Start order creating ' . $orderId);
 
             try {
@@ -128,7 +129,8 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 WC_Retailcrm_Logger::info(
-                    __METHOD__, 'WC_Order: ' . WC_RETAILCRM_LOGGER::formatWCObject($wcOrder)
+                    __METHOD__,
+                    'WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder)
                 );
                 $this->processOrder($wcOrder);
 
@@ -152,12 +154,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error message: %s, file: %s on line: %s',
+                        'Error message: %s - Exception in file: %s on line: %s. Trace: %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine()
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
                     ),
-                    WC_Retailcrm_Logger::TYPE[2]
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
 
                 return null;
@@ -220,8 +223,14 @@ if (!class_exists('WC_Retailcrm_Orders')) :
          */
         protected function fillOrderCreate($wcCustomerId, $wcCustomerEmail, $wcOrder)
         {
-            WC_Retailcrm_Logger::info(__METHOD__, sprintf(
-                'WC_Customer ID: %s email: %s WC_Order ID: %s', $wcCustomerId, $wcCustomerEmail, $wcOrder->get_id())
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                sprintf(
+                    'Fill order data: WC_Customer ID: %s email: %s WC_Order ID: %s',
+                    $wcCustomerId,
+                    $wcCustomerEmail,
+                    $wcOrder->get_id()
+                )
             );
             $isContact = $this->retailcrm->getCorporateEnabled() && static::isCorporateOrder($wcOrder);
 
@@ -278,11 +287,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     if (!$addressFound) {
                         WC_Retailcrm_Logger::info(
                             __METHOD__,
-                            sprintf(
-                                '[%d] => %s',
-                                $this->order['customer']['id'],
-                                'Notification: Create new address for corporate customer'
-                            )
+                            'Notification: Create new address for corporate customer ' . $this->order['customer']['id']
                         );
                     }
 
@@ -331,7 +336,8 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             try {
                 $wcOrder = wc_get_order($orderId);
                 WC_Retailcrm_Logger::info(
-                    __METHOD__, 'WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder)
+                    __METHOD__,
+                    'Update WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder)
                 );
                 $needRecalculate = false;
 
@@ -371,12 +377,13 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error message: %s, file: %s on line: %s',
+                        'Error message: %s - Exception in file: %s on line: %s. Trace: %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine()
+                        $exception->getLine(),
+                        $exception->getTraceAsString()
                     ),
-                    WC_Retailcrm_Logger::TYPE[2]
+                    WC_Retailcrm_Logger::TYPE['exc']
                 );
 
                 return null;
@@ -448,6 +455,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             if ('auto-draft' === $order->get_status()) {
                 WC_Retailcrm_Logger::info(__METHOD__, 'Skip, order in auto-draft status');
+
                 return;
             }
 
@@ -534,13 +542,14 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             /** @var WC_Order_Item_Product $item */
             foreach ($wcItems as $id => $item) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    'Process WC_Order_Item_Product: ' . WC_Retailcrm_Logger::formatWCObject($item)
+                );
                 $crmItem = $crmItems[$id] ?? null;
                 $orderItems[] = $this->order_item->build($item, $crmItem)->getData();
 
                 $this->order_item->resetData($this->cancelLoyalty);
-                WC_Retailcrm_Logger::info(
-                    __METHOD__, 'WC_Order_Item_Product: ' . WC_RETAILCRM_LOGGER::formatWCObject($item)
-                );
             }
 
             unset($crmItems, $crmItem);

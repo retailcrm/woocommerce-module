@@ -77,6 +77,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
             if (empty($categories)) {
                 WC_Retailcrm_Logger::error(__METHOD__, 'Can`t get categories!');
+
                 return;
             }
 
@@ -86,6 +87,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
             if (empty($offers)) {
                 WC_Retailcrm_Logger::error(__METHOD__, 'Can`t get offers!');
+
                 return;
             }
 

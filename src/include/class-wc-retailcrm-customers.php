@@ -98,7 +98,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
-            WC_Retailcrm_Logger::info(__METHOD__, 'WC_Customer: ' . $customerId);
+
+            WC_Retailcrm_Logger::info(__METHOD__, 'Register WC_Customer ID: ' . $customerId);
 
             $wcCustomer = new WC_Customer($customerId);
             $email      = $wcCustomer->get_billing_email();
@@ -181,7 +182,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             if ($this->isCustomer($customer)) {
                 WC_Retailcrm_Logger::info(
-                    __METHOD__, 'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                    __METHOD__,
+                    'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
                 );
                 $this->processCustomer($customer, $order);
                 $response = $this->retailcrm->customersCreate($this->customer);
@@ -212,7 +214,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             if ($this->isCustomer($customer)) {
                 WC_Retailcrm_Logger::info(
-                    __METHOD__, 'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                    __METHOD__,
+                    'Update WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
                 );
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
@@ -239,10 +242,13 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $customer = $this->wcCustomerGet($customerId);
 
             if ($this->isCustomer($customer)) {
-                WC_Retailcrm_Logger::info(__METHOD__, sprintf(
-                    'WC_Customer: %s. CRM_Customer ID: %s',
-                    WC_Retailcrm_Logger::formatWCObject($customer),
-                    $crmCustomerId)
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    sprintf(
+                        'Update WC_Customer: %s by CRM_Customer ID: %s',
+                        WC_Retailcrm_Logger::formatWCObject($customer),
+                        $crmCustomerId
+                    )
                 );
                 $this->processCustomer($customer);
                 $this->customer['id'] = $crmCustomerId;
@@ -388,7 +394,8 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         public function processCustomerForUpload($customer)
         {
             WC_Retailcrm_Logger::info(
-                __METHOD__, 'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                __METHOD__,
+                'Processing for upload WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
             );
             $this->processCustomer($customer);
         }
@@ -697,14 +704,10 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             $new_customer->set_email($order->get_billing_email());
             $new_customer->set_date_created($order->get_date_created());
 
-            WC_Retailcrm_Logger::info(__METHOD__,'New customer: ', json_encode(
-                [
-                    'firstName' => $new_customer->get_first_name(),
-                    'lastName' => $new_customer->get_last_name(),
-                    'email' => $new_customer->get_email(),
-                    'created' => $new_customer->get_date_created()
-                ]
-            ));
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Build new customer from order data: ' . WC_Retailcrm_Logger::formatWCObject($new_customer)
+            );
 
             return $new_customer;
         }
