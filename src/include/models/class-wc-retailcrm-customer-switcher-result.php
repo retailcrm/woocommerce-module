@@ -65,11 +65,12 @@ class WC_Retailcrm_Customer_Switcher_Result
     {
         WC_Retailcrm_Logger::info(
             __METHOD__,
-            sprintf(
-                'Saving WC_Customer: %s and WC_Order: %s',
-                WC_Retailcrm_Logger::formatWCObject($this->wcCustomer),
-                WC_Retailcrm_Logger::formatWCObject($this->wcOrder)
-            )
+            sprintf('Saving WC_Customer %s and WC_Order %s', $this->wcCustomer->get_id(), $this->wcOrder->get_id()),
+            null,
+            [
+                'wc_customer' => WC_Retailcrm_Logger::formatWCObject($this->wcCustomer),
+                'wc_order' => WC_Retailcrm_Logger::formatWCObject($this->wcOrder),
+            ]
         );
 
         if (!empty($this->wcCustomer) && $this->wcCustomer->get_id()) {

@@ -43,7 +43,12 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
     {
         $this->data->validate();
 
-        WC_Retailcrm_Logger::info(__METHOD__, 'Customer State: ' . json_encode($this->data));
+        WC_Retailcrm_Logger::info(
+            __METHOD__,
+            'Build Customer state',
+            null,
+            ['customer_state' => $this->data]
+        );
 
         $newCustomer = $this->data->getNewCustomer();
         $newContact = $this->data->getNewContact();
@@ -102,7 +107,9 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
 
         WC_Retailcrm_Logger::info(
             __METHOD__,
-            sprintf('Switching customer in order %s to %s', $wcOrder->get_id(), json_encode($newCustomer))
+            'Switching customer in order ' . $wcOrder->get_id(),
+            null,
+            ['crm_customer' => $newCustomer]
         );
 
         if (isset($newCustomer['externalId'])) {

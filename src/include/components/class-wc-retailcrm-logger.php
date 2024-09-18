@@ -119,10 +119,11 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          * @param string $method
          * @param string $message
          * @param null|string $type
+         * @param array $context
          */
-        public static function error(string $method, string $message, $type = null)
+        public static function error(string $method, string $message, $type = null, array $context = [])
         {
-            self::log($method, $message, $type, WC_Log_Levels::ERROR);
+            self::log($method, $message, $type, $context, WC_Log_Levels::ERROR);
         }
 
         /**
@@ -131,10 +132,11 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          * @param string $method
          * @param string $message
          * @param null|string $type
+         * @param array $context
          */
-        public static function info(string $method, string $message, $type = null)
+        public static function info(string $method, string $message, $type = null, array $context = [])
         {
-            self::log($method, $message, $type, WC_Log_Levels::INFO);
+            self::log($method, $message, $type, $context, WC_Log_Levels::INFO);
         }
 
         /**
@@ -143,12 +145,14 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          * @param string $method
          * @param string $message
          * @param string|null $type
+         * @param array $context
          * @param string|null $level
          */
-        private static function log(string $method, string $message, $type = null, $level = 'info')
+        private static function log(string $method, string $message, $type = null, array $context = [], $level = 'info')
         {
             $time = self::getStartTime();
-            $context = ['time' => round((microtime(true) - $time), 3), 'source' => self::HANDLE];
+            $context['time'] = round((microtime(true) - $time), 3);
+            $context['source'] = self::HANDLE;
 
             $message = sprintf(
                 '%s [%s] <%s> %s=> %s',
@@ -162,10 +166,10 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             self::getInstance()->log($level, $message, $context);
         }
 
-        public static function formatWCObject($object): string
+        public static function formatWCObject($object): array
         {
             if ($object instanceof WC_Order) {
-                return json_encode([
+                return [
                     'id' => $object->get_id(),
                     'status' => $object->get_status(),
                     'date_modified' => $object->get_date_modified(),
@@ -186,11 +190,11 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                     'email' => $object->get_billing_email(),
                     'payment_method_title' => $object->get_payment_method_title(),
                     'date_paid' => $object->get_date_paid(),
-                ]);
+                ];
             }
 
             if ($object instanceof WC_Customer) {
-                return json_encode([
+                return [
                     'id' => $object->get_id(),
                     'date_modified' => $object->get_date_modified(),
                     'email' => $object->get_email(),
@@ -210,11 +214,10 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
                         'phone' => method_exists($object, 'get_shipping_phone')
                             ? $object->get_shipping_phone() : $object->get_billing_phone(),
                     ],
-                ]);
+                ];
             }
 
-            return method_exists($object, 'get_data') ?
-                json_encode(array_filter($object->get_data())) : json_encode($object);
+            return method_exists($object, 'get_data') ? (array_filter($object->get_data())) : $object;
         }
     }
 endif;

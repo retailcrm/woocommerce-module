@@ -69,8 +69,9 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
             try {
                 WC_Retailcrm_Logger::info(
                     $method,
-                    empty($arguments) ? '[no params]' : json_encode($arguments),
-                    WC_Retailcrm_Logger::TYPE['req']
+                    empty($arguments) ? '[no params]' : '[with arguments]',
+                    WC_Retailcrm_Logger::TYPE['req'],
+                    ['arguments' => $arguments]
                 );
                 /** @var \WC_Retailcrm_Response $response */
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
@@ -98,14 +99,16 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                     )) {
                         WC_Retailcrm_Logger::info(
                             $method,
-                            'Ok [request was successful, but response is omitted]',
-                            WC_Retailcrm_Logger::TYPE['res']
+                            'Ok',
+                            WC_Retailcrm_Logger::TYPE['res'],
+                            ['body' => 'request was successful, but response is omitted']
                         );
                     } else {
                         WC_Retailcrm_Logger::info(
                             $method,
-                            'Ok ' . $response->getRawResponse(),
-                            WC_Retailcrm_Logger::TYPE['res']
+                            'Ok',
+                            WC_Retailcrm_Logger::TYPE['res'],
+                            ['body' => json_decode($response->getRawResponse(), true)]
                         );
                     }
 

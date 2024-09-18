@@ -183,7 +183,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if ($this->isCustomer($customer)) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                    'Process WC_Customer ' . $customer->get_id(),
+                    null,
+                    ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
                 );
                 $this->processCustomer($customer, $order);
                 $response = $this->retailcrm->customersCreate($this->customer);
@@ -215,7 +217,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if ($this->isCustomer($customer)) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'Update WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                    'Update WC_Customer ' . $customer->get_id(),
+                    null,
+                    ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
                 );
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
@@ -244,11 +248,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             if ($this->isCustomer($customer)) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    sprintf(
-                        'Update WC_Customer: %s by CRM_Customer ID: %s',
-                        WC_Retailcrm_Logger::formatWCObject($customer),
-                        $crmCustomerId
-                    )
+                    'Update WC_Customer by CRM_Customer ID: ' . $crmCustomerId,
+                    null,
+                    ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
                 );
                 $this->processCustomer($customer);
                 $this->customer['id'] = $crmCustomerId;
@@ -395,7 +397,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
         {
             WC_Retailcrm_Logger::info(
                 __METHOD__,
-                'Processing for upload WC_Customer: ' . WC_Retailcrm_Logger::formatWCObject($customer)
+                'Processing for upload WC_Customer ' . $customer->get_id(),
+                null,
+                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
             );
             $this->processCustomer($customer);
         }
@@ -706,7 +710,9 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
             WC_Retailcrm_Logger::info(
                 __METHOD__,
-                'Build new customer from order data: ' . WC_Retailcrm_Logger::formatWCObject($new_customer)
+                'Build new customer from order data',
+                null,
+                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($new_customer)]
             );
 
             return $new_customer;

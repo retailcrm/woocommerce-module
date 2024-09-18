@@ -127,7 +127,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $builder   = new WC_Retailcrm_WC_Customer_Builder();
                     $customers = WC_Retailcrm_History_Assembler::assemblyCustomer($history);
 
-                    WC_Retailcrm_Logger::info(__METHOD__, 'Assembled customers history: ' . json_encode($customers));
+                    WC_Retailcrm_Logger::info(
+                        __METHOD__,
+                        'Assembled customers history',
+                        null,
+                        ['customers_history' => $customers]
+                    );
                     WC_Retailcrm_Plugin::$history_run = true;
 
                     foreach ($customers as $crmCustomer) {
@@ -181,11 +186,9 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                             WC_Retailcrm_Logger::info(
                                 __METHOD__,
-                                sprintf(
-                                    'Updated WC_Customer %s: %s',
-                                    $crmCustomer['externalId'],
-                                    WC_Retailcrm_Logger::formatWCObject($wcCustomer)
-                                )
+                                'Updated WC_Customer ' . $crmCustomer['externalId'],
+                                null,
+                                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($wcCustomer)]
                             );
 
                             // @codeCoverageIgnoreStart
@@ -245,7 +248,12 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                     $historyAssembly = WC_Retailcrm_History_Assembler::assemblyOrder($history);
 
-                    WC_Retailcrm_Logger::info(__METHOD__, 'Assembled orders history: ' . json_encode($historyAssembly));
+                    WC_Retailcrm_Logger::info(
+                        __METHOD__,
+                        'Assembled orders history',
+                        null,
+                        ['orders_history' => $historyAssembly]
+                    );
                     WC_Retailcrm_Plugin::$history_run = true;
 
                     foreach ($historyAssembly as $orderHistory) {
@@ -309,7 +317,9 @@ if (!class_exists('WC_Retailcrm_History')) :
 
                                 WC_Retailcrm_Logger::info(
                                     __METHOD__,
-                                    'Result WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder)
+                                    'Result WC_Order ' . $wcOrder->get_id(),
+                                    null,
+                                    ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
                                 );
                             }
                         } catch (Exception $exception) {
@@ -425,7 +435,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                 return false;
             }
 
-            WC_Retailcrm_Logger::info(__METHOD__, 'Updating WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder));
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Updating WC_Order ' . $wcOrder->get_id(),
+                null,
+                ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
+            );
 
             if (isset($order['status']) && isset($options[$order['status']])) {
                 $wcOrder->update_status($options[$order['status']]);
@@ -507,7 +522,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                         if (!$wcProduct) {
                             WC_Retailcrm_Logger::error(
                                 __METHOD__,
-                                sprintf('Product %s not found by %s', json_encode($crmProduct['offer']), $this->bindField)
+                                'Crm Product not found by ' . $this->bindField,
+                                null,
+                                ['crm_product' => $crmProduct['offer']]
                             );
 
                             continue;
@@ -672,7 +689,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                 return false;
             }
 
-            WC_Retailcrm_Logger::info(__METHOD__, 'Creating WC_Order from CRM_Order: ' . json_encode($order));
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Creating WC_Order from CRM_Order: ' . $order['id'] ?? 'id empty',
+                null,
+                ['crm_order' => $order]
+            );
 
             if (
                 is_array($this->orderMethods)
@@ -861,7 +883,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                     if (!$wcProduct) {
                         WC_Retailcrm_Logger::error(
                             __METHOD__,
-                            sprintf('Crm_Product %s not found by %s', json_encode($crmProduct['offer']), $this->bindField)
+                            'Crm_Product not found by ' . $this->bindField,
+                            null,
+                            ['crm_product' => $crmProduct['offer']]
                         );
 
                         continue;
@@ -1154,10 +1178,16 @@ if (!class_exists('WC_Retailcrm_History')) :
                 __METHOD__,
                 sprintf(
                     'Add in order WC_Order: %s, product WC_Product: %s, CRM_Product: %s',
-                    WC_Retailcrm_Logger::formatWCObject($wcOrder),
-                    WC_Retailcrm_Logger::formatWCObject($wcProduct),
-                    json_encode($crmProduct)
-                )
+                    $wcOrder->get_id(),
+                    $wcProduct->get_id(),
+                    $crmProduct['id'] ?? 'id empty'
+                ),
+                null,
+                [
+                    'wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder),
+                    'wc_product' => WC_Retailcrm_Logger::formatWCObject($wcProduct),
+                    'crm_product' => $crmProduct,
+                ]
             );
             $discountTotal   = $crmProduct['discountTotal'];
             $productQuantity = $crmProduct['quantity'];
@@ -1212,11 +1242,12 @@ if (!class_exists('WC_Retailcrm_History')) :
 
             WC_Retailcrm_Logger::info(
                 __METHOD__,
-                sprintf(
-                    'Updating product WC_Order_Item: %s, CRM_Product: %s',
-                    WC_Retailcrm_Logger::formatWCObject($wcOrderItem),
-                    json_encode($crmProduct)
-                )
+                'Updating order product WC_Order_Item, CRM_Product',
+                null,
+                [
+                    'wc_order_item' => WC_Retailcrm_Logger::formatWCObject($wcOrderItem),
+                    'crm_product' => $crmProduct,
+                ]
             );
         }
 
@@ -1254,7 +1285,12 @@ if (!class_exists('WC_Retailcrm_History')) :
 
             $data->setWcOrder($wcOrder);
 
-            WC_Retailcrm_Logger::info(__METHOD__, 'Processing CRM_Order ' . json_encode($order));
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Processing CRM_Order ' . $order['id'] ?? 'id empty',
+                null,
+                ['crm_order' => $order]
+            );
 
             if (isset($order['customer'])) {
                 $crmOrder = $this->getCRMOrder($order['id'], 'id');
@@ -1262,10 +1298,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                 if (empty($crmOrder)) {
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
-                        sprintf(
-                            'Cannot get order data from retailCRM. Skipping customer change. History data: %s',
-                            json_encode($order)
-                        )
+                        'Cannot get order data from retailCRM. Skipping customer change.',
+                        null,
+                        ['history_data' => $order]
                     );
 
                     return false;
@@ -1298,10 +1333,9 @@ if (!class_exists('WC_Retailcrm_History')) :
                 if (empty($crmOrder)) {
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
-                        sprintf(
-                            'Cannot get order data from retailCRM. Skipping customer change. History data: %s',
-                            json_encode($order)
-                        )
+                        'Cannot get order data from retailCRM. Skipping customer change.',
+                        null,
+                        ['history_data' => $order]
                     );
 
                     return false;
@@ -1458,11 +1492,9 @@ if (!class_exists('WC_Retailcrm_History')) :
         {
             WC_Retailcrm_Logger::info(
                 __METHOD__,
-                sprintf(
-                    'Using this individual person data in order to set it into order %s: %s',
-                    $data->getWcOrder()->get_id(),
-                    json_encode($crmCustomer)
-                )
+                'Using this individual person data in order to set it into order ' . $data->getWcOrder()->get_id(),
+                null,
+                ['crm_customer' => $crmCustomer]
             );
 
             if ($isContact) {

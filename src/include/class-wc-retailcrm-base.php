@@ -195,7 +195,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function api_sanitized($settings)
         {
             WC_Retailcrm_Logger::setEntry(__FUNCTION__);
-            WC_Retailcrm_Logger::info(__METHOD__, 'Module settings: ' . json_encode($settings));
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Module settings',
+                null,
+                ['settings' => $settings]
+            );
             $isLoyaltyUploadPrice = false;
 
             if (

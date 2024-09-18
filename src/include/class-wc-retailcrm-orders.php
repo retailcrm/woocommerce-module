@@ -96,7 +96,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 return null;
             }
 
-            WC_Retailcrm_Logger::info(__METHOD__, 'Start order creating ' . $orderId);
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Start order creating ' . is_int($orderId) ? $orderId : '',
+                null,
+                ['wc_order' => WC_Retailcrm_Logger::formatWCObject($orderId)]
+            );
 
             try {
                 $this->order_payment->resetData();
@@ -130,7 +135,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder)
+                    'Create WC_Order ' . $wcOrder->get_id(),
+                    null,
+                    ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
                 );
                 $this->processOrder($wcOrder);
 
@@ -337,7 +344,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 $wcOrder = wc_get_order($orderId);
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'Update WC_Order: ' . WC_Retailcrm_Logger::formatWCObject($wcOrder)
+                    'Update WC_Order ' . $wcOrder->get_id(),
+                    null,
+                    ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
                 );
                 $needRecalculate = false;
 
@@ -544,7 +553,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             foreach ($wcItems as $id => $item) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'Process WC_Order_Item_Product: ' . WC_Retailcrm_Logger::formatWCObject($item)
+                    'Process WC_Order_Item_Product ' . $id,
+                    null,
+                    ['wc_order_item_product' => WC_Retailcrm_Logger::formatWCObject($item)]
                 );
                 $crmItem = $crmItems[$id] ?? null;
                 $orderItems[] = $this->order_item->build($item, $crmItem)->getData();

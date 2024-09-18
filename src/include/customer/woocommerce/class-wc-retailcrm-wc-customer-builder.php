@@ -155,7 +155,9 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
 
         WC_Retailcrm_Logger::info(
             __METHOD__,
-            'Building WC_Customer from data: ' . json_encode($this->data)
+            'Building WC_Customer from data',
+            null,
+            ['customer_data' => $this->data]
         );
 
         $this->customer->set_first_name($this->dataValue('firstName', $this->customer->get_first_name()));
