@@ -86,12 +86,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -130,7 +130,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
                         'Assembled customers history',
-                        null,
                         ['customers_history' => $customers]
                     );
                     WC_Retailcrm_Plugin::$history_run = true;
@@ -187,7 +186,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                             WC_Retailcrm_Logger::info(
                                 __METHOD__,
                                 'Updated WC_Customer ' . $crmCustomer['externalId'],
-                                null,
                                 ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($wcCustomer)]
                             );
 
@@ -196,12 +194,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                             WC_Retailcrm_Logger::error(
                                 __METHOD__,
                                 sprintf(
-                                    '%s - Exception in file %s on line %s Trace: %s',
+                                    '%s - Exception in file %s on line %s',
                                     $exception->getMessage(),
                                     $exception->getFile(),
-                                    $exception->getLine(),
-                                    $exception->getTraceAsString()
+                                    $exception->getLine()
                                 ),
+                                ['trace' => $exception->getTraceAsString()],
                                 WC_Retailcrm_Logger::TYPE['exc']
                             );
                         }
@@ -251,7 +249,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
                         'Assembled orders history',
-                        null,
                         ['orders_history' => $historyAssembly]
                     );
                     WC_Retailcrm_Plugin::$history_run = true;
@@ -318,7 +315,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 WC_Retailcrm_Logger::info(
                                     __METHOD__,
                                     'Result WC_Order ' . $wcOrder->get_id(),
-                                    null,
                                     ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
                                 );
                             }
@@ -326,12 +322,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                             WC_Retailcrm_Logger::error(
                                 __METHOD__,
                                 sprintf(
-                                    '%s - Exception in file %s on line %s Trace: %s',
+                                    '%s - Exception in file %s on line %s',
                                     $exception->getMessage(),
                                     $exception->getFile(),
-                                    $exception->getLine(),
-                                    $exception->getTraceAsString()
+                                    $exception->getLine()
                                 ),
+                                ['trace' => $exception->getTraceAsString()],
                                 WC_Retailcrm_Logger::TYPE['exc']
                             );
 
@@ -438,7 +434,6 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Updating WC_Order ' . $wcOrder->get_id(),
-                null,
                 ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
             );
 
@@ -523,7 +518,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                             WC_Retailcrm_Logger::error(
                                 __METHOD__,
                                 'Crm Product not found by ' . $this->bindField,
-                                null,
                                 ['crm_product' => $crmProduct['offer']]
                             );
 
@@ -692,7 +686,6 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Creating WC_Order from CRM_Order: ' . $order['id'] ?? 'id empty',
-                null,
                 ['crm_order' => $order]
             );
 
@@ -884,7 +877,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                         WC_Retailcrm_Logger::error(
                             __METHOD__,
                             'Crm_Product not found by ' . $this->bindField,
-                            null,
                             ['crm_product' => $crmProduct['offer']]
                         );
 
@@ -1182,7 +1174,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $wcProduct->get_id(),
                     $crmProduct['id'] ?? 'id empty'
                 ),
-                null,
                 [
                     'wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder),
                     'wc_product' => WC_Retailcrm_Logger::formatWCObject($wcProduct),
@@ -1243,7 +1234,6 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Updating order product WC_Order_Item, CRM_Product',
-                null,
                 [
                     'wc_order_item' => WC_Retailcrm_Logger::formatWCObject($wcOrderItem),
                     'crm_product' => $crmProduct,
@@ -1288,7 +1278,6 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Processing CRM_Order ' . $order['id'] ?? 'id empty',
-                null,
                 ['crm_order' => $order]
             );
 
@@ -1299,7 +1288,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
                         'Cannot get order data from retailCRM. Skipping customer change.',
-                        null,
                         ['history_data' => $order]
                     );
 
@@ -1334,7 +1322,6 @@ if (!class_exists('WC_Retailcrm_History')) :
                     WC_Retailcrm_Logger::info(
                         __METHOD__,
                         'Cannot get order data from retailCRM. Skipping customer change.',
-                        null,
                         ['history_data' => $order]
                     );
 
@@ -1372,7 +1359,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 } catch (\Exception $exception) {
                     $errorMessage = sprintf(
                         'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s' .
-                        ' - Exception in file %s on line %s. Trace: %s'
+                        ' - Exception in file %s on line %s'
                         ,
                         $order['externalId'],
                         $newCustomerId,
@@ -1380,11 +1367,15 @@ if (!class_exists('WC_Retailcrm_History')) :
                         isset($order['company']) ? $order['company']['name'] : '',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     );
 
-                    WC_Retailcrm_Logger::error(__METHOD__, $errorMessage, WC_Retailcrm_Logger::TYPE['exc']);
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        $errorMessage,
+                        ['trace' => $exception->getTraceAsString()],
+                        WC_Retailcrm_Logger::TYPE['exc']
+                    );
                     $handled = false;
                 }
                 // @codeCoverageIgnoreEnd
@@ -1493,7 +1484,6 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Using this individual person data in order to set it into order ' . $data->getWcOrder()->get_id(),
-                null,
                 ['crm_customer' => $crmCustomer]
             );
 

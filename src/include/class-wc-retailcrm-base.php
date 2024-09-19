@@ -198,7 +198,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Module settings',
-                null,
                 ['settings' => $settings]
             );
             $isLoyaltyUploadPrice = false;
@@ -601,12 +600,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -660,15 +659,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     }
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::info(
+                WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -893,12 +892,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -914,12 +913,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -935,12 +934,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -958,12 +957,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -981,12 +980,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }

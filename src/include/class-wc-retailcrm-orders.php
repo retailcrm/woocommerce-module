@@ -99,7 +99,6 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Start order creating ' . is_int($orderId) ? $orderId : '',
-                null,
                 ['wc_order' => WC_Retailcrm_Logger::formatWCObject($orderId)]
             );
 
@@ -136,7 +135,6 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Create WC_Order ' . $wcOrder->get_id(),
-                    null,
                     ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
                 );
                 $this->processOrder($wcOrder);
@@ -161,12 +159,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error message: %s - Exception in file: %s on line: %s. Trace: %s',
+                        'Error message: %s - Exception in file: %s on line: %s.',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
 
@@ -345,7 +343,6 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Update WC_Order ' . $wcOrder->get_id(),
-                    null,
                     ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
                 );
                 $needRecalculate = false;
@@ -386,12 +383,12 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error message: %s - Exception in file: %s on line: %s. Trace: %s',
+                        'Error message: %s - Exception in file: %s on line: %s.',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
 
@@ -554,7 +551,6 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Process WC_Order_Item_Product ' . $id,
-                    null,
                     ['wc_order_item_product' => WC_Retailcrm_Logger::formatWCObject($item)]
                 );
                 $crmItem = $crmItems[$id] ?? null;

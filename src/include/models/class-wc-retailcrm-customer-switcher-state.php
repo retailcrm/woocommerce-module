@@ -173,7 +173,6 @@ class WC_Retailcrm_Customer_Switcher_State
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'State data - customer and contact',
-                null,
                 [
                     'customer' => $this->getNewCustomer(),
                     'contact' => $this->getNewContact(),

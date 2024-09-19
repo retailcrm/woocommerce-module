@@ -83,12 +83,12 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error process cart: %s - Exception in file %s on line %s Trace: %s',
+                        'Error process cart: %s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }
@@ -110,14 +110,14 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error clear cart: %s - Exception in file %s on line %s Trace: %s',
+                        'Error clear cart: %s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
-                    WC_Retailcrm_Logger::TYPE['exc'])
-                ;
+                    ['trace' => $exception->getTraceAsString()],
+                    WC_Retailcrm_Logger::TYPE['exc']
+                );
             }
 
             return $isSuccessful;

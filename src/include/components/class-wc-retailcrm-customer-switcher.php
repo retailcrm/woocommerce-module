@@ -46,7 +46,6 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         WC_Retailcrm_Logger::info(
             __METHOD__,
             'Build Customer state',
-            null,
             ['customer_state' => $this->data]
         );
 
@@ -108,7 +107,6 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
         WC_Retailcrm_Logger::info(
             __METHOD__,
             'Switching customer in order ' . $wcOrder->get_id(),
-            null,
             ['crm_customer' => $newCustomer]
         );
 

@@ -70,14 +70,14 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                 WC_Retailcrm_Logger::info(
                     $method,
                     empty($arguments) ? '[no params]' : '[with arguments]',
-                    WC_Retailcrm_Logger::TYPE['req'],
-                    ['arguments' => $arguments]
+                    ['arguments' => $arguments],
+                    WC_Retailcrm_Logger::TYPE['req']
                 );
                 /** @var \WC_Retailcrm_Response $response */
                 $response = call_user_func_array(array($this->retailcrm, $method), $arguments);
 
                 if (is_string($response)) {
-                    WC_Retailcrm_Logger::info($method, $response, WC_Retailcrm_Logger::TYPE['res']);
+                    WC_Retailcrm_Logger::info($method, $response, [], WC_Retailcrm_Logger::TYPE['res']);
 
                     return $response;
                 }
@@ -86,6 +86,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                     WC_Retailcrm_Logger::error(
                         $method,
                         sprintf("[%s] null (no response whatsoever)", $called),
+                        [],
                         WC_Retailcrm_Logger::TYPE['res']
                     );
 
@@ -100,24 +101,27 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                         WC_Retailcrm_Logger::info(
                             $method,
                             'Ok',
-                            WC_Retailcrm_Logger::TYPE['res'],
-                            ['body' => 'request was successful, but response is omitted']
+                            ['body' => 'request was successful, but response is omitted'],
+                            WC_Retailcrm_Logger::TYPE['res']
                         );
                     } else {
                         WC_Retailcrm_Logger::info(
                             $method,
                             'Ok',
-                            WC_Retailcrm_Logger::TYPE['res'],
-                            ['body' => json_decode($response->getRawResponse(), true)]
+                            ['body' => json_decode($response->getRawResponse(), true)],
+                            WC_Retailcrm_Logger::TYPE['res']
                         );
                     }
 
                 } else {
-                    WC_Retailcrm_Logger::error($method, sprintf(
-                        "Error: [HTTP-code %s] %s %s",
-                        $response->getStatusCode(),
-                        $response->getErrorString(),
-                        $response->getRawResponse()),
+                    WC_Retailcrm_Logger::error(
+                        $method,
+                        sprintf(
+                            "Error: [HTTP-code %s] %s",
+                            $response->getStatusCode(),
+                            $response->getErrorString()
+                        ),
+                        ['response' => $response->getRawResponse()],
                         WC_Retailcrm_Logger::TYPE['res']
                     );
                 }
@@ -125,36 +129,36 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                 WC_Retailcrm_Logger::error(
                     $method,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             } catch (WC_Retailcrm_Exception_Json $exception) {
                 WC_Retailcrm_Logger::error(
                     $method,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             } catch (InvalidArgumentException $exception) {
                 WC_Retailcrm_Logger::error(
                     $method,
                     sprintf(
-                        '%s - Exception in file %s on line %s Trace: %s',
+                        '%s - Exception in file %s on line %s',
                         $exception->getMessage(),
                         $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
+                        $exception->getLine()
                     ),
+                    ['trace' => $exception->getTraceAsString()],
                     WC_Retailcrm_Logger::TYPE['exc']
                 );
             }

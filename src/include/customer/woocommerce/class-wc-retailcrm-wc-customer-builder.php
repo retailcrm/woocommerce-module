@@ -156,7 +156,6 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
         WC_Retailcrm_Logger::info(
             __METHOD__,
             'Building WC_Customer from data',
-            null,
             ['customer_data' => $this->data]
         );
 
