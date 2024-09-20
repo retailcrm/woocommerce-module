@@ -121,7 +121,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                             $response->getStatusCode(),
                             $response->getErrorString()
                         ),
-                        ['response' => $response->getRawResponse()],
+                        ['response' => json_decode($response->getRawResponse(), true)],
                         WC_Retailcrm_Logger::TYPE['res']
                     );
                 }

@@ -95,7 +95,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 if (!$response->isSuccessful()) {
                     WC_Retailcrm_Logger::error(
                         __METHOD__,
-                        'Error while registering in the loyalty program: ' . $response->getRawResponse()
+                        'Error while registering in the loyalty program',
+                        ['response' => json_decode($response->getRawResponse(), true)]
                     );
                 }
 
@@ -125,7 +126,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 if (!$response->isSuccessful()) {
                     WC_Retailcrm_Logger::error(
                         __METHOD__,
-                        'Error while registering in the loyalty program: ' . $response->getRawResponse()
+                        'Error while registering in the loyalty program',
+                        ['response' => json_decode($response->getRawResponse(), true)]
                     );
                 }
 
