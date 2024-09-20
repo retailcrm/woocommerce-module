@@ -21,12 +21,12 @@ jobs:
       matrix:
         include:
           # WordPress 5.3
-          #PHP 7.1 and 7.4
-          - php-version: '7.1'
+          #PHP 7.0 and 7.4
+          - php-version: '7.0'
             wp: '5.3'
             wc: '5.4.3'
             coverage: 1
-          - php-version: '7.1'
+          - php-version: '7.0'
             wp: '5.3'
             wc: '6.4.0'
           - php-version: '7.4'
@@ -37,11 +37,11 @@ jobs:
             wc: '6.4.0'
 
           # WordPress 6.0
-          # PHP 7.1 and 7.4
-          - php-version: '7.1'
+          # PHP 7.0 and 7.4
+          - php-version: '7.0'
             wp: '6.0'
             wc: '5.4.3'
-          - php-version: '7.1'
+          - php-version: '7.0'
             wp: '6.0'
             wc: '6.4.0'
           - php-version: '7.4'
@@ -66,7 +66,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer:2.1.14, phpunit:6.4.3
+          tools: composer:2.1.14, phpunit:6.5.14
           extensions: gd, mbstring, mysqli, zip, unzip, mcrypt, mysql, pdo_mysql, dom
           coverage: xdebug
 
