@@ -98,7 +98,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
         private static function getIdentifier(): string
         {
             if (empty(static::$logIdentifier)) {
-                static::$logIdentifier = substr(uniqid('', false), -8);
+                static::$logIdentifier = substr(wp_generate_uuid4(), 0, 8);
             }
 
             return static::$logIdentifier;
