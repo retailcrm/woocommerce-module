@@ -2,7 +2,7 @@
 Contributors: Simla.com
 Donate link: https://www.simla.com
 Tags: Интеграция, Simla.com, simla
-Requires PHP: 7.0
+Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.5
 Stable tag: 4.8.5
