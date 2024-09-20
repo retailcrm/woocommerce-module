@@ -191,7 +191,11 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $images = [];
 
             foreach ($idImages as $id) {
-                $images[] = wp_get_attachment_image_src($id, 'full')[0];
+                $attachmentImageSrc = wp_get_attachment_image_src($id, 'full');
+
+                if (is_array($attachmentImageSrc) && isset($attachmentImageSrc[0])) {
+                    $images[] = $attachmentImageSrc[0];
+                }
             }
 
             $termList = $parent !== false
