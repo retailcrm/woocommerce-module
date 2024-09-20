@@ -25,7 +25,6 @@ jobs:
           - php-version: '7.0'
             wp: '5.3'
             wc: '5.4.3'
-            coverage: 1
             phpunit: 'phpunit:6.5.14'
           - php-version: '7.0'
             wp: '5.3'
