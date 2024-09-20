@@ -6,7 +6,7 @@ ARCHIVE_NAME = '/tmp/retailcrm-'$(VERSION)'.zip'
 
 svn_clone:
 	mkdir /tmp/svn_plugin_dir
-	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --username $(USERNAME) --password $(PASSWORD) --no-auth-cache
+	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --no-auth-cache
 
 svn_push: /tmp/svn_plugin_dir
 	if [ ! -d "/tmp/svn_plugin_dir/tags/$(VERSION)" ]; then \
