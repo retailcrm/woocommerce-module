@@ -34,7 +34,7 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
             $error = $this->uploadSettings();
 
             if ($error !== '') {
-                writeBaseLogs($error);
+                WC_Retailcrm_Logger::error(__METHOD__, $error);
 
                 return;
             }
@@ -66,7 +66,7 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
                 }
 
                 if (empty($products)) {
-                    writeBaseLogs('Can`t get products!');
+                    WC_Retailcrm_Logger::error(__METHOD__, 'Can`t get products!');
 
                     return;
                 }
@@ -107,7 +107,17 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
                     unset($chunks);
                 } catch (\Throwable $exception) {
-                    writeBaseLogs($exception->getMessage() . PHP_EOL . $exception->getTraceAsString());
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        sprintf(
+                            'Exception: %s in file %s on line %s',
+                            $exception->getMessage(),
+                            $exception->getFile(),
+                            $exception->getLine()
+                        ),
+                        ['trace' => $exception->getTraceAsString()],
+                        WC_Retailcrm_Logger::TYPE['exc']
+                    );
 
                     return;
                 }
