@@ -1,19 +1,19 @@
 ROOT_DIR=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VERSION = `cat $(ROOT_DIR)/VERSION`
-ARCHIVE_NAME = '/tmp/retailcrm-'$(VERSION)'.ocmod.zip'
+ARCHIVE_NAME = '/tmp/retailcrm-'$(VERSION)'.zip'
 
 .PHONY: test
 
 svn_clone:
 	mkdir /tmp/svn_plugin_dir
-	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --username $(USERNAME) --password $(PASSWORD) --no-auth-cache
+	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --no-auth-cache
 
 svn_push: /tmp/svn_plugin_dir
 	if [ ! -d "/tmp/svn_plugin_dir/tags/$(VERSION)" ]; then \
 		svn delete /tmp/svn_plugin_dir/trunk/*; \
 		rm -rf /tmp/svn_plugin_dir/trunk/*; \
 		cp -R $(ROOT_DIR)/src/* /tmp/svn_plugin_dir/trunk; \
-		svn copy /tmp/svn_plugin_dir/trunk /tmp/svn_plugin_dir/tags/$(VERSION) --username $(USERNAME) --password $(PASSWORD) --no-auth-cache; \
+		svn copy /tmp/svn_plugin_dir/trunk /tmp/svn_plugin_dir/tags/$(VERSION) --no-auth-cache; \
 		svn add /tmp/svn_plugin_dir/trunk/* --force; \
 		svn add /tmp/svn_plugin_dir/tags/$(VERSION)/* --force; \
 		svn ci /tmp/svn_plugin_dir -m $(VERSION) --username $(USERNAME) --password $(PASSWORD) --no-auth-cache; \

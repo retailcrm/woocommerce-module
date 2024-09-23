@@ -1,3 +1,6 @@
+## 2024-09-20 4.8.5
+* Project testing has been updated
+
 ## 2024-09-13 4.8.4
 * Updated work with promotional items when loyalty program is enabled
 

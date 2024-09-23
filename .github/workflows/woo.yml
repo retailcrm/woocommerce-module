@@ -21,238 +21,43 @@ jobs:
       matrix:
         include:
           # WordPress 5.3
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
+          #PHP 7.1 and 7.4
+          - php-version: '7.1'
             wp: '5.3'
             wc: '5.4.3'
             coverage: 1
-          - php-version: '7.3'
-            wp: '5.3'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.3'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.3'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
+            phpunit: 'phpunit:7.5.20'
           - php-version: '7.1'
             wp: '5.3'
-            wc: '5.8.0'
-          - php-version: '7.2'
+            wc: '6.4.0'
+            phpunit: 'phpunit:7.5.20'
+          - php-version: '7.4'
             wp: '5.3'
-            wc: '5.8.0'
-          - php-version: '7.1'
+            wc: '5.4.3'
+            phpunit: 'phpunit:7.5.20'
+          - php-version: '7.4'
             wp: '5.3'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.3'
-            wc: '6.0.0'
-
-          # WordPress 5.4
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '5.4'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '5.4'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.4'
             wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.4'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
-          - php-version: '7.1'
-            wp: '5.4'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.4'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.4'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.4'
-            wc: '6.0.0'
-
-          # WordPress 5.5
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '5.5'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '5.5'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.5'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.5'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
-          - php-version: '7.1'
-            wp: '5.5'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.5'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.5'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.5'
-            wc: '6.0.0'
-
-          # WordPress 5.6
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '5.6'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '5.6'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.6'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.6'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
-          - php-version: '7.1'
-            wp: '5.6'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.6'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.6'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.6'
-            wc: '6.0.0'
-
-          # WordPress 5.7
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '5.7'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '5.7'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.7'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.7'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
-          - php-version: '7.1'
-            wp: '5.7'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.7'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.7'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.7'
-            wc: '6.0.0'
-
-          # WordPress 5.8
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '5.8'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '5.8'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.8'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.8'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
-          - php-version: '7.1'
-            wp: '5.8'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.8'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.8'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.8'
-            wc: '6.0.0'
-
-          # WordPress 5.9
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '5.9'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '5.9'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '5.9'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '5.9'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
-          - php-version: '7.1'
-            wp: '5.9'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '5.9'
-            wc: '5.8.0'
-          - php-version: '7.1'
-            wp: '5.9'
-            wc: '6.0.0'
-          - php-version: '7.2'
-            wp: '5.9'
-            wc: '6.0.0'
+            phpunit: 'phpunit:7.5.20'
 
           # WordPress 6.0
-          #PHP 7.0 and 7.3
-          - php-version: '7.3'
-            wp: '6.0'
-            wc: '5.4.3'
-          - php-version: '7.3'
-            wp: '6.0'
-            wc: '5.4.3'
-          - php-version: '7.0'
-            wp: '6.0'
-            wc: '6.4.0'
-          - php-version: '7.3'
-            wp: '6.0'
-            wc: '6.4.0'
-
-          #PHP 7.1 and 7.2
+          # PHP 7.1 and 7.4
           - php-version: '7.1'
             wp: '6.0'
-            wc: '5.8.0'
-          - php-version: '7.2'
-            wp: '6.0'
-            wc: '5.8.0'
+            wc: '5.4.3'
+            phpunit: 'phpunit:7.5.20'
           - php-version: '7.1'
             wp: '6.0'
-            wc: '6.0.0'
-          - php-version: '7.2'
+            wc: '6.4.0'
+            phpunit: 'phpunit:7.5.20'
+          - php-version: '7.4'
             wp: '6.0'
-            wc: '6.0.0'
-
+            wc: '5.4.3'
+            phpunit: 'phpunit:7.5.20'
+          - php-version: '7.4'
+            wp: '6.0'
+            wc: '6.4.0'
+            phpunit: 'phpunit:7.5.20'
     services:
       mysql:
         image: mysql:5.7
@@ -269,7 +74,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer:2.1.14, phpunit:6.4.3
+          tools: composer:2.1.14, ${{ matrix.phpunit }}
           extensions: gd, mbstring, mysqli, zip, unzip, mcrypt, mysql, pdo_mysql, dom
           coverage: xdebug
 
@@ -319,7 +124,7 @@ jobs:
           git fetch origin --unshallow --tags
           export LAST_TAG=`git describe --abbrev=0 --tags`
           export VERSION=`cat VERSION`
-          export ARCHIVE_NAME=retailcrm-$VERSION.ocmod.zip
+          export ARCHIVE_NAME=retailcrm-$VERSION.zip
           export ARCHIVE_PATH="/tmp/$ARCHIVE_NAME"
           export RELEASE_TAG=v$VERSION
           export LAST_COMMIT=`git log --oneline --format=%B -n 1 HEAD | head -n 1`
