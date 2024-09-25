@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.5
-Stable tag: 4.8.5
+Stable tag: 4.8.6
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.8.6 =
-* replacing the file_get_content() method with wp_remote_get()
+* replacing the file_get_content() method with wp_remote_get() in url validator for download crm's domains
 
 = 4.8.5 =
 * Project testing has been updated

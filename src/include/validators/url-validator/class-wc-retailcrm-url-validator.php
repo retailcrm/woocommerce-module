@@ -171,13 +171,12 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         {
             try {
                 $content = wp_remote_get($domainUrl);
-
+                
                 if (!$content instanceof WP_ERROR && $content['response']['code'] === 200) {
                     $domains = json_decode($content['body'], true);
                     return array_column($domains['domains'], 'domain');
-                } else {
-                    return self::CRM_ALL_DOMAINS;
                 }
+                return self::CRM_ALL_DOMAINS;
             } catch (Exception $exception) {
                 throw new ValidatorException($this->getFileError);
             }
