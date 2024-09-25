@@ -16,6 +16,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
     {
         const CRM_DOMAINS_URL = 'https://infra-data.retailcrm.tech/crm-domains.json';
         const BOX_DOMAINS_URL = 'https://infra-data.retailcrm.tech/box-domains.json';
+        const CRM_ALL_DOMAINS = ["ecomlogic.com", "retailcrm.ru", "retailcrm.pro", "retailcrm.es", "simla.com", "simla.io", "retailcrm.io"];
 
         /**
          * @param string $crmUrl
@@ -169,9 +170,14 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function getValidDomains(string $domainUrl): array
         {
             try {
-                $content = json_decode(file_get_contents($domainUrl), true);
+                $content = wp_remote_get($domainUrl);
 
-                return array_column($content['domains'], 'domain');
+                if (!$content instanceof WP_ERROR && $content['response']['code'] === 200) {
+                    $domains = json_decode($content['body'], true);
+                    return array_column($domains['domains'], 'domain');
+                } else {
+                    return self::CRM_ALL_DOMAINS;
+                }
             } catch (Exception $exception) {
                 throw new ValidatorException($this->getFileError);
             }

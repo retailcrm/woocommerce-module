@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.8.6 =
+* replacing the file_get_content() method with wp_remote_get()
+
 = 4.8.5 =
 * Project testing has been updated
 

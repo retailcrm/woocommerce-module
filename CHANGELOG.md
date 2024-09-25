@@ -1,3 +1,6 @@
+## 2024-09-25 4.8.6
+* replacing the file_get_content() method with wp_remote_get()
+
 ## 2024-09-20 4.8.5
 * Project testing has been updated
 
