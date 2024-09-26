@@ -124,11 +124,6 @@ return [
         "You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open" =>
             "Presionando el botón «Exportar» puedes descargar a todos los pedidos y clientes de CMS a Simla.com. Este proceso puede llevar mucho tiempo y es necesario mantener abierta la pestaña hasta que termine el proceso",
         "Debug information" => "Información Debug",
-        "Debug mode" => "Modo de depuración",
-        "Enable debug mode in module" =>
-            "Activar el modo de depuración en el módulo",
-        "Is required to enable debug mode for advanced logs" =>
-            "Se requiere el modo de depuración para habilitar el registro avanzado de logs",
         "Custom fields" => "Campos personalizados",
         "Select value" => "Selecciona un valor",
         "Custom fields for order" => "Campos de pedido personalizados",

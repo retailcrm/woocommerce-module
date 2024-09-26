@@ -127,10 +127,6 @@ return [
         "You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open" =>
             "Вы можете экспортировать все заказы и клиентов из CMS в Simla.com, нажав кнопку «Выгрузить». Этот процесс может занять много времени, и до его завершения необходимо держать вкладку открытой",
         "Debug information" => "Отладочная информация",
-        "Debug mode" => "Режим отладки",
-        "Enable debug mode in module" => "Активировать режим отладки в модуле",
-        "Is required to enable debug mode for advanced logs" =>
-            "Требуется включить режим отладки для расширенного логирования",
         "Custom fields" => "Пользовательские поля",
         "Select value" => "Выберите значение",
         "Custom fields for order" => "Пользовательские поля для заказа",

@@ -738,14 +738,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'type'        => 'checkbox'
                 ];
 
-                $this->form_fields['debug_mode'] = [
-                        'label'       => __('Enable debug mode in module', 'retailcrm'),
-                        'title'       => __('Debug mode', 'retailcrm'),
-                        'description' => __('Is required to enable debug mode for advanced logs', 'retailcrm'),
-                        'class'       => 'checkbox',
-                        'type'        => 'checkbox'
-                ];
-
                 /**
                  * Debug information
                  */
