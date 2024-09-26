@@ -62,6 +62,6 @@ if (!class_exists('WC_Retailcrm_Url_Constraint')) :
         /**
          * @var string
          */
-        public $getFileError = 'Bad Request. File not getted';
+        public $getFileError = 'Bad Request, file not getted';
     }
 endif;
