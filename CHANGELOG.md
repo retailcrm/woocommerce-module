@@ -1,3 +1,6 @@
+## 2024-09-26 4.8.6
+* Optimized url-validator
+
 ## 2024-09-20 4.8.5
 * Project testing has been updated
 

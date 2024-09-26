@@ -62,6 +62,6 @@ if (!class_exists('WC_Retailcrm_Url_Constraint')) :
         /**
          * @var string
          */
-        public $getFileError = 'Unable to obtain reference values.';
+        public $getFileError = 'Bad Request, file not getted';
     }
 endif;
