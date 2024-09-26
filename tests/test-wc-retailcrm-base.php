@@ -119,8 +119,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayHasKey('export_selected_orders_ids', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('export_selected_orders_btn', $this->baseRetailcrm->form_fields);
 
-        //Debug info settings
-        $this->assertArrayHasKey('debug_mode', $this->baseRetailcrm->form_fields);
+        //Debug info
         $this->assertArrayHasKey('debug-info', $this->baseRetailcrm->form_fields);
 
         //Other settings
