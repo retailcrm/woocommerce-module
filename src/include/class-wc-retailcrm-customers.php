@@ -184,7 +184,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Process WC_Customer ' . $customer->get_id(),
-                    ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
+                    ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($customer)]
                 );
                 $this->processCustomer($customer, $order);
                 $response = $this->retailcrm->customersCreate($this->customer);
@@ -217,7 +217,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Update WC_Customer ' . $customer->get_id(),
-                    ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
+                    ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($customer)]
                 );
                 $this->processCustomer($customer);
                 $this->retailcrm->customersEdit($this->customer);
@@ -247,7 +247,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Update WC_Customer by CRM_Customer ID: ' . $crmCustomerId,
-                    ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
+                    ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($customer)]
                 );
                 $this->processCustomer($customer);
                 $this->customer['id'] = $crmCustomerId;
@@ -395,7 +395,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Processing for upload WC_Customer ' . $customer->get_id(),
-                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
+                ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($customer)]
             );
             $this->processCustomer($customer);
         }
@@ -707,7 +707,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Build new customer from order data',
-                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($new_customer)]
+                ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($new_customer)]
             );
 
             return $new_customer;

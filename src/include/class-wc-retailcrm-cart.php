@@ -80,17 +80,7 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                 $setResponse = $this->apiClient->cartSet($crmCart, $site);
                 $isSuccessful = $setResponse->isSuccessful() && !empty($setResponse['success']);
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(
-                    __METHOD__,
-                    sprintf(
-                        'Error process cart: %s - Exception in file %s on line %s',
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    ),
-                    ['trace' => $exception->getTraceAsString()],
-                    WC_Retailcrm_Logger::TYPE['exc']
-                );
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
 
             return $isSuccessful;
@@ -107,17 +97,7 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                     $isSuccessful = $clearResponse->isSuccessful() && !empty($clearResponse['success']);
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(
-                    __METHOD__,
-                    sprintf(
-                        'Error clear cart: %s - Exception in file %s on line %s',
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    ),
-                    ['trace' => $exception->getTraceAsString()],
-                    WC_Retailcrm_Logger::TYPE['exc']
-                );
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
 
             return $isSuccessful;

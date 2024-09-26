@@ -83,17 +83,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 $this->ordersHistory();
             // @codeCoverageIgnoreStart
             } catch (\Exception $exception) {
-                WC_Retailcrm_Logger::error(
-                    __METHOD__,
-                    sprintf(
-                        '%s - Exception in file %s on line %s',
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    ),
-                    ['trace' => $exception->getTraceAsString()],
-                    WC_Retailcrm_Logger::TYPE['exc']
-                );
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
             // @codeCoverageIgnoreEnd
         }
@@ -186,22 +176,12 @@ if (!class_exists('WC_Retailcrm_History')) :
                             WC_Retailcrm_Logger::info(
                                 __METHOD__,
                                 'Updated WC_Customer ' . $crmCustomer['externalId'],
-                                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($wcCustomer)]
+                                ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($wcCustomer)]
                             );
 
                             // @codeCoverageIgnoreStart
                         } catch (Exception $exception) {
-                            WC_Retailcrm_Logger::error(
-                                __METHOD__,
-                                sprintf(
-                                    '%s - Exception in file %s on line %s',
-                                    $exception->getMessage(),
-                                    $exception->getFile(),
-                                    $exception->getLine()
-                                ),
-                                ['trace' => $exception->getTraceAsString()],
-                                WC_Retailcrm_Logger::TYPE['exc']
-                            );
+                            WC_Retailcrm_Logger::exception(__METHOD__, $exception);
                         }
                         // @codeCoverageIgnoreEnd
                     }
@@ -315,21 +295,11 @@ if (!class_exists('WC_Retailcrm_History')) :
                                 WC_Retailcrm_Logger::info(
                                     __METHOD__,
                                     'Result WC_Order ' . $wcOrder->get_id(),
-                                    ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
+                                    ['wc_order' => WC_Retailcrm_Logger::formatWcObject($wcOrder)]
                                 );
                             }
                         } catch (Exception $exception) {
-                            WC_Retailcrm_Logger::error(
-                                __METHOD__,
-                                sprintf(
-                                    '%s - Exception in file %s on line %s',
-                                    $exception->getMessage(),
-                                    $exception->getFile(),
-                                    $exception->getLine()
-                                ),
-                                ['trace' => $exception->getTraceAsString()],
-                                WC_Retailcrm_Logger::TYPE['exc']
-                            );
+                            WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
                             continue;
                         }
@@ -434,7 +404,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 'Updating WC_Order ' . $wcOrder->get_id(),
-                ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
+                ['wc_order' => WC_Retailcrm_Logger::formatWcObject($wcOrder)]
             );
 
             if (isset($order['status']) && isset($options[$order['status']])) {
@@ -1175,8 +1145,8 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $crmProduct['id'] ?? 'id empty'
                 ),
                 [
-                    'wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder),
-                    'wc_product' => WC_Retailcrm_Logger::formatWCObject($wcProduct),
+                    'wc_order' => WC_Retailcrm_Logger::formatWcObject($wcOrder),
+                    'wc_product' => WC_Retailcrm_Logger::formatWcObject($wcProduct),
                     'crm_product' => $crmProduct,
                 ]
             );
@@ -1235,7 +1205,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 __METHOD__,
                 'Updating order product WC_Order_Item, CRM_Product',
                 [
-                    'wc_order_item' => WC_Retailcrm_Logger::formatWCObject($wcOrderItem),
+                    'wc_order_item' => WC_Retailcrm_Logger::formatWcObject($wcOrderItem),
                     'crm_product' => $crmProduct,
                 ]
             );
@@ -1357,24 +1327,16 @@ if (!class_exists('WC_Retailcrm_History')) :
                     $handled = true;
                 // @codeCoverageIgnoreStart
                 } catch (\Exception $exception) {
-                    $errorMessage = sprintf(
-                        'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: %s' .
-                        ' - Exception in file %s on line %s'
-                        ,
-                        $order['externalId'],
-                        $newCustomerId,
-                        isset($order['company']) ? $order['company']['id'] : '',
-                        isset($order['company']) ? $order['company']['name'] : '',
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    );
-
-                    WC_Retailcrm_Logger::error(
+                    WC_Retailcrm_Logger::exception(
                         __METHOD__,
-                        $errorMessage,
-                        ['trace' => $exception->getTraceAsString()],
-                        WC_Retailcrm_Logger::TYPE['exc']
+                        $exception,
+                        sprintf(
+                            'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: ',
+                            $order['externalId'],
+                            $newCustomerId,
+                            isset($order['company']) ? $order['company']['id'] : '',
+                            isset($order['company']) ? $order['company']['name'] : ''
+                        )
                     );
                     $handled = false;
                 }

@@ -67,8 +67,8 @@ class WC_Retailcrm_Customer_Switcher_Result
             __METHOD__,
             'Saving WC_Customer and WC_Order',
             [
-                'wc_customer' => WC_Retailcrm_Logger::formatWCObject($this->wcCustomer),
-                'wc_order' => WC_Retailcrm_Logger::formatWCObject($this->wcOrder),
+                'wc_customer' => WC_Retailcrm_Logger::formatWcObject($this->wcCustomer),
+                'wc_order' => WC_Retailcrm_Logger::formatWcObject($this->wcOrder),
             ]
         );
 

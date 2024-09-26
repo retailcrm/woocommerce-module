@@ -17,13 +17,10 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
     class WC_Retailcrm_Logger
     {
         /** @var string */
-        const HANDLE = 'retailcrm';
-
-        const TYPE = [
-            'req' => 'REQUEST',
-            'res' => 'RESPONSE',
-            'exc' => 'EXCEPTION',
-        ];
+        private const HANDLE = 'retailcrm';
+        public const REQUEST = 'REQUEST';
+        public const RESPONSE = 'RESPONSE';
+        public CONST EXCEPTION = 'EXCEPTION';
 
         /**
          * @var \WC_Logger_Interface $instance
@@ -41,11 +38,11 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
         private static $logIdentifier;
 
         /**
-         * First called action name
+         * Current called hook name
          *
-         * @var string $entrypoint
+         * @var string $currentHook
          */
-        private static $entrypoint;
+        private static $currentHook;
 
         /**
          * First called action time
@@ -66,7 +63,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          */
         private static function getInstance(): WC_Logger_Interface
         {
-            if (empty(static::$instance)) {
+            if (!static::$instance instanceof WC_Logger) {
                 static::$instance = new WC_Logger(self::$additionalHandlers);
             }
 
@@ -88,16 +85,14 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
          * @param $id
          * @return void
          */
-        public static function setEntry(string $action, $id = null)
+        public static function setHook(string $action, $id = null)
         {
-            if (empty(static::$entrypoint)) {
-                static::$entrypoint = $id === null ? $action : sprintf('%s-%s', $action, $id);
-            }
+            static::$currentHook = $id === null ? $action : sprintf('%s-%d', $action, (int) $id);
         }
 
         private static function getIdentifier(): string
         {
-            if (empty(static::$logIdentifier)) {
+            if (!is_string(static::$logIdentifier)) {
                 static::$logIdentifier = substr(wp_generate_uuid4(), 0, 8);
             }
 
@@ -106,11 +101,35 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
 
         private static function getStartTime(): float
         {
-            if (empty(static::$startTime)) {
+            if (!is_float(static::$startTime)) {
                 static::$startTime = microtime(true);
             }
 
             return static::$startTime;
+        }
+
+        /**
+         * Exception logging
+         *
+         * @param string $method
+         * @param Throwable $exception
+         * @param string $additionalMessage
+         * @return void
+         */
+        public static function exception(string $method, Throwable $exception, string $additionalMessage = '')
+        {
+            self::error(
+                $method,
+                sprintf(
+                    '%s%s - Exception in file %s on line %s',
+                    $additionalMessage,
+                    $exception->getMessage(),
+                    $exception->getFile(),
+                    $exception->getLine()
+                ),
+                ['trace' => $exception->getTraceAsString()],
+                self::EXCEPTION
+            );
         }
 
         /**
@@ -157,7 +176,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             $message = sprintf(
                 '%s [%s] <%s> %s=> %s',
                 self::getIdentifier(),
-                self::$entrypoint,
+                self::$currentHook,
                 $method,
                 $type ? $type . ' ' : '',
                 $message
@@ -166,58 +185,83 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             self::getInstance()->log($level, $message, $context);
         }
 
-        public static function formatWCObject($object): array
+        /**
+         * Extracts information useful for logs from an object
+         *
+         * @param $object
+         * @return array
+         */
+        public static function formatWcObject($object): array
         {
             if ($object instanceof WC_Order) {
-                return [
-                    'id' => $object->get_id(),
-                    'status' => $object->get_status(),
-                    'date_modified' => $object->get_date_modified(),
-                    'total' => $object->get_total(),
-                    'shipping' => [
-                        'first_name' => $object->get_shipping_first_name(),
-                        'last_name' => $object->get_shipping_last_name(),
-                        'company' => $object->get_shipping_company(),
-                        'address_1' => $object->get_shipping_address_1(),
-                        'address_2' => $object->get_shipping_address_2(),
-                        'city' => $object->get_shipping_city(),
-                        'state' => $object->get_shipping_state(),
-                        'postcode' => $object->get_shipping_postcode(),
-                        'country' => $object->get_shipping_country(),
-                        'phone' => method_exists($object, 'get_shipping_phone')
-                            ? $object->get_shipping_phone() : $object->get_billing_phone(),
-                    ],
-                    'email' => $object->get_billing_email(),
-                    'payment_method_title' => $object->get_payment_method_title(),
-                    'date_paid' => $object->get_date_paid(),
-                ];
+                return self::formatWcOrder($object);
             }
 
             if ($object instanceof WC_Customer) {
-                return [
-                    'id' => $object->get_id(),
-                    'date_modified' => $object->get_date_modified(),
-                    'email' => $object->get_email(),
-                    'display_name' => $object->get_display_name(),
-                    'role' => $object->get_role(),
-                    'username' => $object->get_username(),
-                    'shipping' => [
-                        'first_name' => $object->get_shipping_first_name(),
-                        'last_name' => $object->get_shipping_last_name(),
-                        'company' => $object->get_shipping_company(),
-                        'address_1' => $object->get_shipping_address_1(),
-                        'address_2' => $object->get_shipping_address_2(),
-                        'city' => $object->get_shipping_city(),
-                        'state' => $object->get_shipping_state(),
-                        'postcode' => $object->get_shipping_postcode(),
-                        'country' => $object->get_shipping_country(),
-                        'phone' => method_exists($object, 'get_shipping_phone')
-                            ? $object->get_shipping_phone() : $object->get_billing_phone(),
-                    ],
-                ];
+                return self::formatWcCustomer($object);
             }
 
-            return method_exists($object, 'get_data') ? (array_filter($object->get_data())) : [$object];
+            if (is_object($object)) {
+                return method_exists($object, 'get_data') ? (array_filter($object->get_data())) : [$object];
+            }
+
+            return [$object];
+        }
+
+        public static function formatWcOrder(WC_Order $order) {
+            return [
+                'id' => $order->get_id(),
+                'status' => $order->get_status(),
+                'date_modified' => $order->get_date_modified(),
+                'total' => $order->get_total(),
+                'shipping' => [
+                    'first_name' => $order->get_shipping_first_name(),
+                    'last_name' => $order->get_shipping_last_name(),
+                    'company' => $order->get_shipping_company(),
+                    'address_1' => $order->get_shipping_address_1(),
+                    'address_2' => $order->get_shipping_address_2(),
+                    'city' => $order->get_shipping_city(),
+                    'state' => $order->get_shipping_state(),
+                    'postcode' => $order->get_shipping_postcode(),
+                    'country' => $order->get_shipping_country(),
+                    'phone' => method_exists($order, 'get_shipping_phone') ? $order->get_shipping_phone() : '',
+                ],
+                'billing' => [
+                    'phone' => $order->get_billing_phone()
+                ],
+                'email' => $order->get_billing_email(),
+                'payment_method_title' => $order->get_payment_method_title(),
+                'date_paid' => $order->get_date_paid(),
+            ];
+        }
+
+        public static function formatWcCustomer(WC_Customer $customer)
+        {
+            return [
+                'id' => $customer->get_id(),
+                'date_modified' => $customer->get_date_modified(),
+                'firstName' => $customer->get_first_name(),
+                'lastName' => $customer->get_last_name(),
+                'email' => $customer->get_email(),
+                'display_name' => $customer->get_display_name(),
+                'role' => $customer->get_role(),
+                'username' => $customer->get_username(),
+                'shipping' => [
+                    'first_name' => $customer->get_shipping_first_name(),
+                    'last_name' => $customer->get_shipping_last_name(),
+                    'company' => $customer->get_shipping_company(),
+                    'address_1' => $customer->get_shipping_address_1(),
+                    'address_2' => $customer->get_shipping_address_2(),
+                    'city' => $customer->get_shipping_city(),
+                    'state' => $customer->get_shipping_state(),
+                    'postcode' => $customer->get_shipping_postcode(),
+                    'country' => $customer->get_shipping_country(),
+                    'phone' => method_exists($customer, 'get_shipping_phone') ? $customer->get_shipping_phone() : '',
+                ],
+                'billing' => [
+                    'phone' => $customer->get_billing_phone()
+                ],
+            ];
         }
     }
 endif;

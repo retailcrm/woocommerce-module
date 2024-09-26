@@ -107,17 +107,7 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
 
                     unset($chunks);
                 } catch (\Throwable $exception) {
-                    WC_Retailcrm_Logger::error(
-                        __METHOD__,
-                        sprintf(
-                            'Exception: %s in file %s on line %s',
-                            $exception->getMessage(),
-                            $exception->getFile(),
-                            $exception->getLine()
-                        ),
-                        ['trace' => $exception->getTraceAsString()],
-                        WC_Retailcrm_Logger::TYPE['exc']
-                    );
+                    WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
                     return;
                 }

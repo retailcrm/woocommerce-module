@@ -36,7 +36,7 @@ class WC_Retailcrm_Customer_Address extends WC_Retailcrm_Abstracts_Address
             WC_Retailcrm_Logger::error(
                 __METHOD__,
                 'Error: Customer address is empty',
-                ['wc_customer' => WC_Retailcrm_Logger::formatWCObject($customer)]
+                ['wc_customer' => WC_Retailcrm_Logger::formatWcObject($customer)]
             );
         }
 

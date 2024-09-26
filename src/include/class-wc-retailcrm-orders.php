@@ -98,8 +98,8 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             WC_Retailcrm_Logger::info(
                 __METHOD__,
-                'Start order creating ' . is_int($orderId) ? $orderId : '',
-                ['wc_order' => WC_Retailcrm_Logger::formatWCObject($orderId)]
+                'Start order creating ' . (is_int($orderId) ? $orderId : ''),
+                ['wc_order' => WC_Retailcrm_Logger::formatWcObject($orderId)]
             );
 
             try {
@@ -135,7 +135,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Create WC_Order ' . $wcOrder->get_id(),
-                    ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
+                    ['wc_order' => WC_Retailcrm_Logger::formatWcObject($wcOrder)]
                 );
                 $this->processOrder($wcOrder);
 
@@ -156,17 +156,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $this->loyalty->applyLoyaltyDiscount($wcOrder, $response['order'], $discountLp);
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(
-                    __METHOD__,
-                    sprintf(
-                        'Error message: %s - Exception in file: %s on line: %s.',
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    ),
-                    ['trace' => $exception->getTraceAsString()],
-                    WC_Retailcrm_Logger::TYPE['exc']
-                );
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
                 return null;
             }
@@ -343,7 +333,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Update WC_Order ' . $wcOrder->get_id(),
-                    ['wc_order' => WC_Retailcrm_Logger::formatWCObject($wcOrder)]
+                    ['wc_order' => WC_Retailcrm_Logger::formatWcObject($wcOrder)]
                 );
                 $needRecalculate = false;
 
@@ -380,17 +370,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     }
                 }
             } catch (Throwable $exception) {
-                WC_Retailcrm_Logger::error(
-                    __METHOD__,
-                    sprintf(
-                        'Error message: %s - Exception in file: %s on line: %s.',
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine()
-                    ),
-                    ['trace' => $exception->getTraceAsString()],
-                    WC_Retailcrm_Logger::TYPE['exc']
-                );
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
                 return null;
             }
@@ -551,7 +531,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Process WC_Order_Item_Product ' . $id,
-                    ['wc_order_item_product' => WC_Retailcrm_Logger::formatWCObject($item)]
+                    ['wc_order_item_product' => WC_Retailcrm_Logger::formatWcObject($item)]
                 );
                 $crmItem = $crmItems[$id] ?? null;
                 $orderItems[] = $this->order_item->build($item, $crmItem)->getData();
