@@ -38,29 +38,17 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
         private static $logIdentifier;
 
         /**
-         * Current called hook name
-         *
          * @var string $currentHook
          */
         private static $currentHook;
 
         /**
-         * First called action time
-         *
          * @var float $startTime
          */
         private static $startTime;
 
-        /**
-         * WC_Retailcrm_Logger constructor.
-         */
         private function __construct() {}
 
-        /**
-         * Instantiates logger with file handler.
-         *
-         * @return \WC_Logger_Interface
-         */
         private static function getInstance(): WC_Logger_Interface
         {
             if (!static::$instance instanceof WC_Logger) {
@@ -70,22 +58,12 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             return static::$instance;
         }
 
-        /**
-         * @param array $additionalHandlers
-         */
-        public static function setAdditionalHandlers($additionalHandlers)
+        public static function setAdditionalHandlers(array $additionalHandlers): void
         {
             self::$additionalHandlers = $additionalHandlers;
         }
 
-        /**
-         * Called in base class for action hooks
-         *
-         * @param string $action
-         * @param $id
-         * @return void
-         */
-        public static function setHook(string $action, $id = null)
+        public static function setHook(string $action, $id = null): void
         {
             static::$currentHook = $id === null ? $action : sprintf('%s-%d', $action, (int) $id);
         }
@@ -108,15 +86,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             return static::$startTime;
         }
 
-        /**
-         * Exception logging
-         *
-         * @param string $method
-         * @param Throwable $exception
-         * @param string $additionalMessage
-         * @return void
-         */
-        public static function exception(string $method, Throwable $exception, string $additionalMessage = '')
+        public static function exception(string $method, Throwable $exception, string $additionalMessage = ''): void
         {
             self::error(
                 $method,
@@ -132,42 +102,17 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             );
         }
 
-        /**
-         * Error logging
-         *
-         * @param string $method
-         * @param string $message
-         * @param null|string $type
-         * @param array $context
-         */
-        public static function error(string $method, string $message, array $context = [], $type = null)
+        public static function error(string $method, string $message, array $context = [], $type = null): void
         {
             self::log($method, $message, $context, $type, WC_Log_Levels::ERROR);
         }
 
-        /**
-         * Info logging
-         *
-         * @param string $method
-         * @param string $message
-         * @param null|string $type
-         * @param array $context
-         */
-        public static function info(string $method, string $message, array $context = [], $type = null)
+        public static function info(string $method, string $message, array $context = [], $type = null): void
         {
             self::log($method, $message, $context, $type, WC_Log_Levels::INFO);
         }
 
-        /**
-         * Regular logging function.
-         *
-         * @param string $method
-         * @param string $message
-         * @param string|null $type
-         * @param array $context
-         * @param string|null $level
-         */
-        private static function log(string $method, string $message, array $context = [], $type = null, $level = 'info')
+        private static function log(string $method, string $message, array $context = [], $type = null, $level = 'info'): void
         {
             $time = self::getStartTime();
             $context['time'] = round((microtime(true) - $time), 3);

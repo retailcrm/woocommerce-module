@@ -21,7 +21,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
         {
             $this->corporateEnabled = $corporateEnabled;
 
-            if ( ! class_exists( 'WC_Retailcrm_Client_V5' ) ) {
+            if (!class_exists('WC_Retailcrm_Client_V5')) {
                 include_once(WC_Integration_Retailcrm::checkCustomFile('include/api/class-wc-retailcrm-client-v5.php'));
             }
 
@@ -29,11 +29,9 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
         }
 
         /**
-         * getCorporateEnabled
-         *
          * @return bool
          */
-        public function getCorporateEnabled()
+        public function getCorporateEnabled(): bool
         {
             return $this->corporateEnabled;
         }
@@ -43,7 +41,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
          *
          * @return string[]
          */
-        private function methodsWithoutFullLog()
+        private function methodsWithoutFullLog(): array
         {
             $methodsList = [
                 'statusesList',
@@ -67,7 +65,6 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
             $called = sprintf('%s::%s', get_class($this->retailcrm), $method);
 
             try {
-                /** @var \WC_Retailcrm_Response $response */
                 $response = $this->getResponse($method, $arguments);
 
                 if (is_string($response)) {
@@ -99,7 +96,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
         {
             WC_Retailcrm_Logger::info(
                 $method,
-                count($arguments) === 0 ? '[no params]' : '[with params]',
+                $arguments === [] ? '[no params]' : '[with params]',
                 ['params' => $arguments],
                 WC_Retailcrm_Logger::REQUEST
             );
@@ -125,7 +122,6 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                         WC_Retailcrm_Logger::RESPONSE
                     );
                 }
-
             } else {
                 WC_Retailcrm_Logger::error(
                     $method,

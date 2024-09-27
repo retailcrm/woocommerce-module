@@ -274,15 +274,6 @@ msgstr "Presionando el botón «Exportar» puedes descargar a todos los pedidos 
 msgid "Debug information"
 msgstr "Información Debug"
 
-msgid "Debug mode"
-msgstr "Modo de depuración"
-
-msgid "Enable debug mode in module"
-msgstr "Activar el modo de depuración en el módulo"
-
-msgid "Is required to enable debug mode for advanced logs"
-msgstr "Se requiere el modo de depuración para habilitar el registro avanzado de logs"
-
 msgid "Custom fields"
 msgstr "Campos personalizados"
 

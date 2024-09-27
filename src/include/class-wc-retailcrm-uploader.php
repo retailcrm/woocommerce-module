@@ -60,6 +60,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         public function uploadSelectedOrders()
         {
             $ids = $_GET['order_ids_retailcrm'];
+
             WC_Retailcrm_Logger::info(__METHOD__, 'Selected order IDs: ' . json_encode($ids));
 
             if (!empty($ids)) {
