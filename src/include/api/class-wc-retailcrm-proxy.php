@@ -28,10 +28,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
             $this->retailcrm = new WC_Retailcrm_Client_V5($api_url, $api_key);
         }
 
-        /**
-         * @return bool
-         */
-        public function getCorporateEnabled(): bool
+        public function getCorporateEnabled(): ?bool
         {
             return $this->corporateEnabled;
         }
