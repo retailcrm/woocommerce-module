@@ -41,7 +41,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             );
         }
 
-        public function getForm(int $userId)
+        public function getForm(int $userId, $loyaltyTerms = '', $loyaltyPersonal = '')
         {
             $result = [];
             $phone = '';
@@ -75,7 +75,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $result['loyaltyId'] = $loyaltyAccount['id'];
                 }
             } else {
-                $result['form'] = $this->loyaltyForm->getRegistrationForm($phone);
+                $result['form'] = $this->loyaltyForm->getRegistrationForm($phone, $loyaltyTerms, $loyaltyPersonal);
             }
 
            return $result;
