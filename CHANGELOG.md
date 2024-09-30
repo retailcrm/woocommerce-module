@@ -1,3 +1,6 @@
+## 2024-09-26 4.8.7
+* Logs refactoring
+
 ## 2024-09-26 4.8.6
 * Optimized url-validator
 

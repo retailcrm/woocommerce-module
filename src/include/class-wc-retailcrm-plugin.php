@@ -89,6 +89,10 @@ class WC_Retailcrm_Plugin
             return;
         }
 
+        if (!class_exists('WC_Retailcrm_Logger')) {
+            require_once(WC_Integration_Retailcrm::checkCustomFile('include/components/class-wc-retailcrm-logger.php'));
+        }
+
         if (!class_exists('WC_Retailcrm_Icml')) {
             require_once(WC_Integration_Retailcrm::checkCustomFile('include/class-wc-retailcrm-icml.php'));
         }

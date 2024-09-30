@@ -182,6 +182,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function init_settings_fields()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $this->init_form_fields();
             $this->init_settings();
         }
@@ -193,6 +194,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function api_sanitized($settings)
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+            WC_Retailcrm_Logger::info(
+                __METHOD__,
+                'Module settings',
+                ['settings' => $settings]
+            );
             $isLoyaltyUploadPrice = false;
 
             if (
@@ -285,6 +292,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function clear_cron_tasks()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             wp_clear_scheduled_hook('retailcrm_icml');
             wp_clear_scheduled_hook('retailcrm_history');
             wp_clear_scheduled_hook('retailcrm_inventories');
@@ -301,6 +309,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function generate_icml()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             /*
              * A temporary solution.
              * We have rebranded the module and changed the name of the ICML file.
@@ -360,9 +369,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function uploadCatalog($infoApiKey)
         {
+            WC_Retailcrm_Logger::info(__METHOD__, 'Add task for automatically upload catalog in CRM');
+
             if ($infoApiKey->isSuccessful() && !empty($infoApiKey['scopes'])) {
                 if (!in_array('analytics_write', $infoApiKey['scopes'])) {
-                    writeBaseLogs(
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
                         'To automatically load the catalog in CRM, you need to enable analytics_write for the API key'
                     );
 
@@ -372,11 +384,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $statisticUpdate = $this->apiClient->statisticUpdate();
 
                 if ($statisticUpdate->isSuccessful()) {
-                    writeBaseLogs('Catalog generated, task automatically upload added to CRM');
+                    WC_Retailcrm_Logger::info(
+                        __METHOD__,
+                        'Catalog generated, upload task added to CRM'
+                    );
                 } else {
-                    writeBaseLogs(
-                        $statisticUpdate['errorMsg']
-                        ?? 'Unrecognized error when adding catalog upload task to CRM'
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        $statisticUpdate['errorMsg'] ?? 'Unrecognized error when adding catalog upload task to CRM'
                     );
                 }
             }
@@ -399,6 +414,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_history_get()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $retailcrm_history = new WC_Retailcrm_History($this->apiClient);
             $retailcrm_history->getHistory();
         }
@@ -410,6 +426,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_process_order($order_id)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $order_id);
             $this->orders->orderCreate($order_id);
         }
 
@@ -420,6 +437,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function load_stocks()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $inventories = new WC_Retailcrm_Inventories($this->apiClient);
 
             $inventories->updateQuantity();
@@ -434,6 +452,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function upload_selected_orders()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $this->uploader->uploadSelectedOrders();
         }
 
@@ -444,6 +463,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function upload_to_crm()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $page = filter_input(INPUT_POST, 'Step');
             $entity = filter_input(INPUT_POST, 'Entity');
 
@@ -466,12 +486,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function create_customer($customerId)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $customerId);
+
             if (WC_Retailcrm_Plugin::history_running() === true) {
                 return;
             }
 
             if (empty($customerId)) {
-                WC_Retailcrm_Logger::add('Error: Customer externalId is empty');
+                WC_Retailcrm_Logger::error(__METHOD__, 'Error: Customer externalId is empty');
 
                 return;
             }
@@ -494,12 +516,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function update_customer($customerId)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $customerId);
+
             if (WC_Retailcrm_Plugin::history_running() === true) {
+                WC_Retailcrm_Logger::info(__METHOD__, 'History in progress, skip');
+
                 return;
             }
 
             if (empty($customerId)) {
-                WC_Retailcrm_Logger::add('Error: Customer externalId is empty');
+                WC_Retailcrm_Logger::error(__METHOD__, 'Error: Customer externalId is empty');
 
                 return;
             }
@@ -516,8 +542,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function create_order($order_id)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $order_id);
+
             if (is_admin()) {
+                WC_Retailcrm_Logger::info(__METHOD__, 'Creation is from admin panel');
                 $this->retailcrm_process_order($order_id);
+            } else {
+                WC_Retailcrm_Logger::info(__METHOD__, 'Creation is not from admin panel, skip');
             }
         }
 
@@ -532,27 +563,41 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             global $woocommerce;
 
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 $site = $this->apiClient->getSingleSiteForKey();
                 $cartItems = $woocommerce->cart->get_cart();
                 $customerId = $woocommerce->customer->get_id();
 
                 if (empty($site)) {
-                    writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        'Error with CRM credentials: need an valid apiKey assigned to one certain site'
+                    );
                 } elseif (empty($customerId)) {
-                    writeBaseLogs('Abandoned carts work only for registered customers');
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        'Abandoned carts work only for registered customers'
+                    );
                 } else {
                     $isCartExist = $this->cart->isCartExist($customerId, $site);
                     $isSuccessful = $this->cart->processCart($customerId, $cartItems, $site, $isCartExist);
 
                     if ($isSuccessful) {
-                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' processed. Hook: ' . current_filter());
+                        WC_Retailcrm_Logger::info(
+                            __METHOD__,
+                            'Cart for customer ID: ' . $customerId . ' processed. Hook: ' . current_filter()
+                        );
                     } else {
-                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' not processed. Hook: ' . current_filter());
+                        WC_Retailcrm_Logger::error(
+                            __METHOD__,
+                            'Cart for customer ID: ' . $customerId . ' not processed. Hook: ' . current_filter()
+                        );
                     }
                 }
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
@@ -571,32 +616,50 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             global $woocommerce;
 
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 $site = $this->apiClient->getSingleSiteForKey();
                 $customerId = $woocommerce->customer->get_id();
 
                 if (empty($site)) {
-                    writeBaseLogs('Error with CRM credentials: need an valid apiKey assigned to one certain site');
+                    WC_Retailcrm_Logger::info(
+                        __METHOD__,
+                        'Error with CRM credentials: need an valid apiKey assigned to one certain site'
+                    );
                 } elseif (empty($customerId)) {
-                    writeBaseLogs('Abandoned carts work only for registered customers');
+                    WC_Retailcrm_Logger::info(
+                        __METHOD__,
+                        'Abandoned carts work only for registered customers'
+                    );
                 } else {
                     $isCartExist = $this->cart->isCartExist($customerId, $site);
                     $isSuccessful = $this->cart->clearCart($customerId, $site, $isCartExist);
 
                     if ($isSuccessful) {
-                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' cleared. Hook: ' . current_filter());
+                        WC_Retailcrm_Logger::info(
+                            __METHOD__,
+                            'Cart for customer ID: ' . $customerId . ' cleared. Hook: ' . current_filter()
+                        );
                     } elseif ($isCartExist) {
-                        writeBaseLogs('Cart for customer ID: ' . $customerId . ' not cleared. Hook: ' . current_filter());
+                        WC_Retailcrm_Logger::info(
+                            __METHOD__,
+                            'Cart for customer ID: ' . $customerId . ' not cleared. Hook: ' . current_filter()
+                        );
                     }
                 }
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
         public function update_order($orderId)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $orderId);
+
             if (WC_Retailcrm_Plugin::history_running() === true) {
+                WC_Retailcrm_Logger::info(__METHOD__, 'History in progress, skip');
+
                 return;
             }
 
@@ -614,11 +677,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function take_update_order($order_id)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $order_id);
+
             if (
                 WC_Retailcrm_Plugin::history_running() === true
                 || did_action('woocommerce_checkout_order_processed')
                 || did_action('woocommerce_new_order')
             ) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    'History in progress or already did actions (woocommerce_checkout_order_processed;woocommerce_new_order), skip'
+                );
+
                 return;
             }
 
@@ -627,6 +697,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function update_order_loyalty()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+
             if ($this->updatedOrderId !== []) {
                 foreach ($this->updatedOrderId as $orderId) {
                     $this->orders->updateOrder($orderId);
@@ -636,12 +708,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function update_order_items($orderId)
         {
+            WC_Retailcrm_Logger::setHook(current_action(), $orderId);
             $this->orders->updateOrder($orderId);
         }
 
         public function trash_order_action($id)
         {
             if ('shop_order' == get_post_type($id)) {
+                WC_Retailcrm_Logger::setHook(current_action(), $id);
                 $this->orders->updateOrder($id, true);
             }
         }
@@ -740,8 +814,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             if (!$isSuccessful) {
-                writeBaseLogs('Errors when registering a loyalty program. Passed parameters: ' .
-                    json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf(
+                        'Errors when registering a loyalty program. Passed parameters: %s',
+                        json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                    )
                 );
                 echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
             } else {
@@ -761,7 +839,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             if (!$isSuccessful) {
-                writeBaseLogs('Errors when activate loyalty program. Passed parameters: ' . json_encode(['loyaltyId' => $loyaltyId]));
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    'Errors when activate loyalty program. Passed parameters: ' . json_encode(['loyaltyId' => $loyaltyId])
+                );
                 echo json_encode(['error' => __('Error when activating the loyalty program. Try again later', 'retailcrm')]);
             } else {
                 echo json_encode(['isSuccessful' => true]);
@@ -772,6 +853,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function coupon_info()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 $result = $this->loyalty->createLoyaltyCoupon();
 
@@ -786,52 +869,61 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', '', true);
                 wp_localize_script('retailcrm-loyalty-cart', 'AdminUrl', $wpAdminUrl);
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
         public function refresh_loyalty_coupon()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 $this->loyalty->createLoyaltyCoupon(true);
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
         public function clear_loyalty_coupon()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 $this->loyalty->clearLoyaltyCoupon();
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
         public function remove_coupon($couponCode)
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
                     $this->loyalty->createLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
         public function apply_coupon($couponCode)
         {
+            WC_Retailcrm_Logger::setHook(current_action());
+
             try {
                 if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
                     $this->loyalty->createLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
-                writeBaseLogs($exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
         }
 
         public function reviewCreditBonus()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $resultHtml = $this->loyalty->getCreditBonuses();
 
             if ($resultHtml) {
@@ -1010,6 +1102,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return null;
             }
 
+            WC_Retailcrm_Logger::setHook(current_action());
+
             $orderMetaData        = $this->getMetaData('order');
             $customerMetaData     = $this->getMetaData('user');
             $orderCustomFields    = $this->getCustomFields('order');
@@ -1046,6 +1140,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function add_loyalty_item($items)
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $items['loyalty'] = __('Loyalty program', 'retailcrm');
 
             return $items;
@@ -1063,6 +1158,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!isset($userId)) {
                 return;
             }
+
+            WC_Retailcrm_Logger::setHook(current_action());
 
             $jsScript = 'retailcrm-loyalty-actions';
             $loyaltyUrl = ['url' => get_admin_url()];
@@ -1168,6 +1265,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function deactivate()
         {
+            WC_Retailcrm_Logger::setHook(current_action());
             $api_client = $this->getApiClient();
             $clientId = get_option('retailcrm_client_id');
 

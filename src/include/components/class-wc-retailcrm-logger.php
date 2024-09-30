@@ -17,7 +17,10 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
     class WC_Retailcrm_Logger
     {
         /** @var string */
-        const HANDLE = 'retailcrm';
+        private const HANDLE = 'retailcrm';
+        public const REQUEST = 'REQUEST';
+        public const RESPONSE = 'RESPONSE';
+        public CONST EXCEPTION = 'EXCEPTION';
 
         /**
          * @var \WC_Logger_Interface $instance
@@ -30,99 +33,180 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
         private static $additionalHandlers;
 
         /**
-         * WC_Retailcrm_Logger constructor.
+         * @var string $logIdentifier
          */
-        private function __construct() {}
+        private static $logIdentifier;
 
         /**
-         * Instantiates logger with file handler.
-         *
-         * @return \WC_Logger_Interface
+         * @var string $currentHook
          */
-        private static function getInstance()
+        private static $currentHook;
+
+        /**
+         * @var float $startTime
+         */
+        private static $startTime;
+
+        private function __construct() {}
+
+        private static function getInstance(): WC_Logger_Interface
         {
-            if (empty(static::$instance)) {
+            if (!static::$instance instanceof WC_Logger) {
                 static::$instance = new WC_Logger(self::$additionalHandlers);
             }
 
             return static::$instance;
         }
 
-        /**
-         * @param array $additionalHandlers
-         */
-        public static function setAdditionalHandlers($additionalHandlers)
+        public static function setAdditionalHandlers(array $additionalHandlers): void
         {
             self::$additionalHandlers = $additionalHandlers;
         }
 
-        /**
-         * Regular logging
-         *
-         * @param string $message
-         * @param string $level
-         */
-        public static function add($message, $level = WC_Log_Levels::NOTICE)
+        public static function setHook(string $action, $id = null): void
         {
-            self::getInstance()->add(self::HANDLE, $message, $level);
+            static::$currentHook = $id === null ? $action : sprintf('%s-%d', $action, (int) $id);
         }
 
-        /**
-         * Regular logging with caller prefix
-         *
-         * @param string $caller
-         * @param string $message
-         * @param string $level
-         */
-        public static function addCaller($caller, $message, $level = WC_Log_Levels::NOTICE)
+        private static function getIdentifier(): string
         {
-            self::add(sprintf('<%s> => %s', $caller, $message), $level);
-        }
-
-        /**
-         * Log error
-         *
-         * @param string $message
-         */
-        public static function error($message)
-        {
-            self::add($message, WC_Log_Levels::ERROR);
-        }
-
-        /**
-         * Debug logging. Contains a lot of debug data like full requests & responses.
-         * This log will work only if debug mode is enabled (see retailcrm_is_debug() for details).
-         * Caller should be specified, or message will be ignored at all.
-         *
-         * @param string        $method
-         * @param array|string  $messages
-         */
-        public static function debug($method, $messages)
-        {
-            if (retailcrm_is_debug()) {
-                if (!empty($method) && !empty($messages)) {
-                    $result = is_array($messages) ? substr(
-                        array_reduce(
-                            $messages,
-                            function ($carry, $item) {
-                                $carry .= ' ' . print_r($item, true);
-                                return $carry;
-                            }
-                        ),
-                        1
-                    ) : $messages;
-
-                    self::getInstance()->add(
-                        self::HANDLE . '_debug',
-                        sprintf(
-                            '<%s> => %s',
-                            $method,
-                            $result
-                        ),
-                        WC_Log_Levels::DEBUG
-                    );
-                }
+            if (!is_string(static::$logIdentifier)) {
+                static::$logIdentifier = substr(wp_generate_uuid4(), 0, 8);
             }
+
+            return static::$logIdentifier;
+        }
+
+        private static function getStartTime(): float
+        {
+            if (!is_float(static::$startTime)) {
+                static::$startTime = microtime(true);
+            }
+
+            return static::$startTime;
+        }
+
+        public static function exception(string $method, Throwable $exception, string $additionalMessage = ''): void
+        {
+            self::error(
+                $method,
+                sprintf(
+                    '%s%s - Exception in file %s on line %s',
+                    $additionalMessage,
+                    $exception->getMessage(),
+                    $exception->getFile(),
+                    $exception->getLine()
+                ),
+                ['trace' => $exception->getTraceAsString()],
+                self::EXCEPTION
+            );
+        }
+
+        public static function error(string $method, string $message, array $context = [], $type = null): void
+        {
+            self::log($method, $message, $context, $type, WC_Log_Levels::ERROR);
+        }
+
+        public static function info(string $method, string $message, array $context = [], $type = null): void
+        {
+            self::log($method, $message, $context, $type, WC_Log_Levels::INFO);
+        }
+
+        private static function log(string $method, string $message, array $context = [], $type = null, $level = 'info'): void
+        {
+            $time = self::getStartTime();
+            $context['time'] = round((microtime(true) - $time), 3);
+            $context['source'] = self::HANDLE;
+
+            $message = sprintf(
+                '%s [%s] <%s> %s=> %s',
+                self::getIdentifier(),
+                self::$currentHook,
+                $method,
+                $type ? $type . ' ' : '',
+                $message
+            );
+
+            self::getInstance()->log($level, $message, $context);
+        }
+
+        /**
+         * Extracts information useful for logs from an object
+         *
+         * @param $object
+         * @return array
+         */
+        public static function formatWcObject($object): array
+        {
+            if ($object instanceof WC_Order) {
+                return self::formatWcOrder($object);
+            }
+
+            if ($object instanceof WC_Customer) {
+                return self::formatWcCustomer($object);
+            }
+
+            if (is_object($object)) {
+                return method_exists($object, 'get_data') ? (array_filter($object->get_data())) : [$object];
+            }
+
+            return [$object];
+        }
+
+        public static function formatWcOrder(WC_Order $order) {
+            return [
+                'id' => $order->get_id(),
+                'status' => $order->get_status(),
+                'date_modified' => $order->get_date_modified(),
+                'total' => $order->get_total(),
+                'shipping' => [
+                    'first_name' => $order->get_shipping_first_name(),
+                    'last_name' => $order->get_shipping_last_name(),
+                    'company' => $order->get_shipping_company(),
+                    'address_1' => $order->get_shipping_address_1(),
+                    'address_2' => $order->get_shipping_address_2(),
+                    'city' => $order->get_shipping_city(),
+                    'state' => $order->get_shipping_state(),
+                    'postcode' => $order->get_shipping_postcode(),
+                    'country' => $order->get_shipping_country(),
+                    'phone' => method_exists($order, 'get_shipping_phone') ? $order->get_shipping_phone() : '',
+                ],
+                'billing' => [
+                    'phone' => $order->get_billing_phone()
+                ],
+                'email' => $order->get_billing_email(),
+                'payment_method_title' => $order->get_payment_method_title(),
+                'date_paid' => $order->get_date_paid(),
+            ];
+        }
+
+        public static function formatWcCustomer(WC_Customer $customer)
+        {
+            return [
+                'id' => $customer->get_id(),
+                'date_modified' => $customer->get_date_modified(),
+                'firstName' => $customer->get_first_name(),
+                'lastName' => $customer->get_last_name(),
+                'email' => $customer->get_email(),
+                'display_name' => $customer->get_display_name(),
+                'role' => $customer->get_role(),
+                'username' => $customer->get_username(),
+                'shipping' => [
+                    'first_name' => $customer->get_shipping_first_name(),
+                    'last_name' => $customer->get_shipping_last_name(),
+                    'company' => $customer->get_shipping_company(),
+                    'address_1' => $customer->get_shipping_address_1(),
+                    'address_2' => $customer->get_shipping_address_2(),
+                    'city' => $customer->get_shipping_city(),
+                    'state' => $customer->get_shipping_state(),
+                    'postcode' => $customer->get_shipping_postcode(),
+                    'country' => $customer->get_shipping_country(),
+                    'phone' => method_exists($customer, 'get_shipping_phone') ? $customer->get_shipping_phone() : '',
+                ],
+                'billing' => [
+                    'phone' => $customer->get_billing_phone()
+                ],
+            ];
         }
     }
 endif;

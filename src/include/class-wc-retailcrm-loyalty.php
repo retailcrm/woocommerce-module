@@ -48,7 +48,11 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             try {
                 $response = $this->getLoyaltyAccounts($userId);
             } catch (Throwable $exception) {
-                writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
+                WC_Retailcrm_Logger::exception(
+                    __METHOD__,
+                    $exception,
+                    'Exception get loyalty accounts: '
+                );
 
                 return $result;
             }
@@ -83,12 +87,20 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $response = $this->apiClient->createLoyaltyAccount($parameters, $site);
 
                 if (!$response->isSuccessful()) {
-                    writeBaseLogs('Error while registering in the loyalty program: ' . $response->getRawResponse());
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        'Error while registering in the loyalty program',
+                        ['response' => json_decode($response->getRawResponse(), true)]
+                    );
                 }
 
                 return $response->isSuccessful();
             } catch (Throwable $exception) {
-                writeBaseLogs('Exception while registering in the loyalty program: ' . $exception->getMessage());
+                WC_Retailcrm_Logger::exception(
+                    __METHOD__,
+                    $exception,
+                    'Exception while registering in the loyalty program: '
+                );
 
                 return false;
             }
@@ -100,12 +112,16 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $response = $this->apiClient->activateLoyaltyAccount($loyaltyId);
 
                 if (!$response->isSuccessful()) {
-                    writeBaseLogs('Error while registering in the loyalty program: ' . $response->getRawResponse());
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        'Error while registering in the loyalty program',
+                        ['response' => json_decode($response->getRawResponse(), true)]
+                    );
                 }
 
                 return $response->isSuccessful();
             } catch (Throwable $exception) {
-                writeBaseLogs('Exception while activate loyalty account: ' . $exception->getMessage());
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
                 return false;
             }
@@ -341,7 +357,11 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             try {
                 $response = $this->getLoyaltyAccounts($wcCustomer->get_id());
             } catch (Throwable $exception) {
-                writeBaseLogs('Exception get loyalty accounts: ' . $exception->getMessage());
+                WC_Retailcrm_Logger::exception(
+                    __METHOD__,
+                    $exception,
+                    'Exception get loyalty accounts: '
+                );
 
                 return false;
             }
@@ -414,7 +434,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $response = $this->apiClient->ordersGet($orderExternalId);
 
             if (!$response instanceof WC_Retailcrm_Response || !$response->isSuccessful() || !isset($response['order'])) {
-                writeBaseLogs('Process order: Error when receiving an order from the CRM. Order Id: ' . $orderExternalId);
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    'Process order: Error when receiving an order from the CRM. Order Id: ' . $orderExternalId
+                );
 
                 return [];
             }

@@ -76,7 +76,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $categories = $this->prepareCategories();
 
             if (empty($categories)) {
-                writeBaseLogs('Can`t get categories!');
+                WC_Retailcrm_Logger::error(__METHOD__, 'Can`t get categories!');
+
                 return;
             }
 
@@ -85,7 +86,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $offers = $this->prepareOffers();
 
             if (empty($offers)) {
-                writeBaseLogs('Can`t get offers!');
+                WC_Retailcrm_Logger::error(__METHOD__, 'Can`t get offers!');
+
                 return;
             }
 
@@ -95,6 +97,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $this->icmlWriter->formatXml($this->tmpFile);
 
             rename($this->tmpFile, $this->file);
+            WC_Retailcrm_Logger::info(__METHOD__, 'Catalog generated');
         }
 
         /**
@@ -127,7 +130,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 wp_cache_flush();
 
                 if (empty($products)) {
-                    writeBaseLogs('Can`t get products!');
+                    WC_Retailcrm_Logger::error(__METHOD__, 'Can`t get products!');
+
                     return;
                 }
 

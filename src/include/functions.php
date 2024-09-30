@@ -183,16 +183,6 @@ function calculatePriceExcludingTax($priceIncludingTax, $rate)
 }
 
 /**
- * Write base logs in retailcrm file.
- *
- * @codeCoverageIgnore
- */
-function writeBaseLogs($message)
-{
-    WC_Retailcrm_Logger::addCaller(__METHOD__, $message);
-}
-
-/**
  * Checking the use of HPOS.
  *
  * @codeCoverageIgnore

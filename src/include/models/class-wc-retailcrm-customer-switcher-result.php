@@ -63,13 +63,13 @@ class WC_Retailcrm_Customer_Switcher_Result
      */
     public function save()
     {
-        WC_Retailcrm_Logger::debug(
+        WC_Retailcrm_Logger::info(
             __METHOD__,
-            array(
-                'Saving customer and order:',
-                $this->wcCustomer,
-                $this->wcOrder
-            )
+            'Saving WC_Customer and WC_Order',
+            [
+                'wc_customer' => WC_Retailcrm_Logger::formatWcObject($this->wcCustomer),
+                'wc_order' => WC_Retailcrm_Logger::formatWcObject($this->wcOrder),
+            ]
         );
 
         if (!empty($this->wcCustomer) && $this->wcCustomer->get_id()) {

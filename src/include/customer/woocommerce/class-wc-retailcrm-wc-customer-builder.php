@@ -153,7 +153,11 @@ class WC_Retailcrm_WC_Customer_Builder extends WC_Retailcrm_Abstract_Builder
     {
         $this->checkBuilderValidity();
 
-        WC_Retailcrm_Logger::debug(__METHOD__, ['Building WC_Customer from data:', $this->data]);
+        WC_Retailcrm_Logger::info(
+            __METHOD__,
+            'Building WC_Customer from data',
+            ['customer_data' => $this->data]
+        );
 
         $this->customer->set_first_name($this->dataValue('firstName', $this->customer->get_first_name()));
         $this->customer->set_last_name($this->dataValue('lastName', $this->customer->get_last_name()));

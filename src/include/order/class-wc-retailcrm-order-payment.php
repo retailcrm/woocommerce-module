@@ -62,14 +62,12 @@ class WC_Retailcrm_Order_Payment extends WC_Retailcrm_Abstracts_Data
 
         if ($order->is_paid()) {
             if ($order->get_status() != 'completed' && $order->get_payment_method() == 'cod') {
-                writeBaseLogs(
-                    implode(
-                        ' ',
-                        [
-                            'Payment for order: ' . $order->get_id(),
-                            'Payment status cannot be changed as it is cash (or other payment method) on delivery.',
-                            'The status will be changed when the order is in status completed.',
-                        ]
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    sprintf('Payment for order: %s. ' .
+                        'Payment status cannot be changed as it is cash (or other payment method) on delivery. ' .
+                        'The status will be changed when the order is in status completed.',
+                        $order->get_id()
                     )
                 );
             } else {
