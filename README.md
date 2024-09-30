@@ -15,3 +15,4 @@ Integration plugin for WooCommerce and [Simla.com](https://www.simla.com)
 #### Local testing
 
 To local testing run `make run_tests`
+
