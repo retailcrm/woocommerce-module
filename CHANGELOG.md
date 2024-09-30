@@ -1,3 +1,6 @@
+## 2024-09-30 4.8.8
+* Fix tests svn externals definitions error
+
 ## 2024-09-26 4.8.7
 * Logs refactoring
 
