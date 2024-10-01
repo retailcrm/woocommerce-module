@@ -1167,17 +1167,20 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $cssPath = plugins_url() . self::ASSETS_DIR . '/css/';
             $messagePhone = __('Enter the correct phone number', 'retailcrm');
 
+            $loyaltyTemrs = $this->settings['loyalty_terms'] ?? '';
+            $loyaltyPersonal = $this->settings['loyalty_personal'] ?? '';
+
             wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
             wp_enqueue_script($jsScript, $jsScriptsPath . $jsScript . '.js', '', '', true);
             wp_localize_script($jsScript, 'loyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'customerId', $userId);
             wp_localize_script($jsScript, 'messagePhone', $messagePhone);
-            wp_localize_script($jsScript, 'termsLoyalty', $this->settings['loyalty_terms']);
-            wp_localize_script($jsScript, 'privacyLoyalty',  $this->settings['loyalty_personal']);
+            wp_localize_script($jsScript, 'termsLoyalty', $loyaltyTemrs);
+            wp_localize_script($jsScript, 'privacyLoyalty',  $loyaltyPersonal);
             wp_register_style('retailcrm-loyalty-style', $cssPath . 'retailcrm-loyalty-style.css', false, '0.1');
             wp_enqueue_style('retailcrm-loyalty-style');
 
-            $result = $this->loyalty->getForm($userId);
+            $result = $this->loyalty->getForm($userId, $loyaltyTemrs, $loyaltyPersonal);
 
             if ([] === $result) {
                 echo '<p style="color: red">'. __('Error while retrieving data. Try again later', 'retailcrm') . '</p>';

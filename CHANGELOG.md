@@ -1,3 +1,6 @@
+## 2024-09-30 4.8.9
+* Improvement of customer registration form in loyalty program
+
 ## 2024-09-30 4.8.8
 * Fix tests svn externals definitions error
 

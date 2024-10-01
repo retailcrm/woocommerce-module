@@ -41,9 +41,16 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             );
         }
 
-        public function getForm(int $userId)
+        public function getForm(int $userId, $loyaltyTerms = '', $loyaltyPersonal = '')
         {
             $result = [];
+            $phone = '';
+
+            $wcCustomer = new WC_Customer($userId);
+
+            if ($wcCustomer instanceof WC_Customer) {
+                $phone = $wcCustomer->get_billing_phone();
+            }
 
             try {
                 $response = $this->getLoyaltyAccounts($userId);
@@ -68,7 +75,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $result['loyaltyId'] = $loyaltyAccount['id'];
                 }
             } else {
-                $result['form'] = $this->loyaltyForm->getRegistrationForm();
+                $result['form'] = $this->loyaltyForm->getRegistrationForm($phone, $loyaltyTerms, $loyaltyPersonal);
             }
 
            return $result;
@@ -84,6 +91,17 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             ];
 
             try {
+                $wcCustomer = new WC_Customer($userId);
+
+                if ($wcCustomer instanceof WC_Customer) {
+                    $currentPhone = $wcCustomer->get_billing_phone();
+
+                    if (empty($currentPhone) && $phone !== '') {
+                        $wcCustomer->set_billing_phone($phone);
+                        $wcCustomer->save();
+                    }
+                }
+
                 $response = $this->apiClient->createLoyaltyAccount($parameters, $site);
 
                 if (!$response->isSuccessful()) {

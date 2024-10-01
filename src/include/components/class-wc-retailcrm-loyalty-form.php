@@ -5,15 +5,34 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
     class WC_Retailcrm_Loyalty_Form
     {
-        public function getRegistrationForm()
+        public function getRegistrationForm($phone = '', $loyaltyTerms = '', $loyaltyPersonal = '')
         {
+            $htmlLoyaltyTerms = $loyaltyTerms !== ''
+                ? sprintf(
+                    '<p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a id="terms-popup" class="popup-open-loyalty" href="#">%s</a>.</p>',
+                    __(' I agree with ', 'retailcrm'),
+                    __('loyalty program terms', 'retailcrm')
+                )
+                : ''
+            ;
+
+            $htmlLoyaltyPersonal = $loyaltyPersonal !== ''
+                ? sprintf(
+                '<p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a id="privacy-popup" class="popup-open-loyalty" href="#">%s</a>.</p>',
+                __(' I agree with ', 'retailcrm'),
+                __('terms of personal data processing', 'retailcrm')
+                )
+                : ''
+            ;
+
+
             return sprintf(
                 '
                     <form id="loyaltyRegisterForm" method="post">
                         <p>%s</p>
-                        <p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a id="terms-popup" class="popup-open-loyalty" href="#">%s</a>.</p>
-                        <p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a id="privacy-popup" class="popup-open-loyalty" href="#">%s</a>.</p>
-                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" required></p>
+                        %s
+                        %s
+                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" value="%s" required></p>
                         <p><input type="submit" value="%s"></p>
                     </form>
                     <div class="popup-fade-loyalty">
@@ -25,11 +44,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     </div>
                     ',
                 __('To register in the loyalty program, fill in the form:', 'retailcrm'),
-                __(' I agree with ', 'retailcrm'),
-                __('loyalty program terms', 'retailcrm'),
-                __(' I agree with ', 'retailcrm'),
-                __('terms of personal data processing', 'retailcrm'),
+                $htmlLoyaltyTerms,
+                $htmlLoyaltyPersonal,
                 __('Phone', 'retailcrm'),
+                $phone,
                 __('Send', 'retailcrm'),
                 __('Close', 'retailcrm')
             );
