@@ -1,3 +1,6 @@
+## 2024-10-08 4.8.10
+* Fixed errors in catalog formation when changing synchronization parameters (sku/externalId)
+
 ## 2024-09-30 4.8.9
 * Improvement of customer registration form in loyalty program
 
