@@ -26,6 +26,7 @@ class WC_Retailcrm_Request
 
     protected $url;
     protected $defaultParameters;
+    protected $versionData;
 
     /**
      * Client constructor.
@@ -38,6 +39,13 @@ class WC_Retailcrm_Request
     {
         $this->url = $url;
         $this->defaultParameters = $defaultParameters;
+        $this->versionData = [
+            'php_version' => function_exists('phpversion') ? phpversion() : '',
+            'cms_source' => 'Woocommerce',
+            'module_version' => WC_Integration_Retailcrm::MODULE_VERSION,
+            'woocommerce_version' => WC()->version ?? '',
+            'cms_version' => function_exists('get_bloginfo') ? get_bloginfo('version') : ''
+        ];
     }
 
     /**
@@ -71,7 +79,11 @@ class WC_Retailcrm_Request
             );
         }
 
-        $parameters = array_merge($this->defaultParameters, $parameters);
+        if (self::METHOD_GET === $method) {
+            $parameters = array_merge($this->defaultParameters, $parameters, $this->versionData);
+        } else {
+            $parameters = array_merge($this->defaultParameters, $parameters);
+        }
 
         $url = $this->url . $path;
 
