@@ -73,11 +73,11 @@ class WC_Retailcrm_Request
 
         $parameters = self::METHOD_GET === $method
             ? array_merge($this->defaultParameters, $parameters, [
-                'cms_source' => 'Woocommerce',
-                'php_version' => function_exists('phpversion') ? phpversion() : '',
+                'cms_source' => 'WordPress',
                 'cms_version' => function_exists('get_bloginfo') ? get_bloginfo('version') : '',
-                'module_version' => WC_Integration_Retailcrm::MODULE_VERSION,
-                'woocommerce_version' => WC()->version ?? '',
+                'woo_version' => WC()->version ?? '',
+                'php_version' => function_exists('phpversion') ? phpversion() : '',
+                'module_version' => WC_Integration_Retailcrm::MODULE_VERSION, 
             ])
             : $parameters = array_merge($this->defaultParameters, $parameters);
 
