@@ -26,7 +26,6 @@ class WC_Retailcrm_Request
 
     protected $url;
     protected $defaultParameters;
-    protected $versionData;
 
     /**
      * Client constructor.
@@ -39,13 +38,6 @@ class WC_Retailcrm_Request
     {
         $this->url = $url;
         $this->defaultParameters = $defaultParameters;
-        $this->versionData = [
-            'php_version' => function_exists('phpversion') ? phpversion() : '',
-            'cms_source' => 'Woocommerce',
-            'module_version' => WC_Integration_Retailcrm::MODULE_VERSION,
-            'woocommerce_version' => WC()->version ?? '',
-            'cms_version' => function_exists('get_bloginfo') ? get_bloginfo('version') : ''
-        ];
     }
 
     /**
@@ -65,9 +57,9 @@ class WC_Retailcrm_Request
     public function makeRequest(
         $path,
         $method,
-        array $parameters = array()
+        array $parameters = []
     ) {
-        $allowedMethods = array(self::METHOD_GET, self::METHOD_POST);
+        $allowedMethods = [self::METHOD_GET, self::METHOD_POST];
 
         if (!in_array($method, $allowedMethods, false)) {
             throw new \InvalidArgumentException(
@@ -79,11 +71,15 @@ class WC_Retailcrm_Request
             );
         }
 
-        if (self::METHOD_GET === $method) {
-            $parameters = array_merge($this->defaultParameters, $parameters, $this->versionData);
-        } else {
-            $parameters = array_merge($this->defaultParameters, $parameters);
-        }
+        $parameters = self::METHOD_GET === $method
+            ? array_merge($this->defaultParameters, $parameters, [
+                'php_version' => function_exists('phpversion') ? phpversion() : '',
+                'cms_source' => 'Woocommerce',
+                'module_version' => WC_Integration_Retailcrm::MODULE_VERSION,
+                'woocommerce_version' => WC()->version ?? '',
+                'cms_version' => function_exists('get_bloginfo') ? get_bloginfo('version') : '',
+            ])
+            : $parameters = array_merge($this->defaultParameters, $parameters);
 
         $url = $this->url . $path;
 

@@ -1,5 +1,5 @@
 ## 2024-10-14 4.8.11
-* Add parameters with versions of PHP, module, wordpress, woocommerce
+* Added additional parameters to GET requests
 
 ## 2024-10-08 4.8.10
 * Fixed errors in catalog formation when changing synchronization parameters (sku/externalId)

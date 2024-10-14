@@ -84,7 +84,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 == Changelog ==
 
 = 4.8.11 =
-* Add parameters with versions of PHP, module, wordpress, woocommerce
+* Added additional parameters to GET requests
 
 = 4.8.10 =
 * Fixed errors in catalog formation when changing synchronization parameters (sku/externalId)
