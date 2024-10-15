@@ -57,9 +57,9 @@ class WC_Retailcrm_Request
     public function makeRequest(
         $path,
         $method,
-        array $parameters = array()
+        array $parameters = []
     ) {
-        $allowedMethods = array(self::METHOD_GET, self::METHOD_POST);
+        $allowedMethods = [self::METHOD_GET, self::METHOD_POST];
 
         if (!in_array($method, $allowedMethods, false)) {
             throw new \InvalidArgumentException(
@@ -71,7 +71,15 @@ class WC_Retailcrm_Request
             );
         }
 
-        $parameters = array_merge($this->defaultParameters, $parameters);
+        $parameters = self::METHOD_GET === $method
+            ? array_merge($this->defaultParameters, $parameters, [
+                'cms_source' => 'WordPress',
+                'cms_version' => function_exists('get_bloginfo') ? get_bloginfo('version') : '',
+                'woo_version' => WC()->version ?? '',
+                'php_version' => function_exists('phpversion') ? phpversion() : '',
+                'module_version' => WC_Integration_Retailcrm::MODULE_VERSION, 
+            ])
+            : $parameters = array_merge($this->defaultParameters, $parameters);
 
         $url = $this->url . $path;
 
