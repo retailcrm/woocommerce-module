@@ -108,6 +108,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
             add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
 
+            if (
+                !$this->get_option('deactivate_update_order')
+                || $this->get_option('deactivate_update_order') == static::NO
+            ) {
+                add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
+                add_action('shutdown', [$this, 'update_order'], -1);
+                add_action('woocommerce_saved_order_items', [$this, 'update_order_items'], 10, 1);
+            }
 
             if (isLoyaltyActivate($this->settings)) {
                 add_action('wp_ajax_register_customer_loyalty', [$this, 'register_customer_loyalty']);
@@ -130,22 +138,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('retailcrm_loyalty_upload_price', [$this, 'upload_loyalty_price']);
                 add_action('admin_print_footer_scripts', [$this, 'ajax_upload_loyalty_price'], 99);
                 add_action('wp_ajax_upload_loyalty_price', [$this, 'upload_loyalty_price']);
-
-                if (
-                    !$this->get_option('deactivate_update_order')
-                    || $this->get_option('deactivate_update_order') == static::NO
-                ) {
-                    add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
-                    add_action('shutdown', [$this, 'update_order_loyalty'], -1);
-                    add_action('woocommerce_saved_order_items', [$this, 'update_order_items'], 10, 1);
-                }
-            } elseif (
-                !$this->get_option('deactivate_update_order')
-                || $this->get_option('deactivate_update_order') == static::NO
-            ) {
-                add_action('woocommerce_update_order', [$this, 'update_order'], 10, 1);
             }
-
 
             // Subscribed hooks
             add_action('register_form', [$this, 'subscribe_register_form'], 99);
@@ -653,19 +646,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-        public function update_order($orderId)
-        {
-            WC_Retailcrm_Logger::setHook(current_action(), $orderId);
-
-            if (WC_Retailcrm_Plugin::history_running() === true) {
-                WC_Retailcrm_Logger::info(__METHOD__, 'History in progress, skip');
-
-                return;
-            }
-
-            $this->orders->updateOrder($orderId);
-        }
-
         /**
          * Edit order in retailCRM
          *
@@ -695,7 +675,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->updatedOrderId[$order_id] = $order_id;
         }
 
-        public function update_order_loyalty()
+        public function update_order()
         {
             WC_Retailcrm_Logger::setHook(current_action());
 
@@ -708,8 +688,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function update_order_items($orderId)
         {
-            WC_Retailcrm_Logger::setHook(current_action(), $orderId);
-            $this->orders->updateOrder($orderId);
+            if (is_admin()) {
+                WC_Retailcrm_Logger::setHook(current_action(), $orderId);
+                $this->orders->updateOrder($orderId);
+            }
         }
 
         public function trash_order_action($id)
