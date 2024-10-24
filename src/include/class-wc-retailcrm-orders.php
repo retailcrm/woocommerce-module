@@ -330,6 +330,11 @@ if (!class_exists('WC_Retailcrm_Orders')) :
 
             try {
                 $wcOrder = wc_get_order($orderId);
+
+                if ($wcOrder->get_status() === 'checkout-draft') {
+                    return null;
+                }
+                
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'Update WC_Order ' . $wcOrder->get_id(),
