@@ -1,3 +1,6 @@
+## 2024-10-24 4.8.12
+* Fixed multiple execution of order updates
+
 ## 2024-10-14 4.8.11
 * Added additional parameters to GET requests
 
