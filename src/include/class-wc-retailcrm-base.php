@@ -557,16 +557,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             WC_Retailcrm_Logger::setHook(current_action());
 
+            if (did_action('woocommerce_new_order') === 0) {
+                return;
+            }
+
             if (did_action('woocommerce_checkout_order_processed')) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     'There was a hook woocommerce_checkout_order_processed'
                 );
 
-                return;
-            }
-
-            if (did_action('woocommerce_new_order') === 0) {
                 return;
             }
 
@@ -716,8 +716,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             WC_Retailcrm_Logger::setHook(current_action());
 
-            if ($this->updatedOrderId !== []) {
-                foreach ($this->updatedOrderId as $orderId) {
+            foreach ($this->updatedOrderId as $orderId) {
+                if (!isset($this->createdOrderId[$orderId])) {
                     $this->orders->updateOrder($orderId);
                 }
             }
