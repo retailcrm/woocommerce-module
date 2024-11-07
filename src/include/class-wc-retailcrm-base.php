@@ -41,6 +41,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
         /** @var array */
         protected $updatedOrderId = [];
 
+        /** @var array */
+        protected $createdOrderId = [];
+
         /**
          * Init and hook in the integration.
          *
@@ -106,7 +109,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_footer_scripts', [$this, 'initialize_whatsapp'], 101);
             add_action('wp_print_footer_scripts', [$this, 'send_analytics'], 99);
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
-            add_action('woocommerce_new_order', [$this, 'create_order'], 11, 1);
+            add_action('woocommerce_new_order', [$this, 'take_create_order'], 11, 1);
+            add_action('shutdown', [$this, 'create_order'], -2);
 
             if (
                 !$this->get_option('deactivate_update_order')
@@ -526,6 +530,22 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->customers->updateCustomer($customerId);
         }
 
+        public function take_create_order($order_id)
+        {
+            WC_Retailcrm_Logger::setHook(current_action(), $order_id);
+
+            if (WC_Retailcrm_Plugin::history_running() === true) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    'History in progress, skip'
+                );
+
+                return;
+            }
+
+            $this->createdOrderId[$order_id] = $order_id;
+        }
+
         /**
          * Create order in RetailCRM from admin panel
          *
@@ -533,15 +553,32 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @param int $order_id
          */
-        public function create_order($order_id)
+        public function create_order()
         {
-            WC_Retailcrm_Logger::setHook(current_action(), $order_id);
+            WC_Retailcrm_Logger::setHook(current_action());
+
+            if (did_action('woocommerce_checkout_order_processed')) {
+                WC_Retailcrm_Logger::info(
+                    __METHOD__,
+                    'There was a hook woocommerce_checkout_order_processed'
+                );
+
+                return;
+            }
+
+            if (did_action('woocommerce_new_order') === 0) {
+                return;
+            }
+
+            $logText = 'Creation order';
 
             if (is_admin()) {
-                WC_Retailcrm_Logger::info(__METHOD__, 'Creation is from admin panel');
-                $this->retailcrm_process_order($order_id);
-            } else {
-                WC_Retailcrm_Logger::info(__METHOD__, 'Creation is not from admin panel, skip');
+                $logText = 'Creation order from admin panel';
+            }
+
+            foreach ($this->createdOrderId as $orderId) {
+                WC_Retailcrm_Logger::info(__METHOD__, $logText . sprintf(' (%s)', $orderId));
+                $this->retailcrm_process_order($orderId);
             }
         }
 
