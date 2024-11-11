@@ -1,3 +1,6 @@
+## 2024-11-07 4.8.13
+* Supports custom cart and checkout templates
+
 ## 2024-10-24 4.8.12
 * Fixed multiple execution of order updates
 
