@@ -253,13 +253,6 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $tax = reset($tax_rates);
             }
 
-            if ($product->get_manage_stock() == true) {
-                $stockQuantity = $product->get_stock_quantity();
-                $quantity = empty($stockQuantity) === false ? $stockQuantity : 0;
-            } else {
-                $quantity = $product->get_stock_status() === 'instock' ? 1 : 0;
-            }
-
             $productData = [
                 'id' => $product->get_id(),
                 'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
@@ -271,7 +264,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 ,
                 'picture' => $images,
                 'url' => ($product->get_parent_id() > 0) ? $parent->get_permalink() : $product->get_permalink(),
-                'quantity' => $quantity,
+                'quantity' => $this->getQuantity($product),
                 'categoryId' => $termList,
                 'dimensions' => $dimensions,
                 'weight' => $weight,
@@ -309,9 +302,19 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $product
             );
 
-            if (isset($productData)) {
-                return $productData;
+            return $productData ?? [];
+        }
+
+        private function getQuantity($product)
+        {
+            if ($product->get_manage_stock()) {
+                $stockQuantity = $product->get_stock_quantity();
+                $quantity = $stockQuantity !== null && $stockQuantity !== 0 ? $stockQuantity : 0;
+            } else {
+                $quantity = $product->get_stock_status() === 'instock' ? 1 : 0;
             }
+
+            return $quantity;
         }
 
         /**

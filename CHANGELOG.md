@@ -1,3 +1,6 @@
+## 2024-11-07 4.8.14
+* The method for determining the stock quantity has been optimized
+
 ## 2024-11-07 4.8.13
 * Supports custom cart and checkout templates
 
