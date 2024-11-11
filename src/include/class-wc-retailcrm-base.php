@@ -109,14 +109,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_footer_scripts', [$this, 'initialize_whatsapp'], 101);
             add_action('wp_print_footer_scripts', [$this, 'send_analytics'], 99);
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
-            add_action('woocommerce_new_order', [$this, 'take_create_order'], 11, 1);
+            add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
 
             if (
                 !$this->get_option('deactivate_update_order')
                 || $this->get_option('deactivate_update_order') == static::NO
             ) {
-                add_action('woocommerce_update_order', [$this, 'take_update_order'], 11, 1);
+                add_action('woocommerce_update_order', [$this, 'fill_array_update_orders'], 11, 1);
                 add_action('shutdown', [$this, 'update_order'], -1);
                 add_action('woocommerce_saved_order_items', [$this, 'update_order_items'], 10, 1);
             }
@@ -530,15 +530,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->customers->updateCustomer($customerId);
         }
 
-        public function take_create_order($order_id)
+        public function fill_array_create_orders($order_id)
         {
             WC_Retailcrm_Logger::setHook(current_action(), $order_id);
 
             if (WC_Retailcrm_Plugin::history_running() === true) {
-                WC_Retailcrm_Logger::info(
-                    __METHOD__,
-                    'History in progress, skip'
-                );
+                WC_Retailcrm_Logger::info(__METHOD__, 'History in progress, skip');
 
                 return;
             }
@@ -577,7 +574,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             foreach ($this->createdOrderId as $orderId) {
-                WC_Retailcrm_Logger::info(__METHOD__, $logText . sprintf(' (%s)', $orderId));
+                WC_Retailcrm_Logger::info(__METHOD__, sprintf('%s (%s)', $logText, $orderId));
                 $this->retailcrm_process_order($orderId);
             }
         }
@@ -692,7 +689,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          *
          * @throws \Exception
          */
-        public function take_update_order($order_id)
+        public function fill_array_update_orders($order_id)
         {
             WC_Retailcrm_Logger::setHook(current_action(), $order_id);
 
