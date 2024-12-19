@@ -243,19 +243,17 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             $ordersPages = (int)($ordersCount / 50) + (($ordersCount % 50 === 0) ? -1 : 0);
             $customerPages = (int)($customerCount / 50) + (($customerCount % 50 === 0) ? -1 : 0);
 
-            echo $customerPages;
-
             try {
                 switch ($entity) {
                     case 'orders':
                         $this->ArchiveUpload('orders', $page, $ordersPages);
                         break;
                     case 'customers':
-                        $this->ArchiveUpload('customers', $page, $customerPages);;
+                        $this->ArchiveUpload('customers', $page, $customerPages);
                         break;
                     case 'full_upload':
-                        $this->ArchiveUpload('orders', 0, $ordersPages);
                         $this->ArchiveUpload('customers', 0, $customerPages);
+                        $this->ArchiveUpload('orders', 0, $ordersPages);
                         break;
                     default:
                         echo 'Unknown entity: ' . $entity;
