@@ -234,5 +234,48 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 );
             }
         }
+
+        public function uploadConsole($entity, $page = 0)
+        {
+            $ordersCount = $this->getCountOrders();
+            $customerCount = $this->getCountUsers();
+
+            $ordersPages = (int)($ordersCount / 50) + (($ordersCount % 50 === 0) ? -1 : 0);
+            $customerPages = (int)($customerCount / 50) + (($customerCount % 50 === 0) ? -1 : 0);
+
+            echo $customerPages;
+
+            try {
+                switch ($entity) {
+                    case 'orders':
+                        $this->ArchiveUpload('orders', $page, $ordersPages);
+                        break;
+                    case 'customers':
+                        $this->ArchiveUpload('customers', $page, $customerPages);;
+                        break;
+                    case 'full_upload':
+                        $this->ArchiveUpload('orders', 0, $ordersPages);
+                        $this->ArchiveUpload('customers', 0, $customerPages);
+                        break;
+                    default:
+                        echo 'Unknown entity: ' . $entity;
+                }
+            } catch (Exception $exception) {
+                echo $exception->getMessage();
+            }
+        }
+
+        public function archiveUpload($entity, $page, $countPages)
+        {
+            for ($i = $page; $i <= $countPages; $i++) {
+                if ($entity === 'orders') {
+                    $this->uploadArchiveOrders($i);
+                    echo $page . ' page uploaded' . PHP_EOL;
+                } elseif ($entity === 'customers') {
+                    $this->uploadArchiveCustomers($i);
+                    echo $page . ' page uploaded' . PHP_EOL;
+                }
+            }
+        }
     }
-}//end if
+}
