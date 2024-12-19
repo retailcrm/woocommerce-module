@@ -1,3 +1,6 @@
+## 2024-12-19 4.8.15
+* Add export archive in CRM
+
 ## 2024-11-07 4.8.14
 * The method for determining the stock quantity has been optimized
 
