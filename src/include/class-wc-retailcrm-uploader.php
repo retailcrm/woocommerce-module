@@ -246,14 +246,14 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             try {
                 switch ($entity) {
                     case 'orders':
-                        $this->ArchiveUpload('orders', $page, $ordersPages);
+                        $this->archiveUpload('orders', $page, $ordersPages);
                         break;
                     case 'customers':
-                        $this->ArchiveUpload('customers', $page, $customerPages);
+                        $this->archiveUpload('customers', $page, $customerPages);
                         break;
                     case 'full_upload':
-                        $this->ArchiveUpload('customers', 0, $customerPages);
-                        $this->ArchiveUpload('orders', 0, $ordersPages);
+                        $this->archiveUpload('customers', 0, $customerPages);
+                        $this->archiveUpload('orders', 0, $ordersPages);
                         break;
                     default:
                         echo 'Unknown entity: ' . $entity;
@@ -268,11 +268,10 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             for ($i = $page; $i <= $countPages; $i++) {
                 if ($entity === 'orders') {
                     $this->uploadArchiveOrders($i);
-                    echo $page . ' page uploaded' . PHP_EOL;
                 } elseif ($entity === 'customers') {
                     $this->uploadArchiveCustomers($i);
-                    echo $page . ' page uploaded' . PHP_EOL;
                 }
+                echo $page . ' page uploaded' . PHP_EOL;
             }
         }
     }

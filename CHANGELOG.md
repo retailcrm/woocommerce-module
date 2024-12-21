@@ -1,5 +1,5 @@
 ## 2024-12-19 4.8.15
-* Add export archive in CRM
+* Fix uploading archive in CRM using console script
 
 ## 2024-11-07 4.8.14
 * The method for determining the stock quantity has been optimized
