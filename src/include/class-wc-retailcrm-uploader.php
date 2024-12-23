@@ -237,11 +237,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
         public function uploadConsole($entity, $page = 0)
         {
-            $ordersCount = $this->getCountOrders();
-            $customerCount = $this->getCountUsers();
-
-            $ordersPages = (int)($ordersCount / 50) + (($ordersCount % 50 === 0) ? -1 : 0);
-            $customerPages = (int)($customerCount / 50) + (($customerCount % 50 === 0) ? -1 : 0);
+            $ordersPages = ceil($this->getCountOrders()/50);
+            $customerPages = ceil($this->getCountUsers()/50);
 
             try {
                 switch ($entity) {
@@ -265,14 +262,15 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
         public function archiveUpload($entity, $page, $countPages)
         {
-            for ($i = $page; $i <= $countPages; $i++) {
+            do {
                 if ($entity === 'orders') {
-                    $this->uploadArchiveOrders($i);
+                    $this->uploadArchiveOrders($page);
                 } elseif ($entity === 'customers') {
-                    $this->uploadArchiveCustomers($i);
+                    $this->uploadArchiveCustomers($page);
                 }
                 echo $page . ' page uploaded' . PHP_EOL;
-            }
+                $page++;
+            } while (true);
         }
     }
 }
