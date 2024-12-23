@@ -270,7 +270,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 }
                 echo $page . ' page uploaded' . PHP_EOL;
                 $page++;
-            } while (true);
+            } while ($page <= $countPages);
         }
     }
 }
