@@ -75,13 +75,13 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         /**
          * Uploads archive order in CRM
          *
-         * @param null|int $page Number page uploads.
-         * @param array    $ids  Ids orders upload.
+         * @param int|null $page Number page uploads.
+         * @param array $ids  Ids orders upload.
          *
          * @return void|null
          * @throws Exception Invalid argument exception.
          */
-        public function uploadArchiveOrders($page, $ids = [])
+        public function uploadArchiveOrders(?int $page, array $ids = [])
         {
             WC_Retailcrm_Logger::info(__METHOD__, 'Archive order IDs: ' . implode(', ', $ids));
 
@@ -98,11 +98,13 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 $orderIds = $ids;
             }
 
-            foreach ($orderIds as $orderId) {
-                $errorMessage = $this->orders->orderCreate($orderId);
+            if ($orderIds !== []) {
+                foreach ($orderIds as $orderId) {
+                    $errorMessage = $this->orders->orderCreate($orderId);
 
-                if (is_string($errorMessage)) {
-                    $uploadErrors[$orderId] = $errorMessage;
+                    if (is_string($errorMessage)) {
+                        $uploadErrors[$orderId] = $errorMessage;
+                    }
                 }
             }
 
@@ -125,7 +127,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
             $users = $this->getCmsUsers($page);
 
-            if (false === empty($users)) {
+            if ($users !== []) {
                 $dataCustomers = [];
 
                 foreach ($users as $user) {
@@ -237,8 +239,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
         public function uploadConsole($entity, $page = 0)
         {
-            $ordersPages = ceil($this->getCountOrders()/50);
-            $customerPages = ceil($this->getCountUsers()/50);
+            $ordersPages = ceil($this->getCountOrders() / 50);
+            $customerPages = ceil($this->getCountUsers() / 50);
 
             try {
                 switch ($entity) {
@@ -260,7 +262,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             }
         }
 
-        public function archiveUpload($entity, $page, $countPages)
+        public function archiveUpload($entity, $page, $totalPages)
         {
             do {
                 if ($entity === 'orders') {
@@ -268,9 +270,11 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 } elseif ($entity === 'customers') {
                     $this->uploadArchiveCustomers($page);
                 }
+
                 echo $page . ' page uploaded' . PHP_EOL;
+
                 $page++;
-            } while ($page <= $countPages);
+            } while ($page <= $totalPages);
         }
     }
 }
