@@ -239,8 +239,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
         public function uploadConsole($entity, $page = 0)
         {
-            $ordersPages = ceil($this->getCountOrders() / 50);
-            $customerPages = ceil($this->getCountUsers() / 50);
+            $ordersPages = (int) ceil($this->getCountOrders() / 50);
+            $customerPages = (int) ceil($this->getCountUsers() / 50);
 
             try {
                 switch ($entity) {
@@ -264,6 +264,8 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
 
         public function archiveUpload($entity, $page, $totalPages)
         {
+            echo $entity . ' uploading started' . PHP_EOL;
+
             do {
                 if ($entity === 'orders') {
                     $this->uploadArchiveOrders($page);

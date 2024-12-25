@@ -31,9 +31,12 @@
 
 ```
 <?php
+
 require_once __DIR__ . '/wp-load.php';
+
 $options = getopt('',['entity::','page::']);
-do_action("wp_console_upload", $options['entity'] ?? '', (int)$options['page'] ?? 0);
+
+do_action('wp_console_upload', $options['entity'] ?? '', (int) $options['page'] ?? 0);
 ```
 2. После чего в командной строке ввести команду для запуска скрипта: <br>
 
