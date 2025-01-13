@@ -28,7 +28,6 @@ compile_pot:
 
 install:
 	mkdir -p coverage
-    sudo apt update && sudo apt install -y subversion
 	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(DB_PASS) $(WP_VERSION) $(WC_VERSION)
 
 test:
