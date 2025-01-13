@@ -27,6 +27,7 @@ compile_pot:
 	msgfmt resources/pot/retailcrm-es_ES.pot -o src/languages/retailcrm-es_ES.mo
 
 install:
+	sudo apt install subversion
 	mkdir -p coverage
 	bash tests/bin/install.sh $(DB_NAME) $(DB_USER) $(DB_HOST) $(DB_PASS) $(WP_VERSION) $(WC_VERSION)
 

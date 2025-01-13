@@ -93,9 +93,7 @@ jobs:
         env:
           WP_VERSION: ${{ matrix.wp }}
           WC_VERSION: ${{ matrix.wc }}
-        run: |
-          sudo apt install subversion -y
-          make install
+        run: make install
 
       - name: Run tests
         env:
