@@ -111,6 +111,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
             add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
+            add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
 
             if (
                 !$this->get_option('deactivate_update_order')
@@ -174,6 +175,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->activateModule();
         }
 
+        public function console_upload($entity, $page = 0)
+        {
+            $this->uploader->uploadConsole($entity, $page);
+        }
         /**
          * Init settings fields
          */
