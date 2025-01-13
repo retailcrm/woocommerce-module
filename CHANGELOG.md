@@ -1,3 +1,6 @@
+## 2025-01-13 4.8.16
+* Fix tests svn error
+
 ## 2024-12-19 4.8.15
 * Fix uploading archive in CRM using console script
 
