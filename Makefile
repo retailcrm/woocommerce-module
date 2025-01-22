@@ -5,7 +5,8 @@ ARCHIVE_NAME = '/tmp/retailcrm-'$(VERSION)'.zip'
 .PHONY: test
 
 svn_clone:
-	mkdir /tmp/svn_plugin_dir
+	sudo apt install subversion
+	mkdir -p /tmp/svn_plugin_dir
 	svn co $(SVNREPOURL) /tmp/svn_plugin_dir --no-auth-cache
 
 svn_push: /tmp/svn_plugin_dir
