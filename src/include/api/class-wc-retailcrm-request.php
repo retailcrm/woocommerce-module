@@ -77,9 +77,10 @@ class WC_Retailcrm_Request
                 'cms_version' => function_exists('get_bloginfo') ? get_bloginfo('version') : '',
                 'woo_version' => WC()->version ?? '',
                 'php_version' => function_exists('phpversion') ? phpversion() : '',
-                'module_version' => WC_Integration_Retailcrm::MODULE_VERSION, 
+                'module_version' => WC_Integration_Retailcrm::MODULE_VERSION,
+                'ga_option_is_active' => getOptionByCode('ua') === WC_Retailcrm_Abstracts_Settings::YES,
             ])
-            : $parameters = array_merge($this->defaultParameters, $parameters);
+            : array_merge($this->defaultParameters, $parameters);
 
         $url = $this->url . $path;
 

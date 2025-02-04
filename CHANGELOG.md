@@ -1,3 +1,6 @@
+## 2025-02-03 4.8.18
+* Added additional parameters to GET requests
+
 ## 2025-01-21 4.8.17
 * Fix deploy
 
