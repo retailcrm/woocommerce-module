@@ -208,9 +208,7 @@ function isCorporateOrder($wcCustomer, $wcOrder)
     return !empty($wcCustomer->get_billing_company()) || !empty($wcOrder->get_billing_company());
 }
 
-function getOption($optionName)
+function getOptionByCode($optionName)
 {
-    $options =  get_option(WC_Retailcrm_Base::$option_key);
-
-    return $options[$optionName] ?? null;
+    return get_option(WC_Retailcrm_Base::$option_key)[$optionName] ?? null;
 }
