@@ -83,7 +83,7 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
 
     /**
      * @param $retailcrm
-     * @dataProvider dataProviderApiClientForUpload
+     * @dataProvider dataProviderApiClient
      */
     public function test_order_upload($retailcrm)
     {
@@ -95,7 +95,7 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
 
     /**
      * @param $retailcrm
-     * @dataProvider dataProviderApiClientForUpload
+     * @dataProvider dataProviderApiClient
      */
     public function test_upload_selected_orders()
     {
@@ -128,27 +128,6 @@ class WC_Retailcrm_Uploader_Test extends WC_Retailcrm_Test_Case_Helper
         return array(
             array(
                 'retailcrm' => $this->apiMock
-            ),
-            array(
-                'retailcrm' => false
-            )
-        );
-    }
-
-    public function dataProviderApiClientForUpload()
-    {
-        $this->setUp();
-
-        $apiMock = (clone $this->apiMock);
-        $apiMock
-            ->expects($this->once())
-            ->method('ordersUpload')
-            ->willReturn(new WC_Retailcrm_Response(200, ''));
-        ;
-
-        return array(
-            array(
-                'retailcrm' => $apiMock
             ),
             array(
                 'retailcrm' => false
