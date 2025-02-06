@@ -602,6 +602,32 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             );
         }
 
+        public function processOrderForUpload($orderIds)
+        {
+            $ordersForUpload = [];
+            $errorOrders = [];
+
+            foreach ($orderIds as $orderId) {
+                try {
+                    $this->order = [];
+                    $this->processOrder(wc_get_order($orderId));
+
+                    if ($this->order === []) {
+                        throw new \RuntimeException(sprintf('Order %s is not uploaded', $orderId));
+                    }
+
+                    $ordersForUpload[] = $this->order;
+                } catch (Throwable $exception) {
+                    $errorOrders[$orderId] = sprintf(
+                        'Exception for Order [%s]: %s. Trace: %s',
+                        $orderId, $exception->getMessage(), $exception->getTraceAsString()
+                    );
+                }
+            }
+
+            return [$ordersForUpload, $errorOrders];
+        }
+
         /**
          * Send payment in CRM
          *

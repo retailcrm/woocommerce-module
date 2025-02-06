@@ -83,14 +83,11 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         public function uploadArchiveOrders(?int $page, array $ids = [])
         {
-            WC_Retailcrm_Logger::info(__METHOD__, 'Archive order IDs: ' . implode(', ', $ids));
-
             if (!$this->retailcrm instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
 
             $orderIds = [];
-            $uploadErrors = [];
 
             if (null !== $page) {
                 $orderIds = $this->getCmsOrders($page);
@@ -98,14 +95,40 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 $orderIds = $ids;
             }
 
-            if ($orderIds !== []) {
-                foreach ($orderIds as $orderId) {
-                    $errorMessage = $this->orders->orderCreate($orderId);
+            if ($orderIds === []) {
+                return null;
+            }
 
-                    if (is_string($errorMessage)) {
-                        $uploadErrors[$orderId] = $errorMessage;
-                    }
+            WC_Retailcrm_Logger::info(__METHOD__, 'Archive order IDs: ' . implode(', ', $ids));
+
+            [$ordersForUpload, $uploadErrors] = $this->orders->processOrderForUpload($orderIds);
+
+            try {
+                $response = $this->retailcrm->ordersUpload($ordersForUpload);
+
+                if (!$response->isSuccessful()) {
+                    throw new RuntimeException(
+                        sprintf(
+                            'Failure to upload orders: %s. Status code: %s',
+                            $response->getErrorString(),
+                            $response->getStatusCode()
+                        )
+                    );
                 }
+            } catch (Exception $exception) {
+                WC_Retailcrm_Logger::error(
+                    __METHOD__,
+                    sprintf("Error while uploading orders: %s", $exception->getMessage())
+                );
+
+                return null;
+            }
+
+            /** WP version >= 6 */
+            if (function_exists('wp_cache_flush_runtime')) {
+                wp_cache_flush_runtime();
+            } else {
+                wp_cache_flush();
             }
 
             $this->logOrdersUploadErrors($uploadErrors);
@@ -225,7 +248,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         private function logOrdersUploadErrors($errors)
         {
-            if (empty($errors) === true) {
+            if ($errors === []) {
                 return;
             }
 
