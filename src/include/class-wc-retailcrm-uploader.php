@@ -248,7 +248,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         private function logOrdersUploadErrors($errors)
         {
-            if (empty($errors) === true) {
+            if ($errors === []) {
                 return;
             }
 
