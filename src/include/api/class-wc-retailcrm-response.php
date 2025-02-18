@@ -120,9 +120,8 @@ class WC_Retailcrm_Response implements \ArrayAccess
      * @param mixed $value  value
      *
      * @throws \BadMethodCallException
-     * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         throw new \BadMethodCallException('This activity not allowed');
     }
@@ -133,9 +132,8 @@ class WC_Retailcrm_Response implements \ArrayAccess
      * @param mixed $offset offset
      *
      * @throws \BadMethodCallException
-     * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new \BadMethodCallException('This call not allowed');
     }
@@ -145,9 +143,8 @@ class WC_Retailcrm_Response implements \ArrayAccess
      *
      * @param mixed $offset offset
      *
-     * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->response[$offset]);
     }
@@ -159,9 +156,8 @@ class WC_Retailcrm_Response implements \ArrayAccess
      *
      * @throws \InvalidArgumentException
      *
-     * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if (!isset($this->response[$offset])) {
             throw new \InvalidArgumentException("Property \"$offset\" not found");
