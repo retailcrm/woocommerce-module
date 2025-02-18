@@ -1,3 +1,6 @@
+## 2025-02-18 4.8.20
+* Add returned types for methods
+
 ## 2025-02-04 4.8.19
 * Optimization of order unloading
 

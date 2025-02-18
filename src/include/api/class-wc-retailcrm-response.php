@@ -153,11 +153,12 @@ class WC_Retailcrm_Response implements \ArrayAccess
      * Get offset
      *
      * @param mixed $offset offset
-     *
+     * @return mixed
      * @throws \InvalidArgumentException
      *
+     * TODO PHP 7.1 не поддерживает тип mixed. Оператор | для перечисления типов также не поддерживается
      */
-    public function offsetGet($offset): object|array|string|float|int|bool|null
+    public function offsetGet($offset)
     {
         if (!isset($this->response[$offset])) {
             throw new \InvalidArgumentException("Property \"$offset\" not found");
