@@ -157,7 +157,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
      * @throws \InvalidArgumentException
      *
      */
-    public function offsetGet($offset): mixed
+    public function offsetGet($offset): object|array|string|float|int|bool|null
     {
         if (!isset($this->response[$offset])) {
             throw new \InvalidArgumentException("Property \"$offset\" not found");
