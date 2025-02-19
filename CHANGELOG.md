@@ -1,3 +1,6 @@
+## 2025-02-19 4.8.21
+* Fix version of module
+
 ## 2025-02-18 4.8.20
 * Add returned types for methods offsetExists, offsetSet, offsetUnset in WC_Retailcrm_Response
 
