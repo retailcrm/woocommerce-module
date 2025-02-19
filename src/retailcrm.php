@@ -27,7 +27,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     class WC_Integration_Retailcrm {
         const WOOCOMMERCE_SLUG = 'woocommerce';
         const WOOCOMMERCE_PLUGIN_PATH = 'woocommerce/woocommerce.php';
-        const MODULE_VERSION = '4.8.19';
+        const MODULE_VERSION = '4.8.20';
 
         private static $instance;
 
