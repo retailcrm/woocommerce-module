@@ -156,7 +156,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
      * @return mixed
      * @throws \InvalidArgumentException
      *
-     * TODO PHP 7.1 не поддерживает тип mixed. Оператор | для перечисления типов также не поддерживается
+     * TODO PHP < 8.0 не поддерживает тип mixed. Оператор | для перечисления типов также не поддерживается.
      */
     public function offsetGet($offset)
     {
