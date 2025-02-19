@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.8.20 =
-* Add returned types for methods offsetExists(), offsetSet(), offsetUnset() in WC_Retailcrm_Response
+* Add returned types for methods offsetExists, offsetSet, offsetUnset in WC_Retailcrm_Response
 
 = 4.8.19 =
 * Optimization of order unloading

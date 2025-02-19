@@ -1,5 +1,5 @@
 ## 2025-02-18 4.8.20
-* Add returned types for methods offsetExists(), offsetSet(), offsetUnset() in WC_Retailcrm_Response
+* Add returned types for methods offsetExists, offsetSet, offsetUnset in WC_Retailcrm_Response
 
 ## 2025-02-04 4.8.19
 * Optimization of order unloading
