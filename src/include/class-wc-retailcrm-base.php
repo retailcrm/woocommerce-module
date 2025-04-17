@@ -91,6 +91,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_icml', [$this, 'generate_icml']);
             add_action('retailcrm_inventories', [$this, 'load_stocks']);
             add_action('wp_ajax_do_upload', [$this, 'upload_to_crm']);
+            add_action('wp_ajax_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
             add_action('wp_ajax_cron_info', [$this, 'get_cron_info'], 99);
             add_action('wp_ajax_set_meta_fields', [$this, 'set_meta_fields'], 99);
             add_action('wp_ajax_content_upload', [$this, 'count_upload_data'], 99);
@@ -106,6 +107,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_scripts', [$this, 'initialize_daemon_collector'], 99);
             add_action('wp_print_scripts', [$this, 'initialize_online_assistant'], 101);
             add_action('wp_enqueue_scripts', [$this, 'include_whatsapp_icon_style'], 101);
+            add_action('wp_enqueue_scripts', [$this, 'include_js_script_for_tracker'], 101);
             add_action('wp_print_footer_scripts', [$this, 'initialize_whatsapp'], 101);
             add_action('wp_print_footer_scripts', [$this, 'send_analytics'], 99);
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
@@ -173,6 +175,22 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             //Activation configured module
             $this->activateModule();
+        }
+
+        function get_cart_items_for_tracker() {
+            $cart_items = [];
+
+            foreach ( WC()->cart->get_cart() as $cart_item ) {
+                $product = $cart_item['data'];
+                $cart_items[] = [
+                    'product_id' => $product->get_id(),
+                    'name'       => $product->get_name(),
+                    'quantity'   => $cart_item['quantity'],
+                    'price'      => wc_price( $product->get_price() ),
+                ];
+            }
+
+            wp_send_json_success($cart_items);
         }
 
         public function console_upload($entity, $page = 0)
@@ -1003,6 +1021,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 // In this method transfer wp-admin url in JS scripts.
                 wp_localize_script($scriptName, 'AdminUrl', $wpAdminUrl);
             }
+        }
+
+        public function include_js_script_for_tracker()
+        {
+            $scriptName = 'retailcrm-tracker';
+            $jsScriptsPath = plugins_url() . self::ASSETS_DIR . '/js/' . $scriptName . '.js';
+
+            wp_register_script($scriptName, $jsScriptsPath, false, '0.1');
+            wp_enqueue_script($scriptName, $jsScriptsPath, '', '', true);
+
+            wp_localize_script($scriptName, 'AdminUrl', ['url' => get_admin_url()]);
         }
 
         /**
