@@ -1,10 +1,7 @@
 jQuery(function() {
-
-    ocapi.event('page_view')
-
     function startTracker(...trackers)
     {
-        if (trackers.includes('product_view')) {
+        if (trackers.includes('page_view')) {
             sendProductView();
         }
 
@@ -17,33 +14,32 @@ jQuery(function() {
         }
     }
 
+    // Проверил, все корректно передается.
     function sendProductView()
     {
-        const variableProductId = jQuery('input[name="product_id"]').val();
+        let offerId = jQuery('.single_add_to_cart_button').val() || jQuery('input[name="product_id"]').val();
 
-        if (variableProductId) {
-            console.log('Открыли страницу вариативного товара, ID: ' + variableProductId);
+        if (offerId) {
+            setTimeout(() => {
+                ocapi.event('page_view', { offer_external_id:  offerId })
+            }, 3000)
         }
-
-        const productId = jQuery('.single_add_to_cart_button').val();
-
-        if (productId) {
-            console.log('Открыли страницу простого товара, ID: ' + productId);
-        }
-
-        ocapi.event('page_view')
-
     }
 
     function sendCartView()
     {
         if ($('body').hasClass('woocommerce-cart')) {
-            console.log('Мы находимся в корзине WooCommerce');
+            setTimeout(() => {
+                ocapi.event('open_cart')
+            }, 5000)
         }
     }
 
     function sendCartChange()
     {
+        let cartObject = {};
+        cartObject.items = [];
+
         // Добавление товара в корзину
         jQuery(document.body).on('adding_to_cart', function (event, button, data) {
             console.log('Товар добавлен в корзину 🛒');
