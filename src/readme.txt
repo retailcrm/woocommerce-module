@@ -5,7 +5,7 @@ Tags: Интеграция, Simla.com, simla
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.5
-Stable tag: 4.8.21
+Stable tag: 4.8.22
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -82,6 +82,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.8.22 =
+* Added data tracking support
+
 = 4.8.21 =
 * Fix version of module
 
