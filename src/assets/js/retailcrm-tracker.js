@@ -26,9 +26,10 @@ jQuery(function() {
         }
     }
 
+    // Реализовать получение email клиента. А лучше все данные клиента
     function sendCartView()
     {
-        if ($('body').hasClass('woocommerce-cart')) {
+        if (jQuery(document.body).hasClass('woocommerce-cart')) {
             setTimeout(() => {
                 ocapi.event('open_cart')
             }, 5000)
