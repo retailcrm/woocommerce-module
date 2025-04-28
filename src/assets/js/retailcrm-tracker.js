@@ -44,9 +44,11 @@ function startTracker(...trackers)
     function sendCartView()
     {
         if (jQuery(document.body).hasClass('woocommerce-cart')) {
-            setTimeout(() => {
-                ocapi.event('open_cart')
-            }, 1000)
+            getCustomerInfo().then(function (customer) {
+                setTimeout(function() {
+                    ocapi.event('open_cart', { 'email': customer.email});
+                }, 1000);
+            });
         }
     }
 
@@ -70,7 +72,24 @@ function startTracker(...trackers)
         if (cart.items !== []) {
             setTimeout(function() {
                 ocapi.event('cart', cart);
-            }, 1500);
+            }, 1000);
+        }
+    }
+
+    async function getCustomerInfo() {
+        try {
+            const response = await jQuery.ajax({
+                url: AdminUrl.url + '/admin-ajax.php?action=get_customer_info_for_tracker',
+                method: 'POST',
+                data: { ajax: 1 },
+                dataType: 'json'
+            })
+
+            return response.success ? response.data : []
+        } catch (error) {
+            console.error('AJAX ошибка:', error);
+
+            return [];
         }
     }
 
@@ -78,9 +97,9 @@ function startTracker(...trackers)
         try {
             const response = await jQuery.ajax({
                 url: AdminUrl.url + '/admin-ajax.php?action=get_cart_items_for_tracker',
-                method: "POST",
+                method: 'POST',
                 data: { ajax: 1 },
-                dataType: "json"
+                dataType: 'json'
             })
 
             return response.success ? response.data : []

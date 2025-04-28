@@ -92,6 +92,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_inventories', [$this, 'load_stocks']);
             add_action('wp_ajax_do_upload', [$this, 'upload_to_crm']);
             add_action('wp_ajax_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
+            add_action('wp_ajax_get_customer_info_for_tracker', [$this, 'get_customer_info_for_tracker'], 99);
             add_action('wp_ajax_cron_info', [$this, 'get_cron_info'], 99);
             add_action('wp_ajax_set_meta_fields', [$this, 'set_meta_fields'], 99);
             add_action('wp_ajax_content_upload', [$this, 'count_upload_data'], 99);
@@ -177,7 +178,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $this->activateModule();
         }
 
-        function get_cart_items_for_tracker() {
+        function get_cart_items_for_tracker()
+        {
             $cartItems = [];
 
             foreach (WC()->cart->get_cart() as $item) {
@@ -192,6 +194,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             wp_send_json_success($cartItems);
+        }
+
+        function get_customer_info_for_tracker()
+        {
+            if (is_user_logged_in()) {
+                $user = wp_get_current_user();
+
+                // TODO: В будущем можно получить больше данных.
+                wp_send_json_success(['email' => $user->user_email]);
+            }
         }
 
         public function console_upload($entity, $page = 0)

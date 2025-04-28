@@ -218,7 +218,7 @@ add_action('wp_footer', function() {
     ?>
     <script>
         jQuery(function() {
-            startTracker('page_view', 'cart');
+            startTracker('open_cart');
         });
     </script>
     <?php
