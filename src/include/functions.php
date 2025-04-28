@@ -212,3 +212,14 @@ function getOptionByCode($optionName)
 {
     return get_option(WC_Retailcrm_Base::$option_key)[$optionName] ?? null;
 }
+
+
+add_action('wp_footer', function() {
+    ?>
+    <script>
+        jQuery(function() {
+            startTracker('page_view', 'cart');
+        });
+    </script>
+    <?php
+});

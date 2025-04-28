@@ -178,19 +178,20 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
 
         function get_cart_items_for_tracker() {
-            $cart_items = [];
+            $cartItems = [];
 
-            foreach ( WC()->cart->get_cart() as $cart_item ) {
-                $product = $cart_item['data'];
-                $cart_items[] = [
-                    'product_id' => $product->get_id(),
-                    'name'       => $product->get_name(),
-                    'quantity'   => $cart_item['quantity'],
-                    'price'      => wc_price( $product->get_price() ),
+            foreach (WC()->cart->get_cart() as $item) {
+                $product = $item['data'];
+
+                $cartItems[] = [
+                    'id' => $product->get_id(),
+                    'sku' => $product->get_sku(),
+                    'price' => wc_get_price_including_tax($product),
+                    'quantity' => $item['quantity'],
                 ];
             }
 
-            wp_send_json_success($cart_items);
+            wp_send_json_success($cartItems);
         }
 
         public function console_upload($entity, $page = 0)
