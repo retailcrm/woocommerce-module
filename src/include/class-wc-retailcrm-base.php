@@ -91,8 +91,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('retailcrm_icml', [$this, 'generate_icml']);
             add_action('retailcrm_inventories', [$this, 'load_stocks']);
             add_action('wp_ajax_do_upload', [$this, 'upload_to_crm']);
-            add_action('wp_ajax_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
-            add_action('wp_ajax_get_customer_info_for_tracker', [$this, 'get_customer_info_for_tracker'], 99);
             add_action('wp_ajax_cron_info', [$this, 'get_cron_info'], 99);
             add_action('wp_ajax_set_meta_fields', [$this, 'set_meta_fields'], 99);
             add_action('wp_ajax_content_upload', [$this, 'count_upload_data'], 99);
@@ -115,6 +113,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
+
+            //Tracker
+            add_action('wp_ajax_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
+            add_action('wp_ajax_get_customer_info_for_tracker', [$this, 'get_customer_info_for_tracker'], 99);
+            add_action('wp_ajax_nopriv_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
+            add_action('wp_ajax_nopriv_get_customer_info_for_tracker', [$this, 'get_customer_info_for_tracker'], 99);
 
             if (
                 !$this->get_option('deactivate_update_order')
@@ -186,7 +190,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $product = $item['data'];
 
                 $cartItems[] = [
-                    'id' => $product->get_id(),
+                    'id' => (string) $product->get_id(),
                     'sku' => $product->get_sku(),
                     'price' => wc_get_price_including_tax($product),
                     'quantity' => $item['quantity'],

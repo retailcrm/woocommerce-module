@@ -213,12 +213,12 @@ function getOptionByCode($optionName)
     return get_option(WC_Retailcrm_Base::$option_key)[$optionName] ?? null;
 }
 
-
+// TODO: подключение трекинга данных.
 add_action('wp_footer', function() {
     ?>
     <script>
         jQuery(function() {
-            startTracker('open_cart');
+            startTracker('page_view', 'open_cart', 'cart');
         });
     </script>
     <?php
