@@ -1,6 +1,6 @@
 let cartListenersInitialized = false;
 
-function startTracker(...trackers)
+function startTrack(...trackers)
 {
     try {
         if (trackers.includes('page_view')) {
