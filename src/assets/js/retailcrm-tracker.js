@@ -1,17 +1,17 @@
 let cartListenersInitialized = false;
 
-function startTrack(...trackers)
+function startTrack(...trackerEvents)
 {
     try {
-        if (trackers.includes('page_view')) {
+        if (trackerEvents.includes('page_view')) {
             sendProductView();
         }
 
-        if (trackers.includes('open_cart')) {
+        if (trackerEvents.includes('open_cart')) {
             sendCartView()
         }
 
-        if (trackers.includes('cart')) {
+        if (trackerEvents.includes('cart')) {
             if (!cartListenersInitialized) {
                 jQuery(document.body).on('added_to_cart updated_cart_totals', sendCartChange);
             }
