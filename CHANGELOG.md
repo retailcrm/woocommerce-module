@@ -1,3 +1,6 @@
+## 2025-04-25 4.8.22
+* Added data tracking support
+
 ## 2025-02-19 4.8.21
 * Fix version of module
 
