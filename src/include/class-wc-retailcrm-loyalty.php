@@ -267,7 +267,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $coupon->delete(true);
             }
 
-            //Generate new coupon
+            // Generate new coupon
             $coupon = new WC_Coupon();
 
             $coupon->set_usage_limit(0);
