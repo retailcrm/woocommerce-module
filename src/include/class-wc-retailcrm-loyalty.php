@@ -78,7 +78,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $result['form'] = $this->loyaltyForm->getRegistrationForm($phone, $loyaltyTerms, $loyaltyPersonal);
             }
 
-           return $result;
+            return $result;
         }
 
         public function registerCustomer(int $userId, string $phone, string $site): bool
@@ -147,15 +147,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         private function getDiscountLoyalty($cartItems, $site, $customerId)
         {
+            $discount = 0;
             $response = $this->calculateDiscountLoyalty($cartItems, $site, $customerId);
 
             if ($response === 0) {
-                return 0;
+                return $discount;
             }
 
-            $discount = 0;
-
-            //Checking if the loyalty discount is a percent discount
+            // Checking if the loyalty discount is a percent discount
             foreach ($response['order']['items'] as $item) {
                 if (!isset($item['discounts'])) {
                     continue;
@@ -168,7 +167,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 }
             }
 
-            //If the discount has already been given, do not work with points deduction
+            // If the discount has already been given, do not work with points deduction
             if ($discount === 0) {
                 foreach ($response['calculations'] as $calculate) {
                     if ($calculate['privilegeType'] !== 'loyalty_level') {
@@ -179,7 +178,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 }
             }
 
-            return $discount;
+            // Setting 'Bonus exchange rate' from loyalty program in CRM
+            $chargeRate = $response['loyalty']['chargeRate'] ?? 1;
+
+            return $discount * $chargeRate;
         }
 
         private function getLoyaltyAccounts(int $userId)

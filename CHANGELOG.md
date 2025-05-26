@@ -1,3 +1,6 @@
+## 2025-05-26 4.8.23
+* Added support for flexible loyalty charge rate
+
 ## 2025-04-25 4.8.22
 * Added data tracking support
 
