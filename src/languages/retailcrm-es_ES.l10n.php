@@ -72,6 +72,8 @@ return [
         "Online assistant" => "Consultor en línea",
         "Insert the Online consultant code here" =>
             "Inserte el código de consultor en Línea aquí",
+        "Incorrect code of Online consultant" =>
+            "Código incorrecto del consultor",
         "Select API version" => "Selecciona la versión de API",
         "API version" => "Versión de API",
         "API settings" => "Ajustes de API",

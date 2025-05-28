@@ -76,6 +76,8 @@ return [
         "Online assistant" => "Онлайн консультант",
         "Insert the Online consultant code here" =>
             "Вставьте код Онлайн-консультанта здесь",
+        "Incorrect code of Online consultant" =>
+            "Неверный код Онлайн-консультанта",
         "Select API version" => "Выберите версию API",
         "API version" => "Версия API",
         "API settings" => "Настройки API",
