@@ -28,8 +28,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     /** @var string */
     private $crmUrl;
 
-    private $validConsultant;
-
     /**
      * WC_Retailcrm_Abstracts_Settings constructor.
      */
@@ -136,6 +134,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'api_options'
                 ];
 
+                $this->form_fields['tracker_settings'] = [
+                    'type'        => 'textarea',
+                    //'css'         => 'display: none',
+                ];
+
                 $this->form_fields['online_assistant'] = [
                     'title'       => __('Online assistant', 'retailcrm'),
                     'css' => 'width:400px; height:215px; resize: horizontal;',
@@ -143,15 +146,19 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'online_assistant',
                     'placeholder' => __('Insert the Online consultant code here', 'retailcrm')
                 ];
-   
-                $this->form_fields['tracker_active'] = [
-                    'title'       => __('Activate tracker', 'retailcrm'),
-                    'type'        => 'checkbox',
-                    'class'       => 'checkbox',
-                    'label'       => __('Enable tracker widget', 'retailcrm'),
-                    'description' => __('Check this to enable the tracker on your site', 'retailcrm'),
+
+
+                $this->form_fields['tracker_settings'] = [
+                    'type'        => 'textarea',
+                    //'css'         => 'display: none',
                 ];
 
+                $this->form_fields[] = [
+                    'title'       => __('Catalog settings', 'retailcrm'),
+                    'type'        => 'heading',
+                    'description' => '',
+                    'id'          => 'catalog_options'
+                ];
 
                 $this->form_fields[] = [
                     'title'       => __('Catalog settings', 'retailcrm'),
@@ -859,37 +866,12 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                is_string($onlineAssistant) &&
                strpos($onlineAssistant, 'c.retailcrm.tech/widget/loader.js') !== false
         ) {
-            $this->validConsultant = true;
-            
             return wp_unslash($onlineAssistant);
         }
 
         WC_Admin_Settings::add_error(__('Incorrect code of Online consultant', 'retailcrm'));
 
         return '';
-    }
-
-      /**
-    * Returns the original value for the online_consultant field (ignores woocommerce validation)
-    *
-    * @param $key
-    * @param $value
-    *
-    * @return string
-    */
-    public function validate_tracker_active_field()
-    {
-        $onlineAssistant = $_POST['woocommerce_integration-retailcrm_tracker_active'];
-
-        if (($this->get_option('online_assistant', '') === '') && $onlineAssistant) {
-            return 'no';
-        }
-
-        if (!$onlineAssistant) {
-            return 'no';
-        }
-
-        return 'yes';
     }
 
     /**

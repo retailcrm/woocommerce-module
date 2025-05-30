@@ -1025,7 +1025,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'retailcrm-cron-info',
                 'retailcrm-meta-fields',
                 'retailcrm-module-settings',
-                'retailcrm-loyalty'
+                'retailcrm-loyalty',
+                'retailcrm-tracker-interface',
             ];
 
             $wpAdminUrl    = ['url' => get_admin_url()];
