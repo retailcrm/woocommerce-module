@@ -66,11 +66,13 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $loyaltyAccount = $response['loyaltyAccounts'][0] ?? null;
 
-            $history = $this->getLoyaltyHistory($loyaltyAccount['id']);
+            if ($loyaltyAccount) {
+                $loyaltyAccount['history'] = $this->getLoyaltyHistory($loyaltyAccount['id']);
+            }
 
             if ($loyaltyAccount && (int) $loyaltyAccount['customer']['externalId'] === $userId) {
                 if ($loyaltyAccount['active'] === true) {
-                    $result['form'] = $this->loyaltyForm->getInfoLoyalty($loyaltyAccount, $history);
+                    $result['form'] = $this->loyaltyForm->getInfoLoyalty($loyaltyAccount);
                 } else {
                     $result['form'] = $this->loyaltyForm->getActivationForm();
 
@@ -584,7 +586,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         public function getLoyaltyHistory(int $loyaltyId)
         {
             try {
-                $response = $this->apiClient->getClientBonusHistory($loyaltyId);
+                $response = $this->apiClient->getClientBonusHistory($loyaltyId, [] , 20);
 
                 if (!$response->isSuccessful()) {
                     WC_Retailcrm_Logger::error(

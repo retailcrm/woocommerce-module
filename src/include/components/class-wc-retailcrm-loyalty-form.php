@@ -65,20 +65,28 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             );
         }
 
-        public function getInfoLoyalty(array $loyaltyAccount, $history)
+        public function getInfoLoyalty(array $loyaltyAccount)
         {
-            $data = [
-                '<b>' . __('Bonus account', 'retailcrm') . '</b>',
-                __('Participation ID: ', 'retailcrm') . $loyaltyAccount['id'],
-                __('Current level: ', 'retailcrm') . $loyaltyAccount['level']['name'],
-                __('Bonuses on the account: ', 'retailcrm') . $loyaltyAccount['amount'],
-                __('Bonus card number: ' , 'retailcrm') . ($loyaltyAccount['cardNumber'] ?? __('The card is not linked', 'retailcrm')),
-                __('Date of registration: ', 'retailcrm') . $loyaltyAccount['activatedAt'],
-                '<hr>',
-                '<br>',
-                '<b>' . __('Current level rules', 'retailcrm') . '</b>',
-                __('Required amount of purchases to move to the next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . ' ' . $loyaltyAccount['loyalty']['currency'],
-            ];
+            $operationTypes = 
+                [
+                    'credit_manual' => 'Начислено',
+                    'charge_manual' => 'Списано',
+                    'credit_for_order' => 'Начислено за заказ ',
+                    'burn' => 'Сгорание',
+                    'charge_for_order' => 'Списание за заказ '
+                ];
+
+            $data = 
+                [
+                    '<b>' . __('Bonus account', 'retailcrm') . '</b>',
+                    __('Participation ID: ', 'retailcrm') . $loyaltyAccount['id'],
+                    __('Current level: ', 'retailcrm') . $loyaltyAccount['level']['name'],
+                    __('Bonuses on the account: ', 'retailcrm') . $loyaltyAccount['amount'],
+                    __('Date of registration: ', 'retailcrm') . $loyaltyAccount['activatedAt'],
+                    '<br>',
+                    '<b>' . __('Current level rules', 'retailcrm') . '</b>',
+                    __('Required amount of purchases to move to the next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . ' ' . $loyaltyAccount['loyalty']['currency'],
+                ];
 
             switch ($loyaltyAccount['level']['type']) {
                 case 'bonus_converting':
@@ -95,27 +103,36 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     break;
             }
 
+            print_r($loyaltyAccount['history']->bonusOperations);
+
             $htmlTable = '
-                <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">
+                <table cellpadding="8" cellspacing="0" style="width: 100%; font-family: Arial, sans-serif; border: none">
                 <thead>
-                    <tr style="background-color: #f2f2f2;">
-                       <th style="text-align: left;">Количество</th>
-                       <th style="text-align: left;">Дата начисления</th>
-                       <th style="text-align: left;">Заказ</th>
+                    <tr style="background-color:rgba(212, 202, 202, 0.7);">
+                       <th colspan="3" style="text-align: left; border: none">История операций</th>
                    </tr>
                 </thead>
                 <tbody>';
                 
-            foreach ($history->bonusOperations as $node) {
-                $amount = isset($node['amount']) ? htmlspecialchars($node['amount']) : '0.00';
-                $dateCreate = isset($node['createdAt']) ? htmlspecialchars($node['createdAt']) : 'Нет данных';
-                $dateActivation = isset($node['order']['externalId']) ? htmlspecialchars($node['order']['externalId']) : 'Нет данных';
-    
+            foreach ($loyaltyAccount['history']->bonusOperations as $node) {
+                $amount = $node['amount'];
+                $dateCreate = $node['createdAt'];
+                $description = isset($operationTypes[$node['type']]) ? $operationTypes[$node['type']] : '-';
+
+                if (
+                    in_array($node['type'], ['credit_for_order', 'charge_for_order']) &&
+                    isset($node['order']['externalId'])
+                ) {
+                    $description .= $node['order']['externalId'];
+                }
+
+                $colorText = $amount < 0 ? 'red' : 'green';
+
                 $htmlTable .= "
-                <tr>
-                     <td style=\"text-align: center;\">$amount</td>
-                     <td>$dateCreate</td>
-                     <td>$dateActivation</td>
+                <tr style=\"background-color:rgba(242, 242, 242, 0.76);\">
+                     <td style=\"text-align: center; border: none; color: {$colorText}\">$amount</td>
+                     <td style=\"text-align: center; border: none;\">$dateCreate</td>
+                     <td style=\"text-align: center; border: none;\">$description</td>
                 </tr>";
             } 
 
@@ -130,6 +147,5 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return $result . $htmlTable;
         }
     }
-
 
 endif;
