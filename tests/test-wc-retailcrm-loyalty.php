@@ -60,7 +60,11 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         $this->setMockResponse($this->apiMock, 'createLoyaltyAccount', $this->responseMock);
         $this->setMockResponse($this->apiMock, 'activateLoyaltyAccount', $this->responseMock);
         $this->setMockResponse($this->apiMock, 'getSingleSiteForKey', 'woo');
-        $this->setMockResponse($this->apiMock, 'getClientBonusHistory', ['bonusOperations' => ['amount' => 100]]);
+        $this->setMockResponse(
+            $this->apiMock,
+            'getClientBonusHistory',
+            ['bonusOperations' => [['amount' => 100, 'createdAt' => '21-06-1998']]]
+        );
 
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
     }
