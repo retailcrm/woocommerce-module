@@ -114,8 +114,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $htmlTable = '
                 <table cellpadding="8" cellspacing="0" style="width: 100%; border: none">
                 <tbody>';
-                
-            foreach ($loyaltyAccount['history']->bonusOperations as $node) {
+
+            foreach ($loyaltyAccount['history'] as $node) {
                 $amount = $node['amount'];
                 $dateCreate = $node['createdAt'];
                 $description = isset($operationTypes[$node['type']]) ? $operationTypes[$node['type']] : '-';

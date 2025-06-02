@@ -587,16 +587,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             try {
                 $response = $this->apiClient->getClientBonusHistory($loyaltyId, [] , 20);
-
-                if (!$response->isSuccessful()) {
-                    WC_Retailcrm_Logger::error(
-                        __METHOD__,
-                        'Error while getting loyalty history',
-                        ['response' => json_decode($response->getRawResponse(), true)]
-                    );
-                }
-
-                $bonuses = $response;
+                $bonuses = $response['bonusOperations'];
 
                 return $bonuses;
             } catch (Throwable $exception) {
