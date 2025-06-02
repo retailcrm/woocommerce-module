@@ -66,6 +66,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $loyaltyAccount = $response['loyaltyAccounts'][0] ?? null;
 
+            if ($loyaltyAccount) {
+                $loyaltyAccount['history'] = $this->getLoyaltyHistory($loyaltyAccount['id']);
+            }
+
             if ($loyaltyAccount && (int) $loyaltyAccount['customer']['externalId'] === $userId) {
                 if ($loyaltyAccount['active'] === true) {
                     $result['form'] = $this->loyaltyForm->getInfoLoyalty($loyaltyAccount);
@@ -577,6 +581,20 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         private function getHtmlCreditBonuses($creditBonuses)
         {
             return '<b style="font-size: large">' . __("Points will be awarded upon completion of the order:", 'retailcrm') . ' <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
+        }
+
+        public function getLoyaltyHistory(int $loyaltyId)
+        {
+            try {
+                $response = $this->apiClient->getClientBonusHistory($loyaltyId, [] , 20);
+                $bonuses = $response['bonusOperations'];
+
+                return $bonuses;
+            } catch (Throwable $exception) {
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
+
+                return false;
+            }
         }
     }
 
