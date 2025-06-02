@@ -1,3 +1,6 @@
+## 2025-06-02 4.8.23
+* Added loyalty history
+
 ## 2025-04-25 4.8.22
 * Added data tracking support
 
