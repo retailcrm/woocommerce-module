@@ -43,14 +43,24 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
 
         $this->apiMock = $this->getMockBuilder('\WC_Retailcrm_Client_V5')
             ->disableOriginalConstructor()
-            ->setMethods(['customersGet', 'getLoyaltyAccountList', 'createLoyaltyAccount', 'activateLoyaltyAccount', 'calculateDiscountLoyalty', 'getSingleSiteForKey', 'applyBonusToOrder'])
-            ->getMock()
-        ;
+            ->setMethods(
+                [
+                    'customersGet',
+                    'getLoyaltyAccountList',
+                    'createLoyaltyAccount',
+                    'activateLoyaltyAccount',
+                    'calculateDiscountLoyalty',
+                    'getSingleSiteForKey',
+                    'applyBonusToOrder',
+                    'getClientBonusHistory',
+                ])
+                ->getMock();
 
         $this->setMockResponse($this->apiMock, 'customersGet', ['customer' => ['id' => 1]]);
         $this->setMockResponse($this->apiMock, 'createLoyaltyAccount', $this->responseMock);
         $this->setMockResponse($this->apiMock, 'activateLoyaltyAccount', $this->responseMock);
         $this->setMockResponse($this->apiMock, 'getSingleSiteForKey', 'woo');
+        $this->setMockResponse($this->apiMock, 'getClientBonusHistory', ['bonusOperations' => ['amount' => 100]]);
 
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
     }

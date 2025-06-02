@@ -31,7 +31,7 @@ class DataLoyaltyRetailCrm
                                 'customer' => [
                                     'externalId' => 1
                                 ],
-                                'id' => 1
+                                'id' => 1,
                             ]
                         ]
                     ]
@@ -64,7 +64,8 @@ class DataLoyaltyRetailCrm
                                 'customer' => [
                                     'externalId' => 1
                                 ],
-                                'active' => true
+                                'active' => true,
+                                'history' => ['bonusOpeations' => 100],
                             ]
                         ]
                     ]
