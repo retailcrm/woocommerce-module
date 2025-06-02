@@ -134,11 +134,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'api_options'
                 ];
 
-                $this->form_fields['tracker_settings'] = [
-                    'type'        => 'textarea',
-                    //'css'         => 'display: none',
-                ];
-
                 $this->form_fields['online_assistant'] = [
                     'title'       => __('Online assistant', 'retailcrm'),
                     'css' => 'width:400px; height:215px; resize: horizontal;',
@@ -147,10 +142,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'placeholder' => __('Insert the Online consultant code here', 'retailcrm')
                 ];
 
-
                 $this->form_fields['tracker_settings'] = [
                     'type'        => 'textarea',
-                    //'css'         => 'display: none',
+                    'css'         => 'display: none',
                 ];
 
                 $this->form_fields[] = [
