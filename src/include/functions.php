@@ -213,13 +213,22 @@ function getOptionByCode($optionName)
     return get_option(WC_Retailcrm_Base::$option_key)[$optionName] ?? null;
 }
 
-// TODO: подключение трекинга данных.
-add_action('wp_footer', function() {
-    ?>
-    <script>
-        jQuery(function() {
-            startTrack('page_view', 'open_cart', 'cart');
-        });
-    </script>
-    <?php
-});
+$retailcrm_settings = get_option('woocommerce_integration-retailcrm_settings');
+$tracker_settings = json_decode($retailcrm_settings['tracker_settings'], true);
+
+if (isset($tracker_settings['tracker_enabled'])) {
+    $tracker_enabled = $tracker_settings['tracker_enabled'];
+    $tracked_events = $tracker_settings['tracked_events'];
+}
+
+if ($tracker_enabled && count($tracked_events) > 0) {
+    add_action('wp_footer', function() {
+        ?>
+        <script>
+            jQuery(function() {
+                 startTrack('page_view', 'open_cart', 'cart');
+            });
+        </script>
+         <?php
+     });
+}
