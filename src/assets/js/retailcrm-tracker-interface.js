@@ -25,7 +25,7 @@ jQuery(document).ready(function ($) {
             const trackerCheckbox = `
                 <label>
                     <input type="checkbox" id="${trackerCheckboxId}" ${savedData.tracker_enabled ? 'checked' : ''}> 
-                    Активировать передачу событий
+                    ${retailcrm_localized.tracker_activity}
                 </label>
             `;
             $trackerContainer.html(trackerCheckbox);
@@ -35,9 +35,9 @@ jQuery(document).ready(function ($) {
     function renderEventCheckboxes() {
         const savedData = getSavedData();
         const events = [
-            {value: 'page_view', label: 'Page View', title: 'Трекает просмотр страниц пользователем'},
-            {value: 'cart', label: 'Cart', title: 'Трекает изменения в корзине (добавление/удаление товара)'},
-            {value: 'open_cart', label: 'Open Cart', title: 'Трекает момент, когда пользователь открыл корзину'}
+            {value: 'page_view', label: retailcrm_localized.page_view, title: retailcrm_localized.page_view_desc},
+            {value: 'cart', label: retailcrm_localized.cart, title: retailcrm_localized.cart_desc},
+            {value: 'open_cart', label: retailcrm_localized.open_cart, title: retailcrm_localized.open_cart_desc}
         ];
 
         let checkboxes = '';

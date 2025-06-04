@@ -221,14 +221,22 @@ if (isset($tracker_settings['tracker_enabled'])) {
     $tracked_events = $tracker_settings['tracked_events'];
 }
 
+$isPageView = in_array('page_view', $tracked_events) ? 'page_view' : null;
+$isCart = in_array('cart', $tracked_events) ? 'cart' : null;
+$isCartOpen = in_array('open_cart', $tracked_events) ? 'open_cart' : null;
+
 if ($tracker_enabled && count($tracked_events) > 0) {
-    add_action('wp_footer', function() {
+    add_action('wp_footer', function() use ($isPageView, $isCart, $isCartOpen) {
         ?>
         <script>
             jQuery(function() {
-                 startTrack('page_view', 'open_cart', 'cart');
+                var pageView = <?php echo json_encode($isPageView); ?>;
+                var cart = <?php echo json_encode($isCart); ?>;
+                var openCart = <?php echo json_encode($isCartOpen); ?>;
+
+                startTrack(pageView, openCart, cart);
             });
         </script>
-         <?php
-     });
+        <?php
+    });
 }
