@@ -32,7 +32,7 @@ class WC_Retailcrm_Daemon_Collector_Test extends WC_Retailcrm_Test_Case_Helper
 
         $js = $this->daemonCollector->initialize_daemon_collector();
 
-        $this->assertContains('customerId', $js);
+        $this->assertContains('customer', $js);
         $this->assertContains($this->options['daemon_collector_key'], $js);
         $this->assertContains('<script', $js);
         $this->assertContains('</script>', $js);
