@@ -216,6 +216,8 @@ function getOptionByCode($optionName)
 $retailcrm_settings = get_option('woocommerce_integration-retailcrm_settings');
 $tracker_settings = json_decode($retailcrm_settings['tracker_settings'], true);
 
+$tracked_events = [];
+
 if (isset($tracker_settings['tracker_enabled'])) {
     $tracker_enabled = $tracker_settings['tracker_enabled'];
     $tracked_events = $tracker_settings['tracked_events'];

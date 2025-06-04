@@ -39,7 +39,7 @@ class WC_Retailcrm_Abstracts_Settings_Test extends  WC_Retailcrm_Test_Case_Helpe
         $this->assertInternalType('string', $onlineAssistant);
 
         if (is_string($checkout)) {
-            $this->assertEquals('jscode', $onlineAssistant);
+            $this->assertEquals('c.retailcrm.tech/widget/loader.js', $onlineAssistant);
         } else {
             $this->assertEquals('', $onlineAssistant);
         }
@@ -50,7 +50,7 @@ class WC_Retailcrm_Abstracts_Settings_Test extends  WC_Retailcrm_Test_Case_Helpe
     {
         return array(
             array(
-                'checkout' => 'js\code'
+                'checkout' => 'c.retailcrm.tech/widget/loader.js'
             ),
             array(
                 'checkout' => null
