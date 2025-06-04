@@ -154,13 +154,6 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'id'          => 'catalog_options'
                 ];
 
-                $this->form_fields[] = [
-                    'title'       => __('Catalog settings', 'retailcrm'),
-                    'type'        => 'heading',
-                    'description' => '',
-                    'id'          => 'catalog_options'
-                ];
-
                 $this->form_fields['product_description'] = [
                     'type'        => 'select',
                     'class'       => 'select',

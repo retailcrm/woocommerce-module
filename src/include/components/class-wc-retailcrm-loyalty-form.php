@@ -65,7 +65,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             );
         }
 
-        public function getInfoLoyalty(array $loyaltyAccount, $history)
+        public function getInfoLoyalty(array $loyaltyAccount)
         {
             $data = [
                 '<b>' . __('Bonus account', 'retailcrm') . '</b>',
@@ -74,10 +74,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 __('Bonuses on the account: ', 'retailcrm') . $loyaltyAccount['amount'],
                 __('Bonus card number: ' , 'retailcrm') . ($loyaltyAccount['cardNumber'] ?? __('The card is not linked', 'retailcrm')),
                 __('Date of registration: ', 'retailcrm') . $loyaltyAccount['activatedAt'],
-                '<hr>',
                 '<br>',
                 '<b>' . __('Current level rules', 'retailcrm') . '</b>',
-                __('Required amount of purchases to move to the next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . ' ' . $loyaltyAccount['loyalty']['currency'],
+                __('Required amount of purchases to move to the next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . ' ' . $loyaltyAccount['loyalty']['currency']
             ];
 
             switch ($loyaltyAccount['level']['type']) {
@@ -95,39 +94,13 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     break;
             }
 
-            $htmlTable = '
-                <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif;">
-                <thead>
-                    <tr style="background-color: #f2f2f2;">
-                       <th style="text-align: left;">Количество</th>
-                       <th style="text-align: left;">Дата начисления</th>
-                       <th style="text-align: left;">Заказ</th>
-                   </tr>
-                </thead>
-                <tbody>';
-                
-            foreach ($history->bonusOperations as $node) {
-                $amount = isset($node['amount']) ? htmlspecialchars($node['amount']) : '0.00';
-                $dateCreate = isset($node['createdAt']) ? htmlspecialchars($node['createdAt']) : 'Нет данных';
-                $dateActivation = isset($node['order']['externalId']) ? htmlspecialchars($node['order']['externalId']) : 'Нет данных';
-    
-                $htmlTable .= "
-                <tr>
-                     <td style=\"text-align: center;\">$amount</td>
-                     <td>$dateCreate</td>
-                     <td>$dateActivation</td>
-                </tr>";
-            } 
-
-            $htmlTable .= '</tbody></table>';
-
             $result = '';
 
             foreach ($data as $line) {
                 $result .= "<p style='line-height: 1'>$line</p>";
             }
 
-            return $result . $htmlTable;
+            return $result;
         }
     }
 

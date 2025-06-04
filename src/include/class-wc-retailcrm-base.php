@@ -1060,6 +1060,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             wp_register_script($scriptName, $jsScriptsPath, false, '0.1');
             wp_enqueue_script($scriptName, $jsScriptsPath, '', '', true);
+
+            wp_localize_script($scriptName, 'AdminUrl', ['url' => get_admin_url()]);
         }
 
         /**
