@@ -854,6 +854,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                strpos($onlineAssistant, 'c.retailcrm.tech/widget/loader.js') !== false
         ) {
             return wp_unslash($onlineAssistant);
+        } elseif(empty($onlineAssistant)) {
+            return '';
         }
 
         WC_Admin_Settings::add_error(__('Incorrect code of Online consultant', 'retailcrm'));
