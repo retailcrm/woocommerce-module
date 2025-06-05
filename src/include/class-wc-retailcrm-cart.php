@@ -45,7 +45,7 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                     'link' => wc_get_cart_url(),
                 ];
 
-                if (get_option('woocommerce_integration-retailcrm_settings')['daemon_collector'] === 'no') {
+                if (isset($this->settings['daemon_collector']) && $this->settings['daemon_collector'] === 'no') {
                     $crmCart['droppedAt'] = date($this->dateFormat);
                 }
 
