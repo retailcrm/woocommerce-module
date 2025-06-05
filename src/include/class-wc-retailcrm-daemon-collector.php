@@ -88,7 +88,7 @@ EOF;
             && WC()->customer !== null
             && WC()->customer->get_id() > 0
         ) {
-            $params['customerId'] = WC()->customer->get_id();
+            $params['customer']['externalId'] = WC()->customer->get_id();
         }
 
         $this->code .= apply_filters('retailcrm_daemon_collector', '') . sprintf(
