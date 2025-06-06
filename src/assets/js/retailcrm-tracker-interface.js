@@ -13,7 +13,6 @@ jQuery(document).ready(function () {
     function getSavedData() {
         try {
             const text = textarea.val().trim();
-
             return text ? JSON.parse(text) : { tracker_enabled: false, tracked_events: [] };
         } catch (exception) {
             return { tracker_enabled: false, tracked_events: [] };
@@ -55,7 +54,6 @@ jQuery(document).ready(function () {
         });
         
         eventsContainer.html(checkboxes);
-        updateTextarea();
     }
 
     function updateTextarea() {
@@ -85,11 +83,12 @@ jQuery(document).ready(function () {
             clearAll();
         } else {
             renderMainCheckbox();
-
-            if (jQuery('#' + trackerCheckboxId).is(':checked')) {
-                renderEventCheckboxes();
+            renderEventCheckboxes();
+            
+            if (!jQuery('#' + trackerCheckboxId).is(':checked')) {
+                eventsContainer.hide();
             } else {
-                eventsContainer.empty();
+                eventsContainer.show();
             }
         }
     }
@@ -97,11 +96,10 @@ jQuery(document).ready(function () {
     assistantCode.on('input', updateDisplay);
     trackerContainer.on('change', '#' + trackerCheckboxId, function() {
         if (jQuery(this).is(':checked')) {
-            renderEventCheckboxes();
+            eventsContainer.show();
         } else {
-            eventsContainer.empty();
+            eventsContainer.hide();
         }
-
         updateTextarea();
     });
     
