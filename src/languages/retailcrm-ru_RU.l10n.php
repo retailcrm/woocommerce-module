@@ -73,11 +73,11 @@ return [
             "Способы оформления заказа, доступные для выгрузки из Simla.com",
         "Order methods" => "Способы оформления заказа",
         "Catalog settings" => "Настройки каталога",
-        "Online assistant" => "Онлайн консультант",
+        "Online assistant" => "Онлайн консультант/трекер",
         "Insert the Online consultant code here" =>
-            "Вставьте код Онлайн-консультанта здесь",
+            "Вставьте код онлайн-консультанта/трекера",
         "Incorrect code of Online consultant" =>
-            "Неверный код Онлайн-консультанта",
+            "Неверный код онлайн-консультанта/трекера",
         "Select API version" => "Выберите версию API",
         "API version" => "Версия API",
         "API settings" => "Настройки API",

@@ -212,33 +212,3 @@ function getOptionByCode($optionName)
 {
     return get_option(WC_Retailcrm_Base::$option_key)[$optionName] ?? null;
 }
-
-$crmSettings = get_option('woocommerce_integration-retailcrm_settings');
-$trackerSettings = json_decode($crmSettings['tracker_settings'], true);
-
-$trackedEvents = [];
-
-if (isset($trackerSettings['tracker_enabled'])) {
-    $trackerEnabled = $trackerSettings['tracker_enabled'];
-    $trackedEvents = $trackerSettings['tracked_events'];
-}
-
-$isPageView = in_array('page_view', $trackedEvents) ? 'page_view' : null;
-$isCart = in_array('cart', $trackedEvents) ? 'cart' : null;
-$isCartOpen = in_array('open_cart', $trackedEvents) ? 'open_cart' : null;
-
-if ($trackerEnabled && count($trackedEvents) > 0) {
-    add_action('wp_footer', function() use ($isPageView, $isCart, $isCartOpen) {
-        ?>
-        <script>
-            jQuery(function() {
-                var pageView = <?php echo json_encode($isPageView); ?>;
-                var cart = <?php echo json_encode($isCart); ?>;
-                var openCart = <?php echo json_encode($isCartOpen); ?>;
-
-                startTrack(pageView, openCart, cart);
-            });
-        </script>
-        <?php
-    });
-}

@@ -113,6 +113,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
+            add_action('wp_footer', [$this, 'add_retailcrm_tracking_script'], 102);
 
             //Tracker
             add_action('wp_ajax_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
@@ -1445,6 +1446,40 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if ($this->apiClient && $clientId && !$isActive) {
                 WC_Retailcrm_Plugin::integration_module($this->apiClient, $clientId);
                 update_option('retailcrm_active_in_crm', true);
+            }
+        }
+
+        public function add_retailcrm_tracking_script() {
+            $crmSettings = get_option('woocommerce_integration-retailcrm_settings');
+
+            if (empty($crmSettings)) {
+                return;
+            }
+
+            $trackerSettings = json_decode($crmSettings['tracker_settings'], true);
+            $trackedEvents = [];
+
+            if (isset($trackerSettings['tracker_enabled'])) {
+                $trackerEnabled = $trackerSettings['tracker_enabled'];
+                $trackedEvents = $trackerSettings['tracked_events'];
+            }
+
+            $isPageView = in_array('page_view', $trackedEvents) ? 'page_view' : null;
+            $isCart = in_array('cart', $trackedEvents) ? 'cart' : null;
+            $isCartOpen = in_array('open_cart', $trackedEvents) ? 'open_cart' : null;
+
+            if ($trackerEnabled && count($trackedEvents) > 0) {
+                ?>
+                <script>
+                    jQuery(function() {
+                        var pageView = <?php echo json_encode($isPageView); ?>;
+                        var cart = <?php echo json_encode($isCart); ?>;
+                        var openCart = <?php echo json_encode($isCartOpen); ?>;
+
+                        startTrack(pageView, openCart, cart);
+                    });
+                </script>
+                <?php
             }
         }
     }
