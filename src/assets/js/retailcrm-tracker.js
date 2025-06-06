@@ -37,9 +37,16 @@ function startTrack(...trackerEvents)
         let offerId = jQuery('.single_add_to_cart_button').val() || jQuery('input[name="product_id"]').val();
 
         if (offerId) {
-            setTimeout(() => {
-                ocapi.event('page_view', { offer_external_id:  offerId })
-            }, 1000)
+            getCustomerInfo().then(function (customer) {
+                if (!customer?.externalId) {
+                    return;
+                }
+
+                setTimeout(() => {
+                    ocapi.setCustomerSiteId(String(customer.externalId));
+                    ocapi.event('page_view', { offer_external_id:  offerId })
+                }, 1000)
+            });
         }
     }
 
@@ -47,11 +54,12 @@ function startTrack(...trackerEvents)
     {
         if (jQuery(document.body).hasClass('woocommerce-cart')) {
             getCustomerInfo().then(function (customer) {
-                if (!customer?.email) {
+                if (!customer?.email || !customer?.externalId) {
                     return;
                 }
 
                 setTimeout(function() {
+                    ocapi.setCustomerSiteId(String(customer.externalId));
                     ocapi.event('open_cart', { customer_email: customer.email});
                 }, 1000);
             });
@@ -75,9 +83,16 @@ function startTrack(...trackerEvents)
         });
 
         if (cart.items !== []) {
-            setTimeout(function() {
-                ocapi.event('cart', cart);
-            }, 1000);
+            getCustomerInfo().then(function (customer) {
+                if (!customer?.externalId) {
+                    return;
+                }
+
+                setTimeout(function() {
+                    ocapi.setCustomerSiteId(String(customer.externalId));
+                    ocapi.event('cart', cart);
+                }, 1000);
+            });
         }
     }
 

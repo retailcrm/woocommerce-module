@@ -1,3 +1,6 @@
+## 2025-05-06 4.8.24
+* Added data tracking settings
+
 ## 2025-05-05 4.8.23
 * Fix send cart with active Daemon Collector
 

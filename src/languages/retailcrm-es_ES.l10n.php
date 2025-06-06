@@ -69,9 +69,11 @@ return [
             "Los métodos de la formalización de los pedidos disponibles para subida desde Simla.com",
         "Order methods" => "Los métodos de la formalización del pedido",
         "Catalog settings" => "Ajustes del catálogo",
-        "Online assistant" => "Consultor en línea",
-        "Insert the Online consultant code here" =>
+        "Online assistant/Event tracker" => "Consultor en línea",
+        "Insert the Online consultant/Event tracker code here" =>
             "Inserte el código de consultor en Línea aquí",
+        "Incorrect code of Online consultant/Event tracker" =>
+            "Código incorrecto del consultor",
         "Select API version" => "Selecciona la versión de API",
         "API version" => "Versión de API",
         "API settings" => "Ajustes de API",
@@ -133,6 +135,13 @@ return [
         "This option is disabled" => "Opción desactivada",
         "Cron launches" => "Tareas de cron",
         "Generation ICML" => "Generación del catálogo",
+        "Activate event tracking" => "Activar seguimiento de eventos",
+        "Page View" => "Visualización de página",
+        "Cart" => "Carrito",
+        "Open Cart" => "Abrir carrito",
+        "Tracks user page views" => "Rastrea las visualizaciones de página del usuario",
+        "Tracks changes in the cart (adding/removing items)" => "Rastrea cambios en el carrito (agregar/eliminar productos)",
+        "Tracks when the user opens the cart" => "Rastrea cuando el usuario abre el carrito",
         "Syncing history" => "Sincronización del historial",
         "Syncing inventories" => "Sincronización de inventario",
         'Don\'t send to CRM' => "No enviar al CRM",

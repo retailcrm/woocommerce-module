@@ -135,11 +135,16 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 ];
 
                 $this->form_fields['online_assistant'] = [
-                    'title'       => __('Online assistant', 'retailcrm'),
+                    'title'       => __('Online assistant/Event tracker', 'retailcrm'),
                     'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type'        => 'textarea',
                     'id'          => 'online_assistant',
-                    'placeholder' => __('Insert the Online consultant code here', 'retailcrm')
+                    'placeholder' => __('Insert the Online consultant/Event tracker code here', 'retailcrm')
+                ];
+
+                $this->form_fields['tracker_settings'] = [
+                    'type'        => 'textarea',
+                    'css'         => 'display: none',
                 ];
 
                 $this->form_fields[] = [
@@ -843,9 +848,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     {
         $onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
 
-        if (!empty($onlineAssistant) && is_string($onlineAssistant)) {
+        if ($onlineAssistant === '') {
+            return '';
+        }
+
+        if (strpos($onlineAssistant, 'c.retailcrm.tech/widget/loader.js') !== false) {
             return wp_unslash($onlineAssistant);
         }
+
+        WC_Admin_Settings::add_error(__('Incorrect code of Online consultant/Event tracker', 'retailcrm'));
 
         return '';
     }
