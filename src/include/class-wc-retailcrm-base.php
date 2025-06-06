@@ -1450,37 +1450,28 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
 
         public function add_retailcrm_tracking_script() {
-            $crmSettings = get_option('woocommerce_integration-retailcrm_settings');
-
-            if (empty($crmSettings)) {
-                return;
-            }
-
-            $trackerSettings = json_decode($crmSettings['tracker_settings'], true);
-            $trackedEvents = [];
-
-            if (isset($trackerSettings['tracker_enabled'])) {
-                $trackerEnabled = $trackerSettings['tracker_enabled'];
+            $trackerSettings = isset($this->settings['tracker_settings']) ? json_decode($this->settings['tracker_settings'], true) : null;
+            
+            if (isset($trackerSettings['tracker_enabled']) && $trackerSettings['tracker_enabled'] === true) {
                 $trackedEvents = $trackerSettings['tracked_events'];
-            }
+                $isPageView = in_array('page_view', $trackedEvents) ? 'page_view' : null;
+                $isCart = in_array('cart', $trackedEvents) ? 'cart' : null;
+                $isCartOpen = in_array('open_cart', $trackedEvents) ? 'open_cart' : null;
 
-            $isPageView = in_array('page_view', $trackedEvents) ? 'page_view' : null;
-            $isCart = in_array('cart', $trackedEvents) ? 'cart' : null;
-            $isCartOpen = in_array('open_cart', $trackedEvents) ? 'open_cart' : null;
+                if (count($trackedEvents) > 0) {
+                    ?>
+                    <script>
+                        jQuery(function() {
+                            var pageView = <?php echo json_encode($isPageView); ?>;
+                            var cart = <?php echo json_encode($isCart); ?>;
+                            var openCart = <?php echo json_encode($isCartOpen); ?>;
 
-            if ($trackerEnabled && count($trackedEvents) > 0) {
-                ?>
-                <script>
-                    jQuery(function() {
-                        var pageView = <?php echo json_encode($isPageView); ?>;
-                        var cart = <?php echo json_encode($isCart); ?>;
-                        var openCart = <?php echo json_encode($isCartOpen); ?>;
-
-                        startTrack(pageView, openCart, cart);
-                    });
-                </script>
-                <?php
+                            startTrack(pageView, openCart, cart);
+                        });
+                    </script>
+                    <?php
+                }
             }
         }
     }
-}
+}   
