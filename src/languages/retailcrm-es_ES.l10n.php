@@ -69,10 +69,10 @@ return [
             "Los métodos de la formalización de los pedidos disponibles para subida desde Simla.com",
         "Order methods" => "Los métodos de la formalización del pedido",
         "Catalog settings" => "Ajustes del catálogo",
-        "Online assistant" => "Consultor en línea",
-        "Insert the Online consultant code here" =>
+        "Online assistant/Event tracker" => "Consultor en línea",
+        "Insert the Online consultant/Event tracker code here" =>
             "Inserte el código de consultor en Línea aquí",
-        "Incorrect code of Online consultant" =>
+        "Incorrect code of Online consultant/Event tracker" =>
             "Código incorrecto del consultor",
         "Select API version" => "Selecciona la versión de API",
         "API version" => "Versión de API",
