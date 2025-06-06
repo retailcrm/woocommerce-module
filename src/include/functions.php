@@ -213,21 +213,21 @@ function getOptionByCode($optionName)
     return get_option(WC_Retailcrm_Base::$option_key)[$optionName] ?? null;
 }
 
-$retailcrm_settings = get_option('woocommerce_integration-retailcrm_settings');
-$tracker_settings = json_decode($retailcrm_settings['tracker_settings'], true);
+$crmSettings = get_option('woocommerce_integration-retailcrm_settings');
+$trackerSettings = json_decode($crmSettings['tracker_settings'], true);
 
-$tracked_events = [];
+$trackedEvents = [];
 
-if (isset($tracker_settings['tracker_enabled'])) {
-    $tracker_enabled = $tracker_settings['tracker_enabled'];
-    $tracked_events = $tracker_settings['tracked_events'];
+if (isset($trackerSettings['tracker_enabled'])) {
+    $trackerEnabled = $trackerSettings['tracker_enabled'];
+    $trackedEvents = $trackerSettings['tracked_events'];
 }
 
-$isPageView = in_array('page_view', $tracked_events) ? 'page_view' : null;
-$isCart = in_array('cart', $tracked_events) ? 'cart' : null;
-$isCartOpen = in_array('open_cart', $tracked_events) ? 'open_cart' : null;
+$isPageView = in_array('page_view', $trackedEvents) ? 'page_view' : null;
+$isCart = in_array('cart', $trackedEvents) ? 'cart' : null;
+$isCartOpen = in_array('open_cart', $trackedEvents) ? 'open_cart' : null;
 
-if ($tracker_enabled && count($tracked_events) > 0) {
+if ($trackerEnabled && count($trackedEvents) > 0) {
     add_action('wp_footer', function() use ($isPageView, $isCart, $isCartOpen) {
         ?>
         <script>

@@ -1040,17 +1040,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 wp_localize_script($scriptName, 'AdminUrl', $wpAdminUrl);
             }
 
-            $translations = [
-                'tracker_activity' => __('Activate event tracking', 'retailcrm'),
-                'page_view' => __('Page View', 'retailcrm'),
-                'cart' => __('Cart', 'retailcrm'),
-                'open_cart' => __('Open Cart', 'retailcrm'),
-                'page_view_desc' => __('Tracks user page views', 'retailcrm'),
-                'cart_desc' => __('Tracks changes in the cart (adding/removing items)', 'retailcrm'),
-                'open_cart_desc' => __('Tracks when the user opens the cart', 'retailcrm'),
-            ];
-
-            wp_localize_script('retailcrm-tracker-interface', 'retailcrm_localized', $translations);
+            $this->include_js_translates_for_tracker();
         }
 
         public function include_js_script_for_tracker()
@@ -1062,6 +1052,21 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_enqueue_script($scriptName, $jsScriptsPath, '', '', true);
 
             wp_localize_script($scriptName, 'AdminUrl', ['url' => get_admin_url()]);
+        }
+
+        public function include_js_translates_for_tracker()
+        {
+            $translations = [
+                'tracker_activity' => __('Activate event tracking', 'retailcrm'),
+                'page_view' => __('Page View', 'retailcrm'),
+                'cart' => __('Cart', 'retailcrm'),
+                'open_cart' => __('Open Cart', 'retailcrm'),
+                'page_view_desc' => __('Tracks user page views', 'retailcrm'),
+                'cart_desc' => __('Tracks changes in the cart (adding/removing items)', 'retailcrm'),
+                'open_cart_desc' => __('Tracks when the user opens the cart', 'retailcrm'),
+            ];
+
+            wp_localize_script('retailcrm-tracker-interface', 'retailcrm_localized', $translations);
         }
 
         /**

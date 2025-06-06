@@ -1,26 +1,27 @@
-jQuery(document).ready(function ($) {
-    const $input = $('#woocommerce_integration-retailcrm_online_assistant');
-    const $textarea = $('#woocommerce_integration-retailcrm_tracker_settings');
+jQuery(document).ready(function () {
+    const assistantCode = jQuery('#woocommerce_integration-retailcrm_online_assistant');
+    const textarea = jQuery('#woocommerce_integration-retailcrm_tracker_settings');
     const trackerCheckboxId = 'retailcrm_activation_tracker';
     const eventsContainerId = 'retailcrm_events_container';
 
-    let $trackerContainer = $('<div id="retailcrm_tracker_container" style="margin-top:10px;"></div>');
-    let $eventsContainer = $('<div id="' + eventsContainerId + '" style="margin-top:10px;"></div>');
+    let trackerContainer = jQuery('<div id="retailcrm_tracker_container" style="margin-top:10px;"></div>');
+    let eventsContainer = jQuery('<div id="' + eventsContainerId + '" style="margin-top:10px;"></div>');
 
-    $input.after($trackerContainer);
-    $trackerContainer.after($eventsContainer);
+    assistantCode.after(trackerContainer);
+    trackerContainer.after(eventsContainer);
 
     function getSavedData() {
         try {
-            const text = $textarea.val().trim();
+            const text = textarea.val().trim();
+
             return text ? JSON.parse(text) : { tracker_enabled: false, tracked_events: [] };
-        } catch (e) {
+        } catch (exception) {
             return { tracker_enabled: false, tracked_events: [] };
         }
     }
 
     function renderMainCheckbox() {
-        if ($('#' + trackerCheckboxId).length === 0) {
+        if (jQuery('#' + trackerCheckboxId).length === 0) {
             const savedData = getSavedData();
             const trackerCheckbox = `
                 <label>
@@ -28,7 +29,8 @@ jQuery(document).ready(function ($) {
                     ${retailcrm_localized.tracker_activity}
                 </label>
             `;
-            $trackerContainer.html(trackerCheckbox);
+            
+            trackerContainer.html(trackerCheckbox);
         }
     }
 
@@ -52,13 +54,13 @@ jQuery(document).ready(function ($) {
             `;
         });
         
-        $eventsContainer.html(checkboxes);
+        eventsContainer.html(checkboxes);
         updateTextarea();
     }
 
     function updateTextarea() {
-        const isTrackerEnabled = $('#' + trackerCheckboxId).is(':checked');
-        const selectedEvents = $('.retailcrm-event:checked').map(function() {
+        const isTrackerEnabled = jQuery('#' + trackerCheckboxId).is(':checked');
+        const selectedEvents = jQuery('.retailcrm-event:checked').map(function() {
             return this.value;
         }).get();
         
@@ -67,40 +69,43 @@ jQuery(document).ready(function ($) {
             tracked_events: selectedEvents
         };
         
-        $textarea.val(JSON.stringify(data));
+        textarea.val(JSON.stringify(data));
     }
 
     function clearAll() {
-        $trackerContainer.empty();
-        $eventsContainer.empty();
-        $textarea.val('');
+        trackerContainer.empty();
+        eventsContainer.empty();
+        textarea.val('');
     }
 
-    function updateUI() {
-        const val = $input.val().trim();
-        if (val === '') {
+    function updateDisplay() {
+        const value = assistantCode.val().trim();
+
+        if (value === '') {
             clearAll();
         } else {
             renderMainCheckbox();
-            if ($('#' + trackerCheckboxId).is(':checked')) {
+
+            if (jQuery('#' + trackerCheckboxId).is(':checked')) {
                 renderEventCheckboxes();
             } else {
-                $eventsContainer.empty();
+                eventsContainer.empty();
             }
         }
     }
 
-    $input.on('input', updateUI);
-    $trackerContainer.on('change', '#' + trackerCheckboxId, function() {
-        if ($(this).is(':checked')) {
+    assistantCode.on('input', updateDisplay);
+    trackerContainer.on('change', '#' + trackerCheckboxId, function() {
+        if (jQuery(this).is(':checked')) {
             renderEventCheckboxes();
         } else {
-            $eventsContainer.empty();
+            eventsContainer.empty();
         }
+
         updateTextarea();
     });
     
-    $eventsContainer.on('change', '.retailcrm-event', updateTextarea);
+    eventsContainer.on('change', '.retailcrm-event', updateTextarea);
 
-    updateUI();
+    updateDisplay();
 });
