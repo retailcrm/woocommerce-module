@@ -207,7 +207,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $user = wp_get_current_user();
 
                 // TODO: В будущем можно получить больше данных.
-                wp_send_json_success(['email' => $user->user_email]);
+                wp_send_json_success(['email' => $user->user_email, 'externalId' => $user->ID]);
             }
         }
 
