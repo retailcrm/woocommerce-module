@@ -45,7 +45,6 @@ class WC_Retailcrm_Abstracts_Settings_Test extends  WC_Retailcrm_Test_Case_Helpe
         }
     }
 
-
     public function dataProviderAssistant()
     {
         return array(
