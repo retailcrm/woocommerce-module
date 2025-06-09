@@ -230,6 +230,8 @@ return [
         "Сharged for order " => "Списано за заказ ",
         "Сharged" => "Списано",
         "Сredited" => "Начислено",
+        "%s bonuses will expire %s" => "%s бонусов сгорит %s",
+        "%s bonuses will active %s" => "%s бонусов будет активировано %s",
         "Send" => "Отправить",
         "To register in the loyalty program, fill in the form:" => "Для регистрации в программе лояльности заполните форму:",
         " I agree with " => " Я согласен с ",

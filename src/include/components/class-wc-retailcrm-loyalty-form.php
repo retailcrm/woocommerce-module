@@ -79,14 +79,24 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
 
             $activationInfo = $loyaltyAccount['activationBonuses'];
-            $burnInfo = 
+            $burnInfo = $loyaltyAccount['burnBonuses'];
+
+            if (isset($activationInfo[0]['date'])) {
+                $activationDate = $activationInfo[0]['date'];
+                $toActivationAmount = $activationInfo[0]['amount'];
+            }
+
+            if (isset($burnInfo [0]['date'])) {
+                $burnDate = $burnInfo[0]['date'];
+                $toBurnAmount = $burnInfo[0]['amount'];
+            }
 
             $data = 
                 [
                     '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
                     '<b>' . __('Bonuses on your account: ', 'retailcrm') . '</b>' . $loyaltyAccount['amount'],
-                    __('Bonuses awaiting activation: ', 'retailcrm') . $activationDate,
-                    __('Upcoming bonus expiration: ', 'retailcrm') . $expireDate,
+                    isset($burnDate) ? sprintf(__('%s bonuses will expire %s', 'retailcrm'), $toBurnAmount, $burnDate): '',
+                    isset($activationDate) ? sprintf(__('%s bonuses will active %s', 'retailcrm'), $toActivationAmount, $activationDate): '',
                     '<b>' . __('Total order summ: ', 'retailcrm') . '</b>',
                     $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
                     '<b>' . $loyaltyAccount['level']['name'] . '</b>',
