@@ -98,7 +98,7 @@ abstract class WC_Retailcrm_Abstracts_Address extends WC_Retailcrm_Abstracts_Dat
     {
         $countries = new WC_Countries();
 
-        return '';
+        return $countries->country_exists($countryCode) ? $countryCode : '';
     }
 
     /**

@@ -230,6 +230,8 @@ return [
         "Сharged for order" => "Cargado por el pedido",
         "Сharged" => "Cargado",
         "Сredited" => "Acreditado",
+        "%s bonuses will expire %s" => "%s bonos expirarán %s",  
+        "%s bonuses will active %s" => "%s bonos se activarán %s",  
         "Send" => "Enviar",
         "To register in the loyalty program, fill in the form:" => "Para registrarse en el programa de fidelización, rellene el formulario:",
         " I agree with " => " Acepto ",

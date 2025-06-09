@@ -55,7 +55,6 @@ class DataLoyaltyRetailCrm
                                 'cardNumber' => '12345',
                                 'activatedAt' => '2024-04-10 15:00:00',
                                 'active' => 1,
-                                'phoneNumber' => '+799925452222',
                                 'ordersSum' => 100,
                                 'nextLevelSum' => 15000,
                                 'loyalty' => [
