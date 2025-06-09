@@ -120,7 +120,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $data[] = '<b style="font-size: 100%">' . __('History', 'retailcrm') . '</b>';
 
             $htmlTable = '
-                <table cellpadding="4" cellspacing="0" style="width: 100%; border: none;>
+                <table cellpadding="7" cellspacing="0" style="width: 100%; border: none;>
                 <tbody>';
 
             foreach ($loyaltyAccount['history'] as $node) {
@@ -141,10 +141,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $colorText = $amount < 0 ? 'red' : 'green';
 
                 $htmlTable .= "
-                <tr style=\"background-color:rgb(255, 255, 255); font-size:105%\">
-                     <td style=\"text-align: center; border: none; color: {$colorText}\">$amount</td>
-                     <td style=\"text-align: center; border: none;\">$dateCreate</td>
-                     <td style=\"text-align: center; border: none; \">$description</td>
+                <tr style=\"background-color:rgb(255, 255, 255);\">
+                     <td style=\"text-align: center; font-size:105%; border: none; color: {$colorText}\">$amount</td>
+                     <td style=\"text-align: center; font-size:105%; border: none;\">$dateCreate</td>
+                     <td style=\"text-align: center; font-size:105%; border: none; \">$description</td>
                 </tr>";
             } 
 
@@ -153,7 +153,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $result = '';
 
             foreach ($data as $line) {
-                $result .= "<p style='line-height: 1.5'>$line</p>";
+                $result .= "<p style='line-height: 1.75'>$line</p>";
             }
 
             return $result . $htmlTable;
