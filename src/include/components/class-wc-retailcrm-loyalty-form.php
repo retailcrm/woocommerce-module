@@ -71,17 +71,22 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 [
                     'credit_manual' => __('Сredited', 'retailcrm'),
                     'charge_manual' => __('Сharged', 'retailcrm'),
-                    'credit_for_order' => __('Сredited for order', 'retailcrm'),
+                    'credit_for_order' => __('Сredited for order ', 'retailcrm'),
                     'burn' => __('Burn','retailcrm'),
-                    'charge_for_order' => __('Сharged for order', 'retailcrm'),
+                    'charge_for_order' => __('Сharged for order ', 'retailcrm'),
                 ];
 
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
+
+            $activationInfo = $loyaltyAccount['activationBonuses'];
+            $burnInfo = 
 
             $data = 
                 [
                     '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
                     '<b>' . __('Bonuses on your account: ', 'retailcrm') . '</b>' . $loyaltyAccount['amount'],
+                    __('Bonuses awaiting activation: ', 'retailcrm') . $activationDate,
+                    __('Upcoming bonus expiration: ', 'retailcrm') . $expireDate,
                     '<b>' . __('Total order summ: ', 'retailcrm') . '</b>',
                     $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
                     '<b>' . $loyaltyAccount['level']['name'] . '</b>',
@@ -112,6 +117,16 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $amount = $node['amount'];
                 $dateCreate = $node['createdAt'];
                 $description = isset($operationTypes[$node['type']]) ? $operationTypes[$node['type']] : '-';
+
+                if (isset($node['order']['externalId'])) {
+                    $order = wc_get_order($node['order']['externalId']);
+
+                    if ($order) {
+                        $order_url = $order->get_view_order_url();
+                        $link = sprintf('<a href = "%s">%s</a>', $order_url, $node['order']['externalId'] );
+                        $description .= $link;
+                    }
+                }
 
                 $colorText = $amount < 0 ? 'red' : 'green';
 

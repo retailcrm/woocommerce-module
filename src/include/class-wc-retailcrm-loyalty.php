@@ -68,6 +68,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             if ($loyaltyAccount) {
                 $loyaltyAccount['history'] = $this->getLoyaltyHistory($loyaltyAccount['id']);
+                $loyaltyAccount['activationBonuses'] = $this->getBonusDetails($loyaltyAccount['id'], 'waiting_activation');
+                $loyaltyAccount['burnBonuses'] = $this->getBonusDetails($loyaltyAccount['id'], 'burn_soon');
             }
 
             if ($loyaltyAccount && (int) $loyaltyAccount['customer']['externalId'] === $userId) {
@@ -587,9 +589,21 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             try {
                 $response = $this->apiClient->getClientBonusHistory($loyaltyId, [] , 20);
-                $bonuses = $response['bonusOperations'];
 
-                return $bonuses;
+                return $response['bonusOperations'];
+            } catch (Throwable $exception) {
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
+
+                return false;
+            }
+        }
+
+        public function getBonusDetails($loyaltyId, $status)
+        {
+            try {
+                $response = $this->apiClient->getDetailClientBonus($loyaltyId, $status, [], 20);
+
+                return $response['bonuses'];
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
