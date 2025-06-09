@@ -53,6 +53,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
                     'getSingleSiteForKey',
                     'applyBonusToOrder',
                     'getClientBonusHistory',
+                    'getDetailClientBonus',
                 ])
                 ->getMock();
 
@@ -64,6 +65,11 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
             $this->apiMock,
             'getClientBonusHistory',
             ['bonusOperations' => [['amount' => 100, 'createdAt' => '21-06-1998', 'type' => 'credit_manual']]]
+        );
+        $this->setMockResponse(
+            $this->apiMock,
+            'getDetailClientBonus',
+            ['bonuses' => [['amount' => 100, 'date' => '21-06-1998']]]
         );
 
         $this->loyalty = new WC_Retailcrm_Loyalty($this->apiMock, []);
