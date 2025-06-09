@@ -1,3 +1,6 @@
+## 2025-06-09 4.8.25
+* Bump version
+
 ## 2025-05-06 4.8.24
 * Added data tracking settings
 
