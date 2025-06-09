@@ -113,6 +113,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
+            add_action('wp_footer', [$this, 'add_retailcrm_tracking_script'], 102);
 
             //Tracker
             add_action('wp_ajax_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
@@ -206,7 +207,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $user = wp_get_current_user();
 
                 // TODO: В будущем можно получить больше данных.
-                wp_send_json_success(['email' => $user->user_email]);
+                wp_send_json_success(['email' => $user->user_email, 'externalId' => $user->ID]);
             }
         }
 
@@ -1025,7 +1026,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'retailcrm-cron-info',
                 'retailcrm-meta-fields',
                 'retailcrm-module-settings',
-                'retailcrm-loyalty'
+                'retailcrm-loyalty',
+                'retailcrm-tracker-interface',
             ];
 
             $wpAdminUrl    = ['url' => get_admin_url()];
@@ -1038,6 +1040,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 // In this method transfer wp-admin url in JS scripts.
                 wp_localize_script($scriptName, 'AdminUrl', $wpAdminUrl);
             }
+
+            $this->include_js_translates_for_tracker();
         }
 
         public function include_js_script_for_tracker()
@@ -1049,6 +1053,21 @@ if (!class_exists('WC_Retailcrm_Base')) {
             wp_enqueue_script($scriptName, $jsScriptsPath, '', '', true);
 
             wp_localize_script($scriptName, 'AdminUrl', ['url' => get_admin_url()]);
+        }
+
+        public function include_js_translates_for_tracker()
+        {
+            $translations = [
+                'tracker_activity' => __('Activate event tracking', 'retailcrm'),
+                'page_view' => __('Page View', 'retailcrm'),
+                'cart' => __('Cart', 'retailcrm'),
+                'open_cart' => __('Open Cart', 'retailcrm'),
+                'page_view_desc' => __('Tracks user page views', 'retailcrm'),
+                'cart_desc' => __('Tracks changes in the cart (adding/removing items)', 'retailcrm'),
+                'open_cart_desc' => __('Tracks when the user opens the cart', 'retailcrm'),
+            ];
+
+            wp_localize_script('retailcrm-tracker-interface', 'retailcrm_localized', $translations);
         }
 
         /**
@@ -1429,5 +1448,30 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 update_option('retailcrm_active_in_crm', true);
             }
         }
+
+        public function add_retailcrm_tracking_script() {
+            $trackerSettings = isset($this->settings['tracker_settings']) ? json_decode($this->settings['tracker_settings'], true) : null;
+            
+            if (isset($trackerSettings['tracker_enabled']) && $trackerSettings['tracker_enabled'] === true) {
+                $trackedEvents = $trackerSettings['tracked_events'];
+                $isPageView = in_array('page_view', $trackedEvents) ? 'page_view' : null;
+                $isCart = in_array('cart', $trackedEvents) ? 'cart' : null;
+                $isCartOpen = in_array('open_cart', $trackedEvents) ? 'open_cart' : null;
+
+                if (count($trackedEvents) > 0) {
+                    ?>
+                    <script>
+                        jQuery(function() {
+                            var pageView = <?php echo json_encode($isPageView); ?>;
+                            var cart = <?php echo json_encode($isCart); ?>;
+                            var openCart = <?php echo json_encode($isCartOpen); ?>;
+
+                            startTrack(pageView, openCart, cart);
+                        });
+                    </script>
+                    <?php
+                }
+            }
+        }
     }
-}
+}   

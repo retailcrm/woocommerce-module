@@ -73,9 +73,11 @@ return [
             "Способы оформления заказа, доступные для выгрузки из Simla.com",
         "Order methods" => "Способы оформления заказа",
         "Catalog settings" => "Настройки каталога",
-        "Online assistant" => "Онлайн консультант",
-        "Insert the Online consultant code here" =>
-            "Вставьте код Онлайн-консультанта здесь",
+        "Online assistant/Event tracker" => "Онлайн консультант/Трекер событий",
+        "Insert the Online consultant/Event tracker code here" =>
+            "Вставьте код онлайн-консультанта/Трекера событий",
+        "Incorrect code of Online consultant/Event tracker" =>
+            "Неверный код онлайн-консультанта/Трекера событий",
         "Select API version" => "Выберите версию API",
         "API version" => "Версия API",
         "API settings" => "Настройки API",
@@ -136,6 +138,13 @@ return [
         "This option is disabled" => "Опция отключена",
         "Cron launches" => "Работающие крон задачи",
         "Generation ICML" => "Генерация каталога",
+        "Activate event tracking" => "Активировать трекинг событий",
+        "Page View" =>  "Просмотр страницы",
+        "Cart" => "Изменение корзины",
+        "Open Cart" => "Просмотр корзины",
+        "Tracks user page views" => "Отслеживает просмотр страниц пользователем",
+        "Tracks changes in the cart (adding/removing items)" => "Отслеживает изменения в корзине (добавление/удаление товара)",
+        "Tracks when the user opens the cart" => "Отслеживает момент, когда пользователь открыл корзину",
         "Syncing history" => "Синхронизация истории",
         "Syncing inventories" => "Синхронизация запасов",
         'Don\'t send to CRM' => "Не отправлять в CRM",
