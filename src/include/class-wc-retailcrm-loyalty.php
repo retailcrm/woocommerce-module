@@ -594,7 +594,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
-                return false;
+                return [];
             }
         }
 
@@ -607,7 +607,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
-                return false;
+                return [];
             }
         }
     }

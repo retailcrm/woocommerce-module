@@ -75,20 +75,18 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     'burn' => __('Burn','retailcrm'),
                     'charge_for_order' => __('Сharged for order ', 'retailcrm'),
                 ];
-
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
+            $activationInfo = $loyaltyAccount['activationBonuses'][0];
+            $burnInfo = $loyaltyAccount['burnBonuses'][0];
 
-            $activationInfo = $loyaltyAccount['activationBonuses'];
-            $burnInfo = $loyaltyAccount['burnBonuses'];
-
-            if (isset($activationInfo[0]['date'])) {
-                $activationDate = $activationInfo[0]['date'];
-                $toActivationAmount = $activationInfo[0]['amount'];
+            if (isset($activationInfo['date'])) {
+                $activationDate = $activationInfo['date'];
+                $toActivationAmount = $activationInfo['amount'];
             }
 
-            if (isset($burnInfo [0]['date'])) {
-                $burnDate = $burnInfo[0]['date'];
-                $toBurnAmount = $burnInfo[0]['amount'];
+            if (isset($burnInfo['date'])) {
+                $burnDate = $burnInfo['date'];
+                $toBurnAmount = $burnInfo['amount'];
             }
 
             $data = 
@@ -123,17 +121,17 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 <table cellpadding="7" cellspacing="0" style="width: 100%; border: none;>
                 <tbody>';
 
-            foreach ($loyaltyAccount['history'] as $node) {
-                $amount = $node['amount'];
-                $dateCreate = $node['createdAt'];
-                $description = isset($operationTypes[$node['type']]) ? $operationTypes[$node['type']] : '-';
+            foreach ($loyaltyAccount['history'] as $operation) {
+                $amount = $operation['amount'];
+                $dateCreate = $operation['createdAt'];
+                $description = isset($operationTypes[$operation['type']]) ? $operationTypes[$operation['type']] : '-';
 
-                if (isset($node['order']['externalId'])) {
-                    $order = wc_get_order($node['order']['externalId']);
+                if (isset($operation['order']['externalId'])) {
+                    $order = wc_get_order($operation['order']['externalId']);
 
                     if ($order) {
                         $order_url = $order->get_view_order_url();
-                        $link = sprintf('<a href = "%s">%s</a>', $order_url, $node['order']['externalId'] );
+                        $link = sprintf('<a href = "%s">%s</a>', $order_url, $operation['order']['externalId'] );
                         $description .= $link;
                     }
                 }
