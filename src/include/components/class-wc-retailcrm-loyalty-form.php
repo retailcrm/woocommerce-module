@@ -79,31 +79,33 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $burnInfo = $loyaltyAccount['burnBonuses'][0] ?: [];
             $activationInfo = $loyaltyAccount['activationBonuses'][0] ?: [];
 
+            switch ($loyaltyAccount['level']['type']) {
+                case 'bonus_converting':
+                    $ordinaryRule = sprintf('<p style="color:gray">' . __('Ordinary products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSize'], $currency);
+                    $promotionRule = sprintf('<p style="color:gray">' . __('Promotional products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo'], $currency);
+                    break;
+                case 'bonus_percent':
+                    $ordinaryRule  = sprintf('<p style="color:gray">' . __('Ordinary products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
+                    $promotionRule = sprintf('<p style="color:gray">' . __('Promotional products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
+                    break;
+                case 'discount':
+                    $ordinaryRule  = sprintf('<p style="color:gray">' . __('Ordinary products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
+                    $promotionRule = sprintf('<p style="color:gray">' . __('Promotional products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
+                    break;
+            }
+
             if ($loyaltyAccount['level']['type'] !== 'discount') {
                 $data = [
                         '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
-                        '<b>' . __('Bonuses on your account: ', 'retailcrm') . '</b>' . $loyaltyAccount['amount'],
+                        '<b>' . sprintf(__('You have %s bonuses', 'retailcrm'), $loyaltyAccount['amount']) . '</b>',
                         $burnInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will expire %s', 'retailcrm'), $burnInfo['amount'], $burnInfo['date']) . '</b>' : '',
                         $activationInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will active %s', 'retailcrm'), $activationInfo['amount'], $activationInfo['date']) : '',
-                        '<b>' . __('Total order summ: ', 'retailcrm') . '</b>',
-                        '<p style="color:gray">' . $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
                         '<b>' . $loyaltyAccount['level']['name'] . '</b>',
+                        $ordinaryRule,
+                        $promotionRule,
+                        '<b>' . __('Total order summ ', 'retailcrm') . $loyaltyAccount['ordersSum'] . $currency . '</b>',
+                        '<p style="color:gray">' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
                 ];
-            }
-
-            switch ($loyaltyAccount['level']['type']) {
-                case 'bonus_converting':
-                    $data[] = sprintf('<p style="color:gray">' . __('Ordinary products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSize'], $currency);
-                    $data[] = sprintf('<p style="color:gray">' . __('Promotional products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo'], $currency);
-                    break;
-                case 'bonus_percent':
-                    $data[] = sprintf('<p style="color:gray">' . __('Ordinary products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
-                    $data[] = sprintf('<p style="color:gray">' . __('Promotional products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
-                    break;
-                case 'discount':
-                    $data[] = sprintf('<p style="color:gray">' . __('Ordinary products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
-                    $data[] = sprintf('<p style="color:gray">' . __('Promotional products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
-                    break;
             }
 
             $data[] = '<b style="font-size: 100%">' . __('History', 'retailcrm') . '</b>';
@@ -128,10 +130,12 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 }
 
                 $colorText = $amount < 0 ? 'red' : 'green';
+                $symbol = $colorText === 'red' ? '- ' : '+ ';
+                $bonusCount = abs($amount);
 
                 $htmlTable .= "
                 <tr style=\"background-color:rgb(255, 255, 255);\">
-                     <td style=\"text-align: center; font-size:105%; border: none; color: {$colorText}\"><b>$amount</b></td>
+                     <td style=\"text-align: left; font-size:105%; border: none; color: {$colorText}\"><b>$symbol $bonusCount</b></td>
                      <td style=\"text-align: center; color: gray; font-size:105%; border: none;\">$dateCreate</td>
                      <td style=\"text-align: center; font-size:105%; border: none; \">$description</td>
                 </tr>";
