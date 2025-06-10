@@ -83,10 +83,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $data = [
                         '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
                         '<b>' . __('Bonuses on your account: ', 'retailcrm') . '</b>' . $loyaltyAccount['amount'],
-                        $burnInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will expire %s', 'retailcrm') . '</p>', $burnInfo['amount'], $burnInfo['date']) . '</b>' : '',
-                        $activationInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will active %s', 'retailcrm') . '</p>', $activationInfo['amount'], $activationInfo['date']) : '',
+                        $burnInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will expire %s', 'retailcrm'), $burnInfo['amount'], $burnInfo['date']) . '</b>' : '',
+                        $activationInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will active %s', 'retailcrm'), $activationInfo['amount'], $activationInfo['date']) : '',
                         '<b>' . __('Total order summ: ', 'retailcrm') . '</b>',
-                        '<p style="color:gray">' . $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency . '</p>',
+                        '<p style="color:gray">' . $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
                         '<b>' . $loyaltyAccount['level']['name'] . '</b>',
                 ];
             }
