@@ -67,38 +67,28 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         public function getInfoLoyalty(array $loyaltyAccount)
         {
-            $operationTypes = 
-                [
-                    'credit_manual' => __('Сredited', 'retailcrm'),
-                    'charge_manual' => __('Сharged', 'retailcrm'),
+            $operationTypes = [
+                    'credit_manual' => __('Сredited by manager', 'retailcrm'),
+                    'charge_manual' => __('Сharged by manager', 'retailcrm'),
                     'credit_for_order' => __('Сredited for order ', 'retailcrm'),
                     'burn' => __('Burn','retailcrm'),
                     'charge_for_order' => __('Сharged for order ', 'retailcrm'),
-                ];
+            ];
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
-            $activationInfo = $loyaltyAccount['activationBonuses'][0];
-            $burnInfo = $loyaltyAccount['burnBonuses'][0];
+            $burnInfo = $loyaltyAccount['burnBonuses'][0] ?: [];
+            $activationInfo = $loyaltyAccount['activationBonuses'][0] ?: [];
 
-            if (isset($activationInfo['date'])) {
-                $activationDate = $activationInfo['date'];
-                $toActivationAmount = $activationInfo['amount'];
-            }
-
-            if (isset($burnInfo['date'])) {
-                $burnDate = $burnInfo['date'];
-                $toBurnAmount = $burnInfo['amount'];
-            }
-
-            $data = 
-                [
-                    '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
-                    '<b>' . __('Bonuses on your account: ', 'retailcrm') . '</b>' . $loyaltyAccount['amount'],
-                    isset($burnDate) ? sprintf(__('%s bonuses will expire %s', 'retailcrm'), $toBurnAmount, $burnDate): '',
-                    isset($activationDate) ? sprintf(__('%s bonuses will active %s', 'retailcrm'), $toActivationAmount, $activationDate): '',
-                    '<b>' . __('Total order summ: ', 'retailcrm') . '</b>',
-                    $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
-                    '<b>' . $loyaltyAccount['level']['name'] . '</b>',
+            if ($loyaltyAccount['level']['type'] !== 'discount') {
+                $data = [
+                        '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
+                        '<b>' . __('Bonuses on your account: ', 'retailcrm') . '</b>' . $loyaltyAccount['amount'],
+                        $burnInfo !== [] ? sprintf(__('%s bonuses will expire %s', 'retailcrm'), $burnInfo['amount'], $burnInfo['date']): '',
+                        $activationInfo !== [] ? sprintf(__('%s bonuses will active %s', 'retailcrm'), $activationInfo['amount'], $activationInfo['date']): '',
+                        '<b>' . __('Total order summ: ', 'retailcrm') . '</b>',
+                        $loyaltyAccount['ordersSum'] . $currency . ' / ' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
+                        '<b>' . $loyaltyAccount['level']['name'] . '</b>',
                 ];
+            }
 
             switch ($loyaltyAccount['level']['type']) {
                 case 'bonus_converting':
