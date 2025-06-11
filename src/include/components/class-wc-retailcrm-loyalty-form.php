@@ -94,19 +94,19 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     break;
             }
 
-            if ($loyaltyAccount['level']['type'] !== 'discount') {
-                $data = [
-                        '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
-                        '<b>' . sprintf(__('You have %s bonuses', 'retailcrm'), $loyaltyAccount['amount']) . '</b>',
-                        $burnInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will expire %s', 'retailcrm'), $burnInfo['amount'], $burnInfo['date']) . '</b>' : '',
-                        $activationInfo !== [] ? sprintf('<p style="color:gray">' . __('%s bonuses will active %s', 'retailcrm'), $activationInfo['amount'], $activationInfo['date']) : '',
-                        '<b>' . $loyaltyAccount['level']['name'] . '</b>',
-                        $ordinaryRule,
-                        $promotionRule,
-                        '<b>' . __('Total order summ ', 'retailcrm') . $loyaltyAccount['ordersSum'] . $currency . '</b>',
-                        '<p style="color:gray">' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
-                ];
-            }
+            
+            $data = [
+                    '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
+                    $loyaltyAccount['level']['type'] !== 'discount' ? '<b>' . sprintf(__('You have %s bonuses', 'retailcrm'), $loyaltyAccount['amount']) . '</b>' : '',
+                    $burnInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount' ? sprintf('<p style="color:gray">' . __('%s bonuses will expire %s', 'retailcrm'), $burnInfo['amount'], $burnInfo['date']) . '</b>' : '',
+                    $activationInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount' ? sprintf('<p style="color:gray">' . __('%s bonuses will active %s', 'retailcrm'), $activationInfo['amount'], $activationInfo['date']) : '',
+                    '<b>' . $loyaltyAccount['level']['name'] . '</b>',
+                    $ordinaryRule,
+                    $promotionRule,
+                    '<b>' . __('Total order summ ', 'retailcrm') . $loyaltyAccount['ordersSum'] . $currency . '</b>',
+                    '<p style="color:gray">' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
+            ];
+            
 
             $data[] = '<b style="font-size: 100%">' . __('History', 'retailcrm') . '</b>';
 
