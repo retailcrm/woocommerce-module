@@ -1,3 +1,6 @@
+## 2025-06-09 4.8.26
+* Added loyalty history info
+
 ## 2025-06-09 4.8.25
 * Bump version
 
