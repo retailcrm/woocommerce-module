@@ -1,3 +1,6 @@
+## 2025-06-19 4.8.27
+* Added the isFromCart parameter transmission when creating an order
+
 ## 2025-06-09 4.8.26
 * Added loyalty history info
 
