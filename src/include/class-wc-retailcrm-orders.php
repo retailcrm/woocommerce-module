@@ -143,6 +143,9 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $this->order['privilegeType'] = $privilegeType;
                 }
 
+                // Необходимо всегда передавать параметр isFromCart = true, CRM сама проверит и привяжет корзину к заказу
+                $this->order['isFromCart'] = true;
+
                 $response = $this->retailcrm->ordersCreate($this->order);
 
                 // Allows you to verify order creation and perform additional actions
