@@ -54,9 +54,9 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
         $price         = $this->calculatePrice($item, $decimalPlaces);
         $discountPrice = $this->calculateDiscount($item, $price, $decimalPlaces, $crmItem);
 
-        $data['productName']  = $item['name'];
+        $data['productName'] = $item['name'];
         $data['initialPrice'] = $price;
-        $data['quantity']     = (double)$item['qty'];
+        $data['quantity'] = (double)$item['qty'];
 
         $itemId = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];
         $data['externalIds'] = [
@@ -156,11 +156,11 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
                 $productPrice = $item->get_total() / $item->get_quantity();
             }
         } else {
-            $productPrice  = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
+            $productPrice = $item->get_total() ? $item->get_total() / $item->get_quantity() : 0;
         }
 
-        $productTax    = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
-        $itemPrice     = $productPrice + $productTax;
+        $productTax = $item->get_total_tax() ? $item->get_total_tax() / $item->get_quantity() : 0;
+        $itemPrice = $productPrice + $productTax;
 
         return round($price - $itemPrice, $decimalPlaces);
     }
@@ -223,7 +223,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
             }
 
             /**
-             *If the sum of the trade item including discounts and loyalty program discount exceeds the cost without discounts.
+             * If the sum of the trade item including discounts and loyalty program discount exceeds the cost without discounts.
              * (Occurs when recalculating an order, deleting/adding coupons)
              */
             if (($item->get_total() + $loyaltyDiscount) > $item->get_subtotal()) {
