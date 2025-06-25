@@ -224,7 +224,7 @@ return [
         "Required amount of purchases to move to the next level: " => "Необходимая сумма покупок для перехода на следующий уровень: ",
         "Activate participation in the loyalty program" => "Активировать участие в программе лояльности",
         "Total order summ " => "Сумма покупок ",
-        "Total summ for next level: " => "Сумма, оставшаяся до перехода на следующий уровень: ",
+        "Total summ for next level: " => "Сумма, необходимая для перехода на следующий уровень: ",
         "History" => "История операций",
         "Сredited for order " => "Начислено за заказ",
         "Сharged for order " => "Списано за заказ ",
