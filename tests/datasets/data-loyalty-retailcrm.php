@@ -198,7 +198,7 @@ class DataLoyaltyRetailCrm
                         ]
                     ]
                 ],
-                'expected' => 40
+                'expected' => [40,1]
             ],
             [
                 'response' => [
@@ -215,7 +215,7 @@ class DataLoyaltyRetailCrm
                         'items' => [['discounts' => null], ['discounts' => null]],
                     ]
                 ],
-                'expected' => 50
+                'expected' => [50,1]
             ]
         ];
     }
