@@ -104,8 +104,11 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     $ordinaryRule,
                     $promotionRule,
                     '<b>' . __('Total order summ ', 'retailcrm') . $loyaltyAccount['ordersSum'] . $currency . '</b>',
-                    '<p style="color:gray">' . __('Total summ for next level: ', 'retailcrm') . $loyaltyAccount['nextLevelSum'] . $currency,
             ];
+
+            if ($loyaltyAccount['nextLevelSum']) {
+                $data[] = '<p style="color:gray">' . __('Total summ for next level: ', 'retailcrm') . ($loyaltyAccount['nextLevelSum'] - $loyaltyAccount['ordersSum']) . $currency;
+            }
             
 
             $data[] = '<b style="font-size: 100%">' . __('History', 'retailcrm') . '</b>';
