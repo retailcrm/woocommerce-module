@@ -253,6 +253,12 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $tax = reset($tax_rates);
             }
 
+            $taxRate = 'none';
+
+            if (isset($tax) && $tax['rate'] != 0) {
+                $taxRate = $tax['rate'];
+            }
+
             $productData = [
                 'id' => $product->get_id(),
                 'productId' => ($product->get_parent_id() > 0) ? $parent->get_id() : $product->get_id(),
@@ -268,7 +274,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'categoryId' => $termList,
                 'dimensions' => $dimensions,
                 'weight' => $weight,
-                'tax' => isset($tax) ? $tax['rate'] : 'none',
+                'tax' => $taxRate,
                 'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product',
             ];
 
