@@ -110,7 +110,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 if ($this->loyalty) {
                     $wcCustomer = null;
                     $privilegeType = 'none';
-                    $discountLp = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
+                    [$discountLp, $chargeRate] = $this->loyalty->deleteLoyaltyCouponInOrder($wcOrder);
                     $dataOrder = $wcOrder->get_data();
 
                     if (isset($dataOrder['customer_id'])) {
@@ -156,7 +156,11 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                 }
 
                 if (isset($discountLp) && $discountLp > 0) {
-                    $this->loyalty->applyLoyaltyDiscount($wcOrder, $response['order'], $discountLp);
+                    $this->loyalty->applyLoyaltyDiscount(
+                        $wcOrder,
+                        $response['order'],
+                        $discountLp / $chargeRate
+                    );
                 }
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);

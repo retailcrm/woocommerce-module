@@ -84,7 +84,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $result['form'] = $this->loyaltyForm->getRegistrationForm($phone, $loyaltyTerms, $loyaltyPersonal);
             }
 
-           return $result;
+            return $result;
         }
 
         public function registerCustomer(int $userId, string $phone, string $site): bool
@@ -153,15 +153,15 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         private function getDiscountLoyalty($cartItems, $site, $customerId)
         {
+            $discount = 0;
+            $chargeRate = 1;
             $response = $this->calculateDiscountLoyalty($cartItems, $site, $customerId);
 
             if ($response === 0) {
-                return 0;
+                return $discount;
             }
 
-            $discount = 0;
-
-            //Checking if the loyalty discount is a percent discount
+            // Checking if the loyalty discount is a percent discount
             foreach ($response['order']['items'] as $item) {
                 if (!isset($item['discounts'])) {
                     continue;
@@ -174,7 +174,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 }
             }
 
-            //If the discount has already been given, do not work with points deduction
+            // If the discount has already been given, do not work with points deduction
             if ($discount === 0) {
                 foreach ($response['calculations'] as $calculate) {
                     if ($calculate['privilegeType'] !== 'loyalty_level') {
@@ -183,9 +183,12 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
                     $discount = $calculate['maxChargeBonuses'];
                 }
+
+                // Setting 'Bonus exchange rate' from loyalty program in CRM
+                $chargeRate = $response['loyalty']['chargeRate'] ?? 1;
             }
 
-            return $discount;
+            return [$discount * $chargeRate, $chargeRate];
         }
 
         private function getLoyaltyAccounts(int $userId)
@@ -256,7 +259,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return null;
             }
 
-            $lpDiscountSum = $this->getDiscountLoyalty($woocommerce->cart->get_cart(), $site, $customerId);
+            [$lpDiscountSum, $lpChargeRate] = $this->getDiscountLoyalty($woocommerce->cart->get_cart(), $site, $customerId);
 
             if ($lpDiscountSum === 0) {
                 return null;
@@ -271,13 +274,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $coupon->delete(true);
             }
 
-            //Generate new coupon
+            // Generate new coupon
             $coupon = new WC_Coupon();
 
             $coupon->set_usage_limit(0);
             $coupon->set_amount($lpDiscountSum);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
             $coupon->set_code('loyalty' . mt_rand());
+            $coupon->update_meta_data('chargeRate', $lpChargeRate);
             $coupon->save();
 
             if ($refreshCoupon) {
@@ -293,7 +297,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $resultString;
             }
 
-            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum . ' ' . __('bonuses', 'retailcrm') . '</b></div>';
+            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . __('bonuses', 'retailcrm') . '</b></div>';
             return $resultString. '<div style="text-align: left;"><b>' . __('Use coupon:', 'retailcrm') . ' <u><i style="cursor: grab" id="input_loyalty_code" onclick="inputLoyaltyCode()">' . $coupon->get_code() . '</i></u></i></b></div>';
         }
 
@@ -348,6 +352,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         public function deleteLoyaltyCouponInOrder($wcOrder)
         {
             $discountLp = 0;
+            $chargeRate = 1;
             $coupons = $wcOrder->get_coupons();
 
             foreach ($coupons as $coupon) {
@@ -355,16 +360,22 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
                 if ($this->isLoyaltyCoupon($code)) {
                     $discountLp = $coupon->get_discount();
+
                     $wcOrder->remove_coupon($code);
                     $objectCoupon = new WC_Coupon($code);
-                    $objectCoupon->delete(true);
 
+                    if (!empty($objectCoupon->get_meta('chargeRate'))) {
+                        $chargeRate = (float) $objectCoupon->get_meta('chargeRate');
+                    }
+
+                    $objectCoupon->delete(true);
                     $wcOrder->recalculate_coupons();
+
                     break;
                 }
             }
 
-            return $discountLp;
+            return [$discountLp, $chargeRate];
         }
 
         public function isValidOrder($wcCustomer, $wcOrder)
@@ -561,6 +572,13 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $coupon->set_amount($loyaltyCoupon->get_amount());
                 $coupon->set_email_restrictions($loyaltyCoupon->get_email_restrictions());
                 $coupon->set_code($loyaltyCoupon->get_code());
+
+                $chargeRate = $loyaltyCoupon->get_meta('chargeRate');
+
+                if (!empty($chargeRate)) {
+                    $coupon->update_meta_data('chargeRate', $chargeRate);
+                }
+
                 $coupon->save();
 
                 $woocommerce->cart->apply_coupon($coupon->get_code());

@@ -1,3 +1,6 @@
+## 2025-06-25 4.8.28
+* Applying the bonus conversion coefficient to currency
+
 ## 2025-06-19 4.8.27
 * Added the isFromCart parameter transmission when creating an order
 
