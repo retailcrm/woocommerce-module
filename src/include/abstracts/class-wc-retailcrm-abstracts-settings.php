@@ -736,6 +736,13 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         'type'        => 'checkbox'
                 ];
 
+                $this->form_fields['use_mc_xmlid'] = [
+                        'label' => __('Transfer external product codes from MS into the articles', 'retailcrm'),
+                        'title' => __("When exporting the catalog, it transfers the full external code into the offer's article for correct synchronization with MS", 'retailcrm'),
+                        'class' => 'checkbox',
+                        'type' => 'checkbox'
+                ];
+
                 $this->form_fields['update_number'] = [
                         'label'       => __('Enable transferring the number to Simla.com', 'retailcrm'),
                         'title'       => __('Transferring the order number', 'retailcrm'),
