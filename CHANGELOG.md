@@ -1,3 +1,6 @@
+## 2025-06-30 4.8.29
+* Fixed zero VAT handling
+
 ## 2025-06-25 4.8.28
 * Applying the bonus conversion coefficient to currency
 

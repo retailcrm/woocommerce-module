@@ -163,10 +163,7 @@ if (!class_exists('WC_Retailcrm_Icml_Writer')) :
                     $this->writer->writeElement('weight', $offer['weight']);
                 }
 
-                if (!empty($offer['tax'])) {
-                    $this->writer->writeElement('vatRate', $offer['tax']);
-                }
-
+                $this->writer->writeElement('vatRate', $offer['tax']);
                 $this->writer->endElement(); // end </offer>
             }
         }
