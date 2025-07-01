@@ -268,7 +268,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'categoryId' => $termList,
                 'dimensions' => $dimensions,
                 'weight' => $weight,
-                'tax' => isset($tax['rate']) && $tax['rate'] != 0 ? $tax['rate'] : 'none',
+                'tax' => isset($tax['rate']) && $tax['rate'] !== 0 ? $tax['rate'] : 'none',
                 'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product',
             ];
 
