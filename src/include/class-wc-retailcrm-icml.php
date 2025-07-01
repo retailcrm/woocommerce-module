@@ -276,7 +276,14 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 $params[] = ['code' => 'article', 'name' => 'Article', 'value' => $product->get_sku()];
 
                 if (isset($this->settings['bind_by_sku']) && $this->settings['bind_by_sku'] == WC_Retailcrm_Base::YES) {
-                    $productData['xmlId'] = $product->get_sku();
+                    if (
+                        isset($this->settings['use_mc_xmlid'])
+                        && $this->settings['use_mc_xmlid'] == WC_Retailcrm_Base::YES
+                    ) {
+                        $productData['xmlId'] = $this->getParrentXmlId($product);
+                    } else {
+                        $productData['xmlId'] = $product->get_sku();
+                    }
                 }
             }
 
@@ -398,6 +405,29 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             }
 
             return $categories;
+        }
+
+        private function getParrentXmlId($product)
+        {
+            $parent = wc_get_product($product->get_parent_id());
+            $xmlId = '';
+
+            if ($parent) {
+                $parentCode = $parent->get_sku() ?? '';
+                $offerCode = $product->get_sku() ?? '';
+
+                if ($parentCode !== '' && $offerCode !== '') {
+                    $xmlId = $parentCode . '#' . $offerCode;
+                }
+            } else {
+                $skuCode = $product->get_sku() ?? '';
+
+                if ($skuCode !== '') {
+                    $xmlId = $skuCode;
+                }
+            }
+
+            return $xmlId;
         }
     }
 endif;

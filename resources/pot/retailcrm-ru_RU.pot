@@ -235,6 +235,12 @@ msgstr "Обновление данных в Simla.com"
 msgid "Activate the binding via sku (xml)"
 msgstr "Активировать связь по sku(xmlId)"
 
+msgid "Transfer external product codes from MS into the articles"
+msgstr "Передавать в артикулы внешние коды товаров Моего Склада"
+
+msgid "When exporting the catalog, it transfers the full external code into the offer's article for correct synchronization with MS"
+msgstr "При экспорта каталога, передает полный внешний код в артикул торгового предложения, для корректной синхронизации с Моим Складом"
+
 msgid "Stock synchronization and link between products"
 msgstr "Синхронизация остатков и связь товаров"
 

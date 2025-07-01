@@ -105,6 +105,10 @@ return [
         "Data updating in Simla.com" => "Обновление данных в Simla.com",
         "Activate the binding via sku (xml)" =>
             "Активировать связь по sku(xmlId)",
+        "Transfer external product codes from MS into the articles" =>
+            "Передавать в артикулы внешние коды товаров Моего Склада",
+        "When exporting the catalog, it transfers the full external code into the offer's article for correct synchronization with MS" =>
+            "При экспорта каталога, передает полный внешний код в артикул торгового предложения, для корректной синхронизации с Моим Складом",
         "Stock synchronization and link between products" =>
             "Синхронизация остатков и связь товаров",
         "Enable transferring the number to Simla.com" =>
