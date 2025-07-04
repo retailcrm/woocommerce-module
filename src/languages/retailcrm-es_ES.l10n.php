@@ -231,8 +231,8 @@ return [
         "Сharged by manager" => "Cobrado por el gerente",
         "Сredited by manager" => "Acreditado por el gerente",
         "Credited for event" => "Acreditado por evento",
-        "Сancel of charge for order " => ""
-        "Сancel of credit for order " => ""
+        "Сancel of charge for order " => "Cancelación de cobro de un pedido ",
+        "Сancel of credit for order " => "Cancelación de cargos de un pedido ",
         "%s bonuses will expire %s" => "%s bonos expirarán %s",  
         "%s bonuses will active %s" => "%s bonos se activarán %s",  
         "Send" => "Enviar",
