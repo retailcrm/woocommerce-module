@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.8.30 =
-* Add description for canceling of bonus operations
+* Added description for canceling of bonus operations
 
 = 4.8.29 =
 * Fixed zero VAT handling
