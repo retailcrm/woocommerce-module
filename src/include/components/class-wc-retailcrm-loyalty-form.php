@@ -76,8 +76,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     'credit_for_event' => __('Credited for event', 'retailcrm')
             ];
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
-            $burnInfo = $loyaltyAccount['burnBonuses'][0] ?: [];
-            $activationInfo = $loyaltyAccount['activationBonuses'][0] ?: [];
+            $burnInfo = $loyaltyAccount['burnBonuses'][0] ?? [];
+            $activationInfo = $loyaltyAccount['activationBonuses'][0] ?? [];
 
             switch ($loyaltyAccount['level']['type']) {
                 case 'bonus_converting':
