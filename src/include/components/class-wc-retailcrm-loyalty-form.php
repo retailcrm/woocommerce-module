@@ -73,7 +73,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     'credit_for_order' => __('Сredited for order ', 'retailcrm'),
                     'burn' => __('Burn','retailcrm'),
                     'charge_for_order' => __('Сharged for order ', 'retailcrm'),
-                    'credit_for_event' => __('Credited for event', 'retailcrm')
+                    'credit_for_event' => __('Credited for event', 'retailcrm'),
+                    'cancel_of_charge' => __('Сancel of charge for order ', 'retailcrm'),
+                    'cancel_of_credit' => __('Сancel of credit for order ', 'retailcrm'),
             ];
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
             $burnInfo = $loyaltyAccount['burnBonuses'][0] ?: [];
