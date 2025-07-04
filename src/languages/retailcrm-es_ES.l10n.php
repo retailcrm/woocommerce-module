@@ -226,11 +226,13 @@ return [
         "Total order summ " => "Total de compras ",  
         "Total summ for next level: " => "Falta para el siguiente nivel: ",
         "History" => "Historial de operaciones",  
-        "Сredited for order" => "Acreditado por el pedido",
-        "Сharged for order" => "Cargado por el pedido",
+        "Сredited for order " => "Acreditado por el pedido ",
+        "Сharged for order " => "Cargado por el pedido ",
         "Сharged by manager" => "Cobrado por el gerente",
         "Сredited by manager" => "Acreditado por el gerente",
         "Credited for event" => "Acreditado por evento",
+        "Сancel of charge for order " => ""
+        "Сancel of credit for order " => ""
         "%s bonuses will expire %s" => "%s bonos expirarán %s",  
         "%s bonuses will active %s" => "%s bonos se activarán %s",  
         "Send" => "Enviar",
