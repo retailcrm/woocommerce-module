@@ -1,6 +1,9 @@
 ## 2025-07-04 4.8.31
 * Code compatibility fix for PHP 8.0
 
+## 2025-07-04 4.8.30
+* Added description for canceling of bonus operations
+
 ## 2025-06-30 4.8.29
 * Fixed zero VAT handling
 
