@@ -524,12 +524,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Daemon collector settings
                  */
-                $this->form_fields[] = [
-                    'title'       => __('Daemon Collector settings', 'retailcrm'),
-                    'type'        => 'heading',
-                    'description' => '',
-                    'id'          => 'invent_options'
-                ];
+                if ($this->get_option('daemon_collector') === 'yes') {
+                    $this->form_fields[] = [
+                        'title'       => __('Daemon Collector settings', 'retailcrm'),
+                        'type'        => 'heading',
+                        'description' => '',
+                        'id'          => 'invent_options'
+                    ];
+                }
 
                 $this->form_fields['daemon_collector'] = [
                     'label'       => __('Activate Daemon Collector', 'retailcrm'),
