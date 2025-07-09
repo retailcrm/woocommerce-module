@@ -83,7 +83,7 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 == Changelog ==
 = 4.8.32 =
-* Daemon Collector hiden
+* Daemon Collector hidden
 
 = 4.8.31 =
 * Code compatibility fix for PHP 8.0

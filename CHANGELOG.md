@@ -1,5 +1,5 @@
 ## 2025-07-08 4.8.32
-* Daemon Collector hiden
+* Daemon Collector hidden
 
 ## 2025-07-04 4.8.31
 * Code compatibility fix for PHP 8.0
