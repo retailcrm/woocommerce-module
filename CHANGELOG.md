@@ -1,3 +1,6 @@
+## 2025-07-17 4.8.33
+* Plugin description update
+
 ## 2025-07-08 4.8.32
 * Daemon Collector hidden
 
