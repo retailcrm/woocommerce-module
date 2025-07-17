@@ -1,3 +1,6 @@
+## 2025-07-17 4.8.34
+* Plugin contributors update
+
 ## 2025-07-17 4.8.33
 * Plugin description update
 
