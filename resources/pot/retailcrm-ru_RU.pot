@@ -1,5 +1,5 @@
-# Translation of Plugins - Woocommerce Simla.com - Development (trunk) in Russian
-# This file is distributed under the same license as the Plugins - Woocommerce Simla.com - Development (trunk) package.
+# Translation of Plugins - Simla.com - Development (trunk) in Russian
+# This file is distributed under the same license as the Plugins - Simla.com - Development (trunk) package.
 msgid ""
 msgstr ""
 "PO-Revision-Date: 2018-06-06 08:53:26+0000\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: ru\n"
-"Project-Id-Version: Plugins - Woocommerce Simla.com - Development (trunk)\n"
+"Project-Id-Version: Plugins - Simla.com - Development (trunk)\n"
 
 #. Author URI of the plugin/theme
 msgid "https://simla.com/"
@@ -20,16 +20,16 @@ msgid "RetailDriver LLC"
 msgstr "RetailDriver LLC"
 
 #. Description of the plugin/theme
-msgid "Integration plugin for WooCommerce & Simla.com"
-msgstr "Интеграционный плагин для WooCommerce & Simla.com"
+msgid "Integration plugin enabling Simla.com to work with WooCommerce"
+msgstr "Интеграционный плагин, обеспечивающий работу Simla.com с WooCommerce"
 
 #. Plugin URI of the plugin/theme
 msgid "https://wordpress.org/plugins/woo-retailcrm/"
 msgstr "https://wordpress.org/plugins/woo-retailcrm/"
 
 #. Plugin Name of the plugin/theme
-msgid "WooCommerce Simla.com"
-msgstr "WooCommerce Simla.com"
+msgid "Simla.com"
+msgstr "Simla.com"
 
 msgid "Orders"
 msgstr "Заказы"

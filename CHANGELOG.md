@@ -1,3 +1,6 @@
+## 2025-08-05 4.8.35
+* Module name change
+
 ## 2025-07-17 4.8.34
 * Plugin contributors update
 

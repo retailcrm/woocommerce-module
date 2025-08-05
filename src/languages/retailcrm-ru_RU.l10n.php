@@ -6,11 +6,11 @@ return [
     "messages" => [
         "https://simla.com/" => "https://simla.com/",
         "RetailDriver LLC" => "RetailDriver LLC",
-        "Integration plugin for WooCommerce & Simla.com" =>
-            "Интеграционный плагин для WooCommerce & Simla.com",
+        "Integration plugin enabling Simla.com to work with WooCommerce" =>
+            "Интеграционный плагин, обеспечивающий работу Simla.com с WooCommerce",
         "https://wordpress.org/plugins/woo-retailcrm/" =>
             "https://wordpress.org/plugins/woo-retailcrm/",
-        "WooCommerce Simla.com" => "WooCommerce Simla.com",
+        "Simla.com" => "Simla.com",
         "Orders" => "Заказы",
         "Customers" => "Клиенты",
         "Activate history uploads" => "Активировать загрузку истории изменений",
