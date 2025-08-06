@@ -6,8 +6,8 @@ return [
     "messages" => [
         "https://simla.com/" => "https://simla.com/",
         "RetailDriver LLC" => "RetailDriver LLC",
-        "Integration plugin enabling Simla.com to work with WooCommerce" =>
-            "Plugin de integración que permite que Simla.com funcione con WooCommerce",
+        "Integration plugin Simla.com" =>
+            "Complemento de integración Simla.com",
         "https://wordpress.org/plugins/woo-retailcrm/" =>
             "https://wordpress.org/plugins/woo-retailcrm/",
         "Simla.com" => "Simla.com",

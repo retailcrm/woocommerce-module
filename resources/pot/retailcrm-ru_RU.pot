@@ -20,8 +20,8 @@ msgid "RetailDriver LLC"
 msgstr "RetailDriver LLC"
 
 #. Description of the plugin/theme
-msgid "Integration plugin enabling Simla.com to work with WooCommerce"
-msgstr "Интеграционный плагин, обеспечивающий работу Simla.com с WooCommerce"
+msgid "Integration plugin Simla.com"
+msgstr "Интеграционный плагин Simla.com"
 
 #. Plugin URI of the plugin/theme
 msgid "https://wordpress.org/plugins/woo-retailcrm/"
