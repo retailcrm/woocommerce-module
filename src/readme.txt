@@ -1,10 +1,10 @@
-=== Woocommerce Simla.com ===
+=== Simla.com ===
 Contributors: retailcrm
 Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.8
-Stable tag: 4.8.34
+Stable tag: 4.8.35
 License: GPLv1 or later
 License URI: http://www.gnu.org/licenses/gpl-1.0.html
 
@@ -14,7 +14,7 @@ Simla.com integration plugin will help you manage your orders, catalogs and stoc
 
 = Plugin Functions =
 
-This WooСommerce and Simla.com integration plugin will help you manage your orders, catalogs and stock more easily by generating a catalog compatible with Simla.com system, setting up a two-way exchange of orders between WooCommerce and Simla.com; sending and receiving changes on orders, uploading leftovers from Simla.com to your online store automatically. How? By enabling the “stock unloading” function, your stock will be updated automatically every 15 minutes. This also means that you don’t have to manually hide sold out stock on your website: the system will do it for you automatically!
+This Simla.com integration plugin will help you manage your orders, catalogs and stock more easily by generating a catalog compatible with Simla.com system, setting up a two-way exchange of orders between WooCommerce and Simla.com; sending and receiving changes on orders, uploading leftovers from Simla.com to your online store automatically. How? By enabling the “stock unloading” function, your stock will be updated automatically every 15 minutes. This also means that you don’t have to manually hide sold out stock on your website: the system will do it for you automatically!
 
 = Downloaded changes from  Simla.com =
 
@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 4.8.35 =
+* Module name change
+
 = 4.8.34 =
 * Plugin contributors update
 
