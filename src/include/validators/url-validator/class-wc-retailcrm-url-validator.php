@@ -14,8 +14,8 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
      */
     class WC_Retailcrm_Url_Validator extends WC_Retailcrm_Url_Constraint
     {
-        const CRM_DOMAINS_URL = 'https://infra-data.retailcrm.tech/crm-domains.json';
-        const BOX_DOMAINS_URL = 'https://infra-data.retailcrm.tech/box-domains.json';
+        const CRM_DOMAINS_URL = 'crm-domains.json';
+        const BOX_DOMAINS_URL = 'box-domains.json';
         const CRM_ALL_DOMAINS = ["ecomlogic.com", "retailcrm.ru", "retailcrm.pro", "retailcrm.es", "simla.com", "simla.io", "retailcrm.io"];
 
         /**
@@ -167,13 +167,14 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
          * @return array
          * @throws ValidatorException
          */
-        private function getValidDomains(string $domainUrl): array
+        private function getValidDomains(string $domainFile): array
         {
             try {
-                $content = wp_remote_get($domainUrl);
-                
-                if (!$content instanceof WP_ERROR && $content['response']['code'] === 200) {
-                    $domains = json_decode($content['body'], true);
+                $plugin_dir = plugin_dir_path( __FILE__ );
+                $content = file_get_contents($plugin_dir . 'include/components/files/' . $domainFile);
+
+                if ($content !== false) {
+                    $domains = json_decode($content, true);
 
                     return array_column($domains['domains'], 'domain');
                 }
@@ -204,9 +205,9 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
          * @return bool
          * @throws ValidatorException
          */
-        private function checkDomains(string $crmDomainsUrl, string $domainHost): bool
+        private function checkDomains(string $crmDomainsFile, string $domainHost): bool
         {
-            return in_array($domainHost, $this->getValidDomains($crmDomainsUrl), true);
+            return in_array($domainHost, $this->getValidDomains($crmDomainsFile), true);
         }
     }
 endif;

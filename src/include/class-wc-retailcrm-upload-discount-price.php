@@ -190,11 +190,11 @@ if (!class_exists('WC_Retailcrm_Upload_Discount_Price')):
             if ($discountPriceType === null) {
                 $discountPriceType = [
                     'code' => self::DISCOUNT_TYPE_PRICE,
-                    'name' => __('Woocommerce promotional price', 'retailcrm'),
+                    'name' => __('Woocommerce promotional price', 'woo-retailcrm'),
                     'active' => true,
                     'description' => __('Promotional price type for Woocommerce store, generated automatically.
                      Necessary for correct synchronization work when loyalty program is enabled
-                      (Do not delete. Do not deactivate)', 'retailcrm'),
+                      (Do not delete. Do not deactivate)', 'woo-retailcrm'),
                     'ordering' => 999,
                     'promo' => true
                 ];

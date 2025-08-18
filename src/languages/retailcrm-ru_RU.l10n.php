@@ -212,8 +212,9 @@ return [
         "Insert the terms and conditions of the loyalty program" => "Вставьте условия участия в программе лояльности",
         "Conditions of personal data processing" => "Условия обработки персональных данных",
         "Insert the terms and conditions for processing personal data" => "Вставьте условия обработки персональных данных",
-        "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>" =>
-            "Для активации программы лояльности необходимо активировать опцию <a href='?page=wc-settings'>'включить использование купонов'</a>",
+        "To activate the loyalty program it is necessary to activate the %s" =>
+            "Для активации программы лояльности необходимо активировать опцию %s",
+        "Enable use of coupons option" => "включить использование купонов",
         "Bonuses and discount" => "Скидки и бонусы",
         "Participation ID: " => "ID участия: ",
         "Current level: " => "Текущий уровень: ",

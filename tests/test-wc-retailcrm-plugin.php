@@ -16,7 +16,7 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
     protected $apiMock;
     protected $responseMock;
     protected $plugin;
-    private $path = __DIR__ . '/src/retailcrm.php';
+    private $path = __DIR__ . '/src/woo-retailcrm.php';
 
     public function setUp()
     {
@@ -137,4 +137,3 @@ class WC_Retailcrm_Plugin_Test extends WC_Retailcrm_Test_Case_Helper
         );
     }
 }
-

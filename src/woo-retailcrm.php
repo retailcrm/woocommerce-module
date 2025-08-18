@@ -5,6 +5,8 @@
  * Description: Integration plugin for Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
+ * License: MIT
+ * License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
  * Version: 4.8.35
  * Tested up to: 6.8
  * Requires Plugins: woocommerce
@@ -81,7 +83,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         }
 
         public function load_plugin_textdomain() {
-            load_plugin_textdomain('retailcrm', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+            load_plugin_textdomain('woo-retailcrm', false, dirname(plugin_basename(__FILE__)) . '/languages/');
         }
 
         /**

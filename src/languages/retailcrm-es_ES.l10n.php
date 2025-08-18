@@ -212,8 +212,9 @@ return [
         "Insert the terms and conditions of the loyalty program" => "Inserte las condiciones del programa de fidelización",
         "Conditions of personal data processing" => "Condiciones de procesamiento de datos personales",
         "Insert the terms and conditions for processing personal data" => "Inserte las condiciones para el procesamiento de datos personales",
-        "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>" =>
-            "Para activar el programa de fidelización es necesario activar la opción <a href='?page=wc-settings'>'habilitar el uso de cupones'</a>",
+        "To activate the loyalty program it is necessary to activate the %s" =>
+            "Para activar el programa de fidelización es necesario activar la opción %s",
+        "Enable use of coupons option" => "'habilitar el uso de cupones'",
         "Bonuses and discount" => "Descuentos y bonificaciones",
         "Participation ID: " => "ID de participación: ",
         "Current level: " => "Nivel actual: ",

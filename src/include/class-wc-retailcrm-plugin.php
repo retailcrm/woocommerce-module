@@ -18,6 +18,7 @@ class WC_Retailcrm_Plugin
     public static $history_run = false;
     private static $instance = null;
 
+    // странная ссылка на лого самого Woocommerce. Проверить где выводится и удалить её/заменить
     const MARKETPLACE_LOGO = 'https://s3.eu-central-1.amazonaws.com/retailcrm-billing/images/5b69ce4bda663-woocommercesvg2.svg';
     const INTEGRATION_CODE = 'woocommerce';
 
@@ -49,19 +50,19 @@ class WC_Retailcrm_Plugin
             [
                 'five_minutes' => [
                     'interval' => 300, // seconds
-                    'display'  => __('Every 5 minutes')
+                    'display'  => esc_attr__('Every 5 minutes')
                 ],
                 'three_hours' => [
                     'interval' => 10800, // seconds
-                    'display'  => __('Every 3 hours')
+                    'display'  => esc_attr__('Every 3 hours')
                 ],
                 'fiveteen_minutes' => [
                     'interval' => 900, // seconds
-                    'display'  => __('Every 15 minutes')
+                    'display'  => esc_attr__('Every 15 minutes')
                 ],
                 'four_hours' => [
                     'interval' => 14400, //seconds
-                    'display' => __('Every 4 hours')
+                    'display' => esc_attr__('Every 4 hours')
                 ]
             ],
             apply_filters('retailcrm_add_cron_interval', $schedules)

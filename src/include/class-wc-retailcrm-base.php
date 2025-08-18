@@ -502,8 +502,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function upload_to_crm()
         {
             WC_Retailcrm_Logger::setHook(current_action());
-            $page = filter_input(INPUT_POST, 'Step');
-            $entity = filter_input(INPUT_POST, 'Entity');
+            $page = filter_input(INPUT_POST, 'Step', FILTER_SANITIZE_NUMBER_INT);
+            $entity = filter_input(INPUT_POST, 'Entity', FILTER_SANITIZE_STRING);
 
             if ($entity === 'customer') {
                 $this->uploader->uploadArchiveCustomers($page);
@@ -845,13 +845,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function get_status_coupon()
         {
-            echo json_encode(
+            $coupon_settings_url = admin_url('admin.php?page=wc-settings');
+
+            echo wp_json_encode(
                 [
                     'coupon_status' => get_option('woocommerce_enable_coupons'),
                     'translate' => [
-                        'coupon_warning' => __(
-                            "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>",
-                            'retailcrm'
+                        'coupon_warning' => sprintf(
+                            __( 'To activate the loyalty program it is necessary to activate the %s.', 'woo-retailcrm'),
+                            '<a href="' . esc_url($coupon_settings_url) . '">' . esc_html__( 'Enable use of coupons option', 'woo-retailcrm' ) . '</a>'
                         )
                     ]
                 ]);
@@ -861,8 +863,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function register_customer_loyalty()
         {
-            $phone = filter_input(INPUT_POST, 'phone');
-            $userId = filter_input(INPUT_POST, 'userId');
+            $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+            $userId = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
             $site = $this->apiClient->getSingleSiteForKey();
             $isSuccessful = false;
 
@@ -875,12 +877,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     __METHOD__,
                     sprintf(
                         'Errors when registering a loyalty program. Passed parameters: %s',
-                        json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
+                        wp_json_encode(['site' => $site, 'userId' => $userId, 'phone' => $phone])
                     )
                 );
-                echo json_encode(['error' => __('Error while registering in the loyalty program. Try again later', 'retailcrm')]);
+                echo wp_json_encode(['error' => esc_html__('Error while registering in the loyalty program. Try again later', 'woo-retailcrm')]);
             } else {
-                echo json_encode(['isSuccessful' => true]);
+                echo wp_json_encode(['isSuccessful' => true]);
             }
 
             wp_die();
@@ -888,7 +890,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function activate_customer_loyalty()
         {
-            $loyaltyId = filter_input(INPUT_POST, 'loyaltyId');
+            $loyaltyId = filter_input(INPUT_POST, 'loyaltyId', FILTER_SANITIZE_NUMBER_INT);
             $isSuccessful = false;
 
             if ($loyaltyId) {
@@ -898,11 +900,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if (!$isSuccessful) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    'Errors when activate loyalty program. Passed parameters: ' . json_encode(['loyaltyId' => $loyaltyId])
+                    'Errors when activate loyalty program. Passed parameters: ' . wp_json_encode(['loyaltyId' => $loyaltyId])
                 );
-                echo json_encode(['error' => __('Error when activating the loyalty program. Try again later', 'retailcrm')]);
+                echo wp_json_encode(['error' => esc_html__('Error when activating the loyalty program. Try again later', 'woo-retailcrm')]);
             } else {
-                echo json_encode(['isSuccessful' => true]);
+                echo wp_json_encode(['isSuccessful' => true]);
             }
 
             wp_die();
@@ -1058,13 +1060,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function include_js_translates_for_tracker()
         {
             $translations = [
-                'tracker_activity' => __('Activate event tracking', 'retailcrm'),
-                'page_view' => __('Page View', 'retailcrm'),
-                'cart' => __('Cart', 'retailcrm'),
-                'open_cart' => __('Open Cart', 'retailcrm'),
-                'page_view_desc' => __('Tracks user page views', 'retailcrm'),
-                'cart_desc' => __('Tracks changes in the cart (adding/removing items)', 'retailcrm'),
-                'open_cart_desc' => __('Tracks when the user opens the cart', 'retailcrm'),
+                'tracker_activity' => esc_html__('Activate event tracking', 'woo-retailcrm'),
+                'page_view' => esc_html__('Page View', 'woo-retailcrm'),
+                'cart' => esc_html__('Cart', 'woo-retailcrm'),
+                'open_cart' => esc_html__('Open Cart', 'woo-retailcrm'),
+                'page_view_desc' => esc_html__('Tracks user page views', 'woo-retailcrm'),
+                'cart_desc' => esc_html__('Tracks changes in the cart (adding/removing items)', 'woo-retailcrm'),
+                'open_cart_desc' => esc_html__('Tracks when the user opens the cart', 'woo-retailcrm'),
             ];
 
             wp_localize_script('retailcrm-tracker-interface', 'retailcrm_localized', $translations);
@@ -1113,13 +1115,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function count_upload_data()
         {
             $translate = [
-                'tr_order'       => __('Orders', 'retailcrm'),
-                'tr_customer'    => __('Customers', 'retailcrm'),
-                'tr_empty_field' => __('The field cannot be empty, enter the order ID', 'retailcrm'),
-                'tr_successful'  => __('Orders were uploaded', 'retailcrm'),
+                'tr_order'       => esc_html__('Orders', 'woo-retailcrm'),
+                'tr_customer'    => esc_html__('Customers', 'woo-retailcrm'),
+                'tr_empty_field' => esc_html__('The field cannot be empty, enter the order ID', 'woo-retailcrm'),
+                'tr_successful'  => esc_html__('Orders were uploaded', 'woo-retailcrm'),
             ];
 
-            echo json_encode(
+            echo wp_json_encode(
                 [
                     'count_orders' => $this->uploader->getCountOrders(),
                     'count_users'  => $this->uploader->getCountUsers(),
@@ -1135,19 +1137,19 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function get_cron_info()
         {
-            $defaultValue = __('This option is disabled', 'retailcrm');
+            $defaultValue = esc_html__('This option is disabled', 'woo-retailcrm');
             $icml         = $defaultValue;
             $history      = $defaultValue;
             $inventories  = $defaultValue;
             $loyaltyUploadPrice = $defaultValue;
 
             $translate    = [
-                'tr_td_cron'        => __('Cron launches', 'retailcrm'),
-                'tr_td_icml'        => __('Generation ICML', 'retailcrm'),
-                'tr_td_history'     => __('Syncing history', 'retailcrm'),
-                'tr_successful'     => __('Cron tasks cleared', 'retailcrm'),
-                'tr_td_inventories' => __('Syncing inventories', 'retailcrm'),
-                'tr_td_loyaltyUploadPrice' => __('Unloading promotional prices of offers', 'retailcrm')
+                'tr_td_cron'        => esc_html__('Cron launches', 'woo-retailcrm'),
+                'tr_td_icml'        => esc_html__('Generation ICML', 'woo-retailcrm'),
+                'tr_td_history'     => esc_html__('Syncing history', 'woo-retailcrm'),
+                'tr_successful'     => esc_html__('Cron tasks cleared', 'woo-retailcrm'),
+                'tr_td_inventories' => esc_html__('Syncing inventories', 'woo-retailcrm'),
+                'tr_td_loyaltyUploadPrice' => esc_html__('Unloading promotional prices of offers', 'woo-retailcrm')
             ];
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
@@ -1166,7 +1168,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $inventories = date('H:i:s d-m-Y ', wp_next_scheduled('retailcrm_inventories'));
             }
 
-            echo json_encode(
+            echo wp_json_encode(
                 [
                     'history'     => $history,
                     'icml'        => $icml,
@@ -1198,24 +1200,24 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $defaultCrmCustomerFields = $this->getDefaultCrmCustomerFields();
 
             $translate = [
-                'tr_lb_order'    => __('Custom fields for order', 'retailcrm'),
-                'tr_lb_customer' => __('Custom fields for customer', 'retailcrm'),
-                'tr_btn'         => __('Add new select for order', 'retailcrm'),
+                'tr_lb_order'    => esc_html__('Custom fields for order', 'woo-retailcrm'),
+                'tr_lb_customer' => esc_html__('Custom fields for customer', 'woo-retailcrm'),
+                'tr_btn'         => esc_html__('Add new select for order', 'woo-retailcrm'),
             ];
 
-            echo json_encode(
+            echo wp_json_encode(
                 [
                     'order' => [
                         'meta' => $orderMetaData,
                         'custom' => $orderCustomFields,
                         'crmDefault' => $defaultCrmOrderFields,
-                        'tr_default_crm_fields' => __('Standard CRM fields', 'retailcrm'),
+                        'tr_default_crm_fields' => esc_html__('Standard CRM fields', 'woo-retailcrm'),
                     ],
                     'customer' => [
                         'meta' => $customerMetaData,
                         'custom' => $customerCustomFields,
                         'crmDefault' => $defaultCrmCustomerFields,
-                        'tr_default_crm_fields' => __('Standard CRM fields', 'retailcrm'),
+                        'tr_default_crm_fields' => esc_html__('Standard CRM fields', 'woo-retailcrm'),
                     ],
                     'translate' => $translate,
                 ]
@@ -1227,7 +1229,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function add_loyalty_item($items)
         {
             WC_Retailcrm_Logger::setHook(current_action());
-            $items['loyalty'] = __('Loyalty program', 'retailcrm');
+            $items['loyalty'] = esc_html__('Loyalty program', 'woo-retailcrm');
 
             return $items;
         }
@@ -1251,7 +1253,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $loyaltyUrl = ['url' => get_admin_url()];
             $jsScriptsPath =  plugins_url() . self::ASSETS_DIR . '/js/';
             $cssPath = plugins_url() . self::ASSETS_DIR . '/css/';
-            $messagePhone = __('Enter the correct phone number', 'retailcrm');
+            $messagePhone = esc_html__('Enter the correct phone number', 'woo-retailcrm');
 
             $loyaltyTemrs = $this->settings['loyalty_terms'] ?? '';
             $loyaltyPersonal = $this->settings['loyalty_personal'] ?? '';
@@ -1269,7 +1271,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $result = $this->loyalty->getForm($userId, $loyaltyTemrs, $loyaltyPersonal);
 
             if ([] === $result) {
-                echo '<p style="color: red">'. __('Error while retrieving data. Try again later', 'retailcrm') . '</p>';
+                echo '<p style="color: red">'. esc_html__('Error while retrieving data. Try again later', 'woo-retailcrm') . '</p>';
             } else {
                 wp_localize_script($jsScript, 'loyaltyId', $result['loyaltyId'] ?? null);
                 echo $result['form'];
@@ -1284,7 +1286,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         private function getCustomFields($entity)
         {
-            $customFields    = ['default_retailcrm' => __('Select value', 'retailcrm')];
+            $customFields    = ['default_retailcrm' => esc_html__('Select value', 'woo-retailcrm')];
             $getCustomFields = $this->apiClient->customFieldsList(['entity' => $entity], 100);
 
             if (!empty($getCustomFields['customFields']) && $getCustomFields->isSuccessful()) {
@@ -1313,7 +1315,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $table = useHpos() ? $wpdb->prefix . 'wc_orders_meta' : $wpdb->postmeta;
             }
 
-            $metaData = ['default_retailcrm' => __('Select value', 'retailcrm')];
+            $metaData = ['default_retailcrm' => esc_html__('Select value', 'woo-retailcrm')];
             $sqlQuery = "SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`";
             $defaultMetaFields = file(
                 WP_PLUGIN_DIR . self::ASSETS_DIR . '/default/default_meta_fields.txt',
@@ -1394,31 +1396,31 @@ if (!class_exists('WC_Retailcrm_Base')) {
         private function getDefaultCrmOrderFields()
         {
             return [
-                'default-crm-field#firstName' => __('firstName', 'retailcrm'),
-                'default-crm-field#lastName' => __('lastName', 'retailcrm'),
-                'default-crm-field#phone' => __('phone', 'retailcrm'),
-                'default-crm-field#email' => __('email', 'retailcrm'),
-                'default-crm-field#delivery#address#index' => __('addressIndex', 'retailcrm'),
-                'default-crm-field#delivery#address#region' => __('addressRegion', 'retailcrm'),
-                'default-crm-field#delivery#address#city' => __('addressCity', 'retailcrm'),
-                'default-crm-field#delivery#address#text' => __('addressText', 'retailcrm'),
-                'default-crm-field#customerComment' => __('customerComment', 'retailcrm'),
-                'default-crm-field#managerComment' => __('managerComment', 'retailcrm'),
+                'default-crm-field#firstName' => esc_html__('firstName', 'woo-retailcrm'),
+                'default-crm-field#lastName' => esc_html__('lastName', 'woo-retailcrm'),
+                'default-crm-field#phone' => esc_html__('phone', 'woo-retailcrm'),
+                'default-crm-field#email' => esc_html__('email', 'woo-retailcrm'),
+                'default-crm-field#delivery#address#index' => esc_html__('addressIndex', 'woo-retailcrm'),
+                'default-crm-field#delivery#address#region' => esc_html__('addressRegion', 'woo-retailcrm'),
+                'default-crm-field#delivery#address#city' => esc_html__('addressCity', 'woo-retailcrm'),
+                'default-crm-field#delivery#address#text' => esc_html__('addressText', 'woo-retailcrm'),
+                'default-crm-field#customerComment' => esc_html__('customerComment', 'woo-retailcrm'),
+                'default-crm-field#managerComment' => esc_html__('managerComment', 'woo-retailcrm'),
             ];
         }
 
         private function getDefaultCrmCustomerFields()
         {
             return [
-                'default-crm-field#firstName' => __('firstName', 'retailcrm'),
-                'default-crm-field#lastName' => __('lastName', 'retailcrm'),
-                'default-crm-field#phones' => __('phone', 'retailcrm'),
-                'default-crm-field#email' => __('email', 'retailcrm'),
-                'default-crm-field#address#index' => __('addressIndex', 'retailcrm'),
-                'default-crm-field#address#region' => __('addressRegion', 'retailcrm'),
-                'default-crm-field#address#city' => __('addressCity', 'retailcrm'),
-                'default-crm-field#address#text' => __('addressText', 'retailcrm'),
-                'default-crm-field#tags' => __('tags', 'retailcrm'),
+                'default-crm-field#firstName' => esc_html__('firstName', 'woo-retailcrm'),
+                'default-crm-field#lastName' => esc_html__('lastName', 'woo-retailcrm'),
+                'default-crm-field#phones' => esc_html__('phone', 'woo-retailcrm'),
+                'default-crm-field#email' => esc_html__('email', 'woo-retailcrm'),
+                'default-crm-field#address#index' => esc_html__('addressIndex', 'woo-retailcrm'),
+                'default-crm-field#address#region' => esc_html__('addressRegion', 'woo-retailcrm'),
+                'default-crm-field#address#city' => esc_html__('addressCity', 'woo-retailcrm'),
+                'default-crm-field#address#text' => esc_html__('addressText', 'woo-retailcrm'),
+                'default-crm-field#tags' => esc_html__('tags', 'woo-retailcrm'),
             ];
         }
 
@@ -1434,7 +1436,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             <label style="%s" for="subscribeEmail">%s</label>
                         </div>',
                 $style,
-                __('I agree to receive promotional newsletters', 'retailcrm')
+                esc_html__('I agree to receive promotional newsletters', 'woo-retailcrm')
             );
         }
 
@@ -1462,9 +1464,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     ?>
                     <script>
                         jQuery(function() {
-                            var pageView = <?php echo json_encode($isPageView); ?>;
-                            var cart = <?php echo json_encode($isCart); ?>;
-                            var openCart = <?php echo json_encode($isCartOpen); ?>;
+                            var pageView = <?php echo wp_json_encode($isPageView); ?>;
+                            var cart = <?php echo wp_json_encode($isCart); ?>;
+                            var openCart = <?php echo wp_json_encode($isCartOpen); ?>;
 
                             startTrack(pageView, openCart, cart);
                         });

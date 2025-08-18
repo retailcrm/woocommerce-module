@@ -34,8 +34,8 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function __construct()
     {
         $this->id                 = 'integration-retailcrm';
-        $this->method_title       = __('Simla.com', 'retailcrm');
-        $this->method_description = __('Integration with Simla.com management system', 'retailcrm');
+        $this->method_title       = esc_html__('Simla.com', 'woo_retailcrm');
+        $this->method_description = esc_html__('Integration with Simla.com management system', 'woo-retailcrm');
 
         static::$option_key = $this->get_option_key();
 
@@ -63,7 +63,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 type: "POST",
                 url: '<?php echo $ajax_url; ?>?action=generate_icml',
                 success: function (response) {
-                    alert('<?php echo __('Catalog was generated', 'retailcrm'); ?>');
+                    alert('<?php echo esc_html__('Catalog was generated', 'woo-retailcrm'); ?>');
                     console.log('AJAX response : ', response);
                 }
             });
@@ -82,7 +82,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     type: "POST",
                     url: '<?php echo $ajax_url; ?>?action=upload_loyalty_price',
                     success: function (response) {
-                        alert('<?php echo __('Promotional prices unloaded', 'retailcrm');?>');
+                        alert('<?php echo esc_html__('Promotional prices unloaded', 'woo-retailcrm');?>');
                         console.log('AJAX response : ', response);
                     }
                 });
@@ -97,19 +97,19 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function init_form_fields()
     {
         $this->form_fields = [
-            [ 'title' => __('Main settings', 'retailcrm'), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ],
+            [ 'title' => esc_html__('Main settings', 'woo-retailcrm'), 'type' => 'title', 'desc' => '', 'id' => 'general_options' ],
 
             'api_url' => [
-                'title'             => __('API of URL', 'retailcrm'),
+                'title'             => esc_html__('API of URL', 'woo-retailcrm'),
                 'type'              => 'text',
-                'description'       => __('Enter API URL (https://yourdomain.simla.com)', 'retailcrm'),
+                'description'       => esc_html__('Enter API URL (https://yourdomain.simla.com)', 'woo-retailcrm'),
                 'desc_tip'          => true,
                 'default'           => ''
             ],
             'api_key' => [
-                'title'             => __('API key', 'retailcrm'),
+                'title'             => esc_html__('API key', 'woo-retailcrm'),
                 'type'              => 'text',
-                'description'       => __('Enter your API key. You can find it in the administration section of Simla.com', 'retailcrm'),
+                'description'       => esc_html__('Enter your API key. You can find it in the administration section of Simla.com', 'woo-retailcrm'),
                 'desc_tip'          => true,
                 'default'           => ''
             ]
@@ -128,18 +128,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 add_action('admin_print_footer_scripts', [$this, 'show_blocks'], 99);
 
                 $this->form_fields[] = [
-                    'title'       => __('API settings', 'retailcrm'),
+                    'title'       => esc_html__('API settings', 'woo-retailcrm'),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'api_options'
                 ];
 
                 $this->form_fields['online_assistant'] = [
-                    'title'       => __('Online assistant/Event tracker', 'retailcrm'),
+                    'title'       => esc_html__('Online assistant/Event tracker', 'woo-retailcrm'),
                     'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type'        => 'textarea',
                     'id'          => 'online_assistant',
-                    'placeholder' => __('Insert the Online consultant/Event tracker code here', 'retailcrm')
+                    'placeholder' => esc_html__('Insert the Online consultant/Event tracker code here', 'woo-retailcrm')
                 ];
 
                 $this->form_fields['tracker_settings'] = [
@@ -148,7 +148,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 ];
 
                 $this->form_fields[] = [
-                    'title'       => __('Catalog settings', 'retailcrm'),
+                    'title'       => esc_html__('Catalog settings', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'catalog_options'
@@ -157,27 +157,27 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 $this->form_fields['product_description'] = [
                     'type'        => 'select',
                     'class'       => 'select',
-                    'title'       => __('Product description', 'retailcrm'),
+                    'title'       => esc_html__('Product description', 'woo-retailcrm'),
                     'options'     => [
-                            'full'  => __('Full description', 'retailcrm'),
-                            'short' => __('Short description', 'retailcrm'),
+                            'full'  => esc_html__('Full description', 'woo-retailcrm'),
+                            'short' => esc_html__('Short description', 'woo-retailcrm'),
                             ],
                     'desc_tip'    => true,
-                    'description' => __(
+                    'description' => esc_html__(
                         'In the catalog, you can use a full or short description of the product',
-                        'retailcrm'
+                        'woo-retailcrm'
                     ),
                 ];
 
                 $this->form_fields['icml_unload_services'] = [
-                    'label' => __('Enabled', 'retailcrm'),
-                    'title' => __('Uploading services', 'retailcrm'),
+                    'label' => esc_html__('Enabled', 'woo-retailcrm'),
+                    'title' => esc_html__('Uploading services', 'woo-retailcrm'),
                     'class' => 'checkbox',
                     'type' => 'checkbox',
                     'desc_tip' => true,
-                    'description' => __(
+                    'description' => esc_html__(
                         "Goods with the 'virtual' option enabled will be uploaded to Simla as services",
-                        "retailcrm"
+                        "woo-retailcrm"
                     ),
                 ];
 
@@ -207,7 +207,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     }
 
                     $this->form_fields[] = [
-                        'title' => __('Order methods', 'retailcrm'),
+                        'title' => esc_html__('Order methods', 'woo-retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'order_methods_options'
@@ -215,15 +215,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     $this->form_fields['order_methods'] = [
                         'label'       =>  ' ',
-                        'title'       => __('Order methods available for uploading from Simla.com', 'retailcrm'),
+                        'title'       => esc_html__('Order methods available for uploading from Simla.com', 'woo-retailcrm'),
                         'class'       => '',
                         'type'        => 'multiselect',
                         'options'     => $order_methods_option,
                         'css'         => 'min-height:100px;',
                         'select_buttons' => true,
-                        'description' => __(
+                        'description' => esc_html__(
                             'Select order methods which will be uploaded from Simla.com to the website',
-                            'retailcrm'
+                            'woo-retailcrm'
                         ),
                     ];
                 }
@@ -253,7 +253,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     $wc_shipping_list = get_wc_shipping_methods();
 
                     $this->form_fields[] = [
-                        'title' => __('Delivery types', 'retailcrm'),
+                        'title' => esc_html__('Delivery types', 'woo-retailcrm'),
                         'type' => 'heading',
                         'description' => '',
                         'id' => 'shipping_options'
@@ -261,9 +261,13 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     foreach ($wc_shipping_list as $shipping_code => $shipping) {
                         if (isset($shipping['enabled']) && $shipping['enabled'] == static::YES) {
+                            $title = $shipping['title'] ? esc_html($shipping['title']): '';
+                            $description = $shipping['description'] ? esc_html($shipping['description']) : '';
+
+
                             $this->form_fields[$shipping_code] = [
-                                'title'          => __($shipping['title'], 'woocommerce'),
-                                'description' => __($shipping['description'], 'woocommerce'),
+                                'title'          => esc_html__($title, 'woo-retailcrm'),
+                                'description' => esc_html__($description, 'woo-retailcrm'),
                                 'css'            => 'min-width:350px;',
                                 'class'          => 'select',
                                 'type'           => 'select',
@@ -296,7 +300,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             $integrationPayments['code'][] = $crmPayment['code'];
                             $integrationPayments['name'][] = $crmPayment['name'];
 
-                            $crmPayment['name'] .= ' - ' . __('Integration payment', 'retailcrm');
+                            $crmPayment['name'] .= ' - ' . esc_html__('Integration payment', 'woo-retailcrm');
                         }
 
                         $paymentOptionList[$crmPayment['code']] = $crmPayment['name'];
@@ -307,7 +311,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     $this->form_fields[] = [
                             'id' => 'payment_options',
                             'type' => 'heading',
-                            'title' => __('Payment types', 'retailcrm'),
+                            'title' => esc_html__('Payment types', 'woo-retailcrm'),
                     ];
 
                     if (!empty($integrationPayments['name'])) {
@@ -315,15 +319,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                                 'id'                => 'payment_options',
                                 'css'               => 'max-width:400px;resize: none;',
                                 'type'              => 'textarea',
-                                'title'             => __('Attention!', 'retailcrm'),
+                                'title'             => esc_html__('Attention!', 'woo-retailcrm'),
                                 'value'             => '',
-                                'placeholder'       => __('If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM', 'retailcrm'),
+                                'placeholder'       => esc_html__('If payment type linked to the CRM integration module choosed, payment must be proceed in the CRM', 'woo-retailcrm'),
                                 'custom_attributes' => ['readonly' => 'readonly'],
                         ];
                     }
 
                     foreach ($wc_payment->get_available_payment_gateways() as $payment) {
-                        $title = empty($payment->method_title) ? $payment->id : $payment->method_title;
+                        $title = empty($payment->method_title) ?$payment->id : $payment->method_title;
                         $description = empty($payment->method_description)
                             ? $payment->description
                             : $payment->method_description;
@@ -331,11 +335,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         $this->form_fields[$payment->id] = [
                             'css'         => 'min-width:350px;',
                             'type'        => 'select',
-                            'title'       => __($title, 'woocommerce'),
+                            'title'       => esc_html($title),
                             'class'       => 'select',
                             'options'     => $paymentOptionList,
                             'desc_tip'    =>  true,
-                            'description' => __($description, 'woocommerce'),
+                            'description' => esc_html($description),
                         ];
                     }
                 }
@@ -347,7 +351,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                  * Statuses options
                  */
-                $statuses_option_list = ['not-upload' => __("Don't send to CRM", 'retailcrm')];
+                $statuses_option_list = ['not-upload' => esc_html__("Don't send to CRM", 'woo-retailcrm')];
                 $retailcrm_statuses_list = $this->apiClient->statusesList();
 
                 if (!empty($retailcrm_statuses_list) && $retailcrm_statuses_list->isSuccessful()) {
@@ -362,7 +366,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     $wc_statuses = wc_get_order_statuses();
 
                     $this->form_fields[] = [
-                        'title'       => __('Statuses', 'retailcrm'),
+                        'title'       => esc_html__('Statuses', 'woo-retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
                         'id'          => 'statuses_options'
@@ -371,7 +375,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     foreach ($wc_statuses as $idx => $name) {
                         $uid = str_replace('wc-', '', $idx);
                         $this->form_fields[$uid] = [
-                            'title'    => __($name, 'woocommerce'),
+                            'title'    => esc_html($name),
                             'css'      => 'min-width:350px;',
                             'class'    => 'select',
                             'type'     => 'select',
@@ -384,7 +388,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 /**
                 * Coupon options
                 */
-                $coupon_option_list = ['not-upload' => __("Don't send to CRM", 'retailcrm')];
+                $coupon_option_list = ['not-upload' => esc_html__("Don't send to CRM", 'woo-retailcrm')];
                 $retailcrm_metaFiels_list = $this->apiClient->customFieldsList(
                         ['entity' => 'order', 'type' => ['string', 'text']]
                 );
@@ -395,7 +399,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     }
 
                     $this->form_fields[] = [
-                            'title' => __("Coupon", 'retailcrm'),
+                            'title' => esc_html__("Coupon", 'woo-retailcrm'),
                             'type' => 'heading',
                             'description' => '',
                             'id' => 'coupon_options'
@@ -405,20 +409,20 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                             'id' => 'coupon_options',
                             'css'               => 'max-width:400px;resize: none;height:215px;',
                             'type'              => 'textarea',
-                            'title'             => __('Attention!', 'retailcrm'),
+                            'title'             => esc_html__('Attention!', 'woo-retailcrm'),
                             'value'             => '',
-                            'placeholder'       => __('When working with coupons via CRM, it is impossible to transfer manual discounts.', 'retailcrm') .
+                            'placeholder'       => esc_html__('When working with coupons via CRM, it is impossible to transfer manual discounts.', 'woo-retailcrm') .
                             PHP_EOL . PHP_EOL .
-                            __('The user field must be in the String or Text format.', 'retailcrm') .
+                            esc_html__('The user field must be in the String or Text format.', 'woo-retailcrm') .
                             PHP_EOL .
-                            __('When using multiple coupons, separation is supported using spaces, line breaks, characters `;` `,`.', 'retailcrm') .
+                            esc_html__('When using multiple coupons, separation is supported using spaces, line breaks, characters `;` `,`.', 'woo-retailcrm') .
                             PHP_EOL .
-                            __('For example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4', 'retailcrm'),
+                            esc_html__('For example: code_coupon_1; code_coupon_2, code_coupon_3 code_coupon_4', 'woo-retailcrm'),
                             'custom_attributes' => ['readonly' => 'readonly'],
                     ];
 
                     $this->form_fields['woo_coupon_apply_field'] = [
-                            'title' => __('Coupon', 'retailcrm'),
+                            'title' => esc_html__('Coupon', 'woo-retailcrm'),
                             'css' => 'min-width:350px;',
                             'class' => 'select',
                             'type' => 'select',
@@ -431,7 +435,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * Meta data options
                  */
                 $this->form_fields[] = [
-                    'title'       => __('Custom fields', 'retailcrm'),
+                    'title'       => esc_html__('Custom fields', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'class'       => 'meta-fields'
@@ -451,18 +455,18 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * Inventories options
                  */
                 $this->form_fields[] = [
-                    'title'       => __('Setting of the stock balance', 'retailcrm'),
+                    'title'       => esc_html__('Setting of the stock balance', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'invent_options'
                 ];
 
                 $this->form_fields['sync'] = [
-                    'label'       => __('Synchronization of the stock balance', 'retailcrm'),
-                    'title'       => __('Stock balance', 'retailcrm'),
+                    'label'       => esc_html__('Synchronization of the stock balance', 'woo-retailcrm'),
+                    'title'       => esc_html__('Stock balance', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website', 'retailcrm')
+                    'description' => esc_html__('Enable this setting if you would like to get information on leftover stocks from Simla.com to the website', 'woo-retailcrm')
                 ];
 
                 $crmStores = [];
@@ -480,14 +484,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 $this->form_fields['stores_for_uploading'] = [
                         'label'       =>  ' ',
-                        'title'       => __('Warehouses available in CRM', 'retailcrm'),
+                        'title'       => esc_html__('Warehouses available in CRM', 'woo-retailcrm'),
                         'class'       => '',
                         'type'        => 'multiselect',
                         'options'     => $crmStores,
                         'css'         => 'min-height:100px;',
                         'select_buttons' => true,
-                        'description' => __('Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)',
-                            'retailcrm'
+                        'description' => esc_html__('Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)',
+                            'woo-retailcrm'
                         ),
                 ];
 
@@ -495,28 +499,28 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * UA options
                  */
                 $this->form_fields[] = [
-                    'title'       => __('UA settings', 'retailcrm'),
+                    'title'       => esc_html__('UA settings', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'ua_options'
                 ];
 
                 $this->form_fields['ua'] = [
-                    'label'       => __('Activate UA', 'retailcrm'),
-                    'title'       => __('UA', 'retailcrm'),
+                    'label'       => esc_html__('Activate UA', 'woo-retailcrm'),
+                    'title'       => esc_html__('UA', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting for uploading data to UA', 'retailcrm')
+                    'description' => esc_html__('Enable this setting for uploading data to UA', 'woo-retailcrm')
                 ];
 
                 $this->form_fields['ua_code'] = [
-                    'title'       => __('UA tracking code', 'retailcrm'),
+                    'title'       => esc_html__('UA tracking code', 'woo-retailcrm'),
                     'class'       => 'input',
                     'type'        => 'input'
                 ];
 
                 $this->form_fields['ua_custom'] = [
-                    'title'       => __('User parameter', 'retailcrm'),
+                    'title'       => esc_html__('User parameter', 'woo-retailcrm'),
                     'class'       => 'input',
                     'type'        => 'input'
                 ];
@@ -526,7 +530,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  */
                 if ($this->get_option('daemon_collector') === 'yes') {
                     $this->form_fields[] = [
-                        'title'       => __('Daemon Collector settings', 'retailcrm'),
+                        'title'       => esc_html__('Daemon Collector settings', 'woo-retailcrm'),
                         'type'        => 'heading',
                         'description' => '',
                         'id'          => 'invent_options'
@@ -534,15 +538,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 }
 
                 $this->form_fields['daemon_collector'] = [
-                    'label'       => __('Activate Daemon Collector', 'retailcrm'),
-                    'title'       => __('Daemon Collector', 'retailcrm'),
+                    'label'       => esc_html__('Activate Daemon Collector', 'woo-retailcrm'),
+                    'title'       => esc_html__('Daemon Collector', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Enable this setting for activate Daemon Collector on site', 'retailcrm')
+                    'description' => esc_html__('Enable this setting for activate Daemon Collector on site', 'woo-retailcrm')
                 ];
 
                 $this->form_fields['daemon_collector_key'] = [
-                    'title'       => __('Site key', 'retailcrm'),
+                    'title'       => esc_html__('Site key', 'woo-retailcrm'),
                     'class'       => 'input',
                     'type'        => 'input'
                 ];
@@ -551,35 +555,35 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * Uploads options
                  */
                 $this->form_fields[] = [
-                    'title'       => __('Settings of uploading', 'retailcrm'),
+                    'title'       => esc_html__('Settings of uploading', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'upload_options'
                 ];
 
                 $this->form_fields['upload-button'] = [
-                    'label'       => __('Upload', 'retailcrm'),
-                    'title'       => __('Uploading all customers and orders', 'retailcrm'),
+                    'label'       => esc_html__('Upload', 'woo-retailcrm'),
+                    'title'       => esc_html__('Uploading all customers and orders', 'woo-retailcrm'),
                     'type'        => 'button',
-                    'description' => __('You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open', 'retailcrm'),
+                    'description' => esc_html__('You can export all orders and customers from CMS to Simla.com by clicking the «Upload» button. This process can take much time and before it is completed, you need to keep the tab open', 'woo-retailcrm'),
                     'desc_tip'    => true,
                     'id'          => 'export-orders-submit'
                 ];
 
                 $this->form_fields['export_selected_orders_ids'] = [
-                    'label'             => __('Orders identifiers', 'retailcrm'),
-                    'title'             => __('Orders identifiers', 'retailcrm'),
+                    'label'             => esc_html__('Orders identifiers', 'woo-retailcrm'),
+                    'title'             => esc_html__('Orders identifiers', 'woo-retailcrm'),
                     'type'              => 'text',
-                    'description'       => __('Enter orders identifiers separated by a comma, but no more than 50', 'retailcrm'),
+                    'description'       => esc_html__('Enter orders identifiers separated by a comma, but no more than 50', 'woo-retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'export_selected_orders_ids'
                 ];
 
                 $this->form_fields['export_selected_orders_btn'] = [
-                    'label'             => __('Upload', 'retailcrm'),
-                    'title'             => __('Uploading orders by identifiers', 'retailcrm'),
+                    'label'             => esc_html__('Upload', 'woo-retailcrm'),
+                    'title'             => esc_html__('Uploading orders by identifiers', 'woo-retailcrm'),
                     'type'              => 'button',
-                    'description'       => __('This functionality allows to upload orders to Simla.com differentially', 'retailcrm'),
+                    'description'       => esc_html__('This functionality allows to upload orders to Simla.com differentially', 'woo-retailcrm'),
                     'desc_tip'          => true,
                     'id'                => 'export_selected_orders_btn'
                 ];
@@ -588,36 +592,36 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * WhatsApp options
                  */
                 $this->form_fields[] = [
-                    'title'       => __('Settings of WhatsApp', 'retailcrm'),
+                    'title'       => esc_html__('Settings of WhatsApp', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'description' => '',
                     'id'          => 'whatsapp_options'
                 ];
 
                 $this->form_fields['whatsapp_active'] = [
-                    'label'       => __('Activate WhatsApp', 'retailcrm'),
-                    'title'       => __('WhatsApp', 'retailcrm'),
+                    'label'       => esc_html__('Activate WhatsApp', 'woo-retailcrm'),
+                    'title'       => esc_html__('WhatsApp', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __('Activate this setting to activate WhatsApp on the website', 'retailcrm')
+                    'description' => esc_html__('Activate this setting to activate WhatsApp on the website', 'woo-retailcrm')
                 ];
 
                 $this->form_fields['whatsapp_location_icon'] = [
-                    'label'       => __('Place in the lower right corner of the website', 'retailcrm'),
-                    'title'       => __('WhatsApp icon location', 'retailcrm'),
+                    'label'       => esc_html__('Place in the lower right corner of the website', 'woo-retailcrm'),
+                    'title'       => esc_html__('WhatsApp icon location', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __(
+                    'description' => esc_html__(
                         'By default, WhatsApp icon is located in the lower left corner of the website',
-                        'retailcrm'
+                        'woo-retailcrm'
                     )
                 ];
 
                 $this->form_fields['whatsapp_number'] = [
-                    'title'       => __('Enter your phone number', 'retailcrm'),
+                    'title'       => esc_html__('Enter your phone number', 'woo-retailcrm'),
                     'class'       => '',
                     'type'        => 'text',
-                    'description' => __('WhatsApp chat will be opened with this contact', 'retailcrm')
+                    'description' => esc_html__('WhatsApp chat will be opened with this contact', 'woo-retailcrm')
                 ];
 
                  /**
@@ -625,122 +629,134 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 */
 
                 $this->form_fields[] = [
-                    'title' => __('Loyalty program', 'retailcrm'),
+                    'title' => esc_html__('Loyalty program', 'woo-retailcrm'),
                     'type' => 'heading',
                     'description' => '',
                     'id' => 'loyalty_options'
                 ];
 
+                $linkDescriptionLoyalty = wp_kses(
+                    __(
+                        "<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>",
+                        'woo-retailcrm'
+                    ),
+                    array(
+                        'a' => array(
+                            'href' => true,
+                        ),
+                    )
+                );
+
                 $this->form_fields['loyalty'] = [
-                    'label'       => __('Activate program loyalty', 'retailcrm'),
-                    'title'       => __('Loyalty program', 'retailcrm'),
+                    'label'       => esc_html__('Activate program loyalty', 'woo-retailcrm'),
+                    'title'       => esc_html__('Loyalty program', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                     'description' => '<b style="color: red">' .
-                     __('Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in', 'retailcrm') .
-                      ' <\b>' . __("<a href='https://docs.simla.com/Users/Integration/SiteModules/WooCommerce/PLWoocommerce'>documentation loyalty program</a>", "retailcrm")
+                     esc_html__('Attention! When activating the loyalty program, the method of ICML catalog generation changes. Details in', 'woo-retailcrm') .
+                      ' </b>' . $linkDescriptionLoyalty
                 ];
 
                 $this->form_fields['loyalty_terms'] = [
-                    'title' => __('Terms of loyalty program', 'retailcrm'),
+                    'title' => esc_html__('Terms of loyalty program', 'woo-retailcrm'),
                     'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type' => 'textarea',
                     'id' => 'loyalty_terms',
-                    'placeholder' => __('Insert the terms and conditions of the loyalty program', 'retailcrm')
+                    'placeholder' => esc_html__('Insert the terms and conditions of the loyalty program', 'woo-retailcrm')
                 ];
 
                 $this->form_fields['loyalty_personal'] = [
-                    'title' => __('Conditions of personal data processing', 'retailcrm'),
+                    'title' => esc_html__('Conditions of personal data processing', 'woo-retailcrm'),
                     'css' => 'width:400px; height:215px; resize: horizontal;',
                     'type' => 'textarea',
                     'id' => 'loyalty_personal',
-                    'placeholder' => __('Insert the terms and conditions for processing personal data', 'retailcrm')
+                    'placeholder' => esc_html__('Insert the terms and conditions for processing personal data', 'woo-retailcrm')
                 ];
 
                 /**
                  * Generate icml file
                  */
                 $this->form_fields[] = [
-                    'title'       => __('Generating ICML catalog', 'retailcrm'),
+                    'title'       => esc_html__('Generating ICML catalog', 'woo-retailcrm'),
                     'type'        => 'title',
                     'description' => '',
                     'id'          => 'icml_options'
                 ];
 
                 $this->form_fields[] = [
-                    'label'             => __('Generate now', 'retailcrm'),
-                    'title'             => __('Generating ICML', 'retailcrm'),
+                    'label'             => esc_html__('Generate now', 'woo-retailcrm'),
+                    'title'             => esc_html__('Generating ICML', 'woo-retailcrm'),
                     'type'              => 'button',
                     'desc_tip'          => true,
                     'id'                => 'icml-retailcrm',
-                    'description'       => __(
+                    'description'       => esc_html__(
                         'This functionality allows to generate ICML products catalog for uploading to Simla.com',
-                        'retailcrm'
+                        'woo-retailcrm'
                     ),
                 ];
 
                 $this->form_fields[] = [
-                    'label' => __('Upload prices now', 'retailcrm'),
-                    'title' => __('Uploaded discount price', 'retailcrm'),
+                    'label' => esc_html__('Upload prices now', 'woo-retailcrm'),
+                    'title' => esc_html__('Uploaded discount price', 'woo-retailcrm'),
                     'type' => 'button',
                     'desc_tip' => true,
                     'id' => 'upload-loyalty-price-retailcrm',
-                    'description' => __(
+                    'description' => esc_html__(
                         'This functionality loads the promotional prices offers into Simla.com',
-                        'retailcrm'
+                        'woo-retailcrm'
                     ),
                 ];
 
                 $this->form_fields['icml'] = [
-                    'label'       => __('Generating ICML', 'retailcrm'),
-                    'title'       => __('Generating ICML catalog by wp-cron', 'retailcrm'),
+                    'label'       => esc_html__('Generating ICML', 'woo-retailcrm'),
+                    'title'       => esc_html__('Generating ICML catalog by wp-cron', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox'
                 ];
 
                 $this->form_fields['corporate_enabled'] = [
-                    'title'       => __('Corporate customers support', 'retailcrm'),
-                    'label'       => __('Enabled'),
+                    'title'       => esc_html__('Corporate customers support', 'woo-retailcrm'),
+                    'label'       => esc_html__('Enabled'),
                     'description' => '',
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
                 ];
 
                 $this->form_fields['abandoned_carts_enabled'] = [
-                    'title'       => __('Abandoned carts', 'retailcrm'),
-                    'label'       => __('Upload abandoned carts', 'retailcrm'),
+                    'title'       => esc_html__('Abandoned carts', 'woo-retailcrm'),
+                    'label'       => esc_html__('Upload abandoned carts', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
-                    'description' => __(
+                    'description' => esc_html__(
                             'Enable if you want to in CRM abandoned shopping carts were unloaded',
-                            'retailcrm'
+                            'woo-retailcrm'
                     ),
                 ];
 
                 $this->form_fields['history'] = [
-                    'label'       => __('Activate history uploads', 'retailcrm'),
-                    'title'       => __('Upload data from Simla.com', 'retailcrm'),
+                    'label'       => esc_html__('Activate history uploads', 'woo-retailcrm'),
+                    'title'       => esc_html__('Upload data from Simla.com', 'woo-retailcrm'),
                     'class'       => 'checkbox',
                     'type'        => 'checkbox'
                 ];
 
                 $this->form_fields['deactivate_update_order'] = [
-                        'label'       => __('Disable data editing in Simla.com', 'retailcrm'),
-                        'title'       => __('Data updating in Simla.com', 'retailcrm'),
+                        'label'       => esc_html__('Disable data editing in Simla.com', 'woo-retailcrm'),
+                        'title'       => esc_html__('Data updating in Simla.com', 'woo-retailcrm'),
                         'class'       => 'checkbox',
                         'type'        => 'checkbox'
                 ];
 
                 $this->form_fields['bind_by_sku'] = [
-                        'label'       => __('Activate the binding via sku (xml)', 'retailcrm'),
-                        'title'       => __('Stock synchronization and link between products', 'retailcrm'),
+                        'label'       => esc_html__('Activate the binding via sku (xml)', 'woo-retailcrm'),
+                        'title'       => esc_html__('Stock synchronization and link between products', 'woo-retailcrm'),
                         'class'       => 'checkbox',
                         'type'        => 'checkbox'
                 ];
 
                 $this->form_fields['update_number'] = [
-                        'label'       => __('Enable transferring the number to Simla.com', 'retailcrm'),
-                        'title'       => __('Transferring the order number', 'retailcrm'),
+                        'label'       => esc_html__('Enable transferring the number to Simla.com', 'woo-retailcrm'),
+                        'title'       => esc_html__('Transferring the order number', 'woo-retailcrm'),
                         'class'       => 'checkbox',
                         'type'        => 'checkbox'
                 ];
@@ -749,16 +765,16 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                  * Debug information
                  */
                 $this->form_fields['debug-info'] = [
-                    'title'       => __('Debug information', 'retailcrm'),
+                    'title'       => esc_html__('Debug information', 'woo-retailcrm'),
                     'type'        => 'heading',
                     'class'       => 'debug_info_options'
                 ];
 
                 $this->form_fields['clear_cron_tasks'] = [
-                    'label'       => __('Clear', 'retailcrm'),
-                    'title'       => __('Clear cron tasks', 'retailcrm'),
+                    'label'       => esc_html__('Clear', 'woo-retailcrm'),
+                    'title'       => esc_html__('Clear cron tasks', 'woo-retailcrm'),
                     'type'        => 'button',
-                    'description' => __('If you change the time interval, need to clear the old cron tasks', 'retailcrm'),
+                    'description' => esc_html__('If you change the time interval, need to clear the old cron tasks', 'woo-retailcrm'),
                     'desc_tip'    => true,
                     'id'          => 'clear_cron_tasks'
                 ];
@@ -858,7 +874,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             return wp_unslash($onlineAssistant);
         }
 
-        WC_Admin_Settings::add_error(__('Incorrect code of Online consultant/Event tracker', 'retailcrm'));
+        WC_Admin_Settings::add_error(esc_html__('Incorrect code of Online consultant/Event tracker', 'woo-retailcrm'));
 
         return '';
     }
@@ -880,7 +896,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         if ('' !== $validateMessage) {
             $value = '';
 
-            WC_Admin_Settings::add_error(esc_html__($validateMessage, 'retailcrm'));
+            WC_Admin_Settings::add_error(esc_html__('Incorrect URL.', 'woo-retailcrm'));
         }
 
         $this->crmUrl = $value;
@@ -927,22 +943,22 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $response = $api->sitesList();
 
         if (empty($response['sites']) || !$response->isSuccessful()) {
-            $errorMessage = 'Enter the correct API key';
+            $errorMessage = esc_html__('Enter the correct API key', 'woo-retailcrm');
             $isValidCrmSite = false;
         } elseif (count($response['sites']) > 1)  {
-            $errorMessage = 'API key with one-shop access required';
+            $errorMessage = esc_html__('API key with one-shop access required', 'woo-retailcrm');
             $isValidCrmSite = false;
         } else {
             $site = current($response['sites']);
 
             if (get_woocommerce_currency() !== $site['currency']) {
-                $errorMessage = 'The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match';
+                $errorMessage = esc_html__('The currency of the site differs from the currency of the store in CRM. For the integration to work correctly, the currencies in CRM and CMS must match', 'woo-retailcrm');
                 $isValidCrmSite = false;
             }
         }
 
         if ('' !== $errorMessage) {
-            WC_Admin_Settings::add_error(esc_html__($errorMessage, 'retailcrm'));
+            WC_Admin_Settings::add_error($errorMessage);
         }
 
         return $isValidCrmSite;
@@ -966,7 +982,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             $phoneNumber = preg_replace('/[^+0-9]/', '', $value);
 
             if (empty($value) || strlen($value) > 25 || strlen($phoneNumber) !== strlen($value)) {
-                WC_Admin_Settings::add_error(esc_html__('Introduce the correct phone number', 'retailcrm'));
+                WC_Admin_Settings::add_error(esc_html__('Introduce the correct phone number', 'woo-retailcrm'));
                 $value = '';
             }
         }
@@ -1019,14 +1035,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $wp_admin_bar->add_menu(
             [
                 'id' => 'retailcrm_top_menu',
-                'title' => __('Simla.com', 'retailcrm')
+                'title' => esc_html__('Simla.com', 'woo-retailcrm')
             ]
         );
 
         $wp_admin_bar->add_menu(
             [
                 'id' => 'retailcrm_ajax_generate_icml',
-                'title' => __('Generating ICML catalog', 'retailcrm'),
+                'title' => esc_html__('Generating ICML catalog', 'woo-retailcrm'),
                 'href' => '#',
                 'parent' => 'retailcrm_top_menu',
                 'class' => 'retailcrm_ajax_generate_icml'
@@ -1036,7 +1052,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         $wp_admin_bar->add_menu(
             [
                 'id' => 'retailcrm_ajax_generate_setings',
-                'title' => __('Settings', 'retailcrm'),
+                'title' => esc_html__('Settings', 'woo-retailcrm'),
                 'href' => get_site_url() . '/wp-admin/admin.php?page=wc-settings&tab=integration&section=integration-retailcrm',
                 'parent' => 'retailcrm_top_menu',
                 'class' => 'retailcrm_ajax_settings'

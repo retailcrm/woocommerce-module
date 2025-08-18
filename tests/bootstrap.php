@@ -71,5 +71,5 @@ function _manually_load_plugin()
     require_once $pluginDirectory . 'src/include/class-wc-retailcrm-orders.php';
     require_once $pluginDirectory . 'src/include/class-wc-retailcrm-plugin.php';
     require_once $pluginDirectory . 'src/include/class-wc-retailcrm-uploader.php';
-    require_once $pluginDirectory . 'src/retailcrm.php';
+    require_once $pluginDirectory . 'src/woo-retailcrm.php';
 }
