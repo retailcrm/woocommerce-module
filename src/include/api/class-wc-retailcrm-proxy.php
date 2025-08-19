@@ -59,7 +59,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
         public function __call($method, $arguments)
         {
             $response = null;
-            $called = sprintf('%s::%s', get_class($this->retailcrm), $method);
+            $called = sprintf('%1$s::%2$s', get_class($this->retailcrm), $method);
 
             try {
                 $response = $this->getResponse($method, $arguments);
@@ -123,7 +123,7 @@ if (!class_exists('WC_Retailcrm_Proxy')) :
                 WC_Retailcrm_Logger::error(
                     $method,
                     sprintf(
-                        "Error: [HTTP-code %s] %s",
+                        'Error: [HTTP-code %1$s] %2$s',
                         $response->getStatusCode(),
                         $response->getErrorString()
                     ),

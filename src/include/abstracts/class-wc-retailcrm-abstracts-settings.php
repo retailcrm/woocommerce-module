@@ -55,7 +55,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function ajax_generate_icml()
     {
-        $ajax_url = admin_url('admin-ajax.php');
+        $ajax_url = esc_url(admin_url('admin-ajax.php'));
         ?>
         <script type="text/javascript">
         jQuery('#icml-retailcrm, #wp-admin-bar-retailcrm_ajax_generate_icml').bind('click', function() {
@@ -74,7 +74,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
     public function ajax_upload_loyalty_price()
     {
-        $ajax_url = admin_url('admin-ajax.php');
+        $ajax_url = esc_url(admin_url('admin-ajax.php'));
         ?>
         <script type="text/javascript">
             jQuery('#upload-loyalty-price-retailcrm').bind('click', function () {

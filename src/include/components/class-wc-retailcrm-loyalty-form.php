@@ -9,7 +9,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             $htmlLoyaltyTerms = $loyaltyTerms !== ''
                 ? sprintf(
-                    '<p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a id="terms-popup" class="popup-open-loyalty" href="#">%s</a>.</p>',
+                    '<p><input type="checkbox" name="terms" id="termsLoyalty" required>%1$s<a id="terms-popup" class="popup-open-loyalty" href="#">%2$s</a>.</p>',
                     esc_html__(' I agree with ', 'woo-retailcrm'),
                     esc_html__('loyalty program terms', 'woo-retailcrm')
                 )
@@ -18,7 +18,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $htmlLoyaltyPersonal = $loyaltyPersonal !== ''
                 ? sprintf(
-                '<p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a id="privacy-popup" class="popup-open-loyalty" href="#">%s</a>.</p>',
+                '<p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%1$s<a id="privacy-popup" class="popup-open-loyalty" href="#">%2$s</a>.</p>',
                 esc_html__(' I agree with ', 'woo-retailcrm'),
                 esc_html__('terms of personal data processing', 'woo-retailcrm')
                 )
@@ -29,15 +29,15 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return sprintf(
                 '
                     <form id="loyaltyRegisterForm" method="post">
-                        <p>%s</p>
-                        %s
-                        %s
-                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" value="%s" required></p>
-                        <p><input type="submit" value="%s"></p>
+                        <p>%1$s</p>
+                        %2$s
+                        %3$s
+                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%4$s" value="%5$s" required></p>
+                        <p><input type="submit" value="%6$s"></p>
                     </form>
                     <div class="popup-fade-loyalty">
                         <div class="popup-loyalty">
-                            <a class="popup-close-loyalty" href="#">%s</a>
+                            <a class="popup-close-loyalty" href="#">%7$s</a>
                             <br>
                             <div id="popup-loyalty-text"></div>
                         </div>		
@@ -57,8 +57,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             return sprintf('
                     <form id="loyaltyActivateForm" method="post">
-                        <p><input type="checkbox" id="loyaltyActiveCheckbox" name="loyaltyCheckbox" required> %s</p>
-                        <input type="submit" value="%s">
+                        <p><input type="checkbox" id="loyaltyActiveCheckbox" name="loyaltyCheckbox" required> %1$s</p>
+                        <input type="submit" value="%2$s">
                     </form>',
                 esc_html__('Activate participation in the loyalty program', 'woo-retailcrm'),
                 esc_html__('Send', 'woo-retailcrm')

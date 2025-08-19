@@ -140,7 +140,7 @@ if (!class_exists('WC_Retailcrm_Icml_Writer')) :
                 }
 
                 if (empty($offer['name'])) {
-                    $offer['name'] = esc_attr__('Untitled', 'woo-retailcrm');
+                    $offer['name'] = __('Untitled', 'woo-retailcrm');
                 }
 
                 if (empty($offer['productName'])) {

@@ -109,7 +109,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                 if (!$response->isSuccessful()) {
                     throw new RuntimeException(
                         sprintf(
-                            'Failure to upload orders: %s. Status code: %s',
+                            'Failure to upload orders: %1$s. Status code: %2$s',
                             $response->getErrorString(),
                             $response->getStatusCode()
                         )
@@ -255,7 +255,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             foreach ($errors as $orderId => $error) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    sprintf("Error while uploading [%d] => %s", $orderId, $error)
+                    sprintf("Error while uploading [%1$d] => %2$s", $orderId, $error)
                 );
             }
         }
@@ -278,16 +278,16 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                         $this->archiveUpload('orders', 0, $ordersPages);
                         break;
                     default:
-                        echo 'Unknown entity: ' . $entity;
+                        echo 'Unknown entity: ' . esc_html($entity);
                 }
             } catch (Exception $exception) {
-                echo $exception->getMessage();
+                echo esc_html($exception->getMessage());
             }
         }
 
         public function archiveUpload($entity, $page, $totalPages)
         {
-            echo $entity . ' uploading started' . PHP_EOL;
+            echo esc_html($entity) . ' uploading started' . PHP_EOL;
 
             do {
                 if ($entity === 'orders') {
@@ -296,7 +296,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
                     $this->uploadArchiveCustomers($page);
                 }
 
-                echo $page . ' page uploaded' . PHP_EOL;
+                echo esc_html($page) . ' page uploaded' . PHP_EOL;
 
                 $page++;
             } while ($page <= $totalPages);

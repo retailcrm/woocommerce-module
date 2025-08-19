@@ -65,7 +65,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
 
         public static function setHook(string $action, $id = null): void
         {
-            static::$currentHook = $id === null ? $action : sprintf('%s-%d', $action, (int) $id);
+            static::$currentHook = $id === null ? $action : sprintf('%1$s-%2$d', $action, (int) $id);
         }
 
         private static function getIdentifier(): string
@@ -91,7 +91,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             self::error(
                 $method,
                 sprintf(
-                    '%s%s - Exception in file %s on line %s',
+                    '%1$s%2$s - Exception in file %3$s on line %4$s',
                     $additionalMessage,
                     $exception->getMessage(),
                     $exception->getFile(),
@@ -119,7 +119,7 @@ if (!class_exists('WC_Retailcrm_Logger') && class_exists('WC_Log_Levels')) :
             $context['source'] = self::HANDLE;
 
             $message = sprintf(
-                '%s [%s] <%s> %s=> %s',
+                '%1$s [%2$s] <%3$s> %4$s=> %5$s',
                 self::getIdentifier(),
                 self::$currentHook,
                 $method,

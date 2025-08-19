@@ -35,7 +35,7 @@ jQuery(function() {
             url: loyaltyUrl.url + '/admin-ajax.php?action=register_customer_loyalty',
             method: 'POST',
             timeout: 0,
-            data: {ajax: 1, phone: phone.val(), userId: customerId},
+            data: {ajax: 1, phone: phone.val(), userId: customerId, _ajax_nonce: nonce},
             dataType: 'json'
         })
             .done(function (response) {
@@ -66,7 +66,7 @@ jQuery(function() {
             url: loyaltyUrl.url + '/admin-ajax.php?action=activate_customer_loyalty',
             method: 'POST',
             timeout: 0,
-            data: {ajax: 1, loyaltyId: loyaltyId},
+            data: {ajax: 1, loyaltyId: loyaltyId, _ajax_nonce: nonce},
             dataType: 'json'
         })
             .done(function (response) {

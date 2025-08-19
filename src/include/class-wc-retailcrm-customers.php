@@ -149,7 +149,7 @@ if (!class_exists('WC_Retailcrm_Customers')) :
 
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    sprintf('Customer was created, externalId: %s. %s', $wcCustomer->get_id(), $message . $email)
+                    sprintf('Customer was created, externalId: %1$s. %2$s', $wcCustomer->get_id(), $message . $email)
                 );
             }
         }

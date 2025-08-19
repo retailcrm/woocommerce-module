@@ -34,10 +34,16 @@ jQuery(function () {
             url: this.adminUrl + '/admin-ajax.php?action=content_upload',
             method: "POST",
             timeout: 0,
-            data: {ajax: 1},
+            data: {ajax: 1, _ajax_nonce: AdminUrl.nonce},
             dataType: "json"
         })
             .done(function (response) {
+                if (response.error) {
+                    alert(response.error);
+
+                    return false;
+                }
+
                 _this.ordersCount = Number(response.count_orders);
                 _this.customersCount = Number(response.count_users);
                 jQuery(_this.submitButton).removeClass('retailcrm-hidden');
@@ -101,6 +107,8 @@ jQuery(function () {
             }
         }
 
+        data._ajax_nonce = AdminUrl.nonce;
+
         let _this = this;
 
         jQuery.ajax({
@@ -110,6 +118,12 @@ jQuery(function () {
             data: data
         })
             .done(function (response) {
+                if (response.error) {
+                    alert(response.error);
+
+                    return false;
+                }
+
                 if (_this.isDone) {
                     return _this.exportDone();
                 }
@@ -171,7 +185,14 @@ jQuery(function () {
             jQuery.ajax({
                 type: "POST",
                 url: this.adminUrl + '/admin-ajax.php?action=upload_selected_orders&order_ids_retailcrm=' + ids,
+                data: {_ajax_nonce: AdminUrl.nonce},
                 success: function (response) {
+                    if (response.error) {
+                        alert(response.error);
+
+                        return false;
+                    }
+
                     alert(_this.messageSuccessful);
                 }
             });

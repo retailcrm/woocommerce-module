@@ -38,7 +38,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
                 return true;
             } catch (ValidatorException $exception) {
-                WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'retailcrm')) . "userId: $userId");
+                WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'woo-retailcrm')) . "userId: $userId");
             } catch (Throwable $exception) {
                 WC_Admin_Settings::add_error($exception->getMessage());
             }

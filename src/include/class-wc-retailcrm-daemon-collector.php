@@ -92,7 +92,7 @@ EOF;
         }
 
         $this->code .= apply_filters('retailcrm_daemon_collector', '') . sprintf(
-            "\t_rc('create', '%s', %s);\n",
+            '\t_rc(\'create\', \'%1$s\', %2$s);\n',
             $this->options['daemon_collector_key'],
             json_encode((object) $params)
         );

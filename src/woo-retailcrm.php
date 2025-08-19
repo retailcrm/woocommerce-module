@@ -58,27 +58,22 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function woocommerce_missing_notice() {
             if (static::isWooCommerceInstalled()) {
                 if (!is_plugin_active(static::WOOCOMMERCE_PLUGIN_PATH)) {
-                    echo '
-                    <div class="error">
-                        <p>
-                            Activate WooCommerce in order to enable RetailCRM integration!
-                            <a href="' . wp_nonce_url(admin_url('plugins.php')) . '" aria-label="Activate WooCommerce">
-                                Click here to open plugins manager
-                            </a>
-                        </p>
-                    </div>
-                    ';
+                    printf(
+                        '<div class="error"><p>%1$s <a href="%2$s" aria-label="%3$s">%4$s</a></p></div>',
+                        esc_html__( 'Activate WooCommerce in order to enable Simla integration!', 'woo-retailcrm' ),
+                        esc_url( wp_nonce_url( admin_url( 'plugins.php' ) ) ),
+                        esc_attr__( 'Activate WooCommerce', 'woo-retailcrm' ),
+                        esc_html__( 'Click here to open plugins manager', 'woo-retailcrm' )
+                    );
                 }
             } else {
-                echo '
-                <div class="error">
-                    <p>
-                        <a href="'
-                    . static::generatePluginInstallationUrl(static::WOOCOMMERCE_SLUG)
-                    . '" aria-label="Install WooCommerce">Install WooCommerce</a> in order to enable RetailCRM integration!
-                    </p>
-                </div>
-                ';
+                printf(
+                    '<div class="error"><p><a href="%1$s" aria-label="%2$s">%3$s</a> %4$s</p></div>',
+                    esc_url( static::generatePluginInstallationUrl( static::WOOCOMMERCE_SLUG ) ),
+                    esc_attr__( 'Install WooCommerce', 'woo-retailcrm' ),
+                    esc_html__( 'Install WooCommerce', 'woo-retailcrm' ),
+                    esc_html__( 'in order to enable RetailCRM integration!', 'woo-retailcrm' )
+                );
             }
         }
 

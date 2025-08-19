@@ -8,7 +8,7 @@ jQuery(function () {
                     url: AdminUrl.url + '/admin-ajax.php?action=generate_icml',
                     method: 'POST',
                     timeout: 0,
-                    data: {useXmlId: useXmlId},
+                    data: {useXmlId: useXmlId, _ajax_nonce: AdminUrl.nonce},
                     dataType: 'json'
                 })
             }

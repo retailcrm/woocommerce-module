@@ -751,7 +751,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
                     sprintf(
-                        'Error while creating order [%d]: %s',
+                        'Error while creating order [%1$d]: %2$s',
                         $order['id'],
                         json_encode($wcOrder->get_error_messages())
                     )
@@ -973,7 +973,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                         WC_Retailcrm_Logger::error(
                             __METHOD__,
                             sprintf(
-                                "Order externalId=`%s`: item doesn't have woocommerceId, skipping... (item id=`%s`)",
+                                'Order externalId=`%1$s`: item doesn\'t have woocommerceId, skipping... (item id=`%2$s`)',
                                 $order['externalId'],
                                 $item['id']
                             )
@@ -990,8 +990,8 @@ if (!class_exists('WC_Retailcrm_History')) :
                     WC_Retailcrm_Logger::error(
                         __METHOD__,
                         sprintf(
-                            "Order externalId=`%s`: item doesn't have woocommerceId after all assertions, which" .
-                            " is unexpected, skipping... (item id=`%s`)",
+                            'Order externalId=`%1$s`: item doesn\'t have woocommerceId after all assertions, which' .
+                            ' is unexpected, skipping... (item id=`%2$s`)',
                             $order['externalId'],
                             $item['id']
                         )
@@ -1139,7 +1139,7 @@ if (!class_exists('WC_Retailcrm_History')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 sprintf(
-                    'Add in order WC_Order: %s, product WC_Product: %s, CRM_Product: %s',
+                    'Add in order WC_Order: %1$s, product WC_Product: %2$s, CRM_Product: %3$s',
                     $wcOrder->get_id(),
                     $wcProduct->get_id(),
                     $crmProduct['id'] ?? 'id empty'
@@ -1331,7 +1331,7 @@ if (!class_exists('WC_Retailcrm_History')) :
                         __METHOD__,
                         $exception,
                         sprintf(
-                            'Error switching order externalId=%s to customer id=%s (new company: id=%s %s). Reason: ',
+                            'Error switching order externalId=%1$s to customer id=%2$s (new company: id=%3$s %4$s). Reason: ',
                             $order['externalId'],
                             $newCustomerId,
                             isset($order['company']) ? $order['company']['id'] : '',

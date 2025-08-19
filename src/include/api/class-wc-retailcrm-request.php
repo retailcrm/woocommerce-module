@@ -64,7 +64,7 @@ class WC_Retailcrm_Request
         if (!in_array($method, $allowedMethods, false)) {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'Method "%s" is not valid. Allowed methods are %s',
+                    'Method "%1$s" is not valid. Allowed methods are %2$s',
                     $method,
                     implode(', ', $allowedMethods)
                 )

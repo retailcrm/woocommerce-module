@@ -26,10 +26,16 @@ jQuery(function () {
             url: this.adminUrl + '/admin-ajax.php?action=cron_info',
             method: "POST",
             timeout: 0,
-            data: {ajax: 1},
+            data: {ajax: 1, _ajax_nonce: AdminUrl.nonce},
             dataType: "json"
         })
             .done(function (response) {
+                if (response.error) {
+                    alert(response.error);
+
+                    return false;
+                }
+
                 _this.history = response.history;
                 _this.icml = response.icml;
                 _this.inventories = response.inventories;
@@ -68,7 +74,14 @@ jQuery(function () {
         jQuery.ajax({
             type: "POST",
             url: this.adminUrl + '/admin-ajax.php?action=clear_cron_tasks',
+            data: {_ajax_nonce: AdminUrl.nonce},
             success: function (response) {
+                if (response.error) {
+                    alert(response.error);
+
+                    return false;
+                }
+
                 alert(_this.messageSuccessful);
             }
         });

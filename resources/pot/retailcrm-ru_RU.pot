@@ -469,8 +469,11 @@ msgstr "Условия обработки персональных данных"
 msgid "Insert the terms and conditions for processing personal data"
 msgstr "Вставьте условия обработки персональных данных"
 
-msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
-msgstr "Для активации программы лояльности необходимо активировать опцию <a href='?page=wc-settings'>'включить использование купонов'</a>"
+msgid "To activate the loyalty program it is necessary to activate the %s"
+msgstr "Для активации программы лояльности необходимо активировать опцию %s"
+
+msgid "Enable use of coupons option"
+msgstr "включить использование купонов"
 
 msgid "Bonus account"
 msgstr "Бонусный счёт"
@@ -535,11 +538,11 @@ msgstr "Введите корректный номер телефона"
 msgid "Close"
 msgstr "Закрыть"
 
-msgid "Ordinary products: accrual of 1 bonus for each %s %s"
-msgstr "Обычные товары: начисление 1 бонуса за каждые %s %s"
+msgid "Ordinary products: accrual of 1 bonus for each %1$s %2$s"
+msgstr "Обычные товары: начисление 1 бонуса за каждые %1$s %2$s"
 
-msgid "Promotional products: accrual of 1 bonus for each %s %s"
-msgstr "Акционные товары: начисление 1 бонуса за каждые %s %s"
+msgid "Promotional products: accrual of 1 bonus for each %1$s %2$s"
+msgstr "Акционные товары: начисление 1 бонуса за каждые %1$s %2$s"
 
 msgid "Ordinary products: bonus accrual in the amount of %s%% of the purchase amount"
 msgstr "Обычные товары: начисление бонусов в размере %s%% от суммы покупки"
@@ -618,3 +621,18 @@ msgstr "Акционная цена Woocommerce"
 
 msgid "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)"
 msgstr "Акционный тип цены для магазина Woocommerce, сгенерированный автоматически. Необходим для корректной работы синхронизации при включенной программы лояльности (Не удалять. Не деактивировать)"
+
+msgid "Activate WooCommerce in order to enable RetailCRM integration!"
+msgstr "Активируйте WooCommerce, чтобы включить интеграцию с RetailCRM!"
+
+msgid "Activate WooCommerce"
+msgstr "Активировать WooCommerce"
+
+msgid "Click here to open plugins manager"
+msgstr "Нажмите здесь, чтобы открыть менеджер плагинов"
+
+msgid "Install WooCommerce"
+msgstr "Установить WooCommerce"
+
+msgid "in order to enable RetailCRM integration!"
+msgstr "чтобы включить интеграцию с RetailCRM!"
