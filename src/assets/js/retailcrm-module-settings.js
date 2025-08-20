@@ -5,10 +5,10 @@ jQuery(function () {
 
             document.querySelector('.submit').onmousedown = function() {
                 jQuery.ajax({
-                    url: AdminUrl.url + '/admin-ajax.php?action=generate_icml',
+                    url: RetailcrmAdminUrl.url + '/admin-ajax.php?action=retailcrm_generate_icml',
                     method: 'POST',
                     timeout: 0,
-                    data: {useXmlId: useXmlId, _ajax_nonce: AdminUrl.nonce},
+                    data: {useXmlId: useXmlId, _ajax_nonce: RetailcrmAdminUrl.nonce},
                     dataType: 'json'
                 })
             }

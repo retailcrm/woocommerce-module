@@ -99,9 +99,9 @@ function startTrack(...trackerEvents)
     async function getCustomerInfo() {
         try {
             const response = await jQuery.ajax({
-                url: AdminUrl.url + '/admin-ajax.php?action=get_customer_info_for_tracker',
+                url: RetailcrmAdminUrl.url + '/admin-ajax.php?action=retailcrm_get_customer_info_for_tracker',
                 method: 'POST',
-                data: { ajax: 1, _ajax_nonce: AdminUrl.nonce },
+                data: { ajax: 1, _ajax_nonce: RetailcrmAdminUrl.nonce },
                 dataType: 'json'
             })
 
@@ -116,9 +116,9 @@ function startTrack(...trackerEvents)
     async function getCartItems() {
         try {
             const response = await jQuery.ajax({
-                url: AdminUrl.url + '/admin-ajax.php?action=get_cart_items_for_tracker',
+                url: RetailcrmAdminUrl.url + '/admin-ajax.php?action=retailcrm_get_cart_items_for_tracker',
                 method: 'POST',
-                data: { ajax: 1, _ajax_nonce: AdminUrl.nonce },
+                data: { ajax: 1, _ajax_nonce: RetailcrmAdminUrl.nonce },
                 dataType: 'json'
             })
 

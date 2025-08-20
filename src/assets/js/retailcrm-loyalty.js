@@ -12,10 +12,10 @@ jQuery(function() {
     function checkActiveCoupon()
     {
         jQuery.ajax({
-            url: AdminUrl.url + '/admin-ajax.php?action=get_status_coupon',
+            url: RetailcrmAdminUrl.url + '/admin-ajax.php?action=retailcrm_get_status_coupon',
             method: 'POST',
             timeout: 0,
-            data: {ajax: 1, _ajax_nonce: AdminUrl.nonce},
+            data: {ajax: 1, _ajax_nonce: RetailcrmAdminUrl.nonce},
             dataType: 'json'
         })
             .done(function (response) {

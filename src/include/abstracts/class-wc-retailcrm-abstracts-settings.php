@@ -53,7 +53,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     /**
      * @codeCoverageIgnore
      */
-    public function ajax_generate_icml()
+    public function ajax_retailcrm_generate_icml()
     {
         $ajax_url = esc_url(admin_url('admin-ajax.php'));
         ?>
@@ -61,7 +61,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         jQuery('#icml-retailcrm, #wp-admin-bar-retailcrm_ajax_generate_icml').bind('click', function() {
             jQuery.ajax({
                 type: "POST",
-                url: '<?php echo $ajax_url; ?>?action=generate_icml',
+                url: '<?php echo $ajax_url; ?>?action=retailcrm_generate_icml',
                 success: function (response) {
                     alert('<?php echo esc_html__('Catalog was generated', 'woo-retailcrm'); ?>');
                     console.log('AJAX response : ', response);
@@ -80,7 +80,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             jQuery('#upload-loyalty-price-retailcrm').bind('click', function () {
                 jQuery.ajax({
                     type: "POST",
-                    url: '<?php echo $ajax_url; ?>?action=upload_loyalty_price',
+                    url: '<?php echo $ajax_url; ?>?action=retailcrm_upload_loyalty_price',
                     success: function (response) {
                         alert('<?php echo esc_html__('Promotional prices unloaded', 'woo-retailcrm');?>');
                         console.log('AJAX response : ', response);
