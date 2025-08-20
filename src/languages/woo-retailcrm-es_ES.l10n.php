@@ -280,6 +280,8 @@ return [
         'Click here to open plugins manager' => 'Haz clic aquí para abrir el administrador de complementos',
         'Install WooCommerce' => 'Instalar WooCommerce',
         'in order to enable RetailCRM integration!' => '¡para habilitar la integración con Simla!',
+        'Token is not valid' => 'El token no es válido',
+        'Access denied' => 'Acceso denegado'
     ],
     'language' => 'es',
     'x-generator' => 'GlotPress/2.4.0-alpha',

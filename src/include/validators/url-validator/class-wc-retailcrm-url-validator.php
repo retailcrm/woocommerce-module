@@ -171,7 +171,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         {
             try {
                 $plugin_dir = plugin_dir_path( __FILE__ );
-                $content = file_get_contents($plugin_dir . 'include/components/files/' . $domainFile);
+                $content = file_get_contents($plugin_dir . '../../components/files/' . $domainFile);
 
                 if ($content !== false) {
                     $domains = json_decode($content, true);

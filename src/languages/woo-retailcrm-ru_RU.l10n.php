@@ -279,7 +279,9 @@ return [
         'Activate WooCommerce' => 'Активировать WooCommerce',
         'Click here to open plugins manager' => 'Нажмите здесь, чтобы открыть менеджер плагинов',
         'Install WooCommerce' => 'Установить WooCommerce',
-        'in order to enable RetailCRM integration!' => 'чтобы включить интеграцию с RetailCRM!'
+        'in order to enable RetailCRM integration!' => 'чтобы включить интеграцию с RetailCRM!',
+        'Token is not valid' => 'Токен недействителен',
+        'Access denied' => 'Доступ запрещен'
     ],
     'language' => 'ru',
     'x-generator' => 'GlotPress/2.4.0-alpha',

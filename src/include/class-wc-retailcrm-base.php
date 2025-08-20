@@ -185,8 +185,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         function retailcrm_get_cart_items_for_tracker()
         {
-            $this->accessCheck('woo-retailcrm-tracker-nonce', false);
-
             $cartItems = [];
 
             foreach (WC()->cart->get_cart() as $item) {
@@ -206,8 +204,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
         function retailcrm_get_customer_info_for_tracker()
         {
             if (is_user_logged_in()) {
-                $this->accessCheck('woo-retailcrm-tracker-nonce', false);
-
                 $user = wp_get_current_user();
 
                 // TODO: В будущем можно получить больше данных.
@@ -334,7 +330,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_clear_cron_tasks()
         {
-            $this->accessCheck('woo-retailcrm-cron-info-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             WC_Retailcrm_Logger::setHook(current_action());
             wp_clear_scheduled_hook('retailcrm_icml');
@@ -355,7 +351,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             WC_Retailcrm_Logger::setHook(current_action());
 
-            $this->accessCheck('woo-retailcrm-module-settings-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
+
             /*
              * A temporary solution.
              * We have rebranded the module and changed the name of the ICML file.
@@ -445,6 +442,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function retailcrm_upload_loyalty_price()
         {
+            $this->accessCheck('woo-retailcrm-admin-nonce');
+
             if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
                 return null;
             }
@@ -498,7 +497,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_upload_selected_orders()
         {
-            $this->accessCheck('woo-retailcrm-export-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             WC_Retailcrm_Logger::setHook(current_action());
             $this->uploader->uploadSelectedOrders();
@@ -511,7 +510,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_upload_to_crm()
         {
-            $this->accessCheck('woo-retailcrm-export-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             WC_Retailcrm_Logger::setHook(current_action());
             $page = filter_input(INPUT_POST, 'Step', FILTER_SANITIZE_NUMBER_INT);
@@ -857,7 +856,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function retailcrm_get_status_coupon()
         {
-            $this->accessCheck('woo-retailcrm-loyalty-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             $coupon_settings_url = admin_url('admin.php?page=wc-settings');
 
@@ -943,7 +942,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                 wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, '0.1');
                 wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', '', true);
-                wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminUrl', [
+                wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminCoupon', [
                     'url' => get_admin_url(),
                     'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce')
                 ]);
@@ -1052,19 +1051,18 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'retailcrm-tracker-interface',
             ];
 
-            $wpAdminUrl    = get_admin_url();
             $jsScriptsPath =  plugins_url() . self::ASSETS_DIR . '/js/';
 
             foreach ($jsScripts as $scriptName) {
                 wp_register_script($scriptName, $jsScriptsPath . $scriptName . '.js', false, '0.1');
                 wp_enqueue_script($scriptName, $jsScriptsPath . $scriptName . '.js', '', '', true);
-
-                // In this method transfer wp-admin url in JS scripts.
-                wp_localize_script($scriptName, 'RetailcrmAdminUrl', [
-                    'url' => $wpAdminUrl,
-                    'nonce' => wp_create_nonce('woo-' . $scriptName . '-nonce')
-                ]);
             }
+
+            // In this method transfer wp-admin url in JS scripts.
+            wp_localize_script($scriptName, 'RetailcrmAdmin', [
+                'url' => get_admin_url(),
+                'nonce' => wp_create_nonce('woo-retailcrm-admin-nonce')
+            ]);
 
             $this->include_js_translates_for_tracker();
         }
@@ -1076,10 +1074,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             wp_register_script($scriptName, $jsScriptsPath, false, '0.1');
             wp_enqueue_script($scriptName, $jsScriptsPath, '', '', true);
-            wp_localize_script($scriptName, 'RetailcrmAdminUrl', [
-                'url' => get_admin_url(),
-                'nonce' => wp_create_nonce('woo-' . $scriptName . '-nonce')
-            ]);
+            wp_localize_script($scriptName, 'RetailcrmTracker', ['url' => get_admin_url()]);
         }
 
         public function include_js_translates_for_tracker()
@@ -1139,7 +1134,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_count_upload_data()
         {
-            $this->accessCheck('woo-retailcrm-export-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             $translate = [
                 'tr_order'       => esc_html__('Orders', 'woo-retailcrm'),
@@ -1164,7 +1159,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function retailcrm_get_cron_info()
         {
-            $this->accessCheck('woo-retailcrm-cron-info-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             $defaultValue = esc_html__('This option is disabled', 'woo-retailcrm');
             $icml         = $defaultValue;
@@ -1219,7 +1214,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return null;
             }
 
-            $this->accessCheck('woo-retailcrm-meta-fields-nonce');
+            $this->accessCheck('woo-retailcrm-admin-nonce');
 
             WC_Retailcrm_Logger::setHook(current_action());
 
@@ -1510,8 +1505,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         private function accessCheck(string $prefixNonce, $checkPermissions = true): void
         {
-            if (check_ajax_referer($prefixNonce) !== 1) {
-                echo wp_json_encode(['error' => esc_html__('Nonce is not valid', 'woo-retailcrm')]);
+            if (!wp_doing_ajax()) {
+                return;
+            }
+
+            if (check_ajax_referer($prefixNonce, '_ajax_nonce', false) !== 1) {
+                echo wp_json_encode(['error' => esc_html__('Token is not valid', 'woo-retailcrm')]);
 
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
@@ -1520,6 +1519,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         $prefixNonce
                     )
                 );
+
+                wp_die();
             }
 
             if ($checkPermissions && !(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
@@ -1532,9 +1533,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         implode(', ', wp_get_current_user()->roles)
                     )
                 );
-            }
 
-            wp_die();
+                wp_die();
+            }
         }
     }
 }   

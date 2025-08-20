@@ -24,8 +24,8 @@ remove_dir:
 	rm -rf /tmp/svn_plugin_dir
 
 compile_pot:
-	msgfmt resources/pot/retailcrm-ru_RU.pot -o src/languages/retailcrm-ru_RU.mo
-	msgfmt resources/pot/retailcrm-es_ES.pot -o src/languages/retailcrm-es_ES.mo
+	msgfmt resources/pot/woo-retailcrm-ru_RU.pot -o src/languages/woo-retailcrm-ru_RU.mo
+	msgfmt resources/pot/woo-retailcrm-es_ES.pot -o src/languages/woo-retailcrm-es_ES.mo
 
 install:
 	sudo apt install subversion

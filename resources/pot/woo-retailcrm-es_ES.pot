@@ -27,10 +27,6 @@ msgstr "Complemento de integración Simla.com"
 msgid "https://wordpress.org/plugins/woo-retailcrm/"
 msgstr "https://wordpress.org/plugins/woo-retailcrm/"
 
-#. Plugin Name of the plugin/theme
-msgid "Simla.com"
-msgstr "Simla.com"
-
 msgid "Orders"
 msgstr "Pedidos"
 
@@ -627,3 +623,9 @@ msgstr "Instalar WooCommerce"
 
 msgid "in order to enable RetailCRM integration!"
 msgstr "¡para habilitar la integración con Simla!"
+
+msgid "Token is not valid"
+msgstr "El token no es válido"
+
+msgid "Access denied"
+msgstr "Acceso denegado"

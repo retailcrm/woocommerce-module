@@ -18,7 +18,7 @@ jQuery(function () {
         this.messageSuccessful = '';
         this.loyaltyUploadPrice = 0;
 
-        this.adminUrl = RetailcrmAdminUrl.url;
+        this.adminUrl = RetailcrmAdmin.url;
 
         let _this = this;
 
@@ -26,7 +26,7 @@ jQuery(function () {
             url: this.adminUrl + '/admin-ajax.php?action=retailcrm_cron_info',
             method: "POST",
             timeout: 0,
-            data: {ajax: 1, _ajax_nonce: RetailcrmAdminUrl.nonce},
+            data: {ajax: 1, _ajax_nonce: RetailcrmAdmin.nonce},
             dataType: "json"
         })
             .done(function (response) {
@@ -74,7 +74,7 @@ jQuery(function () {
         jQuery.ajax({
             type: "POST",
             url: this.adminUrl + '/admin-ajax.php?action=retailcrm_clear_cron_tasks',
-            data: {_ajax_nonce: RetailcrmAdminUrl.nonce},
+            data: {_ajax_nonce: RetailcrmAdmin.nonce},
             success: function (response) {
                 if (response.error) {
                     alert(response.error);
