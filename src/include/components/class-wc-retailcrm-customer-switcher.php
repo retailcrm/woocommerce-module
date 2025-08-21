@@ -74,7 +74,7 @@ class WC_Retailcrm_Customer_Switcher implements WC_Retailcrm_Builder_Interface
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
                     sprintf(
-                        'Replacing old order id=`%d` company `%1$s` with new company `%2$s`',
+                        'Replacing old order id=`%1$d` company `%2$s` with new company `%3$s`',
                         $this->data->getWcOrder()->get_id(),
                         $this->data->getWcOrder()->get_billing_company(),
                         $newCompany

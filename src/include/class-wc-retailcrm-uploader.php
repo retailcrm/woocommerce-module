@@ -255,7 +255,7 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
             foreach ($errors as $orderId => $error) {
                 WC_Retailcrm_Logger::error(
                     __METHOD__,
-                    sprintf("Error while uploading [%1$d] => %2$s", $orderId, $error)
+                    sprintf('Error while uploading [%1$d] => %2$s', $orderId, $error)
                 );
             }
         }
