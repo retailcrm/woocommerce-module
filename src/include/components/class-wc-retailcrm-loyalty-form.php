@@ -105,7 +105,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     '<b>' . $loyaltyAccount['level']['name'] . '</b>',
                     $ordinaryRule,
                     $promotionRule,
-                    '<b>' . esc_html__('Total order summ ', 'woo-retailcrm') . esc_html($loyaltyAccount['ordersSum'] . $currency . '</b>'),
+                    '<b>' . esc_html__('Total order summ ', 'woo-retailcrm') . esc_html($loyaltyAccount['ordersSum'] . $currency). '</b>',
             ];
 
             if ($loyaltyAccount['nextLevelSum']) {
