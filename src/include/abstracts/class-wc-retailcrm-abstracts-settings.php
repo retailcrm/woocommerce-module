@@ -34,7 +34,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function __construct()
     {
         $this->id                 = 'integration-retailcrm';
-        $this->method_title       = esc_html__('Simla.com', 'woo_retailcrm');
+        $this->method_title       = esc_html__('Simla.com', 'woo-retailcrm');
         $this->method_description = esc_html__('Integration with Simla.com management system', 'woo-retailcrm');
 
         static::$option_key = $this->get_option_key();
@@ -55,14 +55,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function ajax_retailcrm_generate_icml()
     {
-        $ajax_url = esc_url(admin_url('admin-ajax.php'));
+        $ajax_url = admin_url('admin-ajax.php');
         ?>
         <script type="text/javascript">
         jQuery('#icml-retailcrm, #wp-admin-bar-retailcrm_ajax_generate_icml').bind('click', function() {
             jQuery.ajax({
                 type: "POST",
-                url: '<?php echo $ajax_url; ?>?action=retailcrm_generate_icml',
-                data: { _ajax_nonce: '<?php echo wp_create_nonce('woo-retailcrm-admin-nonce'); ?>'},
+                url: '<?php echo esc_js($ajax_url . '?action=retailcrm_generate_icml'); ?>',
+                data: { _ajax_nonce: '<?php echo esc_js(wp_create_nonce('woo-retailcrm-admin-nonce')); ?>' },
                 success: function (response) {
                     alert('<?php echo esc_html__('Catalog was generated', 'woo-retailcrm'); ?>');
                     console.log('AJAX response : ', response);
@@ -75,14 +75,14 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
     public function ajax_retailcrm_upload_loyalty_price()
     {
-        $ajax_url = esc_url(admin_url('admin-ajax.php'));
+        $ajax_url = admin_url('admin-ajax.php');
         ?>
         <script type="text/javascript">
             jQuery('#upload-loyalty-price-retailcrm').bind('click', function () {
                 jQuery.ajax({
                     type: "POST",
-                    url: '<?php echo $ajax_url; ?>?action=retailcrm_upload_loyalty_price',
-                    data: { _ajax_nonce: '<?php echo wp_create_nonce('woo-retailcrm-admin-nonce'); ?>'},
+                    url: '<?php echo esc_js($ajax_url . '?action=retailcrm_upload_loyalty_price'); ?>',
+                    data: { _ajax_nonce: '<?php echo esc_js(wp_create_nonce('woo-retailcrm-admin-nonce')); ?>'},
                     success: function (response) {
                         alert('<?php echo esc_html__('Promotional prices unloaded', 'woo-retailcrm');?>');
                         console.log('AJAX response : ', response);
@@ -263,13 +263,9 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                     foreach ($wc_shipping_list as $shipping_code => $shipping) {
                         if (isset($shipping['enabled']) && $shipping['enabled'] == static::YES) {
-                            $title = $shipping['title'] ? esc_html($shipping['title']): '';
-                            $description = $shipping['description'] ? esc_html($shipping['description']) : '';
-
-
                             $this->form_fields[$shipping_code] = [
-                                'title'          => esc_html__($title, 'woo-retailcrm'),
-                                'description' => esc_html__($description, 'woo-retailcrm'),
+                                'title'          => $shipping['title'],
+                                'description' => $shipping['description'],
                                 'css'            => 'min-width:350px;',
                                 'class'          => 'select',
                                 'type'           => 'select',
@@ -718,7 +714,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
                 $this->form_fields['corporate_enabled'] = [
                     'title'       => esc_html__('Corporate customers support', 'woo-retailcrm'),
-                    'label'       => esc_html__('Enabled'),
+                    'label'       => esc_html__('Enabled', 'woo-retailcrm'),
                     'description' => '',
                     'class'       => 'checkbox',
                     'type'        => 'checkbox',
@@ -813,13 +809,13 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <tr valign="top">
             <th scope="row" class="titledesc">
                 <label for="<?php echo esc_attr($field); ?>"><?php echo wp_kses_post($data['title']); ?></label>
-                <?php echo $this->get_tooltip_html($data); ?>
+                <?php echo esc_attr($this->get_tooltip_html($data)); ?>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['label']); ?></span></legend>
-                    <button id="<?php echo $data['id']; ?>" class="<?php echo esc_attr($data['class']); ?>" type="button" name="<?php echo esc_attr($field); ?>" id="<?php echo esc_attr($field); ?>" style="<?php echo esc_attr($data['css']); ?>" <?php echo $this->get_custom_attribute_html($data); ?>><?php echo wp_kses_post($data['label']); ?></button>
-                    <?php echo $this->get_description_html($data); ?>
+                    <button id="<?php echo esc_attr($data['id']); ?>" class="<?php echo esc_attr($data['class']); ?>" type="button" name="<?php echo esc_attr($field); ?>" id="<?php echo esc_attr($field); ?>" style="<?php echo esc_attr($data['css']); ?>" <?php echo esc_attr($this->get_custom_attribute_html($data)); ?>><?php echo wp_kses_post($data['label']); ?></button>
+                    <?php echo esc_attr($this->get_description_html($data)); ?>
                 </fieldset>
             </td>
         </tr>

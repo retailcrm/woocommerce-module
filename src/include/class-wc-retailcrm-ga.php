@@ -51,7 +51,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
                     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-                    ga('create', '" . $this->options['ua_code'] . "', 'auto');
+                    ga('create', '" . esc_js($this->options['ua_code']) . "', 'auto');
 
                     function getRetailCrmCookie(name) {
                         var matches = document.cookie.match(new RegExp(
@@ -60,7 +60,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                         return matches ? decodeURIComponent(matches[1]) : '';
                     }
 
-                    ga('set', 'dimension" . $this->options['ua_custom'] ."', getRetailCrmCookie('_ga'));
+                    ga('set', 'dimension" . esc_js($this->options['ua_custom']) ."', getRetailCrmCookie('_ga'));
                     ga('send', 'pageview');
                 </script>
             ");
@@ -106,22 +106,22 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                 <script type=\"text/javascript\">
                     ga('require', 'ecommerce', 'ecommerce.js');
                     ga('ecommerce:addTransaction', {
-                        'id':" . $order->get_id() . ",
-                        'affiliation':'" . $domain . "',
-                        'revenue':" . $order->get_total() . ",
-                        'shipping':" . $order->get_total_tax() . ",
-                        'tax':" . $order->get_shipping_total() . "
+                        'id':" . esc_js($order->get_id()) . ",
+                        'affiliation':'" . esc_js($domain) . "',
+                        'revenue':" . esc_js($order->get_total()) . ",
+                        'shipping':" . esc_js($order->get_total_tax()) . ",
+                        'tax':" . esc_js($order->get_shipping_total()) . "
                     });
             ";
 
             foreach ($order_items as $item) {
                 $js .= "
                     ga('ecommerce:addItem', {
-                        'id':" . $order->get_id() . ",
-                        'sku':" . $item['id'] . ",
-                        'name': '" . $item['name'] . "',
-                        'price': " . $item['price'] . ",
-                        'quantity': " . $item['quantity'] . "
+                        'id':" . esc_js($order->get_id()) . ",
+                        'sku':" . esc_js($item['id']) . ",
+                        'name': '" . esc_js($item['name']) . "',
+                        'price': " . esc_js($item['price']) . ",
+                        'quantity': " . esc_js($item['quantity']) . "
                     });
                 ";
             }

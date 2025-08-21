@@ -12,7 +12,7 @@
  * Requires Plugins: woocommerce
  * WC requires at least: 5.4
  * WC tested up to: 9.8
- * Text Domain: retailcrm
+ * Text Domain: woo-retailcrm
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -45,8 +45,6 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
          * Construct the plugin.
          */
         public function __construct() {
-            $this->load_plugin_textdomain();
-
             if (class_exists( 'WC_Integration' )) {
                 self::load_module();
                 add_filter('woocommerce_integrations', [$this, 'add_integration']);
@@ -75,10 +73,6 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
                     esc_html__( 'in order to enable RetailCRM integration!', 'woo-retailcrm' )
                 );
             }
-        }
-
-        public function load_plugin_textdomain() {
-            load_plugin_textdomain('woo-retailcrm', false, dirname(plugin_basename(__FILE__)) . '/languages/');
         }
 
         /**

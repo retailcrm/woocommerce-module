@@ -43,9 +43,9 @@ class WC_Retailcrm_Response implements \ArrayAccess
             $response = json_decode($responseBody, true);
 
             if (!$response && JSON_ERROR_NONE !== ($error = json_last_error())) {
-                throw new WC_Retailcrm_Exception_Json(
-                    "Invalid JSON in the API response body. Error code #$error",
-                    $error
+                throw new WC_Retailcrm_Exception_Json(sprintf(
+                    "Invalid JSON in the API response body. Error code #%s", esc_attr($error)),
+                    esc_attr($error)
                 );
             }
 
@@ -89,7 +89,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
         $propertyName = strtolower(substr($name, 3, 1)) . substr($name, 4);
 
         if (!isset($this->response[$propertyName])) {
-            throw new \InvalidArgumentException("Method \"$name\" not found");
+            throw new \InvalidArgumentException(sprintf("Method '%s' not found", esc_attr($name)));
         }
 
         return $this->response[$propertyName];
@@ -107,7 +107,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
     public function __get($name)
     {
         if (!isset($this->response[$name])) {
-            throw new \InvalidArgumentException("Property \"$name\" not found");
+            throw new \InvalidArgumentException(sprintf("Property '%s' not found", esc_attr($name)));
         }
 
         return $this->response[$name];
@@ -161,7 +161,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
     public function offsetGet($offset)
     {
         if (!isset($this->response[$offset])) {
-            throw new \InvalidArgumentException("Property \"$offset\" not found");
+            throw new \InvalidArgumentException(sprintf("Property '%s' not found", esc_attr($offset)));
         }
 
         return $this->response[$offset];

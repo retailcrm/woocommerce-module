@@ -50,19 +50,19 @@ class WC_Retailcrm_Plugin
             [
                 'five_minutes' => [
                     'interval' => 300, // seconds
-                    'display'  => esc_html__('Every 5 minutes')
+                    'display'  => esc_html__('Every 5 minutes', 'woo-retailcrm')
                 ],
                 'three_hours' => [
                     'interval' => 10800, // seconds
-                    'display'  => esc_html__('Every 3 hours')
+                    'display'  => esc_html__('Every 3 hours', 'woo-retailcrm')
                 ],
                 'fiveteen_minutes' => [
                     'interval' => 900, // seconds
-                    'display'  => esc_html__('Every 15 minutes')
+                    'display'  => esc_html__('Every 15 minutes', 'woo-retailcrm')
                 ],
                 'four_hours' => [
                     'interval' => 14400, //seconds
-                    'display' => esc_html__('Every 4 hours')
+                    'display' => esc_html__('Every 4 hours', 'woo-retailcrm')
                 ]
             ],
             apply_filters('retailcrm_add_cron_interval', $schedules)

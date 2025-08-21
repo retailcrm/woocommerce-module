@@ -73,7 +73,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
             $existInBox = $this->checkDomains(self::BOX_DOMAINS_URL, $crmUrl['host']);
 
             if (false === $existInCrm && false === $existInBox) {
-                throw new ValidatorException($this->domainFail);
+                throw new ValidatorException(esc_attr($this->domainFail));
             }
         }
 
@@ -85,7 +85,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkHost(array $crmUrl)
         {
             if (empty($crmUrl['host'])) {
-                throw new ValidatorException($this->noValidUrlHost);
+                throw new ValidatorException(esc_attr($this->noValidUrlHost));
             }
         }
 
@@ -97,7 +97,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkScheme(array $crmUrl)
         {
             if (!empty($crmUrl['scheme']) && 'https' !== $crmUrl['scheme']) {
-                throw new ValidatorException($this->schemeFail);
+                throw new ValidatorException(esc_attr($this->schemeFail));
             }
         }
 
@@ -109,7 +109,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkQuery(array $crmUrl)
         {
             if (!empty($crmUrl['query'])) {
-                throw new ValidatorException($this->queryFail);
+                throw new ValidatorException(esc_attr($this->queryFail));
             }
         }
 
@@ -121,7 +121,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkAuth(array $crmUrl)
         {
             if (!empty($crmUrl['pass']) || !empty($crmUrl['user'])) {
-                throw new ValidatorException($this->authFail);
+                throw new ValidatorException(esc_attr($this->authFail));
             }
         }
 
@@ -133,7 +133,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkFragment(array $crmUrl)
         {
             if (!empty($crmUrl['fragment'])) {
-                throw new ValidatorException($this->fragmentFail);
+                throw new ValidatorException(esc_attr($this->fragmentFail));
             }
         }
 
@@ -145,7 +145,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkPort(array $crmUrl)
         {
             if (!empty($crmUrl['port'])) {
-                throw new ValidatorException($this->portFail);
+                throw new ValidatorException(esc_attr($this->portFail));
             }
         }
 
@@ -157,7 +157,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function checkPath(array $crmUrl)
         {
             if (!empty($crmUrl['path']) && '/' !== $crmUrl['path']) {
-                throw new ValidatorException($this->pathFail);
+                throw new ValidatorException(esc_attr($this->pathFail));
             }
         }
 
@@ -181,7 +181,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
 
                 return self::CRM_ALL_DOMAINS;
             } catch (Exception $exception) {
-                throw new ValidatorException($this->getFileError);
+                throw new ValidatorException(esc_attr($this->getFileError));
             }
         }
 

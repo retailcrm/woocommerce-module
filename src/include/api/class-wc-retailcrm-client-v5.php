@@ -693,7 +693,7 @@ class WC_Retailcrm_Client_V5
         $this->checkIdParameter($by);
         if (!array_key_exists($by, $customerCorporate)) {
             throw new InvalidArgumentException(
-                sprintf('Corporate customer array must contain the "%s" parameter.', $by)
+                sprintf('Corporate customer array must contain the "%s" parameter.', esc_attr($by))
             );
         }
 
@@ -1184,7 +1184,7 @@ class WC_Retailcrm_Client_V5
 
         if (!array_key_exists($by, $order)) {
             throw new InvalidArgumentException(
-                sprintf('Order array must contain the "%s" parameter.', $by)
+                sprintf('Order array must contain the "%s" parameter.', esc_attr($by))
             );
         }
 
@@ -1298,7 +1298,7 @@ class WC_Retailcrm_Client_V5
 
         if (!array_key_exists($by, $payment)) {
             throw new InvalidArgumentException(
-                sprintf('Order array must contain the "%s" parameter.', $by)
+                sprintf('Order array must contain the "%s" parameter.', esc_attr($by))
             );
         }
 
@@ -1486,7 +1486,7 @@ class WC_Retailcrm_Client_V5
 
         if (!array_key_exists($by, $customer)) {
             throw new InvalidArgumentException(
-                sprintf('Customer array must contain the "%s" parameter.', $by)
+                sprintf('Customer array must contain the "%s" parameter.', esc_attr($by))
             );
         }
 
@@ -3123,8 +3123,8 @@ class WC_Retailcrm_Client_V5
             throw new InvalidArgumentException(
                 sprintf(
                     'Value "%s" for "by" param is not valid. Allowed values are %s.',
-                    $by,
-                    implode(', ', $allowedForBy)
+                    esc_attr($by),
+                    esc_attr(implode(', ', $allowedForBy))
                 )
             );
         }

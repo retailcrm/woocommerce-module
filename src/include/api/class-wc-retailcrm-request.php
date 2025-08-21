@@ -65,8 +65,8 @@ class WC_Retailcrm_Request
             throw new \InvalidArgumentException(
                 sprintf(
                     'Method "%1$s" is not valid. Allowed methods are %2$s',
-                    $method,
-                    implode(', ', $allowedMethods)
+                    esc_attr($method),
+                    esc_attr(implode(', ', $allowedMethods))
                 )
             );
         }
@@ -110,7 +110,7 @@ class WC_Retailcrm_Request
         curl_close($curlHandler);
 
         if ($errno) {
-            throw new WC_Retailcrm_Exception_Curl($error, $errno);
+            throw new WC_Retailcrm_Exception_Curl(esc_html($error), esc_html($errno));
         }
 
         return new WC_Retailcrm_Response($statusCode, $responseBody);

@@ -154,13 +154,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             // Subscribed hooks
-            add_action('register_form', [$this, 'retailcrm_subscribe_register_form'], 99);
-            add_action('woocommerce_register_form', [$this, 'retailcrm_subscribe_woocommerce_register_form'], 99);
+            add_action('register_form', [$this, 'retailcrm_checkout_form'], 99);
+            add_action('woocommerce_register_form', [$this, 'retailcrm_checkout_form'], 99);
 
             if (get_option('woocommerce_enable_signup_and_login_from_checkout') === static::YES) {
                 add_action(
                     'woocommerce_before_checkout_registration_form',
-                    [$this, 'retailcrm_subscribe_woocommerce_before_checkout_registration_form'],
+                    [$this, 'retailcrm_checkout_form'],
                     99
                 );
             }
@@ -297,31 +297,37 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         /**
          * Displaying the checkbox in the WP registration form(wp-login.php).
-         *
-         */
-        public function retailcrm_subscribe_register_form()
-        {
-            echo $this->getSubscribeCheckbox();
-        }
-
-        /**
          * Displaying the checkbox in the WC registration form.
-         *
-         */
-        public function retailcrm_subscribe_woocommerce_register_form()
-        {
-            echo $this->getSubscribeCheckbox();
-        }
-
-        /**
          * Displaying the checkbox in the Checkout order form.
-         *
          */
-        public function retailcrm_subscribe_woocommerce_before_checkout_registration_form()
+        public function retailcrm_checkout_form()
         {
-            echo $this->getSubscribeCheckbox();
-        }
+            $style = is_wplogin()
+                ? 'margin-left: 2em; display: block; position: relative; margin-top: -1.4em; line-height: 1.4em;'
+                : '';
 
+            $html = sprintf(
+                '<div style="margin-bottom:15px">
+                            <input type="checkbox" id="subscribeEmail" name="subscribe" value="subscribed"/>
+                            <label style="%s" for="subscribeEmail">%s</label>
+                        </div>',
+                $style,
+                esc_html__('I agree to receive promotional newsletters', 'woo-retailcrm')
+            );
+
+            $allowed_tags = [
+                'div' => ['style' => []],
+                'input' => [
+                    'type'  => [],
+                    'id'    => [],
+                    'name'  => [],
+                    'value' => [],
+                ],
+                'label' => ['for' => [], 'style' => []],
+            ];
+
+            echo wp_kses($html, $allowed_tags);
+        }
 
         /**
          * If you change the time interval, need to clear the old cron tasks
@@ -795,7 +801,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             if ($this->get_option('ua') && $this->get_option('ua_code')) {
                 $retailcrm_analytics = WC_Retailcrm_Google_Analytics::getInstance($this->settings);
-                echo $retailcrm_analytics->initialize_analytics();
+
+                echo wp_kses($retailcrm_analytics->initialize_analytics(), ['script' => ['type' => []]]);
             } else {
                 echo '';
             }
@@ -810,7 +817,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             if ($this->get_option('ua') == static::YES && $this->get_option('ua_code') && is_checkout()) {
                 $retailcrm_analytics = WC_Retailcrm_Google_Analytics::getInstance($this->settings);
-                echo $retailcrm_analytics->send_analytics();
+
+                echo wp_kses($retailcrm_analytics->send_analytics(), ['script' => ['type' => []]]);
             } else {
                 echo '';
             }
@@ -825,7 +833,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             if ($this->get_option('daemon_collector') == static::YES && $this->get_option('daemon_collector_key')) {
                 $retailcrm_daemon_collector = WC_Retailcrm_Daemon_Collector::getInstance($this->settings);
-                echo $retailcrm_daemon_collector->initialize_daemon_collector();
+
+                echo wp_kses($retailcrm_daemon_collector->initialize_daemon_collector(), ['script' => ['type' => []]]);
             } else {
                 echo '';
             }
@@ -837,7 +846,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
         public function retailcrm_initialize_online_assistant()
         {
             if (!is_admin() && !is_wplogin()) {
-                echo $this->get_option('online_assistant');
+                echo wp_kses($this->get_option('online_assistant'), ['script' => ['type' => []]]);
             }
         }
 
@@ -865,6 +874,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'coupon_status' => get_option('woocommerce_enable_coupons'),
                     'translate' => [
                         'coupon_warning' => sprintf(
+                            /* translators: %s: HTML link to coupon settings page. */
                             __( 'To activate the loyalty program it is necessary to activate the %s.', 'woo-retailcrm'),
                             '<a href="' . esc_url($coupon_settings_url) . '">' . esc_html__( 'Enable use of coupons option', 'woo-retailcrm' ) . '</a>'
                         )
@@ -935,7 +945,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $result = $this->loyalty->createLoyaltyCoupon();
 
                 if ($result) {
-                    echo  $result;
+                    echo wp_kses($result, [
+                        'div' => [
+                            'style' => true,
+                            'id'    => true,
+                            'onclick' => true,
+                        ],
+                        'b'   => [],
+                        'i'   => ['style' => true],
+                        'u'   => [],
+                    ]);
                 }
 
                 $jsScriptPath = plugins_url() . self::ASSETS_DIR . '/js/retailcrm-loyalty-cart.js';
@@ -1005,7 +1024,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $resultHtml = $this->loyalty->getCreditBonuses();
 
             if ($resultHtml) {
-                echo $resultHtml;
+                echo wp_kses($resultHtml, ['b' => ['style' => true], 'u' => ['style' => true], 'i' => ['style' => true]]);
             }
         }
 
@@ -1125,7 +1144,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
                                 </div>
                             </div>';
 
-                echo sprintf($whatsAppHtml, $positionIcon, $phoneNumber);
+                $allowed_tags = [
+                    'div' => ['class' => true],
+                    'a' => ['href' => true, 'target' => true, 'class' => true],
+                    'p' => ['class' => true],
+                    'svg' => ['class' => true, 'fill' => true, 'viewbox' => true, 'xmlns' => true],
+                    'path' => ['d' => true, 'fill' => true],
+                    'br' => [],
+                ];
+
+                echo wp_kses(sprintf($whatsAppHtml, $positionIcon, $phoneNumber), $allowed_tags);
             }
         }
 
@@ -1177,19 +1205,19 @@ if (!class_exists('WC_Retailcrm_Base')) {
             ];
 
             if (isset($this->settings['history']) && $this->settings['history'] == static::YES) {
-                $history = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
+                $history = gmdate('H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
             }
 
             if (isset($this->settings['icml']) && $this->settings['icml'] == static::YES) {
-                $icml = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
+                $icml = gmdate('H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
 
                 if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === static::YES) {
-                    $loyaltyUploadPrice = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_loyalty_upload_price'));
+                    $loyaltyUploadPrice = gmdate('H:i:s d-m-Y', wp_next_scheduled('retailcrm_loyalty_upload_price'));
                 }
             }
 
             if (isset($this->settings['sync']) && $this->settings['sync'] == static::YES) {
-                $inventories = date('H:i:s d-m-Y ', wp_next_scheduled('retailcrm_inventories'));
+                $inventories = gmdate('H:i:s d-m-Y ', wp_next_scheduled('retailcrm_inventories'));
             }
 
             echo wp_json_encode(
@@ -1298,10 +1326,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $result = $this->loyalty->getForm($userId, $loyaltyTemrs, $loyaltyPersonal);
 
             if ([] === $result) {
-                echo '<p style="color: red">'. esc_html__('Error while retrieving data. Try again later', 'woo-retailcrm') . '</p>';
+                echo wp_kses('<p style="color: red">'. esc_html__('Error while retrieving data. Try again later', 'woo-retailcrm') . '</p>', ['p' => ['style' => true],]);
             } else {
                 wp_localize_script($jsScript, 'retailcrmLoyaltyId', $result['loyaltyId'] ?? null);
-                echo $result['form'];
+                $allowed_tags = [
+                    'form' => ['id' => true, 'method' => true],
+                    'input' => ['type' => true, 'id' => true, 'name' => true, 'value' => true, 'placeholder' => true, 'required' => true],
+                    'p' => ['style' => true],
+                    'b' => ['style' => true],
+                    'u' => ['style' => true],
+                    'i' => ['style' => true],
+                    'a' => ['id' => true, 'class' => true, 'href' => true, 'target' => true],
+                    'div' => ['id' => true, 'class' => true],
+                    'br' => [],
+                    'table' => ['style' => true, 'border' => true],
+                    'tbody' => ['style' => true],
+                    'tr' => ['style' => true],
+                    'td' => ['style' => true]
+                ];
+
+                echo wp_kses($result['form'], $allowed_tags);
             }
         }
 
@@ -1449,22 +1493,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'default-crm-field#address#text' => esc_html__('addressText', 'woo-retailcrm'),
                 'default-crm-field#tags' => esc_html__('tags', 'woo-retailcrm'),
             ];
-        }
-
-        private function getSubscribeCheckbox()
-        {
-            $style = is_wplogin()
-                ? 'margin-left: 2em; display: block; position: relative; margin-top: -1.4em; line-height: 1.4em;'
-                : '';
-
-            return sprintf(
-                '<div style="margin-bottom:15px">
-                            <input type="checkbox" id="subscribeEmail" name="subscribe" value="subscribed"/>
-                            <label style="%s" for="subscribeEmail">%s</label>
-                        </div>',
-                $style,
-                esc_html__('I agree to receive promotional newsletters', 'woo-retailcrm')
-            );
         }
 
         private function activateModule()

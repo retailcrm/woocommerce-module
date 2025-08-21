@@ -248,8 +248,8 @@ return [
         'Error when activating the loyalty program. Try again later' => 'Ошибка при активации программы лояльности. Попробуйте позже',
         'Enter the correct phone number' => 'Введите корректный номер телефона',
         'Close' => 'Закрыть',
-        'Ordinary products: accrual of 1 bonus for each %s %s' => 'Обычные товары: начисление 1 бонуса за каждые %s %s',
-        'Promotional products: accrual of 1 bonus for each %s %s' => 'Акционные товары: начисление 1 бонуса за каждые %s %s',
+        'Ordinary products: accrual of 1 bonus for each %1$s %2$s' => 'Обычные товары: начисление 1 бонуса за каждые %1$s %2$s',
+        'Promotional products: accrual of 1 bonus for each %1$s %2$s' => 'Акционные товары: начисление 1 бонуса за каждые %1$s %2$s',
         'Ordinary products: bonus accrual in the amount of %s%% of the purchase amount' => 'Обычные товары: начисление бонуса в размере %s%% от суммы покупки',
         'Promotional products: bonus accrual in the amount of %s%% of the purchase amount' => 'Акционные товары: начисление бонуса в размере %s%% от суммы покупки',
         'Ordinary products: %s%% discount' => 'Обычные товары: скидка %s%%',
@@ -281,7 +281,8 @@ return [
         'Install WooCommerce' => 'Установить WooCommerce',
         'in order to enable RetailCRM integration!' => 'чтобы включить интеграцию с RetailCRM!',
         'Token is not valid' => 'Токен недействителен',
-        'Access denied' => 'Доступ запрещен'
+        'Access denied' => 'Доступ запрещен',
+        'Error while processing validation: %1$s. userId: %2$s' => 'Ошибка при валидации: %1$s. userId: %2$s'
     ],
     'language' => 'ru',
     'x-generator' => 'GlotPress/2.4.0-alpha',

@@ -83,15 +83,21 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             switch ($loyaltyAccount['level']['type']) {
                 case 'bonus_converting':
-                    $ordinaryRule = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: accrual of 1 bonus for each %s %s', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSize']), esc_html($currency));
-                    $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: accrual of 1 bonus for each %s %s', 'woo-retailcrm'),  esc_html($loyaltyAccount['level']['privilegeSizePromo']),  esc_html($currency));
+                    /* translators: %1$s: Amount required for bonus accrual (Ordinary products); %2$s: currency symbol. */
+                    $ordinaryRule = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: accrual of 1 bonus for each %1$s %2$s', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSize']), esc_html($currency));
+                    /* translators: %1$s: Amount required for bonus accrual (Promotional products); %2$s: currency symbol. */
+                    $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: accrual of 1 bonus for each %1$s %2$s', 'woo-retailcrm'),  esc_html($loyaltyAccount['level']['privilegeSizePromo']),  esc_html($currency));
                     break;
                 case 'bonus_percent':
+                    /* translators: %s: Percentage of bonuses accrued from the purchase amount (Ordinary products) */
                     $ordinaryRule  = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: bonus accrual in the amount of %s%% of the purchase amount', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSize']));
+                    /* translators: %s: Percentage of bonuses accrued from the purchase amount (Promotional products) */
                     $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: bonus accrual in the amount of %s%% of the purchase amount', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSizePromo']));
                     break;
                 case 'discount':
+                    /* translators: %s: Percentage of the purchase amount (Ordinary products) */
                     $ordinaryRule  = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: %s%% discount', 'woo-retailcrm'), $loyaltyAccount['level']['privilegeSize']);
+                    /* translators: %s: Percentage of the purchase amount (Promotional products) */
                     $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: %s%% discount', 'woo-retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
                     break;
             }
@@ -99,9 +105,17 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             
             $data = [
                     '<b style="font-size: 150%">' . esc_html__('Bonuses and discount', 'woo-retailcrm') . '</b>',
-                    $loyaltyAccount['level']['type'] !== 'discount' ? '<b>' . sprintf(esc_html__('You have %s bonuses', 'woo-retailcrm'), esc_html($loyaltyAccount['amount'])) . '</b>' : '',
-                    $burnInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount' ? sprintf('<p style="color:gray">' . esc_html__('%s bonuses will expire %s', 'woo-retailcrm'), esc_html($burnInfo['amount']), esc_html($burnInfo['date'])) . '</b>' : '',
-                    $activationInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount' ? sprintf('<p style="color:gray">' . esc_html__('%s bonuses will active %s', 'woo-retailcrm'), esc_html($activationInfo['amount']), esc_html($activationInfo['date'])) : '',
+                    $loyaltyAccount['level']['type'] !== 'discount' ? '<b>'
+                        /* translators: %s: Number of bonuses in the account */
+                        . sprintf(esc_html__('You have %s bonuses', 'woo-retailcrm'), esc_html($loyaltyAccount['amount'])) . '</b>' : '',
+                    $burnInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount'
+                        /* translators: %1$s: Bonuses to be deducted; %2$s: Date of deduction */
+                        ? sprintf('<p style="color:gray">' . esc_html__('%1$s bonuses will expire %2$s', 'woo-retailcrm'), esc_html($burnInfo['amount']), esc_html($burnInfo['date'])) . '</b>'
+                        : '',
+                    $activationInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount'
+                        /* translators: %1$s: Number of bonuses to be credited; %2$s: Date of crediting */
+                        ? sprintf('<p style="color:gray">' . esc_html__('%1$s bonuses will active %2$s', 'woo-retailcrm'), esc_html($activationInfo['amount']), esc_html($activationInfo['date']))
+                        : '',
                     '<b>' . $loyaltyAccount['level']['name'] . '</b>',
                     $ordinaryRule,
                     $promotionRule,

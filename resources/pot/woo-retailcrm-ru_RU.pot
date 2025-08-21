@@ -638,3 +638,12 @@ msgstr "Токен недействителен"
 
 msgid "Access denied"
 msgstr "Доступ запрещен"
+
+msgid "%1$s bonuses will expire %2$s"
+msgstr "%1$s бонусов сгорят %2$s"
+
+msgid "%1$s bonuses will active %2$s"
+msgstr "%1$s бонусов ожидают активации %2$s"
+
+msgid "Error while processing validation: %1$s. userId: %2$s"
+msgstr "Ошибка при валидации: %1$s. userId: %2$s"

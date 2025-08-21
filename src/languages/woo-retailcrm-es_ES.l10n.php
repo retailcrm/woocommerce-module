@@ -249,7 +249,7 @@ return [
         'Enter the correct phone number' => 'Introduce el número de teléfono correcto',
         'Close' => 'Cerrar',
         'Ordinary products: accrual of 1 bonus for each %1$s %2$s' => 'Productos ordinarios: acumulación de 1 bonificación por cada %1$s %2$s',
-        'Promotional products: accrual of 1 bonus for each %s %s' => 'Productos promocionales: acumulación de 1 bonificación por cada %s %s',
+        'Promotional products: accrual of 1 bonus for each %1$s %2$s' => 'Productos promocionales: acumulación de 1 bonificación por cada %1$s %2$s',
         'Ordinary products: bonus accrual in the amount of %s%% of the purchase amount' => 'Productos ordinarios: acumulación de bonificación en la cantidad de %s%% del monto de la compra',
         'Promotional products: bonus accrual in the amount of %s%% of the purchase amount' => 'Productos promocionales: acumulación de bonificación en la cantidad de %s%% del monto de la compra',
         'Ordinary products: %s%% discount' => 'Productos ordinarios: descuento del %s%%',
@@ -281,7 +281,8 @@ return [
         'Install WooCommerce' => 'Instalar WooCommerce',
         'in order to enable RetailCRM integration!' => '¡para habilitar la integración con Simla!',
         'Token is not valid' => 'El token no es válido',
-        'Access denied' => 'Acceso denegado'
+        'Access denied' => 'Acceso denegado',
+        'Error while processing validation: %1$s. userId: %2$s' => 'Error al procesar la validación: %1$s. userId: %2$s'
     ],
     'language' => 'es',
     'x-generator' => 'GlotPress/2.4.0-alpha',
