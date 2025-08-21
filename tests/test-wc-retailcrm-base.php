@@ -151,7 +151,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_initialize_online_assistant()
     {
         ob_start();
-        $this->baseRetailcrm->initialize_online_assistant($this->dataOptions);
+        $this->baseRetailcrm->retailcrm_initialize_online_assistant($this->dataOptions);
 
         $this->assertEquals($this->dataOptions['online_assistant'], ob_get_contents());
         ob_end_clean();
@@ -159,7 +159,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_option_cron_enabled()
     {
-        $this->baseRetailcrm->api_sanitized($this->getOptions());
+        $this->baseRetailcrm->retailcrm_api_sanitized($this->getOptions());
 
         $history = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_history'));
         $icml = date('H:i:s d-m-Y', wp_next_scheduled('retailcrm_icml'));
@@ -172,7 +172,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
 
     public function test_option_cron_disabled()
     {
-        $settings = $this->baseRetailcrm->api_sanitized(
+        $settings = $this->baseRetailcrm->retailcrm_api_sanitized(
             [
                 'api_url' => 'https://example.retailcrm.ru',
                 'api_key' => 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1',
@@ -210,7 +210,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_get_cron_info()
     {
         ob_start();
-        $this->baseRetailcrm->get_cron_info();
+        $this->baseRetailcrm->retailcrm_get_cron_info();
 
         $cronInfo = $this->getJsonData(ob_get_contents());
 
@@ -232,7 +232,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->baseRetailcrm->settings = ['sync' => 'no', 'icml' => 'no', 'history' => 'no'];
 
         ob_start();
-        $this->baseRetailcrm->get_cron_info();
+        $this->baseRetailcrm->retailcrm_get_cron_info();
 
         $cronInfo = $this->getJsonData(ob_get_contents());
 
@@ -252,7 +252,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_count_upload_data()
     {
         ob_start();
-        $this->baseRetailcrm->count_upload_data();
+        $this->baseRetailcrm->retailcrm_count_upload_data();
 
         $uploadInfo = $this->getJsonData(ob_get_contents());
 
@@ -268,7 +268,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     {
         ob_start();
 
-        $this->baseRetailcrm->subscribe_register_form();
+        $this->baseRetailcrm->retailcrm_subscribe_register_form();
         $this->baseRetailcrm->subscribe_woocommerce_register_form();
         $this->baseRetailcrm->subscribe_woocommerce_before_checkout_registration_form();
 
@@ -280,7 +280,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_initialize_whatsapp()
     {
         ob_start();
-        $this->baseRetailcrm->initialize_whatsapp();
+        $this->baseRetailcrm->retailcrm_initialize_whatsapp();
 
         $js = ob_get_contents();
 
@@ -298,7 +298,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ];
 
         ob_start();
-        $this->baseRetailcrm->initialize_whatsapp();
+        $this->baseRetailcrm->retailcrm_initialize_whatsapp();
 
         $this->assertEquals('', ob_get_contents());
         ob_end_clean();
@@ -309,7 +309,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->baseRetailcrm->settings = ['daemon_collector' => 'no', 'daemon_collector_key' => ''];
 
         ob_start();
-        $this->baseRetailcrm->initialize_daemon_collector();
+        $this->baseRetailcrm->retailcrm_initialize_daemon_collector();
 
         $this->assertEquals('', ob_get_contents());
         ob_end_clean();
@@ -318,7 +318,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     public function test_initialize_analytics()
     {
         ob_start();
-        $this->baseRetailcrm->initialize_analytics();
+        $this->baseRetailcrm->retailcrm_initialize_analytics();
 
         $js = ob_get_contents();
 
@@ -332,7 +332,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->baseRetailcrm->settings = ['ua' => '', 'ua_code' => '', 'ua_custom' => ''];
 
         ob_start();
-        $this->baseRetailcrm->initialize_analytics();
+        $this->baseRetailcrm->retailcrm_initialize_analytics();
 
         $this->assertEquals('', ob_get_contents());
         ob_end_clean();
@@ -342,7 +342,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     {
         ob_start();
 
-        $this->baseRetailcrm->set_meta_fields();
+        $this->baseRetailcrm->retailcrm_set_meta_fields();
 
         $jsonData = $this->getJsonData(ob_get_contents());
 
