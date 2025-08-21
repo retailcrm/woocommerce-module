@@ -269,8 +269,8 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_start();
 
         $this->baseRetailcrm->retailcrm_subscribe_register_form();
-        $this->baseRetailcrm->subscribe_woocommerce_register_form();
-        $this->baseRetailcrm->subscribe_woocommerce_before_checkout_registration_form();
+        $this->baseRetailcrm->retailcrm_subscribe_woocommerce_register_form();
+        $this->baseRetailcrm->retailcrm_subscribe_woocommerce_before_checkout_registration_form();
 
         $this->assertContains('subscribeEmail', ob_get_contents());
 
