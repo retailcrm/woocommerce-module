@@ -1396,7 +1396,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 FILE_IGNORE_NEW_LINES
             );
 
-            foreach ($wpdb->get_results($wpdb->prepare("SELECT DISTINCT meta_key FROM $table ORDER BY meta_key")) as $metaValue) {
+            foreach ($wpdb->get_results("SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`") as $metaValue) {
                 $metaData[$metaValue->meta_key] = $metaValue->meta_key;
             }
 
