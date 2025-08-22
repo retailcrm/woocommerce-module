@@ -130,7 +130,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $data[] = '<b style="font-size: 100%">' . esc_html__('History', 'woo-retailcrm') . '</b>';
 
             $htmlTable = '
-                <table style="width: 75%; border: none;>
+                <table style="width: 75%; border: none;">
                 <tbody>';
 
             foreach ($loyaltyAccount['history'] as $operation) {

@@ -952,7 +952,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'onclick' => true,
                         ],
                         'b'   => [],
-                        'i'   => ['style' => true],
+                        'i'   => ['style' => true, 'id' => true, 'onclick' => true],
                         'u'   => [],
                     ]);
                 }
@@ -1343,7 +1343,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'a' => ['id' => true, 'class' => true, 'href' => true, 'target' => true],
                     'div' => ['id' => true, 'class' => true],
                     'br' => [],
-                    'table' => ['style' => true, 'border' => true],
+                    'table' => ['style' => true],
                     'tbody' => ['style' => true],
                     'tr' => ['style' => true],
                     'td' => ['style' => true]

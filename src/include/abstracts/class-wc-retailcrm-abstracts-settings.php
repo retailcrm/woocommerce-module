@@ -804,18 +804,20 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         $data = wp_parse_args($data, $defaults);
 
+        $allowed_tags = ['span' => ['class' => true, 'tabindex' => true, 'aria-label' => true, 'data-tip' => true]];
+
         ob_start();
         ?>
         <tr valign="top">
             <th scope="row" class="titledesc">
                 <label for="<?php echo esc_attr($field); ?>"><?php echo wp_kses_post($data['title']); ?></label>
-                <?php echo esc_attr($this->get_tooltip_html($data)); ?>
+                <?php echo wp_kses($this->get_tooltip_html($data), $allowed_tags); ?>
             </th>
             <td class="forminp">
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['label']); ?></span></legend>
                     <button id="<?php echo esc_attr($data['id']); ?>" class="<?php echo esc_attr($data['class']); ?>" type="button" name="<?php echo esc_attr($field); ?>" id="<?php echo esc_attr($field); ?>" style="<?php echo esc_attr($data['css']); ?>" <?php echo esc_attr($this->get_custom_attribute_html($data)); ?>><?php echo wp_kses_post($data['label']); ?></button>
-                    <?php echo esc_attr($this->get_description_html($data)); ?>
+                    <?php echo wp_kses($this->get_description_html($data), $allowed_tags); ?>
                 </fieldset>
             </td>
         </tr>
@@ -863,9 +865,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     public function validate_online_assistant_field($key, $value)
     {
         $onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant']
-            ? sanitize_text_field(wp_unslash($_POST['woocommerce_integration-retailcrm_online_assistant']))
+            ? wp_unslash($_POST['woocommerce_integration-retailcrm_online_assistant'])
             : ''
         ;
+
+        sanitize_text_field($_POST['woocommerce_integration-retailcrm_online_assistant']);
 
         if ($onlineAssistant === '') {
             return '';
