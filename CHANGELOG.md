@@ -1,3 +1,6 @@
+## 2025-08-22 4.9.0
+* Plugin update for WordPress compliance
+
 ## 2025-08-05 4.8.35
 * Module name change
 
