@@ -66,11 +66,10 @@ class WC_Retailcrm_Daemon_Collector {
      * @return $this
      */
     private function buildHeader() {
-        $header = <<<EOF
-<script type="text/javascript">
-    (function(_,r,e,t,a,i,l){_['retailCRMObject']=a;_[a]=_[a]||function(){(_[a].q=_[a].q||[]).push(arguments)};_[a].l=1*new Date();l=r.getElementsByTagName(e)[0];i=r.createElement(e);i.async=!0;i.src=t;l.parentNode.insertBefore(i,l)})(window,document,'script','https://collector.retailcrm.pro/w.js','_rc');
-
-EOF;
+        $header  = '<script type="text/javascript">';
+        $header .= '(function(_,r,e,t,a,i,l){_["retailCRMObject"]=a;_[a]=_[a]||function(){(_[a].q=_[a].q||[]).push(arguments)};';
+        $header .= '_[a].l=1*new Date();l=r.getElementsByTagName(e)[0];i=r.createElement(e);i.async=!0;';
+        $header .= 'i.src=t;l.parentNode.insertBefore(i,l)})(window,document,"script","https://collector.retailcrm.pro/w.js","_rc");';
 
         $this->code .= $header;
 
@@ -104,11 +103,8 @@ EOF;
      * @return $this
      */
     private function buildFooter() {
-        $footer = <<<EOF
-    _rc('send', 'pageView');
-</script>
-
-EOF;
+        $footer = '_rc(\'send\', \'pageView\')';
+        $footer .= '</script>';
 
         $this->code .= $footer;
 

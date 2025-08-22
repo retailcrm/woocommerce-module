@@ -405,7 +405,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             // Generate new ICML catalog, because change bind_by_sku
             if (isset($_POST['useXmlId'])) {
-                $retailCrmIcml->changeBindBySku($_POST['useXmlId']);
+                $retailCrmIcml->changeBindBySku(wp_unslash($_POST['useXmlId']));
             }
 
             $retailCrmIcml->generate();
@@ -959,8 +959,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                 $jsScriptPath = plugins_url() . self::ASSETS_DIR . '/js/retailcrm-loyalty-cart.js';
 
-                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, '0.1');
-                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', '', true);
+                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, filemtime($jsScriptPath), true);
+                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', filemtime($jsScriptPath), true);
                 wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminCoupon', [
                     'url' => get_admin_url(),
                     'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce')
@@ -1073,8 +1073,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $jsScriptsPath =  plugins_url() . self::ASSETS_DIR . '/js/';
 
             foreach ($jsScripts as $scriptName) {
-                wp_register_script($scriptName, $jsScriptsPath . $scriptName . '.js', false, '0.1');
-                wp_enqueue_script($scriptName, $jsScriptsPath . $scriptName . '.js', '', '', true);
+                $scriptDir = $jsScriptsPath . $scriptName . '.js';
+
+                wp_register_script($scriptName, $scriptDir, false, filemtime($scriptDir), true);
+                wp_enqueue_script($scriptName, $scriptDir, '', filemtime($scriptDir), true);
             }
 
             // In this method transfer wp-admin url in JS scripts.
@@ -1091,8 +1093,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $scriptName = 'retailcrm-tracker';
             $jsScriptsPath = plugins_url() . self::ASSETS_DIR . '/js/' . $scriptName . '.js';
 
-            wp_register_script($scriptName, $jsScriptsPath, false, '0.1');
-            wp_enqueue_script($scriptName, $jsScriptsPath, '', '', true);
+            wp_register_script($scriptName, $jsScriptsPath, false, filemtime($jsScriptsPath), true);
+            wp_enqueue_script($scriptName, $jsScriptsPath, '', filemtime($jsScriptsPath), true);
             wp_localize_script($scriptName, 'RetailcrmTracker', ['url' => get_admin_url()]);
         }
 
@@ -1312,8 +1314,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $loyaltyTemrs = $this->settings['loyalty_terms'] ?? '';
             $loyaltyPersonal = $this->settings['loyalty_personal'] ?? '';
 
-            wp_register_script($jsScript, $jsScriptsPath . $jsScript . '.js', false, '0.1');
-            wp_enqueue_script($jsScript, $jsScriptsPath . $jsScript . '.js', '', '', true);
+            $scriptDir = $jsScriptsPath . $jsScript . '.js';
+
+            wp_register_script($jsScript, $scriptDir, false, filemtime($scriptDir), true);
+            wp_enqueue_script($jsScript, $scriptDir, '', filemtime($scriptDir), true);
             wp_localize_script($jsScript, 'retailcrmLoyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'retailcrmCustomerId', $userId);
             wp_localize_script($jsScript, 'retailcrmMessagePhone', $messagePhone);
@@ -1387,13 +1391,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
 
             $metaData = ['default_retailcrm' => esc_html__('Select value', 'woo-retailcrm')];
-            $sqlQuery = "SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`";
             $defaultMetaFields = file(
                 WP_PLUGIN_DIR . self::ASSETS_DIR . '/default/default_meta_fields.txt',
                 FILE_IGNORE_NEW_LINES
             );
 
-            foreach ($wpdb->get_results($sqlQuery) as $metaValue) {
+            foreach ($wpdb->get_results($wpdb->prepare("SELECT DISTINCT meta_key FROM $table ORDER BY meta_key")) as $metaValue) {
                 $metaData[$metaValue->meta_key] = $metaValue->meta_key;
             }
 

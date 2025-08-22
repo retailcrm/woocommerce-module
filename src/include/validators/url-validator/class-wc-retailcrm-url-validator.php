@@ -34,7 +34,7 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
                     throw new ValidatorException($this->noValidUrl, 400);
                 }
 
-                $urlArray = parse_url($filteredUrl);
+                $urlArray = wp_parse_url($filteredUrl);
 
                 $this->validateUrlFormat($urlArray);
                 $this->validateUrlDomains($urlArray);

@@ -88,30 +88,27 @@ class WC_Retailcrm_Request
             $url .= '?' . http_build_query($parameters, '', '&');
         }
 
-        $curlHandler = curl_init();
-        curl_setopt($curlHandler, CURLOPT_URL, $url);
-        curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curlHandler, CURLOPT_FAILONERROR, false);
-        curl_setopt($curlHandler, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curlHandler, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curlHandler, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curlHandler, CURLOPT_CONNECTTIMEOUT, 30);
+        $args = [
+            'timeout' => 30,
+            'sslverify' => false
+        ];
 
         if (self::METHOD_POST === $method) {
-            curl_setopt($curlHandler, CURLOPT_POST, true);
-            curl_setopt($curlHandler, CURLOPT_POSTFIELDS, $parameters);
+            $args['method'] = 'POST';
+            $args['body'] = $parameters;
+        } else {
+            $args['method'] = 'GET';
         }
 
-        $responseBody = curl_exec($curlHandler);
-        $statusCode = curl_getinfo($curlHandler, CURLINFO_HTTP_CODE);
-        $errno = curl_errno($curlHandler);
-        $error = curl_error($curlHandler);
+        $response = wp_remote_request($url, $args);
 
-        curl_close($curlHandler);
-
-        if ($errno) {
-            throw new WC_Retailcrm_Exception_Curl(esc_html($error), esc_html($errno));
+        if (is_wp_error($response)) {
+            $error = $response->get_error_message();
+            throw new WC_Retailcrm_Exception_Curl(esc_html($error));
         }
+
+        $statusCode = wp_remote_retrieve_response_code($response);
+        $responseBody = wp_remote_retrieve_body($response);
 
         return new WC_Retailcrm_Response($statusCode, $responseBody);
     }

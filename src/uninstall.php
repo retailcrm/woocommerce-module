@@ -46,7 +46,7 @@ $options = [
 ];
 
 foreach ($options as $option) {
-    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name = {$option}");
+    delete_option($option);
 }
 
 // Clear any cached data that has been removed

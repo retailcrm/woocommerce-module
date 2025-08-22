@@ -76,7 +76,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                 return $js;
             }
 
-            $order_id = wc_get_order_id_by_order_key($_GET['key']);
+            $order_id = wc_get_order_id_by_order_key(sanitize_text_field(wp_unslash($_GET['key'])));
             $order = wc_get_order($order_id);
 
             if (is_object($order) === false) {
@@ -99,7 +99,7 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
                 }
             }
 
-            $url = parse_url(get_site_url());
+            $url = wp_parse_url(get_site_url());
             $domain = $url['host'];
 
             $js .= "

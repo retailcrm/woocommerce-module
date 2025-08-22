@@ -41,17 +41,17 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                 $crmCart = [
                     'customer' => ['externalId' => $customerId],
                     'clearAt' => null,
-                    'updatedAt' => date($this->dateFormat),
+                    'updatedAt' => gmdate($this->dateFormat),
                     'link' => wc_get_cart_url(),
                 ];
 
                 if (isset($this->settings['daemon_collector']) && $this->settings['daemon_collector'] === 'no') {
-                    $crmCart['droppedAt'] = date($this->dateFormat);
+                    $crmCart['droppedAt'] = gmdate($this->dateFormat);
                 }
 
                 // If new cart, need set createdAt and externalId
                 if (!$isCartExist) {
-                    $crmCart['createdAt'] = date($this->dateFormat);
+                    $crmCart['createdAt'] = gmdate($this->dateFormat);
                     $crmCart['externalId'] = $customerId . uniqid('_', true);
                 }
 
@@ -68,8 +68,8 @@ if (!class_exists('WC_Retailcrm_Carts')) :
                     $crmCart['items'][] = [
                         'offer' =>  $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],
                         'quantity' => $item['quantity'],
-                        'createdAt' => $product->get_date_created()->date($this->dateFormat) ?? date($this->dateFormat),
-                        'updatedAt' => $product->get_date_modified()->date($this->dateFormat) ?? date($this->dateFormat),
+                        'createdAt' => $product->get_date_created()->date($this->dateFormat) ?? gmdate($this->dateFormat),
+                        'updatedAt' => $product->get_date_modified()->date($this->dateFormat) ?? gmdate($this->dateFormat),
                         'price' => wc_get_price_including_tax($product),
                     ];
                 }
@@ -95,7 +95,7 @@ if (!class_exists('WC_Retailcrm_Carts')) :
 
             try {
                 if ($isCartExist) {
-                    $crmCart = ['customer' => ['externalId' => $customerId], 'clearedAt' => date($this->dateFormat)];
+                    $crmCart = ['customer' => ['externalId' => $customerId], 'clearedAt' => gmdate($this->dateFormat)];
                     $clearResponse = $this->apiClient->cartClear($crmCart, $site);
                     $isSuccessful = $clearResponse->isSuccessful() && !empty($clearResponse['success']);
                 }

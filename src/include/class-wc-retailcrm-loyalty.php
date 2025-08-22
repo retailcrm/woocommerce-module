@@ -280,7 +280,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $coupon->set_usage_limit(0);
             $coupon->set_amount($lpDiscountSum);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
-            $coupon->set_code('loyalty' . mt_rand());
+            $coupon->set_code('loyalty' . wp_rand());
             $coupon->update_meta_data('chargeRate', $lpChargeRate);
             $coupon->save();
 
@@ -338,13 +338,17 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             global $wpdb;
 
+            $loyalty_like = $wpdb->esc_like('loyalty') . '%';
+            $email_like   = '%' . $wpdb->esc_like($email) . '%';
+
             return $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT posts.post_name code FROM {$wpdb->prefix}posts AS posts
                             LEFT JOIN {$wpdb->prefix}postmeta AS postmeta ON posts.ID = postmeta.post_id
-                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE 'loyalty%'
+                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE %s
                             AND postmeta.meta_key = 'customer_email' AND postmeta.meta_value LIKE %s",
-                    '%' . $email . '%'
+                    $loyalty_like,
+                    $email_like
                 ), ARRAY_A
             );
         }

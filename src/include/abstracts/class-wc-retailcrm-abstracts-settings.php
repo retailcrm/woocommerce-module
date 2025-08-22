@@ -862,7 +862,10 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     */
     public function validate_online_assistant_field($key, $value)
     {
-        $onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant'];
+        $onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant']
+            ? sanitize_text_field(wp_unslash($_POST['woocommerce_integration-retailcrm_online_assistant']))
+            : ''
+        ;
 
         if ($onlineAssistant === '') {
             return '';

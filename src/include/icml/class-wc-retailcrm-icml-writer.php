@@ -33,7 +33,7 @@ if (!class_exists('WC_Retailcrm_Icml_Writer')) :
         {
             $this->writer->startDocument('1.0', 'UTF-8');
             $this->writer->startElement('yml_catalog'); // start <yml_catalog>
-            $this->writer->writeAttribute('date', date('Y-m-d H:i:s'));
+            $this->writer->writeAttribute('date', gmdate('Y-m-d H:i:s'));
             $this->writer->startElement('shop'); // start <shop>
             $this->writer->WriteElement('name', $shop);
         }

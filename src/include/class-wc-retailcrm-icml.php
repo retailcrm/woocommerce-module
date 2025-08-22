@@ -71,6 +71,14 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          */
         public function generate()
         {
+            global $wp_filesystem;
+
+            if ( ! function_exists( 'WP_Filesystem' ) ) {
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+            }
+
+            WP_Filesystem();
+
             $this->icmlWriter->writeHead($this->shop);
 
             $categories = $this->prepareCategories();
@@ -96,7 +104,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
             $this->icmlWriter->writeEnd();
             $this->icmlWriter->formatXml($this->tmpFile);
 
-            rename($this->tmpFile, $this->file);
+            if ( $wp_filesystem->exists( $this->tmpFile ) ) {
+                $wp_filesystem->move( $this->tmpFile, $this->file, true );
+            }
+
             WC_Retailcrm_Logger::info(__METHOD__, 'Catalog generated');
         }
 
