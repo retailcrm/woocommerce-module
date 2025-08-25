@@ -18,8 +18,9 @@ class WC_Retailcrm_Plugin
     public static $history_run = false;
     private static $instance = null;
 
-    // странная ссылка на лого самого Woocommerce. Проверить где выводится и удалить её/заменить
-    const MARKETPLACE_LOGO = 'https://s3.eu-central-1.amazonaws.com/retailcrm-billing/images/5b69ce4bda663-woocommercesvg2.svg';
+    /* Note: This parameter is used solely for identifying the module’s connection to WordPress and WooCommerce
+        (establishing the link between the plugin and the integration).
+    */
     const INTEGRATION_CODE = 'woocommerce';
 
     public static function getInstance($file)
@@ -146,9 +147,11 @@ class WC_Retailcrm_Plugin
             return false;
         }
 
+        /* Note: Parameter "name" is used solely for identifying the module’s connection to WordPress and WooCommerce
+        (establishing the link between the plugin and the integration).
+        */
         $configuration = array(
             'name' => 'WooCommerce',
-            'logo' => self::MARKETPLACE_LOGO,
             'code' => self::INTEGRATION_CODE . '-' . $client_id,
             'active' => $active,
         );

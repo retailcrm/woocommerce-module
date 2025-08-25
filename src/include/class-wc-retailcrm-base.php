@@ -958,9 +958,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 }
 
                 $jsScriptPath = plugins_url() . self::ASSETS_DIR . '/js/retailcrm-loyalty-cart.js';
+                $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/retailcrm-loyalty-cart.js';
 
-                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, filemtime($jsScriptPath), true);
-                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', filemtime($jsScriptPath), true);
+                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, filemtime($scriptPath), true);
+                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', filemtime($scriptPath), true);
                 wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminCoupon', [
                     'url' => get_admin_url(),
                     'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce')
@@ -1071,12 +1072,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
             ];
 
             $jsScriptsPath =  plugins_url() . self::ASSETS_DIR . '/js/';
+            $jsScriptsPathDir  = plugin_dir_path( __FILE__ ) . '../assets/js/';
 
             foreach ($jsScripts as $scriptName) {
                 $scriptDir = $jsScriptsPath . $scriptName . '.js';
+                $scriptPath = $jsScriptsPathDir . $scriptName . '.js';
 
-                wp_register_script($scriptName, $scriptDir, false, filemtime($scriptDir), true);
-                wp_enqueue_script($scriptName, $scriptDir, '', filemtime($scriptDir), true);
+                wp_register_script($scriptName, $scriptDir, false, filemtime($scriptPath), true);
+                wp_enqueue_script($scriptName, $scriptDir, '', filemtime($scriptPath), true);
             }
 
             // In this method transfer wp-admin url in JS scripts.
@@ -1092,9 +1095,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             $scriptName = 'retailcrm-tracker';
             $jsScriptsPath = plugins_url() . self::ASSETS_DIR . '/js/' . $scriptName . '.js';
+            $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/' . $scriptName . '.js';
 
-            wp_register_script($scriptName, $jsScriptsPath, false, filemtime($jsScriptsPath), true);
-            wp_enqueue_script($scriptName, $jsScriptsPath, '', filemtime($jsScriptsPath), true);
+            wp_register_script($scriptName, $jsScriptsPath, false, filemtime($scriptPath), true);
+            wp_enqueue_script($scriptName, $jsScriptsPath, '', filemtime($scriptPath), true);
             wp_localize_script($scriptName, 'RetailcrmTracker', ['url' => get_admin_url()]);
         }
 
@@ -1315,9 +1319,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $loyaltyPersonal = $this->settings['loyalty_personal'] ?? '';
 
             $scriptDir = $jsScriptsPath . $jsScript . '.js';
+            $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/' . $jsScript . '.js';
 
-            wp_register_script($jsScript, $scriptDir, false, filemtime($scriptDir), true);
-            wp_enqueue_script($jsScript, $scriptDir, '', filemtime($scriptDir), true);
+            wp_register_script($jsScript, $scriptDir, false, filemtime($scriptPath), true);
+            wp_enqueue_script($jsScript, $scriptDir, '', filemtime($scriptPath), true);
             wp_localize_script($jsScript, 'retailcrmLoyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'retailcrmCustomerId', $userId);
             wp_localize_script($jsScript, 'retailcrmMessagePhone', $messagePhone);
@@ -1451,11 +1456,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $client_id = uniqid();
             }
 
+            $enabledCorporate = isset($settings['corporate_enabled']) ? $settings['corporate_enabled'] : 'no';
+
             if ($settings['api_url'] && $settings['api_key']) {
                 $api_client = new WC_Retailcrm_Proxy(
                     $settings['api_url'],
                     $settings['api_key'],
-                    $settings['corporate_enabled'] === 'yes'
+                    $enabledCorporate === 'yes'
                 );
 
                 $result = WC_Retailcrm_Plugin::integration_module($api_client, $client_id);
