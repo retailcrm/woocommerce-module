@@ -1509,11 +1509,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $meta_keys = wp_cache_get($cache_key);
 
             if (false === $meta_keys) {
-                // Caching has been added, but the prepared functionality is missing.
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-                $meta_keys = $wpdb->get_results(
-                    $wpdb->prepare('SELECT DISTINCT meta_key FROM %s ORDER BY meta_key', $table)
-                );
+                // Caching has been added, but PHPCS does not detect it.
+                // $wpdb->prepare() does not support table name substitution.
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $meta_keys = $wpdb->get_results("SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`");
 
                 wp_cache_set($cache_key, $meta_keys);
             }
