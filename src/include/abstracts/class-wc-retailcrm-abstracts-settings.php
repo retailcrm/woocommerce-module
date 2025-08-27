@@ -39,8 +39,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
 
         static::$option_key = $this->get_option_key();
 
+        //Public parameters in the URL for page identification.
         if (
+            // phpcs:ignore WordPress.Security.NonceVerification
             isset($_GET['page']) && $_GET['page'] == 'wc-settings'
+            // phpcs:ignore WordPress.Security.NonceVerification
             && isset($_GET['tab']) && $_GET['tab'] == 'integration'
         ) {
             add_action('init', [$this, 'init_settings_fields'], 99);
@@ -123,8 +126,11 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
             ? ''
             : 'red-selected-retailcrm';
 
+            //Public parameters in the URL for page identification.
             if (
+                // phpcs:ignore WordPress.Security.NonceVerification
                 isset($_GET['page']) && $_GET['page'] == 'wc-settings'
+                // phpcs:ignore WordPress.Security.NonceVerification
                 && isset($_GET['tab']) && $_GET['tab'] == 'integration'
             ) {
                 add_action('admin_print_footer_scripts', [$this, 'show_blocks'], 99);
@@ -864,12 +870,15 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
     */
     public function validate_online_assistant_field($key, $value)
     {
-        $onlineAssistant = $_POST['woocommerce_integration-retailcrm_online_assistant']
-            ? wp_unslash($_POST['woocommerce_integration-retailcrm_online_assistant'])
-            : ''
-        ;
+        //Internal check in the admin panel for the presence of the parameter.
+        // This parameter contains JavaScript and must not be escaped.
+        // phpcs:ignore WordPress.Security.NonceVerification
+        if (!isset($_POST['woocommerce_integration-retailcrm_online_assistant'])) {
+            return '';
+        }
 
-        sanitize_text_field($_POST['woocommerce_integration-retailcrm_online_assistant']);
+        /// phpcs:ignore WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $onlineAssistant = wp_unslash($_POST['woocommerce_integration-retailcrm_online_assistant']);
 
         if ($onlineAssistant === '') {
             return '';

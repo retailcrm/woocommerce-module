@@ -336,7 +336,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function clear_cron_tasks()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             WC_Retailcrm_Logger::setHook(current_action());
             wp_clear_scheduled_hook('retailcrm_icml');
@@ -357,7 +367,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
         {
             WC_Retailcrm_Logger::setHook(current_action());
 
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             /*
              * A temporary solution.
@@ -403,9 +423,15 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $retailCrmIcml = new WC_Retailcrm_Icml();
 
-            // Generate new ICML catalog, because change bind_by_sku
+            $useXmlId = '';
+
             if (isset($_POST['useXmlId'])) {
-                $retailCrmIcml->changeBindBySku(wp_unslash($_POST['useXmlId']));
+                $useXmlId = sanitize_text_field(wp_unslash($_POST['useXmlId']));
+            }
+
+            // Generate new ICML catalog, because change bind_by_sku
+            if (!empty($useXmlId)) {
+                $retailCrmIcml->changeBindBySku($useXmlId);
             }
 
             $retailCrmIcml->generate();
@@ -448,7 +474,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function upload_loyalty_price()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             if (!$this->apiClient instanceof WC_Retailcrm_Proxy) {
                 return null;
@@ -503,7 +539,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function upload_selected_orders()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             WC_Retailcrm_Logger::setHook(current_action());
             $this->uploader->uploadSelectedOrders();
@@ -516,7 +562,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function upload_to_crm()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             WC_Retailcrm_Logger::setHook(current_action());
             $page = filter_input(INPUT_POST, 'Step', FILTER_SANITIZE_NUMBER_INT);
@@ -865,7 +921,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function get_status_coupon()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             $coupon_settings_url = admin_url('admin.php?page=wc-settings');
 
@@ -886,7 +952,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function register_customer_loyalty()
         {
-            $this->accessCheck('woo-retailcrm-loyalty-actions-nonce', false);
+            if (wp_doing_ajax() && check_ajax_referer('woo-retailcrm-loyalty-actions-nonce', '_ajax_nonce', false) !== 1) {
+                $this->accessLog('woo-retailcrm-loyalty-actions-nonce');
+                wp_die();
+            }
 
             $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
             $userId = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
@@ -915,7 +984,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         public function activate_customer_loyalty()
         {
-            $this->accessCheck('woo-retailcrm-loyalty-actions-nonce', false);
+            if (wp_doing_ajax() && check_ajax_referer('woo-retailcrm-loyalty-actions-nonce', '_ajax_nonce', false) !== 1) {
+                $this->accessLog('woo-retailcrm-loyalty-actions-nonce');
+                wp_die();
+            }
 
             $loyaltyId = filter_input(INPUT_POST, 'loyaltyId', FILTER_SANITIZE_NUMBER_INT);
             $isSuccessful = false;
@@ -1168,7 +1240,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function count_upload_data()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             $translate = [
                 'tr_order'       => esc_html__('Orders', 'woo-retailcrm'),
@@ -1193,7 +1275,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
          */
         public function get_cron_info()
         {
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             $defaultValue = esc_html__('This option is disabled', 'woo-retailcrm');
             $icml         = $defaultValue;
@@ -1248,7 +1340,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return null;
             }
 
-            $this->accessCheck('woo-retailcrm-admin-nonce');
+            if (wp_doing_ajax()) {
+                if (check_ajax_referer('woo-retailcrm-admin-nonce', '_ajax_nonce', false) !== 1) {
+                    $this->accessLog('woo-retailcrm-admin-nonce');
+                    wp_die();
+                }
+
+                if (!(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+                    $this->accessLog();
+                    wp_die();
+                }
+            }
 
             WC_Retailcrm_Logger::setHook(current_action());
 
@@ -1390,9 +1492,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
             global $wpdb;
 
             if ('user' === $entity) {
-                $table = $wpdb->usermeta;
+                $table = esc_sql($wpdb->usermeta);
+            } elseif (useHpos()) {
+                $table = esc_sql($wpdb->prefix . 'wc_orders_meta');
             } else {
-                $table = useHpos() ? $wpdb->prefix . 'wc_orders_meta' : $wpdb->postmeta;
+                $table = esc_sql($wpdb->postmeta);
             }
 
             $metaData = ['default_retailcrm' => esc_html__('Select value', 'woo-retailcrm')];
@@ -1401,7 +1505,20 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 FILE_IGNORE_NEW_LINES
             );
 
-            foreach ($wpdb->get_results("SELECT DISTINCT `meta_key` FROM $table ORDER BY `meta_key`") as $metaValue) {
+            $cache_key = 'retailcrm_meta_keys_' . md5($table);
+            $meta_keys = wp_cache_get($cache_key);
+
+            if (false === $meta_keys) {
+                // Caching has been added, but the prepared functionality is missing.
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+                $meta_keys = $wpdb->get_results(
+                    $wpdb->prepare('SELECT DISTINCT meta_key FROM %s ORDER BY meta_key', $table)
+                );
+
+                wp_cache_set($cache_key, $meta_keys);
+            }
+
+            foreach ($meta_keys as $metaValue) {
                 $metaData[$metaValue->meta_key] = $metaValue->meta_key;
             }
 
@@ -1541,13 +1658,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
             }
         }
 
-        private function accessCheck(string $prefixNonce, $checkPermissions = true): void
+        private function accessLog($prefixNonce = ''): void
         {
-            if (!wp_doing_ajax()) {
-                return;
-            }
-
-            if (check_ajax_referer($prefixNonce, '_ajax_nonce', false) !== 1) {
+            if ($prefixNonce !== '') {
                 echo wp_json_encode(['error' => esc_html__('Token is not valid', 'woo-retailcrm')]);
 
                 WC_Retailcrm_Logger::error(
@@ -1557,11 +1670,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         $prefixNonce
                     )
                 );
-
-                wp_die();
-            }
-
-            if ($checkPermissions && !(current_user_can('manage_woocommerce') || current_user_can('manage_options'))) {
+            } else {
                 echo wp_json_encode(['error' => esc_html__('Access denied', 'woo-retailcrm')]);
 
                 WC_Retailcrm_Logger::error(
@@ -1571,8 +1680,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         implode(', ', wp_get_current_user()->roles)
                     )
                 );
-
-                wp_die();
             }
         }
     }

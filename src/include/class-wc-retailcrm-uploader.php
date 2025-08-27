@@ -59,9 +59,14 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
          */
         public function uploadSelectedOrders()
         {
-            $ids = $_GET['order_ids_retailcrm'] ? wp_unslash($_GET['order_ids_retailcrm']) : [];
+            $ids = [];
 
-            sanitize_text_field($_GET['order_ids_retailcrm']);
+            //Nonce token verification in the parent method.
+            // phpcs:ignore WordPress.Security.NonceVerification
+            if (isset($_GET['order_ids_retailcrm'])) {
+                // phpcs:ignore WordPress.Security.NonceVerification
+                $ids = sanitize_text_field(wp_unslash($_GET['order_ids_retailcrm']));
+            }
 
             WC_Retailcrm_Logger::info(__METHOD__, 'Selected order IDs: ' . json_encode($ids));
 
@@ -200,10 +205,13 @@ if (class_exists('WC_Retailcrm_Uploader') === false) {
         {
             global $wpdb;
 
+            //The number of orders is constantly updating
             if (useHpos()) {
                 // Use {$wpdb->prefix}, because wp_wc_orders not standard WP table
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM {$wpdb->prefix}wc_orders");
             } else {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $result = $wpdb->get_results("SELECT COUNT(ID) as `count` FROM $wpdb->posts WHERE post_type = 'shop_order'");
             }
 

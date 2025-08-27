@@ -72,14 +72,16 @@ if (!class_exists('WC_Retailcrm_Google_Analytics')) {
         public function send_analytics() {
             $js = '';
 
+            //Public key in the URL, no need to verify the nonce token.
+            // phpcs:ignore WordPress.Security.NonceVerification
             if (!isset($_GET['key'])) {
                 return $js;
             }
 
-            $order_id = wc_get_order_id_by_order_key(wp_unslash($_GET['key']));
+            // phpcs:ignore WordPress.Security.NonceVerification
+            $orderKey = sanitize_text_field(wp_unslash($_GET['key']));
+            $order_id = wc_get_order_id_by_order_key($orderKey);
             $order = wc_get_order($order_id);
-
-            sanitize_text_field($_GET['key']);
 
             if (is_object($order) === false) {
                 return $js;

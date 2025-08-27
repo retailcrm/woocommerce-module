@@ -341,6 +341,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $loyalty_like = $wpdb->esc_like('loyalty') . '%';
             $email_like   = '%' . $wpdb->esc_like($email) . '%';
 
+            //The coupon is constantly being updated, which may cause errors when caching.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             return $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT posts.post_name code FROM {$wpdb->prefix}posts AS posts
