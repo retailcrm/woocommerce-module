@@ -1,5 +1,6 @@
 ## 2025-08-26 5.0.0
 * Plugin update for WordPress compliance
+* Starting from module version 5.0.0, changes have been made to the customization mechanism and core functions that are not compatible with earlier versions. Before updating, review the module structure and function names to make the necessary adjustments to custom files.
 
 ## 2025-08-05 4.8.35
 * Module name change
