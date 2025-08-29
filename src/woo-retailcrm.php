@@ -11,7 +11,7 @@
  * Tested up to: 6.8
  * Requires Plugins: woocommerce
  * WC requires at least: 5.4
- * WC tested up to: 9.8
+ * WC tested up to: 10.0
  * Text Domain: woo-retailcrm
  */
 
