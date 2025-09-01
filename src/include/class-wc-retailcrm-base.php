@@ -107,7 +107,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_print_scripts', [$this, 'initialize_online_assistant'], 101);
             add_action('wp_enqueue_scripts', [$this, 'include_whatsapp_icon_style'], 101);
             add_action('wp_enqueue_scripts', [$this, 'include_js_script_for_tracker'], 101);
-            add_action('wp_enqueue_scripts', [$this, 'enqueue_online_consultant_script_for_user'], 101);
+            add_action('wp_enqueue_scripts', [$this, 'enqueue_online_consultant_script_for_user'], 99);
             add_action('wp_print_footer_scripts', [$this, 'initialize_whatsapp'], 101);
             add_action('wp_print_footer_scripts', [$this, 'send_analytics'], 99);
             add_action('admin_enqueue_scripts', [$this, 'include_files_for_admin'], 101);
@@ -1169,11 +1169,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             if ($this->get_option('online_assistant') !== '' && is_user_logged_in()) {
                 $user = wp_get_current_user();
 
-                // wp_localize_script() можно применить только к скрипту, который зарегистрирован и подключен.
-                // Так как у нас нет реального JS-файла, регистрируем и подключаем "фиктивный" скрипт (false вместо пути).
-                wp_register_script('retailcrm-widget', false);
+                // wp_localize_script() can only be applied to a script that is registered and enqueued.
+                // Since we don't have an actual JS file, we register and enqueue a "dummy" script.
+                wp_register_script('retailcrm-widget', false, [], '1.0.0', false);
                 wp_enqueue_script('retailcrm-widget');
 
+                // '_rcco' is an external variable used by Online Consult. We cannot rename it to 'retailcrm_rcco'
+                // because it must match the expected global variable name in the Online Consultant widget.
                 wp_localize_script('retailcrm-widget', '_rcco', [
                         'customer' => [
                                 'name' => $user->display_name,
