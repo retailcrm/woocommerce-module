@@ -5,12 +5,14 @@
  * Description: Integration plugin for Simla.com
  * Author: RetailDriver LLC
  * Author URI: http://retailcrm.pro/
- * Version: 4.8.35
+ * License: MIT
+ * License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
+ * Version: 5.0.0
  * Tested up to: 6.8
  * Requires Plugins: woocommerce
  * WC requires at least: 5.4
- * WC tested up to: 9.8
- * Text Domain: retailcrm
+ * WC tested up to: 10.0
+ * Text Domain: woo-retailcrm
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,7 +29,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     class WC_Integration_Retailcrm {
         const WOOCOMMERCE_SLUG = 'woocommerce';
         const WOOCOMMERCE_PLUGIN_PATH = 'woocommerce/woocommerce.php';
-        const MODULE_VERSION = '4.8.35';
+        const MODULE_VERSION = '5.0.0';
 
         private static $instance;
 
@@ -43,8 +45,6 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
          * Construct the plugin.
          */
         public function __construct() {
-            $this->load_plugin_textdomain();
-
             if (class_exists( 'WC_Integration' )) {
                 self::load_module();
                 add_filter('woocommerce_integrations', [$this, 'add_integration']);
@@ -56,32 +56,23 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
         public function woocommerce_missing_notice() {
             if (static::isWooCommerceInstalled()) {
                 if (!is_plugin_active(static::WOOCOMMERCE_PLUGIN_PATH)) {
-                    echo '
-                    <div class="error">
-                        <p>
-                            Activate WooCommerce in order to enable RetailCRM integration!
-                            <a href="' . wp_nonce_url(admin_url('plugins.php')) . '" aria-label="Activate WooCommerce">
-                                Click here to open plugins manager
-                            </a>
-                        </p>
-                    </div>
-                    ';
+                    printf(
+                        '<div class="error"><p>%1$s <a href="%2$s" aria-label="%3$s">%4$s</a></p></div>',
+                        esc_html__( 'Activate WooCommerce in order to enable Simla integration!', 'woo-retailcrm' ),
+                        esc_url( wp_nonce_url( admin_url( 'plugins.php' ) ) ),
+                        esc_attr__( 'Activate WooCommerce', 'woo-retailcrm' ),
+                        esc_html__( 'Click here to open plugins manager', 'woo-retailcrm' )
+                    );
                 }
             } else {
-                echo '
-                <div class="error">
-                    <p>
-                        <a href="'
-                    . static::generatePluginInstallationUrl(static::WOOCOMMERCE_SLUG)
-                    . '" aria-label="Install WooCommerce">Install WooCommerce</a> in order to enable RetailCRM integration!
-                    </p>
-                </div>
-                ';
+                printf(
+                    '<div class="error"><p><a href="%1$s" aria-label="%2$s">%3$s</a> %4$s</p></div>',
+                    esc_url( static::generatePluginInstallationUrl( static::WOOCOMMERCE_SLUG ) ),
+                    esc_attr__( 'Install WooCommerce', 'woo-retailcrm' ),
+                    esc_html__( 'Install WooCommerce', 'woo-retailcrm' ),
+                    esc_html__( 'in order to enable RetailCRM integration!', 'woo-retailcrm' )
+                );
             }
-        }
-
-        public function load_plugin_textdomain() {
-            load_plugin_textdomain('retailcrm', false, dirname(plugin_basename(__FILE__)) . '/languages/');
         }
 
         /**

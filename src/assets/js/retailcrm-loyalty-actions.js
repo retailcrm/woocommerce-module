@@ -22,7 +22,7 @@ jQuery(function() {
         if (!phone.val().match(/(?:\+|\d)[\d\-\(\) ]{7,}\d/)) {
 
             if (!jQuery('#warningLoyaltyPhone').length) {
-                phone.parent().append('<span style="color: red" id="warningLoyaltyPhone">' + messagePhone + '</span>')
+                phone.parent().append('<span style="color: red" id="warningLoyaltyPhone">' + retailcrmMessagePhone + '</span>')
             }
 
             event.preventDefault();
@@ -32,10 +32,10 @@ jQuery(function() {
         }
 
         jQuery.ajax({
-            url: loyaltyUrl.url + '/admin-ajax.php?action=register_customer_loyalty',
+            url: retailcrmLoyaltyUrl.url + '/admin-ajax.php?action=retailcrm_register_customer_loyalty',
             method: 'POST',
             timeout: 0,
-            data: {ajax: 1, phone: phone.val(), userId: customerId},
+            data: {ajax: 1, phone: phone.val(), userId: retailcrmCustomerId, _ajax_nonce: retailcrmNonce},
             dataType: 'json'
         })
             .done(function (response) {
@@ -63,10 +63,10 @@ jQuery(function() {
         }
 
         jQuery.ajax({
-            url: loyaltyUrl.url + '/admin-ajax.php?action=activate_customer_loyalty',
+            url: retailcrmLoyaltyUrl.url + '/admin-ajax.php?action=retailcrm_activate_customer_loyalty',
             method: 'POST',
             timeout: 0,
-            data: {ajax: 1, loyaltyId: loyaltyId},
+            data: {ajax: 1, loyaltyId: retailcrmLoyaltyId, _ajax_nonce: retailcrmNonce},
             dataType: 'json'
         })
             .done(function (response) {
@@ -85,9 +85,9 @@ jQuery(function() {
 
     jQuery('.popup-open-loyalty').click(function() {
         if (jQuery(this).attr('id') === 'terms-popup') {
-            jQuery('#popup-loyalty-text').html(termsLoyalty);
+            jQuery('#popup-loyalty-text').html(retailcrmTermsLoyalty);
         } else {
-            jQuery('#popup-loyalty-text').html(privacyLoyalty);
+            jQuery('#popup-loyalty-text').html(retailcrmPrivacyLoyalty);
         }
 
         jQuery('.popup-fade-loyalty').fadeIn();

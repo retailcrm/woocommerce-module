@@ -27,10 +27,6 @@ msgstr "Complemento de integración Simla.com"
 msgid "https://wordpress.org/plugins/woo-retailcrm/"
 msgstr "https://wordpress.org/plugins/woo-retailcrm/"
 
-#. Plugin Name of the plugin/theme
-msgid "Simla.com"
-msgstr "Simla.com"
-
 msgid "Orders"
 msgstr "Pedidos"
 
@@ -460,8 +456,11 @@ msgstr "Condiciones de procesamiento de datos personales"
 msgid "Insert the terms and conditions for processing personal data"
 msgstr "Introduce las condiciones para el procesamiento de datos personales"
 
-msgid "To activate the loyalty program it is necessary to activate the <a href='?page=wc-settings'>'enable use of coupons option'</a>"
-msgstr "Para activar el programa de fidelización es necesario activar la opción <a href='?page=wc-settings'>'habilitar el uso de cupones'</a>"
+msgid "To activate the loyalty program it is necessary to activate the %s"
+msgstr "Para activar el programa de fidelización es necesario activar la opción %s"
+
+msgid "Enable use of coupons option"
+msgstr "'habilitar el uso de cupones'"
 
 msgid "Bonus account"
 msgstr "Cuenta de bonos"
@@ -526,11 +525,11 @@ msgstr "Introduce el número de teléfono correcto"
 msgid "Close"
 msgstr "Cerrar"
 
-msgid "Ordinary products: accrual of 1 bonus for each %s %s"
-msgstr "Productos ordinarios: acumulación de 1 bono por cada %s %s"
+msgid "Ordinary products: accrual of 1 bonus for each %1$s %2$s"
+msgstr "Productos ordinarios: acumulación de 1 bono por cada %1$s %2$s"
 
-msgid "Promotional products: accrual of 1 bonus for each %s %s"
-msgstr "Productos promocionales: acumulación de 1 bono por cada %s %s"
+msgid "Promotional products: accrual of 1 bonus for each %1$s %2$s"
+msgstr "Productos promocionales: acumulación de 1 bono por cada %1$s %2$s"
 
 msgid "Ordinary products: bonus accrual in the amount of %s%% of the purchase amount"
 msgstr "Productos ordinarios: acumulación de bonos en la cantidad de %s%% de la suma de la compra"
@@ -609,3 +608,33 @@ msgstr "Precio promocional Woocommerce"
 
 msgid "Promotional price type for Woocommerce store, generated automatically. Necessary for correct synchronization work when loyalty program is enabled (Do not delete. Do not deactivate)"
 msgstr "Tipo de precio promocional para la tienda Woocommerce, generado automáticamente. Necesario para el correcto funcionamiento de la sincronización cuando el programa de fidelización está habilitado (No eliminar. No desactivar)"
+
+msgid "Activate WooCommerce in order to enable Simla integration!"
+msgstr "¡Activa WooCommerce para habilitar la integración con Simla!"
+
+msgid "Activate WooCommerce"
+msgstr "¡Activa WooCommerce!"
+
+msgid "Click here to open plugins manager"
+msgstr "Haz clic aquí para abrir el administrador de complementos"
+
+msgid "Install WooCommerce"
+msgstr "Instalar WooCommerce"
+
+msgid "in order to enable RetailCRM integration!"
+msgstr "¡para habilitar la integración con Simla!"
+
+msgid "Token is not valid"
+msgstr "El token no es válido"
+
+msgid "Access denied"
+msgstr "Acceso denegado"
+
+msgid "%1$s bonuses will expire %2$s"
+msgstr "%1$s bonos expirarán %2$s"
+
+msgid "%1$s bonuses will active %2$s"
+msgstr "%1$s bonos se activarán %2$s"
+
+msgid "Error while processing validation: %1$s. userId: %2$s"
+msgstr "Error al procesar la validación: %1$s. userId: %2$s"

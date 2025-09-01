@@ -9,18 +9,18 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             $htmlLoyaltyTerms = $loyaltyTerms !== ''
                 ? sprintf(
-                    '<p><input type="checkbox" name="terms" id="termsLoyalty" required>%s<a id="terms-popup" class="popup-open-loyalty" href="#">%s</a>.</p>',
-                    __(' I agree with ', 'retailcrm'),
-                    __('loyalty program terms', 'retailcrm')
+                    '<p><input type="checkbox" name="terms" id="termsLoyalty" required>%1$s<a id="terms-popup" class="popup-open-loyalty" href="#">%2$s</a>.</p>',
+                    esc_html__(' I agree with ', 'woo-retailcrm'),
+                    esc_html__('loyalty program terms', 'woo-retailcrm')
                 )
                 : ''
             ;
 
             $htmlLoyaltyPersonal = $loyaltyPersonal !== ''
                 ? sprintf(
-                '<p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%s<a id="privacy-popup" class="popup-open-loyalty" href="#">%s</a>.</p>',
-                __(' I agree with ', 'retailcrm'),
-                __('terms of personal data processing', 'retailcrm')
+                '<p><input type="checkbox" name="privacy" id="privacyLoyalty" required>%1$s<a id="privacy-popup" class="popup-open-loyalty" href="#">%2$s</a>.</p>',
+                esc_html__(' I agree with ', 'woo-retailcrm'),
+                esc_html__('terms of personal data processing', 'woo-retailcrm')
                 )
                 : ''
             ;
@@ -29,27 +29,27 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return sprintf(
                 '
                     <form id="loyaltyRegisterForm" method="post">
-                        <p>%s</p>
-                        %s
-                        %s
-                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%s" value="%s" required></p>
-                        <p><input type="submit" value="%s"></p>
+                        <p>%1$s</p>
+                        %2$s
+                        %3$s
+                        <p><input type="text" name="phone" id="phoneLoyalty" placeholder="%4$s" value="%5$s" required></p>
+                        <p><input type="submit" value="%6$s"></p>
                     </form>
                     <div class="popup-fade-loyalty">
                         <div class="popup-loyalty">
-                            <a class="popup-close-loyalty" href="#">%s</a>
+                            <a class="popup-close-loyalty" href="#">%7$s</a>
                             <br>
                             <div id="popup-loyalty-text"></div>
                         </div>		
                     </div>
                     ',
-                __('To register in the loyalty program, fill in the form:', 'retailcrm'),
+                esc_html__('To register in the loyalty program, fill in the form:', 'woo-retailcrm'),
                 $htmlLoyaltyTerms,
                 $htmlLoyaltyPersonal,
-                __('Phone', 'retailcrm'),
+                esc_html__('Phone', 'woo-retailcrm'),
                 $phone,
-                __('Send', 'retailcrm'),
-                __('Close', 'retailcrm')
+                esc_html__('Send', 'woo-retailcrm'),
+                esc_html__('Close', 'woo-retailcrm')
             );
         }
 
@@ -57,25 +57,25 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             return sprintf('
                     <form id="loyaltyActivateForm" method="post">
-                        <p><input type="checkbox" id="loyaltyActiveCheckbox" name="loyaltyCheckbox" required> %s</p>
-                        <input type="submit" value="%s">
+                        <p><input type="checkbox" id="loyaltyActiveCheckbox" name="loyaltyCheckbox" required> %1$s</p>
+                        <input type="submit" value="%2$s">
                     </form>',
-                __('Activate participation in the loyalty program', 'retailcrm'),
-                __('Send', 'retailcrm')
+                esc_html__('Activate participation in the loyalty program', 'woo-retailcrm'),
+                esc_html__('Send', 'woo-retailcrm')
             );
         }
 
         public function getInfoLoyalty(array $loyaltyAccount)
         {
             $operationTypes = [
-                    'credit_manual' => __('Сredited by manager', 'retailcrm'),
-                    'charge_manual' => __('Сharged by manager', 'retailcrm'),
-                    'credit_for_order' => __('Сredited for order ', 'retailcrm'),
-                    'burn' => __('Burn','retailcrm'),
-                    'charge_for_order' => __('Сharged for order ', 'retailcrm'),
-                    'credit_for_event' => __('Credited for event', 'retailcrm'),
-                    'cancel_of_charge' => __('Сancel of charge for order ', 'retailcrm'),
-                    'cancel_of_credit' => __('Сancel of credit for order ', 'retailcrm'),
+                    'credit_manual' => esc_html__('Сredited by manager', 'woo-retailcrm'),
+                    'charge_manual' => esc_html__('Сharged by manager', 'woo-retailcrm'),
+                    'credit_for_order' => esc_html__('Сredited for order ', 'woo-retailcrm'),
+                    'burn' => esc_html__('Burn','woo-retailcrm'),
+                    'charge_for_order' => esc_html__('Сharged for order ', 'woo-retailcrm'),
+                    'credit_for_event' => esc_html__('Credited for event', 'woo-retailcrm'),
+                    'cancel_of_charge' => esc_html__('Сancel of charge for order ', 'woo-retailcrm'),
+                    'cancel_of_credit' => esc_html__('Сancel of credit for order ', 'woo-retailcrm'),
             ];
             $currency = ' ' . $loyaltyAccount['loyalty']['currency'];
             $burnInfo = $loyaltyAccount['burnBonuses'][0] ?? [];
@@ -83,40 +83,54 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             switch ($loyaltyAccount['level']['type']) {
                 case 'bonus_converting':
-                    $ordinaryRule = sprintf('<p style="color:gray">' . __('Ordinary products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSize'], $currency);
-                    $promotionRule = sprintf('<p style="color:gray">' . __('Promotional products: accrual of 1 bonus for each %s %s', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo'], $currency);
+                    /* translators: %1$s: Amount required for bonus accrual (Ordinary products); %2$s: currency symbol. */
+                    $ordinaryRule = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: accrual of 1 bonus for each %1$s %2$s', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSize']), esc_html($currency));
+                    /* translators: %1$s: Amount required for bonus accrual (Promotional products); %2$s: currency symbol. */
+                    $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: accrual of 1 bonus for each %1$s %2$s', 'woo-retailcrm'),  esc_html($loyaltyAccount['level']['privilegeSizePromo']),  esc_html($currency));
                     break;
                 case 'bonus_percent':
-                    $ordinaryRule  = sprintf('<p style="color:gray">' . __('Ordinary products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
-                    $promotionRule = sprintf('<p style="color:gray">' . __('Promotional products: bonus accrual in the amount of %s%% of the purchase amount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
+                    /* translators: %s: Percentage of bonuses accrued from the purchase amount (Ordinary products) */
+                    $ordinaryRule  = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: bonus accrual in the amount of %s%% of the purchase amount', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSize']));
+                    /* translators: %s: Percentage of bonuses accrued from the purchase amount (Promotional products) */
+                    $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: bonus accrual in the amount of %s%% of the purchase amount', 'woo-retailcrm'), esc_html($loyaltyAccount['level']['privilegeSizePromo']));
                     break;
                 case 'discount':
-                    $ordinaryRule  = sprintf('<p style="color:gray">' . __('Ordinary products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSize']);
-                    $promotionRule = sprintf('<p style="color:gray">' . __('Promotional products: %s%% discount', 'retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
+                    /* translators: %s: Percentage of the purchase amount (Ordinary products) */
+                    $ordinaryRule  = sprintf('<p style="color:gray">' . esc_html__('Ordinary products: %s%% discount', 'woo-retailcrm'), $loyaltyAccount['level']['privilegeSize']);
+                    /* translators: %s: Percentage of the purchase amount (Promotional products) */
+                    $promotionRule = sprintf('<p style="color:gray">' . esc_html__('Promotional products: %s%% discount', 'woo-retailcrm'), $loyaltyAccount['level']['privilegeSizePromo']);
                     break;
             }
 
             
             $data = [
-                    '<b style="font-size: 150%">' . __('Bonuses and discount', 'retailcrm') . '</b>',
-                    $loyaltyAccount['level']['type'] !== 'discount' ? '<b>' . sprintf(__('You have %s bonuses', 'retailcrm'), $loyaltyAccount['amount']) . '</b>' : '',
-                    $burnInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount' ? sprintf('<p style="color:gray">' . __('%s bonuses will expire %s', 'retailcrm'), $burnInfo['amount'], $burnInfo['date']) . '</b>' : '',
-                    $activationInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount' ? sprintf('<p style="color:gray">' . __('%s bonuses will active %s', 'retailcrm'), $activationInfo['amount'], $activationInfo['date']) : '',
+                    '<b style="font-size: 150%">' . esc_html__('Bonuses and discount', 'woo-retailcrm') . '</b>',
+                    $loyaltyAccount['level']['type'] !== 'discount' ? '<b>'
+                        /* translators: %s: Number of bonuses in the account */
+                        . sprintf(esc_html__('You have %s bonuses', 'woo-retailcrm'), esc_html($loyaltyAccount['amount'])) . '</b>' : '',
+                    $burnInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount'
+                        /* translators: %1$s: Bonuses to be deducted; %2$s: Date of deduction */
+                        ? sprintf('<p style="color:gray">' . esc_html__('%1$s bonuses will expire %2$s', 'woo-retailcrm'), esc_html($burnInfo['amount']), esc_html($burnInfo['date'])) . '</b>'
+                        : '',
+                    $activationInfo !== [] && $loyaltyAccount['level']['type'] !== 'discount'
+                        /* translators: %1$s: Number of bonuses to be credited; %2$s: Date of crediting */
+                        ? sprintf('<p style="color:gray">' . esc_html__('%1$s bonuses will active %2$s', 'woo-retailcrm'), esc_html($activationInfo['amount']), esc_html($activationInfo['date']))
+                        : '',
                     '<b>' . $loyaltyAccount['level']['name'] . '</b>',
                     $ordinaryRule,
                     $promotionRule,
-                    '<b>' . __('Total order summ ', 'retailcrm') . $loyaltyAccount['ordersSum'] . $currency . '</b>',
+                    '<b>' . esc_html__('Total order summ ', 'woo-retailcrm') . esc_html($loyaltyAccount['ordersSum'] . $currency). '</b>',
             ];
 
             if ($loyaltyAccount['nextLevelSum']) {
-                $data[] = '<p style="color:gray">' . __('Total summ for next level: ', 'retailcrm') . ($loyaltyAccount['nextLevelSum'] - $loyaltyAccount['ordersSum']) . $currency;
+                $data[] = '<p style="color:gray">' . esc_html__('Total summ for next level: ', 'woo-retailcrm') . esc_html(($loyaltyAccount['nextLevelSum'] - $loyaltyAccount['ordersSum']) . $currency);
             }
             
 
-            $data[] = '<b style="font-size: 100%">' . __('History', 'retailcrm') . '</b>';
+            $data[] = '<b style="font-size: 100%">' . esc_html__('History', 'woo-retailcrm') . '</b>';
 
             $htmlTable = '
-                <table style="width: 75%; border: none;>
+                <table style="width: 75%; border: none;">
                 <tbody>';
 
             foreach ($loyaltyAccount['history'] as $operation) {

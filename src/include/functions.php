@@ -133,7 +133,7 @@ function is_wplogin()
         (in_array($ABSPATH_MY . 'wp-login.php', get_included_files())
         || in_array($ABSPATH_MY . 'wp-register.php', get_included_files()))
         || (isset($_GLOBALS['pagenow']) && $GLOBALS['pagenow'] === 'wp-login.php')
-        || $_SERVER['PHP_SELF'] == '/wp-login.php'
+        || (isset( $_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF'] === '/wp-login.php')
     );
 }
 

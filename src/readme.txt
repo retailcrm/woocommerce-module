@@ -4,9 +4,9 @@ Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.8
-Stable tag: 4.8.35
-License: GPLv1 or later
-License URI: http://www.gnu.org/licenses/gpl-1.0.html
+Stable tag: 5.0.0
+License: MIT
+License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
 
 Simla.com integration plugin will help you manage your orders, catalogs and stock more easily by generating a catalog compatible with Simla.com system
 
@@ -83,6 +83,10 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 5.0.0 =
+* Plugin update for WordPress compliance
+* Starting with this version, changes have been made to the customization mechanism and core functions that are not compatible with earlier versions. Before updating, review the module structure and function names to make the necessary adjustments to custom files.
+
 = 4.8.35 =
 * Module name change
 

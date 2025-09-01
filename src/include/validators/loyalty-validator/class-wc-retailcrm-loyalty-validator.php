@@ -38,7 +38,14 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
 
                 return true;
             } catch (ValidatorException $exception) {
-                WC_Admin_Settings::add_error((esc_html__($exception->getMessage(), 'retailcrm')) . "userId: $userId");
+                $error_text = sprintf(
+                    /* translators: %1$s: exception message, %2$s: user ID */
+                    esc_html__('Error while processing validation: %1$s. userId: %2$s', 'woo-retailcrm'),
+                    esc_html($exception->getMessage()),
+                    $userId
+                );
+
+                WC_Admin_Settings::add_error($error_text);
             } catch (Throwable $exception) {
                 WC_Admin_Settings::add_error($exception->getMessage());
             }
@@ -54,13 +61,13 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
             $responseUser = $this->apiClient->customersGet($userId);
 
             if (!isset($responseUser['customer']['id'])) {
-                throw new ValidatorException($this->notFoundCrmUser, 400);
+                throw new ValidatorException(esc_attr($this->notFoundCrmUser), 400);
             }
 
             $customer = new WC_Customer($userId);
 
             if ($this->isActiveCorp && !empty($customer->get_billing_company())) {
-                throw new ValidatorException($this->isCorporateUser, 400);
+                throw new ValidatorException(esc_attr($this->isCorporateUser), 400);
             }
 
             $this->customer = $responseUser['customer'];
@@ -75,7 +82,7 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
             $responseLoyalty = $this->apiClient->getLoyaltyAccountList($filter);
 
             if (!$responseLoyalty->isSuccessful() || !$responseLoyalty->offsetExists('loyaltyAccounts')) {
-                throw new ValidatorException($this->errorFoundLoyalty, 400);
+                throw new ValidatorException(esc_attr($this->errorFoundLoyalty), 400);
             }
 
             $actualAccount = null;
@@ -87,11 +94,11 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
             }
 
             if (!isset($actualAccount)) {
-                throw new ValidatorException($this->notFoundActiveParticipation, 400);
+                throw new ValidatorException(esc_attr($this->notFoundActiveParticipation), 400);
             }
 
             if ($actualAccount['amount'] === 0 && $actualAccount['level']['type'] !== 'discount') {
-               throw new ValidatorException($this->notExistBonuses, 400);
+               throw new ValidatorException(esc_attr($this->notExistBonuses), 400);
             }
 
             $this->loyaltyAccount = $actualAccount;
@@ -105,15 +112,15 @@ if (!class_exists('WC_Retailcrm_Loyalty_Validator')) :
             $responseLoyalty = $this->apiClient->getLoyalty($idLoyalty);
 
             if (!$responseLoyalty->isSuccessful() || !$responseLoyalty->offsetExists('loyalty')) {
-                throw new ValidatorException($this->notFoundLoyalty, 400);
+                throw new ValidatorException(esc_attr($this->notFoundLoyalty), 400);
             }
 
             if ($responseLoyalty['loyalty']['active'] !== true) {
-                throw new ValidatorException($this->loyaltyInactive, 400);
+                throw new ValidatorException(esc_attr($this->loyaltyInactive), 400);
             }
 
             if ($responseLoyalty['loyalty']['blocked'] === true) {
-                throw new ValidatorException($this->loyaltyBlocked, 400);
+                throw new ValidatorException(esc_attr($this->loyaltyBlocked), 400);
             }
         }
     }

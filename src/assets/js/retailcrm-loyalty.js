@@ -12,13 +12,19 @@ jQuery(function() {
     function checkActiveCoupon()
     {
         jQuery.ajax({
-            url: AdminUrl.url + '/admin-ajax.php?action=get_status_coupon',
+            url: RetailcrmAdmin.url + '/admin-ajax.php?action=retailcrm_get_status_coupon',
             method: 'POST',
             timeout: 0,
-            data: {ajax: 1},
+            data: {ajax: 1, _ajax_nonce: RetailcrmAdmin.nonce},
             dataType: 'json'
         })
             .done(function (response) {
+                if (response.error) {
+                    alert(response.error);
+
+                    return false;
+                }
+
                 if (response.coupon_status !== 'yes') {
                     var checkElement = jQuery('#woocommerce_integration-retailcrm_loyalty');
                     checkElement.parent().css('color', 'red');

@@ -65,7 +65,7 @@ class WC_Retailcrm_Order extends WC_Retailcrm_Abstracts_Data
 
         $data = [
             'externalId' => $order->get_id(),
-            'createdAt' => !empty($dateCreate) ? $dateCreate->date('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
+            'createdAt' => !empty($dateCreate) ? $dateCreate->date('Y-m-d H:i:s') : gmdate('Y-m-d H:i:s'),
             'firstName' => $firstName,
             'lastName' => $lastName,
             'email' => strtolower($order->get_billing_email()),

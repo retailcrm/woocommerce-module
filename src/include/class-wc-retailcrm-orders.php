@@ -228,7 +228,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
             WC_Retailcrm_Logger::info(
                 __METHOD__,
                 sprintf(
-                    'Fill order data: WC_Customer ID: %s email: %s WC_Order ID: %s',
+                    'Fill order data: WC_Customer ID: %1$s email: %2$s WC_Order ID: %3$s',
                     $wcCustomerId,
                     $wcCustomerEmail,
                     $wcOrder->get_id()
@@ -626,7 +626,7 @@ if (!class_exists('WC_Retailcrm_Orders')) :
                     $ordersForUpload[] = $this->order;
                 } catch (Throwable $exception) {
                     $errorOrders[$orderId] = sprintf(
-                        'Exception for Order [%s]: %s. Trace: %s',
+                        'Exception for Order [%1$s]: %2$s. Trace: %3$s',
                         $orderId, $exception->getMessage(), $exception->getTraceAsString()
                     );
                 }

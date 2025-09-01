@@ -56,7 +56,7 @@ class WC_Retailcrm_Order_Item extends WC_Retailcrm_Abstracts_Data
 
         $data['productName'] = $item['name'];
         $data['initialPrice'] = $price;
-        $data['quantity'] = (double)$item['qty'];
+        $data['quantity'] = (float) $item['qty'];
 
         $itemId = ($item['variation_id'] > 0) ? $item['variation_id'] : $item['product_id'];
         $data['externalIds'] = [

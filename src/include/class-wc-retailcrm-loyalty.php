@@ -280,7 +280,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $coupon->set_usage_limit(0);
             $coupon->set_amount($lpDiscountSum);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
-            $coupon->set_code('loyalty' . mt_rand());
+            $coupon->set_code('loyalty' . wp_rand());
             $coupon->update_meta_data('chargeRate', $lpChargeRate);
             $coupon->save();
 
@@ -297,8 +297,8 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $resultString;
             }
 
-            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . __('It is possible to write off', 'retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . __('bonuses', 'retailcrm') . '</b></div>';
-            return $resultString. '<div style="text-align: left;"><b>' . __('Use coupon:', 'retailcrm') . ' <u><i style="cursor: grab" id="input_loyalty_code" onclick="inputLoyaltyCode()">' . $coupon->get_code() . '</i></u></i></b></div>';
+            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
+            return $resultString. '<div style="text-align: left;"><b>' . esc_html__('Use coupon:', 'woo-retailcrm') . ' <u><i style="cursor: grab" id="input_loyalty_code" onclick="inputLoyaltyCode()">' . $coupon->get_code() . '</i></u></i></b></div>';
         }
 
         public function clearLoyaltyCoupon()
@@ -338,13 +338,19 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         {
             global $wpdb;
 
+            $loyalty_like = $wpdb->esc_like('loyalty') . '%';
+            $email_like   = '%' . $wpdb->esc_like($email) . '%';
+
+            //The coupon is constantly being updated, which may cause errors when caching.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             return $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT posts.post_name code FROM {$wpdb->prefix}posts AS posts
                             LEFT JOIN {$wpdb->prefix}postmeta AS postmeta ON posts.ID = postmeta.post_id
-                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE 'loyalty%'
+                            WHERE posts.post_type = 'shop_coupon' AND posts.post_name LIKE %s
                             AND postmeta.meta_key = 'customer_email' AND postmeta.meta_value LIKE %s",
-                    '%' . $email . '%'
+                    $loyalty_like,
+                    $email_like
                 ), ARRAY_A
             );
         }
@@ -600,7 +606,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         private function getHtmlCreditBonuses($creditBonuses)
         {
-            return '<b style="font-size: large">' . __("Points will be awarded upon completion of the order:", 'retailcrm') . ' <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
+            return '<b style="font-size: large">' . esc_html__("Points will be awarded upon completion of the order:", 'woo-retailcrm') . ' <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
         }
 
         public function getLoyaltyHistory(int $loyaltyId)

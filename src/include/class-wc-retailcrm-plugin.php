@@ -18,7 +18,9 @@ class WC_Retailcrm_Plugin
     public static $history_run = false;
     private static $instance = null;
 
-    const MARKETPLACE_LOGO = 'https://s3.eu-central-1.amazonaws.com/retailcrm-billing/images/5b69ce4bda663-woocommercesvg2.svg';
+    /* Note: This parameter is used solely for identifying the module’s connection to WordPress and WooCommerce
+        (establishing the link between the plugin and the integration).
+    */
     const INTEGRATION_CODE = 'woocommerce';
 
     public static function getInstance($file)
@@ -49,19 +51,19 @@ class WC_Retailcrm_Plugin
             [
                 'five_minutes' => [
                     'interval' => 300, // seconds
-                    'display'  => __('Every 5 minutes')
+                    'display'  => esc_html__('Every 5 minutes', 'woo-retailcrm')
                 ],
                 'three_hours' => [
                     'interval' => 10800, // seconds
-                    'display'  => __('Every 3 hours')
+                    'display'  => esc_html__('Every 3 hours', 'woo-retailcrm')
                 ],
                 'fiveteen_minutes' => [
                     'interval' => 900, // seconds
-                    'display'  => __('Every 15 minutes')
+                    'display'  => esc_html__('Every 15 minutes', 'woo-retailcrm')
                 ],
                 'four_hours' => [
                     'interval' => 14400, //seconds
-                    'display' => __('Every 4 hours')
+                    'display' => esc_html__('Every 4 hours', 'woo-retailcrm')
                 ]
             ],
             apply_filters('retailcrm_add_cron_interval', $schedules)
@@ -145,9 +147,11 @@ class WC_Retailcrm_Plugin
             return false;
         }
 
+        /* Note: Parameter "name" is used solely for identifying the module’s connection to WordPress and WooCommerce
+        (establishing the link between the plugin and the integration).
+        */
         $configuration = array(
             'name' => 'WooCommerce',
-            'logo' => self::MARKETPLACE_LOGO,
             'code' => self::INTEGRATION_CODE . '-' . $client_id,
             'active' => $active,
         );
