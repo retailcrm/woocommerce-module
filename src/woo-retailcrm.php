@@ -13,6 +13,7 @@
  * WC requires at least: 5.4
  * WC tested up to: 10.0
  * Text Domain: woo-retailcrm
+ * Domain Path: /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
