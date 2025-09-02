@@ -1,3 +1,6 @@
+## 2025-09-02 5.0.1
+* Implemented chat binding to customers in the CRM via the _rcco object of the online consultant
+
 ## 2025-09-01 5.0.0
 * Plugin update for WordPress compliance
 * Starting with this version, changes have been made to the customization mechanism and core functions that are not compatible with earlier versions. Before updating, review the module structure and function names to make the necessary adjustments to custom files.
