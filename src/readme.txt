@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 5.0.2 =
+* Fix ICML-file's directory for WP hosting
+
 = 5.0.1 =
 * Implemented chat binding to customers in the CRM via the _rcco object of the online consultant
 

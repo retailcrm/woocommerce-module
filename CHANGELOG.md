@@ -1,3 +1,6 @@
+## 2025-10-13 5.0.2
+* Fix ICML-file's directory for WP hosting
+
 ## 2025-09-02 5.0.1
 * Implemented chat binding to customers in the CRM via the _rcco object of the online consultant
 
