@@ -46,8 +46,14 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          */
         public function __construct()
         {
+            if (is_writable(ABSPATH)) {
+                $this->file = ABSPATH . 'simla.xml';
+            } else {
+                $upload = wp_upload_dir();
+                $this->file = $upload['basedir'] . '/simla.xml';
+            }
+
             $this->shop       = get_bloginfo('name');
-            $this->file       = ABSPATH . 'simla.xml';
             $this->tmpFile    = sprintf('%s.tmp', $this->file);
             $this->settings   = get_option(WC_Retailcrm_Base::$option_key);
             $this->icmlWriter = new WC_Retailcrm_Icml_Writer($this->tmpFile);

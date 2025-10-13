@@ -4,7 +4,7 @@ Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.8
-Stable tag: 5.0.1
+Stable tag: 5.0.2
 License: MIT
 License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
 
@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 5.0.2 =
+* Fix ICML-file's directory for WP hosting
+
 = 5.0.1 =
 * Implemented chat binding to customers in the CRM via the _rcco object of the online consultant
 
