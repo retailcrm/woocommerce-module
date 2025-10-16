@@ -40,6 +40,8 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
         protected $activeLoyalty = false;
 
+        protected $purchasePriceUpload  = false;
+
         /**
          * WC_Retailcrm_Icml constructor.
          *
@@ -61,6 +63,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 isset($this->settings['icml_unload_services'])
                 && $this->settings['icml_unload_services'] === WC_Retailcrm_Base::YES
             );
+
+            if (isset($this->settings['purchase_price']) && $this->settings['purchase_price'] === WC_Retailcrm_Base::YES) {
+                $this->purchasePriceUpload = true;
+            }
 
             if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === WC_Retailcrm_Base::YES) {
                 $this->activeLoyalty = true;
@@ -287,6 +293,7 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'weight' => $weight,
                 'tax' => isset($tax['rate']) && $tax['rate'] !== 0 ? $tax['rate'] : 'none',
                 'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product',
+                'purchasePrice' => $this->purchasePriceUpload && $product->get_cogs_value() !== null ? $product->get_cogs_value() : null
             ];
 
             if ($product->get_sku() !== '') {

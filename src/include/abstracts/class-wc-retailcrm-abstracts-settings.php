@@ -718,6 +718,16 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                     'type'        => 'checkbox'
                 ];
 
+                if (defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '9.9.0', '>=' )) {
+                    $this->form_fields['purchase_price'] = [
+                        'label'       => esc_html__('Activate purchase price upload', 'woo-retailcrm'),
+                        'title'       => esc_html__('Purchase price', 'woo-retailcrm'),
+                        'class'       => 'checkbox',
+                        'type'        => 'checkbox',
+                        'description' => esc_html__('Activate purchase price upload in ICML. The Cost of Goods Sold option must be active in woocommerce', 'woo-retailcrm')
+                    ];
+                }
+
                 $this->form_fields['corporate_enabled'] = [
                     'title'       => esc_html__('Corporate customers support', 'woo-retailcrm'),
                     'label'       => esc_html__('Enabled', 'woo-retailcrm'),

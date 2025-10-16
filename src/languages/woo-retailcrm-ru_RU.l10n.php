@@ -282,7 +282,10 @@ return [
         'in order to enable RetailCRM integration!' => 'чтобы включить интеграцию с RetailCRM!',
         'Token is not valid' => 'Токен недействителен',
         'Access denied' => 'Доступ запрещен',
-        'Error while processing validation: %1$s. userId: %2$s' => 'Ошибка при валидации: %1$s. userId: %2$s'
+        'Error while processing validation: %1$s. userId: %2$s' => 'Ошибка при валидации: %1$s. userId: %2$s',
+        'Activate purchase price upload in ICML. The Cost of Goods Sold option must be active in woocommerce' => 'Активировать передачу закупочной стоимости в ICML-каталоге. Опция "Себестоимость реализованных товаров" должна быть активирована в Woocommerce',
+        'Purchase price' => 'Закупочная стоимость',
+        'Activate purchase price upload' => 'Активировать передачу закупочной стоимости'
     ],
     'language' => 'ru',
     'x-generator' => 'GlotPress/2.4.0-alpha',
