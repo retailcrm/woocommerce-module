@@ -48,7 +48,15 @@ if (!class_exists('WC_Retailcrm_Icml')) :
          */
         public function __construct()
         {
-            if (is_writable(ABSPATH)) {
+            global $wp_filesystem;
+
+            if (!function_exists('WP_Filesystem')) {
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+            }
+
+            WP_Filesystem();
+
+            if ($wp_filesystem->is_writable(ABSPATH)) {
                 $this->file = ABSPATH . 'simla.xml';
             } else {
                 $upload = wp_upload_dir();
