@@ -282,7 +282,10 @@ return [
         'in order to enable RetailCRM integration!' => '¡para habilitar la integración con Simla!',
         'Token is not valid' => 'El token no es válido',
         'Access denied' => 'Acceso denegado',
-        'Error while processing validation: %1$s. userId: %2$s' => 'Error al procesar la validación: %1$s. userId: %2$s'
+        'Error while processing validation: %1$s. userId: %2$s' => 'Error al procesar la validación: %1$s. userId: %2$s',
+        'Activate purchase price upload in ICML. The Cost of Goods Sold option must be active in woocommerce' => 'Active primero los dispositivos descargados en el catálogo ICML. La opción "Cost of Goods Sold" para activar la activación en WooCommerce',
+        'Purchase price' => 'Precio de compra',
+        'Activate purchase price upload' => 'Activar transferencia de precio de compra'
     ],
     'language' => 'es',
     'x-generator' => 'GlotPress/2.4.0-alpha',

@@ -40,13 +40,23 @@ if (!class_exists('WC_Retailcrm_Icml')) :
 
         protected $activeLoyalty = false;
 
+        protected $purchasePriceUpload  = false;
+
         /**
          * WC_Retailcrm_Icml constructor.
          *
          */
         public function __construct()
         {
-            if (is_writable(ABSPATH)) {
+            global $wp_filesystem;
+
+            if (!function_exists('WP_Filesystem')) {
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+            }
+
+            WP_Filesystem();
+
+            if ($wp_filesystem->is_writable(ABSPATH)) {
                 $this->file = ABSPATH . 'simla.xml';
             } else {
                 $upload = wp_upload_dir();
@@ -61,6 +71,10 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 isset($this->settings['icml_unload_services'])
                 && $this->settings['icml_unload_services'] === WC_Retailcrm_Base::YES
             );
+
+            if (isset($this->settings['purchase_price']) && $this->settings['purchase_price'] === WC_Retailcrm_Base::YES) {
+                $this->purchasePriceUpload = true;
+            }
 
             if (isset($this->settings['loyalty']) && $this->settings['loyalty'] === WC_Retailcrm_Base::YES) {
                 $this->activeLoyalty = true;
@@ -286,8 +300,12 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'dimensions' => $dimensions,
                 'weight' => $weight,
                 'tax' => isset($tax['rate']) && $tax['rate'] !== 0 ? $tax['rate'] : 'none',
-                'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product',
+                'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product'
             ];
+
+            if ($this->purchasePriceUpload && $product->get_cogs_value() !== null) {
+                $productData['purchasePrice'] = $product->get_cogs_value();
+            }
 
             if ($product->get_sku() !== '') {
                 $params[] = ['code' => 'article', 'name' => 'Article', 'value' => $product->get_sku()];

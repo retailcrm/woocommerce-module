@@ -1,3 +1,6 @@
+## 2025-10-16 5.0.3
+* Add upload purchase price in ICML
+
 ## 2025-10-13 5.0.2
 * Fix ICML-file's directory for WP hosting
 
