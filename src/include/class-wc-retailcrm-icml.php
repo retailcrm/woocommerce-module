@@ -292,9 +292,12 @@ if (!class_exists('WC_Retailcrm_Icml')) :
                 'dimensions' => $dimensions,
                 'weight' => $weight,
                 'tax' => isset($tax['rate']) && $tax['rate'] !== 0 ? $tax['rate'] : 'none',
-                'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product',
-                'purchasePrice' => $this->purchasePriceUpload && $product->get_cogs_value() !== null ? $product->get_cogs_value() : null
+                'type' => ($this->unloadServices && $product->is_virtual()) ? 'service' : 'product'
             ];
+
+            if ($this->purchasePriceUpload && $product->get_cogs_value() !== null) {
+                $productData['purchasePrice'] = $product->get_cogs_value();
+            }
 
             if ($product->get_sku() !== '') {
                 $params[] = ['code' => 'article', 'name' => 'Article', 'value' => $product->get_sku()];
