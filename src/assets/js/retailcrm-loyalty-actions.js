@@ -32,7 +32,7 @@ jQuery(function() {
         }
 
         jQuery.ajax({
-            url: retailcrmLoyaltyUrl.url + '/admin-ajax.php?action=retailcrm_register_customer_loyalty',
+            url: retailcrmLoyaltyUrl.url + 'admin-ajax.php?action=retailcrm_register_customer_loyalty',
             method: 'POST',
             timeout: 0,
             data: {ajax: 1, phone: phone.val(), userId: retailcrmCustomerId, _ajax_nonce: retailcrmNonce},
@@ -63,7 +63,7 @@ jQuery(function() {
         }
 
         jQuery.ajax({
-            url: retailcrmLoyaltyUrl.url + '/admin-ajax.php?action=retailcrm_activate_customer_loyalty',
+            url: retailcrmLoyaltyUrl.url + 'admin-ajax.php?action=retailcrm_activate_customer_loyalty',
             method: 'POST',
             timeout: 0,
             data: {ajax: 1, loyaltyId: retailcrmLoyaltyId, _ajax_nonce: retailcrmNonce},
