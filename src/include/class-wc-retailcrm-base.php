@@ -115,6 +115,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('shutdown', [$this, 'create_order'], -2);
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
             add_action('wp_footer', [$this, 'add_retailcrm_tracking_script'], 102);
+            add_action('wp_footer', [$this, 'bonus_charge'], 103);
 
             //Tracker
             add_action('wp_ajax_retailcrm_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
@@ -1677,6 +1678,31 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     <?php
                 }
             }
+        }
+
+        public function bonus_charge()
+        {
+            ?>
+                <script>
+                    jQuery(document).ready(function($) {
+                        $('.charge-button').on('click', function(e) {
+                            let bonusCount = document.getElementById('chargeBonus').value;
+                            let max = document.getElementById('hidden-count').textContent;
+
+                            if (bonusCount > max) {
+                                let error = document.getElementById('error');
+                                error.innerText = "Больше допустимого";
+                                error.hidden = false;
+                                error.style.color = 'red';
+
+                                return;
+                            }
+
+                            error.hidden = true;
+                        });
+                    });
+                </script>
+            <?php
         }
 
         private function accessLog($prefixNonce = ''): void

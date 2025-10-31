@@ -299,16 +299,18 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
             $html = sprintf(
                 '<div style="margin-bottom:15px padding-top:15px">
+                            <div id="hidden-count" hidden>%d</div>
                             <input type="number" id="chargeBonus" name="charge" value="0"/>
-                            <label style="%s" for="chargeBonus">%s</label>
-                            <button>Списать бонусы</button>
+                            <label for="chargeBonus">%s</label>
+                            <button type="button" class="charge-button">Списать бонусы</button>
+                            <div id="error" hidden></div>
                         </div>',
-                "",
+                        $lpDiscountSum / $lpChargeRate,
                 esc_html__('Введите кол-во бонусов для списания', 'woo-retailcrm')
             );
 
             $allowed_tags = [
-                'div' => ['style' => []],
+                'div' => ['style' => [], 'hidden' => [], 'id' => []],
                 'input' => [
                     'type'  => [],
                     'id'    => [],
@@ -316,7 +318,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     'value' => [],
                 ],
                 'label' => ['for' => [], 'style' => []],
-                'button' => ['style' => []],
+                'button' => ['style' => [], 'type' => [], 'class' => []],
             ];
 
             echo wp_kses($html, $allowed_tags);
