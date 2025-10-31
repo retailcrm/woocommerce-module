@@ -297,8 +297,33 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 return $resultString;
             }
 
-            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
-            return $resultString. '<div style="text-align: left;"><b>' . esc_html__('Use coupon:', 'woo-retailcrm') . ' <u><i style="cursor: grab" id="input_loyalty_code" onclick="inputLoyaltyCode()">' . $coupon->get_code() . '</i></u></i></b></div>';
+            $html = sprintf(
+                '<div style="margin-bottom:15px padding-top:15px">
+                            <input type="number" id="chargeBonus" name="charge" value="0"/>
+                            <label style="%s" for="chargeBonus">%s</label>
+                            <button>Списать бонусы</button>
+                        </div>',
+                "",
+                esc_html__('Введите кол-во бонусов для списания', 'woo-retailcrm')
+            );
+
+            $allowed_tags = [
+                'div' => ['style' => []],
+                'input' => [
+                    'type'  => [],
+                    'id'    => [],
+                    'name'  => [],
+                    'value' => [],
+                ],
+                'label' => ['for' => [], 'style' => []],
+                'button' => ['style' => []],
+            ];
+
+            echo wp_kses($html, $allowed_tags);
+
+            $resultString .= ' <div style="text-align: right; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
+
+            return $resultString;
         }
 
         public function clearLoyaltyCoupon()
