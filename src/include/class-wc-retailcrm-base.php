@@ -114,8 +114,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
-            add_action('wp_footer', [$this, 'add_retailcrm_tracking_script'], 102);
-            add_action('wp_footer', [$this, 'bonus_charge'], 103);
+            add_action('wp_print_footer_script', [$this, 'add_retailcrm_tracking_script'], 102);
 
             //Tracker
             add_action('wp_ajax_retailcrm_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
@@ -138,6 +137,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
                 add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
                 add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+                add_action('wp_footer', [$this, 'bonus_charge'], 105);
+                add_action('wp_ajax_create_loyalty_coupon', [$this, 'create_loyalty_coupon'], 104);
+                add_action('wp_ajax_apply_coupon_to_cart', [$this, 'apply_coupon_to_cart'], 105);
 
                 // Add coupon hooks for loyalty program
                 add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
@@ -1685,9 +1687,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
             ?>
                 <script>
                     jQuery(document).ready(function($) {
-                        $('.charge-button').on('click', function(e) {
-                            let bonusCount = document.getElementById('chargeBonus').value;
-                            let max = document.getElementById('hidden-count').textContent;
+                        $(document).on('click', '.charge-button', function(e) {
+                            let bonusCount = parseInt(document.getElementById('chargeBonus').value);
+                            let max = parseInt(document.getElementById('hidden-count').textContent);
 
                             if (bonusCount > max) {
                                 let error = document.getElementById('error');
@@ -1699,10 +1701,83 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             }
 
                             error.hidden = true;
+
+                            $.ajax({
+                                url: '/wp-admin/admin-ajax.php',
+                                type: 'POST',
+                                data: {
+                                    action: 'create_loyalty_coupon',
+                                    count: bonusCount,
+                                    nonce: '<?php echo esc_js(wp_create_nonce("loyalty_coupon_nonce")); ?>'
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        applyCouponToCart(response.data.coupon_code);
+                                    } else {
+                                        alert('Ошибка: ' + response.data);
+                                        $('.charge-button').prop('disabled', false).text('Ошибка');
+                                    }
+                                },
+                                error: function() {
+                                    alert('Ошибка соединения');
+                                    $('.charge-button').prop('disabled', false).text('Ошибка применения бонусов');
+                                }
+                            });
+
+                            function applyCouponToCart(couponCode) {
+                                $.ajax({
+                                url: '/wp-admin/admin-ajax.php',
+                                type: 'POST',
+                                data: {
+                                    action: 'apply_coupon_to_cart',
+                                    coupon_code: couponCode,
+                                    nonce: '<?php echo esc_js(wp_create_nonce("apply_coupon_nonce")); ?>'
+                                    },
+                                    success: function(response) {
+                                        if (response.success) {
+                                            setTimeout(function() {
+                                                location.reload(true);
+                                            }, 1000);
+                                        } else {
+                                            alert('Ошибка применения купона: ' + response.data);
+                                            $('.charge-button').prop('disabled', false).text('Ошибка');
+                                        }
+                                    },
+                                    error: function() {
+                                        alert('Ошибка применения купона');
+                                        $('.charge-button').prop('disabled', false).text('Ошибка');
+                                    }
+                                });
+                            }
                         });
                     });
                 </script>
             <?php
+        }
+
+        public function create_loyalty_coupon()
+        {
+            global $woocommerce;
+
+            $coupon = new WC_Coupon();
+
+            $coupon->set_usage_limit(1);
+            $coupon->set_amount(intval($_POST['count']));
+            $coupon->set_email_restrictions($woocommerce->customer->get_email());
+            $coupon->set_code('loyalty' . wp_rand());
+            $coupon->save();
+
+            wp_send_json_success(['coupon_code' => $coupon->get_code()]);
+        }
+
+        public function apply_coupon_to_cart() {
+            $coupon_code = wp_unslash($_POST['coupon_code']);
+        
+            if (WC()->cart->apply_coupon($coupon_code)) {
+                wp_send_json_success('Coupon applied successfully');
+            } else {
+                wp_send_json_error('Failed to apply coupon');
+            }
         }
 
         private function accessLog($prefixNonce = ''): void

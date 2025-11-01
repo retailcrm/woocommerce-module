@@ -274,29 +274,6 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $coupon->delete(true);
             }
 
-            // Generate new coupon
-            $coupon = new WC_Coupon();
-
-            $coupon->set_usage_limit(0);
-            $coupon->set_amount($lpDiscountSum);
-            $coupon->set_email_restrictions($woocommerce->customer->get_email());
-            $coupon->set_code('loyalty' . wp_rand());
-            $coupon->update_meta_data('chargeRate', $lpChargeRate);
-            $coupon->save();
-
-            if ($refreshCoupon) {
-                $woocommerce->cart->apply_coupon($coupon->get_code());
-
-                return $resultString;
-            }
-
-            //If a percentage discount, automatically apply a loyalty coupon
-            if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
-                $woocommerce->cart->apply_coupon($coupon->get_code());
-
-                return $resultString;
-            }
-
             $html = sprintf(
                 '<div style="margin-bottom:15px padding-top:15px">
                             <div id="hidden-count" hidden>%d</div>
