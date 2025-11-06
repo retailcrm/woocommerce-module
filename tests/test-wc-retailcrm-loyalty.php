@@ -386,4 +386,41 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
             ],
         ];
     }
+
+    public function testСreateLoyaltyForm()
+{
+    global $woocommerce;
+
+    $cart = $this->createMock(\WC_Cart::class);
+    $cart->method('get_cart')->willReturn(['item1' => ['data' => 'product']]);
+    $cart->method('get_coupons')->willReturn([]);
+
+    $customer = $this->createMock(\WC_Customer::class);
+    $customer->method('get_id')->willReturn(10);
+    $customer->method('get_email')->willReturn('test@example.com');
+
+    $woocommerce = (object)[
+        'cart' => $cart,
+        'customer' => $customer,
+    ];
+
+    $mock = $this->getMockBuilder(\WC_Retailcrm_Loyalty::class)
+        ->setConstructorArgs([$this->apiMock, []])
+        ->onlyMethods(['getDiscountLoyalty', 'getCouponLoyalty', 'isLoyaltyCoupon', 'checkAccount'])
+        ->getMock();
+
+    $mock->method('getDiscountLoyalty')->willReturn([100, 10]);
+    $mock->method('getCouponLoyalty')->willReturn([]);
+    $mock->method('isLoyaltyCoupon')->willReturn(false);
+    $mock->method('checkAccount')->willReturn(true);
+
+    ob_start();
+    $result = $mock->createLoyaltyCoupon();
+    $html = ob_get_clean();
+
+    $this->assertStringContainsString('id="chargeBonus"', $html);
+    $this->assertStringContainsString('class="charge-button"', $html);
+    $this->assertStringContainsString('<div id="hidden-count" hidden>10</div>', $html);
+    $this->assertStringContainsString('It is possible to write off', $result);
+}
 }
