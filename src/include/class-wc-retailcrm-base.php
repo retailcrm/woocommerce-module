@@ -1693,7 +1693,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                             if (bonusCount > max) {
                                 let error = document.getElementById('error');
-                                error.innerText = "Больше допустимого";
+                                error.innerText = '<?php echo esc_html__("Incorrect count of bonuses", "woo-retailcrm"); ?>'
                                 error.hidden = false;
                                 error.style.color = 'red';
 
@@ -1712,15 +1712,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
                                 },
                                 success: function(response) {
                                     if (response.success) {
+                                        $('.charge-button').prop('disabled', false).text('<?php echo esc_html__("Using bonuses...", "woo-retailcrm"); ?>');
                                         applyCouponToCart(response.data.coupon_code);
                                     } else {
-                                        alert('Ошибка: ' + response.data);
-                                        $('.charge-button').prop('disabled', false).text('Ошибка');
+                                        $('.charge-button').prop('disabled', false).text('<?php echo esc_html__("Error accured", "woo-retailcrm"); ?>');
                                     }
                                 },
                                 error: function() {
-                                    alert('Ошибка соединения');
-                                    $('.charge-button').prop('disabled', false).text('Ошибка применения бонусов');
+                                    $('.charge-button').prop('disabled', false).text('<?php echo esc_html__("Error accured", "woo-retailcrm"); ?>');
                                 }
                             });
 
@@ -1739,13 +1738,11 @@ if (!class_exists('WC_Retailcrm_Base')) {
                                                 location.reload(true);
                                             }, 1000);
                                         } else {
-                                            alert('Ошибка применения купона: ' + response.data);
-                                            $('.charge-button').prop('disabled', false).text('Ошибка');
+                                            $('.charge-button').prop('disabled', false).text('<?php echo esc_html__("Error accured", "woo-retailcrm"); ?>');
                                         }
                                     },
                                     error: function() {
-                                        alert('Ошибка применения купона');
-                                        $('.charge-button').prop('disabled', false).text('Ошибка');
+                                        $('.charge-button').prop('disabled', false).text('<?php echo esc_html__("Error accured", "woo-retailcrm"); ?>');
                                     }
                                 });
                             }
@@ -1760,7 +1757,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
             if ( ! wp_verify_nonce($nonce, 'loyalty_coupon_nonce') ) {
-                wp_send_json_error('Ошибка безопасности: неверный запрос.');
+                wp_send_json_error('Incorrect request');
             }
 
             if (!isset($_POST['count']) || $_POST['count'] <= 0) {
@@ -1785,7 +1782,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 
             if ( ! wp_verify_nonce($nonce, 'apply_coupon_nonce') ) {
-                wp_send_json_error('Ошибка безопасности: неверный запрос.');
+                wp_send_json_error('Incorrect request');
             }
 
             if (!isset($_POST['coupon_code']) || $_POST['coupon_code'] === '') {

@@ -279,11 +279,12 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                             <div id="hidden-count" hidden>%d</div>
                             <input type="number" id="chargeBonus" name="charge" value="0"/>
                             <label for="chargeBonus">%s</label>
-                            <button type="button" class="charge-button">Списать бонусы</button>
+                            <button type="button" class="charge-button">%s</button>
                             <div id="error" hidden></div>
                         </div>',
                         $lpDiscountSum / $lpChargeRate,
-                esc_html__('Введите кол-во бонусов для списания', 'woo-retailcrm')
+                esc_html__('Enter the number of bonuses', 'woo-retailcrm'),
+                esc_html__('Use bonuses', 'woo-retailcrm')
             );
 
             $allowed_tags = [
