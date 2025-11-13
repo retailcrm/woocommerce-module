@@ -1026,10 +1026,19 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'style' => true,
                             'id'    => true,
                             'onclick' => true,
+                            'hidden' => [],
                         ],
+                         'input' => [
+                                    'type'  => [],
+                                    'id'    => [],
+                                    'name'  => [],
+                                    'value' => [],
+                            ],
                         'b'   => [],
                         'i'   => ['style' => true, 'id' => true, 'onclick' => true],
                         'u'   => [],
+                        'label' => ['for' => [], 'style' => []],
+                        'button' => ['style' => [], 'type' => [], 'class' => []],
                     ]);
                 }
 

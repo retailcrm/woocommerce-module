@@ -287,21 +287,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 esc_html__('Use bonuses', 'woo-retailcrm')
             );
 
-            $allowed_tags = [
-                'div' => ['style' => [], 'hidden' => [], 'id' => []],
-                'input' => [
-                    'type'  => [],
-                    'id'    => [],
-                    'name'  => [],
-                    'value' => [],
-                ],
-                'label' => ['for' => [], 'style' => []],
-                'button' => ['style' => [], 'type' => [], 'class' => []],
-            ];
-
-            echo wp_kses($html, $allowed_tags);
-
-            $resultString .= ' <div style="text-align: right; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
+            $resultString .= $html . ' <div style="text-align: right; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
 
             return $resultString;
         }
