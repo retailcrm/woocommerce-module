@@ -8,6 +8,7 @@ function inputLoyaltyCode() {
 function bonus_charge() {
     if (typeof jQuery === 'undefined') {
         console.error('jQuery is not loaded');
+
         return;
     }
 
@@ -19,6 +20,7 @@ function bonus_charge() {
         error.innerText = RetailcrmAdminCoupon.translations.incorrect_count;
         error.hidden = false;
         error.style.color = 'red';
+
         return;
     }
 
