@@ -287,7 +287,7 @@ return [
         'Purchase price' => 'Precio de compra',
         'Activate purchase price upload' => 'Activar transferencia de precio de compra',
         'Incorrect count of bonuses' => 'Se ha indicado una cantidad no válida de bonos',
-        'Error accured' => 'Ocurrió un error',
+        'Error occurred' => 'Ocurrió un error',
         'Using bonuses...' => 'Aplicando bonos...',
         'Enter the number of bonuses' => 'Ingrese la cantidad de bonos para descontar',
         'Use bonuses' => 'Descontar bonos'
