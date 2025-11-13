@@ -114,7 +114,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('woocommerce_new_order', [$this, 'fill_array_create_orders'], 11, 1);
             add_action('shutdown', [$this, 'create_order'], -2);
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
-            add_action('wp_print_footer_script', [$this, 'add_retailcrm_tracking_script'], 102);
+            add_action('wp_footer', [$this, 'add_retailcrm_tracking_script'], 102);
 
             //Tracker
             add_action('wp_ajax_retailcrm_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
