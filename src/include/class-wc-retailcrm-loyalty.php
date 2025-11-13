@@ -210,7 +210,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return $response;
         }
 
-        public function createLoyaltyCoupon($refreshCoupon = false)
+        public function processingLoyaltyCoupon($refreshCoupon = false)
         {
             global $woocommerce;
 
@@ -274,6 +274,12 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $coupon->delete(true);
             }
 
+            if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
+                $this->discountCouponApply();
+
+                return $resultString;
+            }
+
             $html = sprintf(
                 '<div style="margin-bottom:15px padding-top:15px">
                             <div id="hidden-count" hidden>%d</div>
@@ -290,6 +296,21 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $resultString .= $html . ' <div style="text-align: right; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
 
             return $resultString;
+        }
+
+        private function discountCouponApply()
+        {
+            global $woocommerce;
+
+            $coupon = new WC_Coupon();
+
+            $coupon->set_usage_limit(1);
+            $coupon->set_amount(intval($_POST['count']));
+            $coupon->set_email_restrictions($woocommerce->customer->get_email());
+            $coupon->set_code('loyalty' . wp_rand());
+            $coupon->save();
+
+            WC()->cart->apply_coupon($coupon->get_code());
         }
 
         public function clearLoyaltyCoupon()

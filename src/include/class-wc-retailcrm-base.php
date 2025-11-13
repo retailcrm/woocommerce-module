@@ -1017,7 +1017,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Logger::setHook(current_action());
 
             try {
-                $result = $this->loyalty->createLoyaltyCoupon();
+                $result = $this->loyalty->processingLoyaltyCoupon();
 
                 if ($result) {
                     echo wp_kses($result, [
@@ -1067,7 +1067,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Logger::setHook(current_action());
 
             try {
-                $this->loyalty->createLoyaltyCoupon(true);
+                $this->loyalty->processingLoyaltyCoupon(true);
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
@@ -1090,7 +1090,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             try {
                 if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
-                    $this->loyalty->createLoyaltyCoupon(true);
+                    $this->loyalty->processingLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
@@ -1103,7 +1103,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             try {
                 if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
-                    $this->loyalty->createLoyaltyCoupon(true);
+                    $this->loyalty->processingLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
