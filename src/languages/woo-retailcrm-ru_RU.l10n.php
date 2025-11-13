@@ -287,7 +287,7 @@ return [
         'Purchase price' => 'Закупочная стоимость',
         'Activate purchase price upload' => 'Активировать передачу закупочной стоимости',
         'Incorrect count of bonuses' => 'Указано недопустимое количество бонусов',
-        'Error accured' => 'Возникла ошибка',
+        'Error occurred' => 'Возникла ошибка',
         'Using bonuses...' => 'Применение бонусов...',
         'Enter the number of bonuses' => 'Введите количество бонусов для списания',
         'Use bonuses' => 'Списать бонусы'
