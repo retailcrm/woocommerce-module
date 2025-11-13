@@ -37,7 +37,7 @@ wp_clear_scheduled_hook('retailcrm_inventories');
 
 global $wpdb;
 
-$options = [
+$retailcrm_options = [
     'retailcrm_client_id',
     'retailcrm_active_in_crm',
     'retailcrm_orders_history_since_id',
@@ -45,8 +45,8 @@ $options = [
     'woocommerce_integration-retailcrm_settings',
 ];
 
-foreach ($options as $option) {
-    delete_option($option);
+foreach ($retailcrm_options as $retailcrm_option) {
+    delete_option($retailcrm_option);
 }
 
 // Clear any cached data that has been removed

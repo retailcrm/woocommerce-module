@@ -275,7 +275,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             }
 
             if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
-                $this->discountCouponApply();
+                $this->discountCouponApply($lpDiscountSum / $lpChargeRate);
 
                 return $resultString;
             }
@@ -298,14 +298,14 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return $resultString;
         }
 
-        private function discountCouponApply()
+        private function discountCouponApply($amount)
         {
             global $woocommerce;
 
             $coupon = new WC_Coupon();
 
             $coupon->set_usage_limit(1);
-            $coupon->set_amount(intval($_POST['count']));
+            $coupon->set_amount($amount);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
             $coupon->set_code('loyalty' . wp_rand());
             $coupon->save();
