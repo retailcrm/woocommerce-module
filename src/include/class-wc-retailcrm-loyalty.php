@@ -279,7 +279,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                             <div id="hidden-count" hidden>%d</div>
                             <input type="number" id="chargeBonus" name="charge" value="0"/>
                             <label for="chargeBonus">%s</label>
-                            <button type="button" class="charge-button">%s</button>
+                            <button type="button" class="charge-button" onclick="bonus_charge()">%s</button>
                             <div id="error" hidden></div>
                         </div>',
                         $lpDiscountSum / $lpChargeRate,
