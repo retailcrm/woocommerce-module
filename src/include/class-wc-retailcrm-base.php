@@ -137,8 +137,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
                 add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
                 add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
-                add_action('wp_ajax_create_loyalty_coupon', [$this, 'create_loyalty_coupon'], 104);
-                add_action('wp_ajax_apply_coupon_to_cart', [$this, 'apply_coupon_to_cart'], 105);
+                add_action('wp_ajax_create_loyalty_coupon', [WC_Retailcrm_Loyalty::class, 'create_loyalty_coupon'], 104);
+                add_action('wp_ajax_apply_coupon_to_cart', [WC_Retailcrm_Loyalty::class, 'apply_coupon_to_cart'], 105);
 
                 // Add coupon hooks for loyalty program
                 add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
@@ -1694,52 +1694,6 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     </script>
                     <?php
                 }
-            }
-        }
-
-        public function create_loyalty_coupon()
-        {
-            $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
-
-            if ( ! wp_verify_nonce($nonce, 'loyalty_coupon_nonce') ) {
-                wp_send_json_error('Incorrect request');
-            }
-
-            if (!isset($_POST['count']) || $_POST['count'] <= 0) {
-                wp_send_json_error('Incorrect bonus count');
-            }
-
-            global $woocommerce;
-
-            $coupon = new WC_Coupon();
-
-            $coupon->set_usage_limit(1);
-            $coupon->set_amount(intval($_POST['count']));
-            $coupon->set_email_restrictions($woocommerce->customer->get_email());
-            $coupon->set_code('loyalty' . wp_rand());
-            $coupon->save();
-
-            wp_send_json_success(['coupon_code' => $coupon->get_code()]);
-        }
-
-        public function apply_coupon_to_cart() 
-        {
-            $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
-
-            if ( ! wp_verify_nonce($nonce, 'apply_coupon_nonce') ) {
-                wp_send_json_error('Incorrect request');
-            }
-
-            if (!isset($_POST['coupon_code']) || $_POST['coupon_code'] === '') {
-                wp_send_json_error('Incorrect coupon code');
-            }
-
-            $coupon_code = sanitize_text_field(wp_unslash($_POST['coupon_code']));
-        
-            if (WC()->cart->apply_coupon($coupon_code)) {
-                wp_send_json_success('Coupon applied successfully');
-            } else {
-                wp_send_json_error('Failed to apply coupon');
             }
         }
 
