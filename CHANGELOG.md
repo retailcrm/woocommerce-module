@@ -1,3 +1,6 @@
+## 2025-11-14 5.0.4
+* Fixed some Ajax-urls
+
 ## 2025-10-16 5.0.3
 * Add upload purchase price in ICML
 
