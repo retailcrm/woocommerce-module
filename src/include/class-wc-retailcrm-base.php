@@ -1032,12 +1032,17 @@ if (!class_exists('WC_Retailcrm_Base')) {
                                     'id'    => [],
                                     'name'  => [],
                                     'value' => [],
+                                    'style' => [],
+                                    'placeholder' => [],
                             ],
                         'b'   => [],
+                        'table' => ['style' => []],
+                        'tr' => ['style' => []],
+                        'td' => ['style' => []],
                         'i'   => ['style' => true, 'id' => true, 'onclick' => true],
                         'u'   => [],
                         'label' => ['for' => [], 'style' => []],
-                        'button' => ['style' => [], 'type' => [], 'class' => [], 'onclick' => []],
+                        'button' => ['style' => [], 'type' => [], 'class' => [], 'onclick' => [], 'id' => []],
                     ]);
                 }
 
@@ -1053,7 +1058,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'apply_coupon_nonce' => wp_create_nonce('apply_coupon_nonce'),
                         'translations' => [
                                 'incorrect_count' => esc_html__('Incorrect count of bonuses', 'woo-retailcrm'),
-                                'using_bonuses' => esc_html__('Using bonuses...', 'woo-retailcrm'),
+                                'using_bonuses' => esc_html__('Using...', 'woo-retailcrm'),
                                 'error_occurred' => esc_html__('Error occurred', 'woo-retailcrm'),
                         ]
                 ]);

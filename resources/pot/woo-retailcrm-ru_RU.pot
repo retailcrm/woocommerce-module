@@ -654,11 +654,11 @@ msgstr "Указано недопустимое количество бонус�
 msgid "Error occurred"
 msgstr "Возникла ошибка"
 
-msgid "Using bonuses..."
-msgstr "Применение бонусов..."
+msgid "Using..."
+msgstr "Применение..."
 
-msgid "Enter the number of bonuses"
-msgstr "Введите количество бонусов для списания"
+msgid "Bonus count"
+msgstr "Кол-во бонусов"
 
 msgid "Use bonuses"
 msgstr "Списать бонусы"

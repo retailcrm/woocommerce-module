@@ -27,7 +27,7 @@ function bonus_charge() {
     error.hidden = true;
 
     jQuery.ajax({
-        url: '/wp-admin/admin-ajax.php',
+        url: 'wp-admin/admin-ajax.php',
         type: 'POST',
         data: {
             action: 'create_loyalty_coupon',
@@ -36,20 +36,20 @@ function bonus_charge() {
         },
         success: function (response) {
             if (response.success) {
-                jQuery('.charge-button').text(RetailcrmAdminCoupon.translations.using_bonuses);
+                jQuery('#retailcrm-charge-button').text(RetailcrmAdminCoupon.translations.using_bonuses);
                 applyCouponToCart(response.data.coupon_code);
             } else {
-                jQuery('.charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
+                jQuery('#retailcrm-charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
             }
         },
         error: function () {
-            jQuery('.charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
+            jQuery('#retailcrm-charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
         }
     });
 
     function applyCouponToCart(couponCode) {
         jQuery.ajax({
-            url: '/wp-admin/admin-ajax.php',
+            url: 'wp-admin/admin-ajax.php',
             type: 'POST',
             data: {
                 action: 'apply_coupon_to_cart',
@@ -62,11 +62,11 @@ function bonus_charge() {
                         location.reload(true);
                     }, 1000);
                 } else {
-                    jQuery('.charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
+                    jQuery('#retailcrm-charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
                 }
             },
             error: function () {
-                jQuery('.charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
+                jQuery('#retailcrm-charge-button').prop('disabled', false).text(RetailcrmAdminCoupon.translations.error_occurred);
             }
         });
     }
