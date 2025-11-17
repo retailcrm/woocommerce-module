@@ -647,3 +647,18 @@ msgstr "%1$s бонусов ожидают активации %2$s"
 
 msgid "Error while processing validation: %1$s. userId: %2$s"
 msgstr "Ошибка при валидации: %1$s. userId: %2$s"
+
+msgid "Incorrect count of bonuses"
+msgstr "Указано недопустимое количество бонусов"
+
+msgid "Error occurred"
+msgstr "Возникла ошибка"
+
+msgid "Using..."
+msgstr "Применение..."
+
+msgid "Bonus count"
+msgstr "Кол-во бонусов"
+
+msgid "Use bonuses"
+msgstr "Списать бонусы"

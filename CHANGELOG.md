@@ -1,3 +1,6 @@
+## 2025-11-17 5.0.5
+* Add partial bonus charge
+
 ## 2025-11-14 5.0.4
 * Fixed some Ajax-urls
 

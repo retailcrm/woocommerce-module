@@ -638,3 +638,18 @@ msgstr "%1$s bonos se activarán %2$s"
 
 msgid "Error while processing validation: %1$s. userId: %2$s"
 msgstr "Error al procesar la validación: %1$s. userId: %2$s"
+
+msgid "Error occurred"
+msgstr "Ocurrió un error"
+
+msgid "Incorrect count of bonuses"
+msgstr "Se ha indicado una cantidad no válida de bonos"
+
+msgid "Using..."
+msgstr "Aplicando..."
+
+msgid "Bonus count"
+msgstr "Bonos"
+
+msgid "Use bonuses"
+msgstr "Descontar bonos"

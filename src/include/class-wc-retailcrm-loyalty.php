@@ -210,7 +210,7 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             return $response;
         }
 
-        public function createLoyaltyCoupon($refreshCoupon = false)
+        public function processingLoyaltyCoupon($refreshCoupon = false)
         {
             global $woocommerce;
 
@@ -274,31 +274,50 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $coupon->delete(true);
             }
 
-            // Generate new coupon
+            if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
+                $this->discountCouponApply($lpDiscountSum / $lpChargeRate);
+
+                return $resultString;
+            }
+
+            $html = sprintf(
+                '<div>
+                           <div id="hidden-count" hidden>%d</div>
+                           <table style="border: none">
+                               <tr>
+                                   <td style="vertical-align: middle; padding: 0px; width: 46%%">
+                                       <input type="number" id="chargeBonus" name="charge" placeholder="%s"/>
+                                   </td>
+                                   <td style="vertical-align: middle;">
+                                       <button type="button" id="retailcrm-charge-button" onclick="bonus_charge()">%s</button>
+                                   </td>
+                               </tr>
+                           </table>
+                           <div id="error" hidden></div>
+                       </div>',
+                $lpDiscountSum / $lpChargeRate,
+                esc_html__('Bonus count', 'woo-retailcrm'),
+                esc_html__('Use bonuses', 'woo-retailcrm')
+            );
+
+            $resultString .= $html . ' <div style="text-align: right; line-height: 1"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
+
+            return $resultString;
+        }
+
+        private function discountCouponApply($amount)
+        {
+            global $woocommerce;
+
             $coupon = new WC_Coupon();
 
-            $coupon->set_usage_limit(0);
-            $coupon->set_amount($lpDiscountSum);
+            $coupon->set_usage_limit(1);
+            $coupon->set_amount($amount);
             $coupon->set_email_restrictions($woocommerce->customer->get_email());
             $coupon->set_code('loyalty' . wp_rand());
-            $coupon->update_meta_data('chargeRate', $lpChargeRate);
             $coupon->save();
 
-            if ($refreshCoupon) {
-                $woocommerce->cart->apply_coupon($coupon->get_code());
-
-                return $resultString;
-            }
-
-            //If a percentage discount, automatically apply a loyalty coupon
-            if ($this->validator->loyaltyAccount['level']['type'] === 'discount') {
-                $woocommerce->cart->apply_coupon($coupon->get_code());
-
-                return $resultString;
-            }
-
-            $resultString .= ' <div style="text-align: left; line-height: 3"><b>' . esc_html__('It is possible to write off', 'woo-retailcrm') . ' ' . $lpDiscountSum / $lpChargeRate . ' ' . esc_html__('bonuses', 'woo-retailcrm') . '</b></div>';
-            return $resultString. '<div style="text-align: left;"><b>' . esc_html__('Use coupon:', 'woo-retailcrm') . ' <u><i style="cursor: grab" id="input_loyalty_code" onclick="inputLoyaltyCode()">' . $coupon->get_code() . '</i></u></i></b></div>';
+            WC()->cart->apply_coupon($coupon->get_code());
         }
 
         public function clearLoyaltyCoupon()
@@ -632,6 +651,52 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 
                 return [];
+            }
+        }
+
+        public static function create_loyalty_coupon()
+        {
+            $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+
+            if (!wp_verify_nonce($nonce, 'loyalty_coupon_nonce')) {
+                wp_send_json_error('Incorrect request');
+            }
+
+            if (!isset($_POST['count']) || $_POST['count'] <= 0) {
+                wp_send_json_error('Incorrect bonus count');
+            }
+
+            global $woocommerce;
+
+            $coupon = new WC_Coupon();
+
+            $coupon->set_usage_limit(1);
+            $coupon->set_amount(intval($_POST['count']));
+            $coupon->set_email_restrictions($woocommerce->customer->get_email());
+            $coupon->set_code('loyalty' . wp_rand());
+            $coupon->save();
+
+            wp_send_json_success(['coupon_code' => $coupon->get_code()]);
+        }
+
+        public static function apply_coupon_to_cart()
+        {
+            $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+
+            if (!wp_verify_nonce($nonce, 'apply_coupon_nonce')) {
+                wp_send_json_error('Incorrect request');
+            }
+
+            if (!isset($_POST['coupon_code']) || $_POST['coupon_code'] === '') {
+                wp_send_json_error('Incorrect coupon code');
+            }
+
+            $coupon_code = sanitize_text_field(wp_unslash($_POST['coupon_code']));
+
+            if (WC()->cart->apply_coupon($coupon_code)) {
+                wp_send_json_success('Coupon applied successfully');
+            } else {
+                wp_send_json_error('Failed to apply coupon');
             }
         }
     }

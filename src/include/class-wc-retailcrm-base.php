@@ -137,6 +137,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
                 add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
                 add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
+                add_action('wp_ajax_create_loyalty_coupon', [WC_Retailcrm_Loyalty::class, 'create_loyalty_coupon'], 104);
+                add_action('wp_ajax_apply_coupon_to_cart', [WC_Retailcrm_Loyalty::class, 'apply_coupon_to_cart'], 105);
 
                 // Add coupon hooks for loyalty program
                 add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
@@ -1015,7 +1017,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Logger::setHook(current_action());
 
             try {
-                $result = $this->loyalty->createLoyaltyCoupon();
+                $result = $this->loyalty->processingLoyaltyCoupon();
 
                 if ($result) {
                     echo wp_kses($result, [
@@ -1023,21 +1025,42 @@ if (!class_exists('WC_Retailcrm_Base')) {
                             'style' => true,
                             'id'    => true,
                             'onclick' => true,
+                            'hidden' => [],
                         ],
+                         'input' => [
+                                    'type'  => [],
+                                    'id'    => [],
+                                    'name'  => [],
+                                    'value' => [],
+                                    'style' => [],
+                                    'placeholder' => [],
+                            ],
                         'b'   => [],
+                        'table' => ['style' => []],
+                        'tr' => ['style' => []],
+                        'td' => ['style' => []],
                         'i'   => ['style' => true, 'id' => true, 'onclick' => true],
                         'u'   => [],
+                        'label' => ['for' => [], 'style' => []],
+                        'button' => ['style' => [], 'type' => [], 'class' => [], 'onclick' => [], 'id' => []],
                     ]);
                 }
 
                 $jsScriptPath = plugins_url() . self::ASSETS_DIR . '/js/retailcrm-loyalty-cart.js';
                 $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/retailcrm-loyalty-cart.js';
 
-                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, false, filemtime($scriptPath), true);
+                wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, array('jquery'), filemtime($scriptPath), true);
                 wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', filemtime($scriptPath), true);
                 wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminCoupon', [
-                    'url' => get_admin_url(),
-                    'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce')
+                        'url' => get_admin_url(),
+                        'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce'),
+                        'loyalty_nonce' => wp_create_nonce('loyalty_coupon_nonce'),
+                        'apply_coupon_nonce' => wp_create_nonce('apply_coupon_nonce'),
+                        'translations' => [
+                                'incorrect_count' => esc_html__('Incorrect count of bonuses', 'woo-retailcrm'),
+                                'using_bonuses' => esc_html__('Using...', 'woo-retailcrm'),
+                                'error_occurred' => esc_html__('Error occurred', 'woo-retailcrm'),
+                        ]
                 ]);
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
@@ -1049,7 +1072,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             WC_Retailcrm_Logger::setHook(current_action());
 
             try {
-                $this->loyalty->createLoyaltyCoupon(true);
+                $this->loyalty->processingLoyaltyCoupon(true);
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
@@ -1072,7 +1095,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             try {
                 if (!$this->loyalty->deleteLoyaltyCoupon($couponCode)) {
-                    $this->loyalty->createLoyaltyCoupon(true);
+                    $this->loyalty->processingLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
@@ -1085,7 +1108,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             try {
                 if (!$this->loyalty->isLoyaltyCoupon($couponCode)) {
-                    $this->loyalty->createLoyaltyCoupon(true);
+                    $this->loyalty->processingLoyaltyCoupon(true);
                 }
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
