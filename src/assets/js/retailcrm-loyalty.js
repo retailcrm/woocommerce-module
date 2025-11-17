@@ -12,7 +12,7 @@ jQuery(function() {
     function checkActiveCoupon()
     {
         jQuery.ajax({
-            url: RetailcrmAdmin.url + '/admin-ajax.php?action=retailcrm_get_status_coupon',
+            url: RetailcrmAdmin.url + 'admin-ajax.php?action=retailcrm_get_status_coupon',
             method: 'POST',
             timeout: 0,
             data: {ajax: 1, _ajax_nonce: RetailcrmAdmin.nonce},

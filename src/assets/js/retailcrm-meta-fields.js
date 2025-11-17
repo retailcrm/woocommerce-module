@@ -36,7 +36,7 @@ jQuery(function () {
         }
 
         jQuery.ajax({
-            url: RetailcrmAdmin.url + '/admin-ajax.php?action=retailcrm_set_meta_fields',
+            url: RetailcrmAdmin.url + 'admin-ajax.php?action=retailcrm_set_meta_fields',
             method: 'POST',
             timeout: 0,
             data: {ajax: 1, _ajax_nonce: RetailcrmAdmin.nonce},

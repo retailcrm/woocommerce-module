@@ -31,7 +31,7 @@ jQuery(function () {
         let _this = this;
 
         jQuery.ajax({
-            url: this.adminUrl + '/admin-ajax.php?action=retailcrm_content_upload',
+            url: this.adminUrl + 'admin-ajax.php?action=retailcrm_content_upload',
             method: "POST",
             timeout: 0,
             data: {ajax: 1, _ajax_nonce: RetailcrmAdmin.nonce},
@@ -112,7 +112,7 @@ jQuery(function () {
         let _this = this;
 
         jQuery.ajax({
-            url: this.adminUrl + '/admin-ajax.php?action=retailcrm_do_upload',
+            url: this.adminUrl + 'admin-ajax.php?action=retailcrm_do_upload',
             method: "POST",
             timeout: 0,
             data: data
@@ -184,7 +184,7 @@ jQuery(function () {
 
             jQuery.ajax({
                 type: "POST",
-                url: this.adminUrl + '/admin-ajax.php?action=retailcrm_upload_selected_orders&order_ids_retailcrm=' + ids,
+                url: this.adminUrl + 'admin-ajax.php?action=retailcrm_upload_selected_orders&order_ids_retailcrm=' + ids,
                 data: {_ajax_nonce: RetailcrmAdmin.nonce},
                 success: function (response) {
                     if (response.error) {
