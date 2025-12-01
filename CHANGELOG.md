@@ -1,3 +1,6 @@
+## 2025-12-01 5.0.6
+* Change test version
+
 ## 2025-11-17 5.0.5
 * Add partial bonus charge
 
