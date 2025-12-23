@@ -4,7 +4,7 @@ Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.9
-Stable tag: 5.0.6
+Stable tag: 5.0.7
 License: MIT
 License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
 
@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 5.0.7 =
+* Url validation fixes
+
 = 5.0.6 =
 * Change test version
 
