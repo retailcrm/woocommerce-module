@@ -7,7 +7,7 @@
  * Author URI: http://retailcrm.pro/
  * License: MIT
  * License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
- * Version: 5.0.6
+ * Version: 5.0.7
  * Tested up to: 6.9
  * Requires Plugins: woocommerce
  * WC requires at least: 5.4
@@ -30,7 +30,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
     class WC_Integration_Retailcrm {
         const WOOCOMMERCE_SLUG = 'woocommerce';
         const WOOCOMMERCE_PLUGIN_PATH = 'woocommerce/woocommerce.php';
-        const MODULE_VERSION = '5.0.6';
+        const MODULE_VERSION = '5.0.7';
 
         private static $instance;
 

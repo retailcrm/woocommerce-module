@@ -14,8 +14,6 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
      */
     class WC_Retailcrm_Url_Validator extends WC_Retailcrm_Url_Constraint
     {
-        const CRM_DOMAINS_URL = 'crm-domains.json';
-        const BOX_DOMAINS_URL = 'box-domains.json';
         const CRM_ALL_DOMAINS = ["ecomlogic.com", "retailcrm.ru", "retailcrm.pro", "retailcrm.es", "simla.com", "simla.io", "retailcrm.io"];
 
         /**
@@ -35,6 +33,10 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
                 }
 
                 $urlArray = wp_parse_url($filteredUrl);
+
+                if (!is_array($urlArray)) {
+                    throw new ValidatorException("Can't parse url in validation", 400);
+                }
 
                 $this->validateUrlFormat($urlArray);
                 $this->validateUrlDomains($urlArray);
@@ -69,10 +71,8 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         private function validateUrlDomains(array $crmUrl)
         {
             $mainDomain = $this->getMainDomain($crmUrl['host']);
-            $existInCrm = $this->checkDomains(self::CRM_DOMAINS_URL, $mainDomain);
-            $existInBox = $this->checkDomains(self::BOX_DOMAINS_URL, $crmUrl['host']);
 
-            if (false === $existInCrm && false === $existInBox) {
+            if (!in_array($mainDomain, self::CRM_ALL_DOMAINS, true)) {
                 throw new ValidatorException(esc_attr($this->domainFail));
             }
         }
@@ -162,30 +162,6 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
         }
 
         /**
-         * @param string $domainUrl
-         *
-         * @return array
-         * @throws ValidatorException
-         */
-        private function getValidDomains(string $domainFile): array
-        {
-            try {
-                $plugin_dir = plugin_dir_path( __FILE__ );
-                $content = file_get_contents($plugin_dir . '../../components/files/' . $domainFile);
-
-                if ($content !== false) {
-                    $domains = json_decode($content, true);
-
-                    return array_column($domains['domains'], 'domain');
-                }
-
-                return self::CRM_ALL_DOMAINS;
-            } catch (Exception $exception) {
-                throw new ValidatorException(esc_attr($this->getFileError));
-            }
-        }
-
-        /**
          * @param string $host
          *
          * @return string
@@ -196,18 +172,6 @@ if (!class_exists('WC_Retailcrm_Url_Validator')) :
             unset($hostArray[0]);
 
             return implode('.', $hostArray);
-        }
-
-        /**
-         * @param string $crmDomainsUrl
-         * @param string $domainHost
-         *
-         * @return bool
-         * @throws ValidatorException
-         */
-        private function checkDomains(string $crmDomainsFile, string $domainHost): bool
-        {
-            return in_array($domainHost, $this->getValidDomains($crmDomainsFile), true);
         }
     }
 endif;

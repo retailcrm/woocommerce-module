@@ -1,3 +1,6 @@
+## 2025-12-23 5.0.7
+* Url validation fixes
+
 ## 2025-12-01 5.0.6
 * Change test version
 
