@@ -690,4 +690,27 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
                                             ->setMethods(['isSuccessful'])
                                             ->getMock();
     }
+
+    public function test_created_item_is_first_after_sort()
+    {
+        $history = [
+            [
+                'id' => 1,
+                'field' => 'status',
+                'order' => ['id' => 10, 'externalId' => 'ext-10']
+            ],
+            [
+                'id' => 2,
+                'field' => 'created',
+                'created' => true,
+                'order' => ['id' => 10, 'externalId' => 'ext-10']
+            ]
+        ];
+
+        $sorted = WC_Retailcrm_History_Assembler::sortCreatedItem($history);
+
+        $this->assertArrayHasKey('created', $sorted[0]);
+        $this->assertTrue($sorted[0]['created']);
+        $this->assertEquals(1, $sorted[1]['id']);
+    }
 }

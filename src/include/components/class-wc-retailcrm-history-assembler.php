@@ -428,7 +428,7 @@ class WC_Retailcrm_History_Assembler
         return $history;
     }
 
-    private static function sortCreatedItem(array $history): array
+    public static function sortCreatedItem(array $history): array
     {
         $createdIndex = null;
 
