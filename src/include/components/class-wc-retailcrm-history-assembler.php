@@ -27,7 +27,7 @@ class WC_Retailcrm_History_Assembler
         $orders = [];
         $orderHistory = self::filterHistory($orderHistory, 'order');
 
-        foreach ($orderHistory as $change) {
+        foreach (self::sortCreatedItem($orderHistory) as $change) {
             $change['order'] = self::removeEmpty($change['order']);
 
             if (isset($change['order']['items']) && $change['order']['items']) {
@@ -426,5 +426,28 @@ class WC_Retailcrm_History_Assembler
         }
 
         return $history;
+    }
+
+    private static function sortCreatedItem(array $history): array
+    {
+        $createdIndex = null;
+
+        foreach ($history as $index => $change) {
+            if (isset($change['created'])) {
+                $createdIndex = $index;
+
+                break;
+            }
+        }
+
+        if ($createdIndex === null || $createdIndex === 0) {
+            return $history;
+        }
+
+        $createdItem = $history[$createdIndex];
+
+        unset($history[$createdIndex]);
+
+        return array_values(array_merge([$createdItem], $history));
     }
 }
