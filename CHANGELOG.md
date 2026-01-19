@@ -1,3 +1,6 @@
+## 2026-01-16 5.0.8
+* Fix element order in change history processing
+
 ## 2025-12-23 5.0.7
 * Url validation fixes
 
