@@ -7,7 +7,7 @@
  * Author URI: http://retailcrm.pro/
  * License: MIT
  * License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
- * Version: 5.0.8
+ * Version: 5.0.9
  * Tested up to: 6.9
  * Requires Plugins: woocommerce
  * WC requires at least: 5.4

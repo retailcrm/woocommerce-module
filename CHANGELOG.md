@@ -1,3 +1,6 @@
+## 2026-01-19 5.0.9
+* Fixed url for bonus count in site cart
+
 ## 2026-01-16 5.0.8
 * Fix element order in change history processing
 
