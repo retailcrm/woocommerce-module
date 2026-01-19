@@ -27,7 +27,7 @@ function bonus_charge() {
     error.hidden = true;
 
     jQuery.ajax({
-        url: 'wp-admin/admin-ajax.php',
+        url: RetailcrmAdminCoupon.url + 'admin-ajax.php',
         type: 'POST',
         data: {
             action: 'create_loyalty_coupon',
@@ -49,7 +49,7 @@ function bonus_charge() {
 
     function applyCouponToCart(couponCode) {
         jQuery.ajax({
-            url: 'wp-admin/admin-ajax.php',
+            url: RetailcrmAdminCoupon.url + 'admin-ajax.php',
             type: 'POST',
             data: {
                 action: 'apply_coupon_to_cart',
