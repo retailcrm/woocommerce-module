@@ -408,6 +408,9 @@ msgstr "Dirección"
 msgid "addressCity"
 msgstr "Ciudad"
 
+msgid "birthday"
+msgstr "Cumpleaños"
+
 msgid "addressIndex"
 msgstr "Código postal"
 

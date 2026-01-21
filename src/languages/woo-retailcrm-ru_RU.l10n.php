@@ -191,6 +191,7 @@ return [
         'addressCity' => 'Город',
         'addressIndex' => 'Индекс',
         'addressRegion' => 'Регион',
+		'birthday' => 'День рождения',
         'Standard CRM fields' => 'Стандартные поля CRM',
         'Warehouses available in CRM' => 'Склады, доступные в CRM',
         'Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)' =>

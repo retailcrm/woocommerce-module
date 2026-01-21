@@ -488,6 +488,21 @@ if (!class_exists('WC_Retailcrm_Customers')) :
                     if (strpos($customKey, 'default-crm-field') !== false) {
                         $crmField = explode('#', $customKey);
 
+						if (isset($crmField[1]) && $crmField[1] === 'birthday') {
+							if (!$metaValue instanceof DateTime) {
+								$metaValue = DateTime::createFromFormat('Y-m-d', $metaValue);
+
+								if (!$metaValue) {
+									WC_Retailcrm_Logger::error(
+										__METHOD__,
+										'Incorrect format. Birthday must be DateTime or date-convertable'
+									);
+
+									continue;
+								}
+							}
+						}
+
                         if (count($crmField) === 2 && isset($crmField[1])) {
                             if ($crmField[1] === 'phones') {
                                 $customerData[$crmField[1]][] = ['number' => $metaValue];

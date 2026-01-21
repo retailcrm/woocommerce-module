@@ -417,6 +417,9 @@ msgstr "Адрес"
 msgid "addressCity"
 msgstr "Город"
 
+msgid "birthday"
+msgstr "День рождения"
+
 msgid "addressIndex"
 msgstr "Индекс"
 
