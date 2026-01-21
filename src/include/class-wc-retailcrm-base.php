@@ -1637,7 +1637,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         private function getDefaultCrmOrderFields()
         {
-            return [
+            $fields = [
                 'default-crm-field#firstName' => esc_html__('firstName', 'woo-retailcrm'),
                 'default-crm-field#lastName' => esc_html__('lastName', 'woo-retailcrm'),
                 'default-crm-field#phone' => esc_html__('phone', 'woo-retailcrm'),
@@ -1649,21 +1649,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 'default-crm-field#customerComment' => esc_html__('customerComment', 'woo-retailcrm'),
                 'default-crm-field#managerComment' => esc_html__('managerComment', 'woo-retailcrm'),
             ];
+
+            return apply_filters('woo_retailcrm_default_order_fields', $fields);
         }
 
         private function getDefaultCrmCustomerFields()
         {
-            return [
-                'default-crm-field#firstName' => esc_html__('firstName', 'woo-retailcrm'),
-                'default-crm-field#lastName' => esc_html__('lastName', 'woo-retailcrm'),
-                'default-crm-field#phones' => esc_html__('phone', 'woo-retailcrm'),
-                'default-crm-field#email' => esc_html__('email', 'woo-retailcrm'),
-                'default-crm-field#address#index' => esc_html__('addressIndex', 'woo-retailcrm'),
-                'default-crm-field#address#region' => esc_html__('addressRegion', 'woo-retailcrm'),
-                'default-crm-field#address#city' => esc_html__('addressCity', 'woo-retailcrm'),
-                'default-crm-field#address#text' => esc_html__('addressText', 'woo-retailcrm'),
-                'default-crm-field#tags' => esc_html__('tags', 'woo-retailcrm'),
+            $fields = [
+                    'default-crm-field#firstName' => esc_html__('firstName', 'woo-retailcrm'),
+                    'default-crm-field#lastName' => esc_html__('lastName', 'woo-retailcrm'),
+                    'default-crm-field#phones' => esc_html__('phone', 'woo-retailcrm'),
+                    'default-crm-field#email' => esc_html__('email', 'woo-retailcrm'),
+                    'default-crm-field#address#index' => esc_html__('addressIndex', 'woo-retailcrm'),
+                    'default-crm-field#address#region' => esc_html__('addressRegion', 'woo-retailcrm'),
+                    'default-crm-field#address#city' => esc_html__('addressCity', 'woo-retailcrm'),
+                    'default-crm-field#address#text' => esc_html__('addressText', 'woo-retailcrm'),
+                    'default-crm-field#tags' => esc_html__('tags', 'woo-retailcrm'),
+                    'default-crm-field#birthday' => esc_html__('birthday', 'woo-retailcrm'),
             ];
+
+            return apply_filters('woo_retailcrm_default_customer_fields', $fields);
         }
 
         private function activateModule()
