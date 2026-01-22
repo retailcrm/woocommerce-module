@@ -1,3 +1,6 @@
+## 2026-01-21 5.0.10
+* Send customer's birthday to CRM
+
 ## 2026-01-19 5.0.9
 * Fixed url for bonus count in site cart
 

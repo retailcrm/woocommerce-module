@@ -48,6 +48,9 @@
 
 > retailcrm_change_default_meta_fields - позволяет изменить список получаемых по умолчанию мета-полей
 
+> woo_retailcrm_default_order_fields - позволяет изменить список стандартных полей заказа CRM для сопоставления с пользовательскими полями CMS
+
+> woo_retailcrm_default_order_fields - позволяет изменить список стандартных полей клиента CRM для сопоставления с пользовательскими полями CMS
 **Пример использования:**
 ```php
 <?php
@@ -61,3 +64,47 @@ function changeProductInfo($productData, $wcProduct)
     return $productData;
 }
 ```
+
+**Пример расширения списка стандартных полей CRM с помощью фильтров**
+```php
+<?php
+
+add_filter('woo_retailcrm_default_customer_fields', function ($fields) {
+
+    $fields['default-crm-field#birthday'] = 'birthday';
+    $fields['default-crm-field#gender']   = 'gender';
+    $fields['default-crm-field#vip']      = 'vip';
+
+    return $fields;
+});
+```
+
+Для добавления нового поля необходимо после символа *#* в названии ключа элемента корректно указать символьный код данного поля в CRM. Получить его можно из [Справочника методов API](https://docs.retailcrm.ru/Developers/API/APIMethods#post--api-v5-customers-create)
+
+Если тип данного поля в CRM отличается от числового или строчного, например, дата или время, то необходимо заранее преобразовать значение из поля в CMS в корректный формат.
+
+Пример корректного преобразования в тип DateTime для передачи даты:
+
+```php
+
+if (isset($crmField[1]) && $crmField[1] === 'birthday') {
+   	if (!$metaValue instanceof DateTime) {
+		$metaValue = DateTime::createFromFormat('Y-m-d', $metaValue);
+
+		if (!$metaValue) {
+			WC_Retailcrm_Logger::error(
+				__METHOD__,
+				'Incorrect format. Birthday must be DateTime or date-convertable'
+			);
+
+			continue;
+		}
+	}
+}
+```
+
+В данном случае выполняется преобразование формата для поля *birthday* для передачи даты рождения в карточку клиента.
+
+Форматирование и передача стандартных полей клиента выполняется в классе **class-wc-retailcrm-customers** в методе **processCustomer**. Для полей заказа в методе **processOrder** класса **class-wc-retailcrm-orders**
+
+

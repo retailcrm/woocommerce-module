@@ -191,6 +191,7 @@ return [
         'addressCity' => 'Ciudad',
         'addressIndex' => 'Código postal',
         'addressRegion' => 'Región',
+		'birthday' => 'Cumpleaños',
         'Standard CRM fields' => 'Los campos del CRM por defecto',
         'Warehouses available in CRM' => 'Almacenes disponibles en CRM',
         'Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)' =>
