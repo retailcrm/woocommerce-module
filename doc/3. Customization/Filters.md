@@ -51,6 +51,36 @@
 > woo_retailcrm_default_order_fields - позволяет изменить список стандартных полей заказа CRM для сопоставления с пользовательскими полями CMS
 
 > woo_retailcrm_default_order_fields - позволяет изменить список стандартных полей клиента CRM для сопоставления с пользовательскими полями CMS
+
+> retailcrm_allowed_tags - позволяет изменить список разрешенных HTML-тегов и атрибутов для интерфейсных блоков модуля. Доступные контексты: `checkout_form`, `coupon_info`, `loyalty_credit_bonuses`, `loyalty_form_error`, `loyalty_form`.
+
+**Пример 1. Расширить теги для блока бонусов**
+```php
+<?php
+
+add_filter('retailcrm_allowed_tags', function ($allowed_tags, $context) {
+    if ($context === 'loyalty_credit_bonuses') {
+        $allowed_tags['span']['class'] = true;
+        $allowed_tags['span']['style'] = true;
+    }
+
+    return $allowed_tags;
+}, 10, 2);
+```
+
+**Пример 2. Запретить inline-обработчики в купонах**
+```php
+<?php
+
+add_filter('retailcrm_allowed_tags', function ($allowed_tags, $context) {
+    if ($context === 'coupon_info' && isset($allowed_tags['button']['onclick'])) {
+        unset($allowed_tags['button']['onclick']);
+    }
+
+    return $allowed_tags;
+}, 10, 2);
+```
+
 **Пример использования:**
 ```php
 <?php
@@ -106,5 +136,3 @@ if (isset($crmField[1]) && $crmField[1] === 'birthday') {
 В данном случае выполняется преобразование формата для поля *birthday* для передачи даты рождения в карточку клиента.
 
 Форматирование и передача стандартных полей клиента выполняется в классе **class-wc-retailcrm-customers** в методе **processCustomer**. Для полей заказа в методе **processOrder** класса **class-wc-retailcrm-orders**
-
-
