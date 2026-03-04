@@ -4,7 +4,7 @@ Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.9
-Stable tag: 5.0.10
+Stable tag: 5.0.11
 License: MIT
 License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
 
@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 5.0.11 =
+* Add retailcrm_allowed_tags hooks for allowed tag contexts
+
 = 5.0.10 =
 * Send customer's birthday to CRM
 

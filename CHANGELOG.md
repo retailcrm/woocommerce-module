@@ -1,3 +1,6 @@
+## 2026-03-04 5.0.11
+* Add retailcrm_allowed_tags hooks for allowed tag contexts
+
 ## 2026-01-21 5.0.10
 * Send customer's birthday to CRM
 
