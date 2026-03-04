@@ -328,6 +328,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 ],
                 'label' => ['for' => [], 'style' => []],
             ];
+            $allowed_tags = apply_filters('retailcrm_allowed_tags', $allowed_tags, 'checkout_form');
 
             echo wp_kses($html, $allowed_tags);
         }
@@ -1020,7 +1021,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $result = $this->loyalty->processingLoyaltyCoupon();
 
                 if ($result) {
-                    echo wp_kses($result, [
+                    $allowed_tags = [
                         'div' => [
                             'style' => true,
                             'id'    => true,
@@ -1043,7 +1044,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                         'u'   => [],
                         'label' => ['for' => [], 'style' => []],
                         'button' => ['style' => [], 'type' => [], 'class' => [], 'onclick' => [], 'id' => []],
-                    ]);
+                    ];
+                    $allowed_tags = apply_filters('retailcrm_allowed_tags', $allowed_tags, 'coupon_info');
+
+                    echo wp_kses($result, $allowed_tags);
                 }
 
                 $jsScriptPath = plugins_url() . self::ASSETS_DIR . '/js/retailcrm-loyalty-cart.js';
@@ -1121,7 +1125,14 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $resultHtml = $this->loyalty->getCreditBonuses();
 
             if ($resultHtml) {
-                echo wp_kses($resultHtml, ['b' => ['style' => true], 'u' => ['style' => true], 'i' => ['style' => true]]);
+                $allowed_tags = [
+                    'b' => ['style' => true],
+                    'u' => ['style' => true],
+                    'i' => ['style' => true]
+                ];
+                $allowed_tags = apply_filters('retailcrm_allowed_tags', $allowed_tags, 'loyalty_credit_bonuses');
+
+                echo wp_kses($resultHtml, $allowed_tags);
             }
         }
 
@@ -1482,7 +1493,9 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $result = $this->loyalty->getForm($userId, $loyaltyTemrs, $loyaltyPersonal);
 
             if ([] === $result) {
-                echo wp_kses('<p style="color: red">'. esc_html__('Error while retrieving data. Try again later', 'woo-retailcrm') . '</p>', ['p' => ['style' => true],]);
+                $allowed_tags = apply_filters('retailcrm_allowed_tags', ['p' => ['style' => true],], 'loyalty_form_error');
+
+                echo wp_kses('<p style="color: red">'. esc_html__('Error while retrieving data. Try again later', 'woo-retailcrm') . '</p>', $allowed_tags);
             } else {
                 wp_localize_script($jsScript, 'retailcrmLoyaltyId', $result['loyaltyId'] ?? null);
                 $allowed_tags = [
@@ -1500,6 +1513,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                     'tr' => ['style' => true],
                     'td' => ['style' => true]
                 ];
+                $allowed_tags = apply_filters('retailcrm_allowed_tags', $allowed_tags, 'loyalty_form');
 
                 echo wp_kses($result['form'], $allowed_tags);
             }
