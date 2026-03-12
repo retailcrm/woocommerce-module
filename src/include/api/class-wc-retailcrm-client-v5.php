@@ -2879,6 +2879,22 @@ class WC_Retailcrm_Client_V5
         );
     }
 
+    /** SMS verification confirmation */
+    public function confirmSmsVerification(array $verification)
+    {
+        if (!isset($verification['code']) || !isset($verification['checkId'])) {
+            throw new InvalidArgumentException(
+                'Parameters `code` and `checkId` are required'
+            );
+        }
+
+        return $this->client->makeRequest(
+            '/verification/sms/confirm',
+            WC_Retailcrm_Request::METHOD_POST,
+            ['verification' => json_encode($verification)]
+        );
+    }
+
     /** Editing participation in the loyalty program */
     public function editLoyaltyAccount(int $clientIdLoyalty, array $parameters)
     {

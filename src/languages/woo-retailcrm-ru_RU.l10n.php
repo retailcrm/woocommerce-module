@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 return [
     'domain' => null,
     'plural-forms' =>
@@ -238,6 +243,8 @@ return [
         '%1$s bonuses will expire %2$s' => '%1$s бонусов сгорят %2$s',
         '%1$s bonuses will active %2$s' => '%1$s бонусов ожидают активации %2$s',
         'Send' => 'Отправить',
+        'Confirm' => 'Подтвердить',
+        'SMS code' => 'Код из СМС',
         'To register in the loyalty program, fill in the form:' => 'Для регистрации в программе лояльности заполните форму:',
         ' I agree with ' => ' Я согласен с ',
         'loyalty program terms' => 'условиями программы лояльности',
@@ -246,6 +253,8 @@ return [
         'Error while registering in the loyalty program. Try again later' => 'Ошибка при регистрации в программе лояльности. Попробуйте позже',
         'The card is not linked' => 'Карта не привязана',
         'Error while retrieving data. Try again later' => 'Ошибка при получении данных. Попробуйте позже',
+        'Incorrect SMS code' => 'Неверный код из СМС',
+        'Incorrect SMS code or an error occurred' => 'Неверный код из СМС или возникла ошибка',
         'Error when activating the loyalty program. Try again later' => 'Ошибка при активации программы лояльности. Попробуйте позже',
         'Enter the correct phone number' => 'Введите корректный номер телефона',
         'Close' => 'Закрыть',

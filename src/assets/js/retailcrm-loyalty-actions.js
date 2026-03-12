@@ -71,7 +71,34 @@ jQuery(function() {
         })
             .done(function (response) {
                 if (response.hasOwnProperty('error')) {
-                    jQuery('#loyaltyRegisterForm').append('<p style="color: red">'+ response.error + '</p>')
+                    jQuery('#loyaltyActivateForm').append('<p style="color: red">'+ response.error + '</p>')
+
+                    event.preventDefault();
+                    return false;
+                } else if (response.needSmsVerification && response.smsForm) {
+                    jQuery('#loyaltyActivateForm').replaceWith(response.smsForm);
+                } else {
+                    location.reload();
+                }
+            })
+
+        event.preventDefault();
+    });
+
+    jQuery(document).on("submit", '#loyaltyVerifySmsForm', function (event) {
+        var smsCode = jQuery('#loyaltySmsCode');
+        var checkId = jQuery('#loyaltyCheckId');
+
+        jQuery.ajax({
+            url: retailcrmLoyaltyUrl.url + 'admin-ajax.php?action=retailcrm_confirm_sms_customer_loyalty',
+            method: 'POST',
+            timeout: 0,
+            data: {ajax: 1, code: smsCode.val(), checkId: checkId.val(), _ajax_nonce: retailcrmNonce},
+            dataType: 'json'
+        })
+            .done(function (response) {
+                if (response.hasOwnProperty('error')) {
+                    jQuery('#loyaltyVerifySmsForm').append('<p style="color: red">'+ response.error + '</p>')
 
                     event.preventDefault();
                     return false;

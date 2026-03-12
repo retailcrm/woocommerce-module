@@ -65,6 +65,21 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             );
         }
 
+        public function getSmsVerificationForm(string $checkId)
+        {
+            return sprintf(
+                '
+                    <form id="loyaltyVerifySmsForm" method="post">
+                        <p><input type="text" name="smsCode" id="loyaltySmsCode" placeholder="%1$s" required></p>
+                        <input type="hidden" name="checkId" id="loyaltyCheckId" value="%2$s">
+                        <input type="submit" value="%3$s">
+                    </form>',
+                esc_html__('SMS code', 'woo-retailcrm'),
+                esc_attr($checkId),
+                esc_html__('Confirm', 'woo-retailcrm')
+            );
+        }
+
         public function getInfoLoyalty(array $loyaltyAccount)
         {
             $operationTypes = [

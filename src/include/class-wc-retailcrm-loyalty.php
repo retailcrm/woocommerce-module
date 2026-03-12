@@ -143,7 +143,35 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                     );
                 }
 
-                return $response->isSuccessful();
+                return $response;
+            } catch (Throwable $exception) {
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
+
+                return false;
+            }
+        }
+
+        public function getSmsVerificationForm(string $checkId): string
+        {
+            return $this->loyaltyForm->getSmsVerificationForm($checkId);
+        }
+
+        public function confirmSmsVerification(string $code, string $checkId): bool
+        {
+            try {
+                $response = $this->apiClient->confirmSmsVerification(['code' => $code, 'checkId' => $checkId]);
+
+                if (!$response->isSuccessful()) {
+                    WC_Retailcrm_Logger::error(
+                        __METHOD__,
+                        'Error while confirming sms verification',
+                        ['response' => json_decode($response->getRawResponse(), true)]
+                    );
+
+                    return false;
+                }
+
+                return true;
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
 

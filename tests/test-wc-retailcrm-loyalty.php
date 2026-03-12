@@ -103,7 +103,7 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $result = $this->loyalty->activateLoyaltyCustomer(1);
 
-        $this->assertTrue($result);
+        $this->assertTrue($result->isSuccessful());
     }
 
     /**

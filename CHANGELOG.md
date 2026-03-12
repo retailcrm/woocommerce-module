@@ -1,3 +1,6 @@
+## 2026-03-11 5.0.12
+* Sms confirm added
+
 ## 2026-03-04 5.0.11
 * Add retailcrm_allowed_tags hooks for allowed tag contexts
 

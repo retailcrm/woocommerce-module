@@ -1,4 +1,9 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 return [
     'domain' => null,
     'plural-forms' =>
