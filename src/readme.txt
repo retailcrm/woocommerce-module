@@ -83,6 +83,9 @@ Asegúrate de tener una clave API específica para cada tienda. Las siguientes i
 
 
 == Changelog ==
+= 5.0.13 =
+*PHP 8.3 deprecation fixes
+
 = 5.0.12 =
 * Sms confirm added
 
