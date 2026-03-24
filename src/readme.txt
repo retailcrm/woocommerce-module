@@ -4,7 +4,7 @@ Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
 Tested up to: 6.9
-Stable tag: 5.0.12
+Stable tag: 5.0.13
 License: MIT
 License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
 
@@ -45,46 +45,9 @@ Make sure you have a specific API key must for each store.
 1. Enter the Simla.com address, the API key, the API version and click the save settings button. If no other settings appear after saving, refresh the page.
 2. A list of directories will pop up, in which you will have to set up delivery and payment methods, as well as order statuses. Check the "Unload leftovers" box if you want to unload leftovers from Simla.com to your store (for more details, see the description).
 
-== Descripción ==
-
-Lleva tu comercio electrónico al siguiente nivel con Simla.com, una herramienta de 360º que te permite no solo integrar plataformas clave como WooCommerce, sino también tener una visión completa de tu negocio y un control total sobre él independientemente de su tamaño.
-
-Este plugin de WooСommerce y Simla.com te ayudará a administrar tus pedidos, catálogos y stock más fácilmente al generar un catálogo compatible con el sistema de Simla.com, que crea un intercambio bidireccional de pedidos entre WooCommerce y Simla.com. También podrás enviar y recibir cambios en pedidos y sincronizar tu mercadería en Simla.com con el de tu tienda automáticamente. ¿Cómo? Al habilitar la función de "descarga de stock", tu bodega se actualizará automáticamente cada 15 minutos. Tampoco tendrás que ocultar manualmente las existencias agotadas en su sitio web, ¡el sistema lo hará por ti automáticamente!
-
-= SINCRONIZA TUS DATOS =
-
-El plugin descarga y actualiza los cambios de Simla.com a WooCommerce cada 5 minutos.
-
-= PERSONALIZA =
-
-El plugin de Simla.com te permite realizar cambios en las clasificaciones básicas colocando una copia de la clasificación del directorio "incluir" en el directorio "wp-content/retailcrm-custom".
-
-¿A que te hemos convencido? Instala ya el plugin de Simla.com y 360NRS y únete a nuestros más de 10,000 clientes en Europa y Latinoamérica mientras haces crecer tu negocio de manera más eficiente.
-
-== Instalación ==
-
-= ACTIVACIÓN Y CONFIGURACIÓN =
-
-Después de activar el plugin, abre la ventana de configuración de WooCommerce, selecciona la pestaña "Integración" y especifica la dirección del Simla.com en la configuración de Simla.com (por ejemplo: https://example.simla.com). También deberás especificar la clave API generada por nuestro sistema (mira las instrucciones para agregar una clave a [Simla.com aquí](http://www.retailcrm.es/docs/Users/ApiKeys)) y seleccionar la versión de API deseada (API v5 solo está disponible desde Simla.com 6.0 y posteriores).
-
-== PREGUNTAS FRECUENTES ==
-
-= I. No hay una lista de directorios para configurar el cumplimiento =
-
-Asegúrate de que todos los métodos estén disponibles para la clave API generada
-
-= II. No veo ningún pedido en Simla.com =
-Asegúrate de tener una clave API específica para cada tienda. Las siguientes instrucciones te ayudarán a configurarla:
-
-== Pantallazos ==
-
-1. Introduce la dirección del Simla.com, la clave API, la versión API y haz clic en el botón “Guardar configuración''. Si no aparecen otras configuraciones después de guardar, actualiza la página.
-2. Después de guardar aparecerá una lista de directorios en la que deberás configurar los métodos de envío y pago, así como los estados de los pedidos. Marca la casilla "Descargar restos" si deseas descargar los restos de Simla.com a tu tienda (para obtener más detalles, consulta la descripción).
-
-
 == Changelog ==
 = 5.0.13 =
-*PHP 8.3 deprecation fixes
+* PHP 8.3 deprecation fixes
 
 = 5.0.12 =
 * Sms confirm added
