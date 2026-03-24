@@ -585,7 +585,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             WC_Retailcrm_Logger::setHook(current_action());
             $page = filter_input(INPUT_POST, 'Step', FILTER_SANITIZE_NUMBER_INT);
-            $entity = filter_input(INPUT_POST, 'Entity', FILTER_SANITIZE_STRING);
+            $entity = isset($_POST['Entity']) ? sanitize_text_field(wp_unslash($_POST['Entity'])) : null;
 
             if ($entity === 'customer') {
                 $this->uploader->uploadArchiveCustomers($page);
@@ -966,7 +966,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 wp_die();
             }
 
-            $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
+            $phone = isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : null;
             $userId = filter_input(INPUT_POST, 'userId', FILTER_SANITIZE_NUMBER_INT);
             $site = $this->apiClient->getSingleSiteForKey();
             $isSuccessful = false;

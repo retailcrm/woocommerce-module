@@ -158,6 +158,7 @@ class WC_Retailcrm_Response implements \ArrayAccess
      *
      * TODO PHP < 8.0 не поддерживает тип mixed. Оператор | для перечисления типов также не поддерживается.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!isset($this->response[$offset])) {
