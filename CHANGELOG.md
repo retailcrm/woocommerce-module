@@ -1,5 +1,5 @@
 ## 2026-03-23 5.0.13
-*PHP 8.3 deprecation fixes
+* PHP 8.3 deprecation fixes
 
 ## 2026-03-11 5.0.12
 * Sms confirm added
