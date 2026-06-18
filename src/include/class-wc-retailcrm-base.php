@@ -91,6 +91,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [$this, 'api_sanitized']);
             add_action('admin_bar_menu', [$this, 'add_retailcrm_button'], 100);
             add_action('woocommerce_checkout_order_processed', [$this, 'retailcrm_process_order'], 10, 1);
+            add_action('woocommerce_store_api_checkout_order_processed', [$this, 'retailcrm_process_order'], 10, 1);
             add_action('retailcrm_history', [$this, 'retailcrm_history_get']);
             add_action('retailcrm_icml', [$this, 'generate_icml']);
             add_action('retailcrm_inventories', [$this, 'load_stocks']);
@@ -1106,7 +1107,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/retailcrm-loyalty-cart.js';
 
                 wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, array('jquery'), filemtime($scriptPath), true);
-                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', filemtime($scriptPath), true);
+                wp_enqueue_script('retailcrm-loyalty-cart');
                 wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminCoupon', [
                         'url' => get_admin_url(),
                         'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce'),
@@ -1237,8 +1238,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $scriptDir = $jsScriptsPath . $scriptName . '.js';
                 $scriptPath = $jsScriptsPathDir . $scriptName . '.js';
 
-                wp_register_script($scriptName, $scriptDir, false, filemtime($scriptPath), true);
-                wp_enqueue_script($scriptName, $scriptDir, '', filemtime($scriptPath), true);
+                wp_register_script($scriptName, $scriptDir, ['jquery'], filemtime($scriptPath), true);
+                wp_enqueue_script($scriptName);
             }
 
             // In this method transfer wp-admin url in JS scripts.
@@ -1277,8 +1278,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $jsScriptsPath = plugins_url() . self::ASSETS_DIR . '/js/' . $scriptName . '.js';
             $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/' . $scriptName . '.js';
 
-            wp_register_script($scriptName, $jsScriptsPath, false, filemtime($scriptPath), true);
-            wp_enqueue_script($scriptName, $jsScriptsPath, '', filemtime($scriptPath), true);
+            wp_register_script($scriptName, $jsScriptsPath, ['jquery'], filemtime($scriptPath), true);
+            wp_enqueue_script($scriptName);
             wp_localize_script($scriptName, 'RetailcrmTracker', ['url' => get_admin_url()]);
         }
 
@@ -1531,8 +1532,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $scriptDir = $jsScriptsPath . $jsScript . '.js';
             $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/' . $jsScript . '.js';
 
-            wp_register_script($jsScript, $scriptDir, false, filemtime($scriptPath), true);
-            wp_enqueue_script($jsScript, $scriptDir, '', filemtime($scriptPath), true);
+            wp_register_script($jsScript, $scriptDir, ['jquery'], filemtime($scriptPath), true);
+            wp_enqueue_script($jsScript);
             wp_localize_script($jsScript, 'retailcrmLoyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'retailcrmCustomerId', $userId);
             wp_localize_script($jsScript, 'retailcrmMessagePhone', $messagePhone);
