@@ -1,4 +1,4 @@
-## 2026-06-17 5.0.14
+## 2026-06-18 5.0.14
 * WordPress 7.0 compatibility: updated Tested up to
 * Fixed jQuery dependency registration for plugin scripts
 * Added WooCommerce Store API hook for block-based checkout order processing

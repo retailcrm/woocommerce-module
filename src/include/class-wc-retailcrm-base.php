@@ -517,14 +517,29 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
 
         /**
-         * @param int $order_id
+         * @param int|\WC_Order $order_id
          *
          * @codeCoverageIgnore Check in another tests
          */
         public function retailcrm_process_order($order_id)
         {
+            if ($order_id instanceof \WC_Order) {
+                $order_id = $order_id->get_id();
+            }
+
             WC_Retailcrm_Logger::setHook(current_action(), $order_id);
             $this->orders->orderCreate($order_id);
+        }
+
+        /**
+         * Returns true if order was already processed via classic or Store API checkout hook.
+         */
+        private function checkout_order_already_processed(): bool
+        {
+            return (bool) (
+                did_action('woocommerce_checkout_order_processed')
+                || did_action('woocommerce_store_api_checkout_order_processed')
+            );
         }
 
         /**
@@ -682,10 +697,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return;
             }
 
-            if (did_action('woocommerce_checkout_order_processed')) {
+            if ($this->checkout_order_already_processed()) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'There was a hook woocommerce_checkout_order_processed'
+                    'There was a hook woocommerce_checkout_order_processed or woocommerce_store_api_checkout_order_processed'
                 );
 
                 return;
@@ -819,12 +834,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (
                 WC_Retailcrm_Plugin::history_running() === true
-                || did_action('woocommerce_checkout_order_processed')
+                || $this->checkout_order_already_processed()
                 || did_action('woocommerce_new_order')
             ) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'History in progress or already did actions (woocommerce_checkout_order_processed;woocommerce_new_order), skip'
+                    'History in progress or already did actions (woocommerce_checkout_order_processed;woocommerce_store_api_checkout_order_processed;woocommerce_new_order), skip'
                 );
 
                 return;
