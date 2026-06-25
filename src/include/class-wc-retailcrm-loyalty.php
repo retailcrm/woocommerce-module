@@ -316,6 +316,10 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
             $coupons = $this->getCouponLoyalty($woocommerce->customer->get_email());
 
             foreach ($coupons as $item) {
+                // Remove from the cart before deleting, otherwise the cart keeps a reference to a coupon
+                // that no longer exists and WooCommerce reports "coupon does not exist" on the block cart.
+                $woocommerce->cart->remove_coupon($item['code']);
+
                 $coupon = new WC_Coupon($item['code']);
 
                 $coupon->delete(true);
