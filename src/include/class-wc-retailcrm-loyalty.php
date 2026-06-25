@@ -29,6 +29,9 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         protected $validator;
 
+        /** @var bool Guard against nested coupon processing triggered by cart recalculation. */
+        private static $isProcessingCoupon = false;
+
         public function __construct($apiClient, $settings)
         {
             $this->apiClient = $apiClient;
@@ -239,6 +242,22 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         }
 
         public function processingLoyaltyCoupon($refreshCoupon = false)
+        {
+            // Skip nested calls: applying the coupon recalculates the cart and re-fires the coupon hooks.
+            if (self::$isProcessingCoupon) {
+                return null;
+            }
+
+            self::$isProcessingCoupon = true;
+
+            try {
+                return $this->doProcessingLoyaltyCoupon($refreshCoupon);
+            } finally {
+                self::$isProcessingCoupon = false;
+            }
+        }
+
+        private function doProcessingLoyaltyCoupon($refreshCoupon = false)
         {
             global $woocommerce;
 
@@ -562,7 +581,11 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
                 $product = $item['data'];
 
                 $productRegularPrice = wc_get_price_including_tax($product, ["price" => $product->get_regular_price()]);
-                $discount = $productRegularPrice - ($item['line_total'] / $item['quantity']);
+
+                // Base the discount on the product price, not the cart line total: line totals are not ready
+                // on woocommerce_add_to_cart and include the loyalty coupon, which compounds the discount.
+                $productActivePrice = wc_get_price_including_tax($product);
+                $discount = $productRegularPrice - $productActivePrice;
 
                 $order['items'][] = [
                     'offer' => $useXmlId ? ['xmlId' => $product->get_sku()] : ['externalId' => $product->get_id()],

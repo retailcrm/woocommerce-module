@@ -148,6 +148,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                 // Add coupon hooks for loyalty program
                 add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
+                // Apply the loyalty coupon on the block-based cart, where woocommerce_cart_coupon is not fired
+                add_action('woocommerce_add_to_cart', [$this, 'apply_loyalty_coupon'], 12, 1);
                 //Remove coupons when cart changes
                 add_action('woocommerce_add_to_cart', [$this, 'refresh_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_after_cart_item_quantity_update', [$this, 'refresh_loyalty_coupon'], 11, 1);
@@ -1145,6 +1147,20 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             try {
                 $this->loyalty->processingLoyaltyCoupon(true);
+            } catch (Throwable $exception) {
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
+            }
+        }
+
+        /**
+         * Applies the loyalty coupon outside the classic cart template (block-based cart).
+         */
+        public function apply_loyalty_coupon()
+        {
+            WC_Retailcrm_Logger::setHook(current_action());
+
+            try {
+                $this->loyalty->processingLoyaltyCoupon();
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
