@@ -1,3 +1,8 @@
+## 2026-06-18 5.0.14
+* WordPress 7.0 compatibility: updated Tested up to
+* Fixed jQuery dependency registration for plugin scripts
+* Added WooCommerce Store API hook for block-based checkout order processing
+
 ## 2026-03-23 5.0.13
 * PHP 8.3 deprecation fixes
 

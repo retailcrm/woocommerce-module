@@ -91,6 +91,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, [$this, 'api_sanitized']);
             add_action('admin_bar_menu', [$this, 'add_retailcrm_button'], 100);
             add_action('woocommerce_checkout_order_processed', [$this, 'retailcrm_process_order'], 10, 1);
+            add_action('woocommerce_store_api_checkout_order_processed', [$this, 'retailcrm_process_order'], 10, 1);
             add_action('retailcrm_history', [$this, 'retailcrm_history_get']);
             add_action('retailcrm_icml', [$this, 'generate_icml']);
             add_action('retailcrm_inventories', [$this, 'load_stocks']);
@@ -147,6 +148,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
                 // Add coupon hooks for loyalty program
                 add_action('woocommerce_cart_coupon', [$this, 'coupon_info'], 11, 1);
+                // Apply the loyalty coupon on the block-based cart, where woocommerce_cart_coupon is not fired
+                add_action('woocommerce_add_to_cart', [$this, 'apply_loyalty_coupon'], 12, 1);
                 //Remove coupons when cart changes
                 add_action('woocommerce_add_to_cart', [$this, 'refresh_loyalty_coupon'], 11, 1);
                 add_action('woocommerce_after_cart_item_quantity_update', [$this, 'refresh_loyalty_coupon'], 11, 1);
@@ -516,14 +519,29 @@ if (!class_exists('WC_Retailcrm_Base')) {
         }
 
         /**
-         * @param int $order_id
+         * @param int|\WC_Order $order_id
          *
          * @codeCoverageIgnore Check in another tests
          */
         public function retailcrm_process_order($order_id)
         {
+            if ($order_id instanceof \WC_Order) {
+                $order_id = $order_id->get_id();
+            }
+
             WC_Retailcrm_Logger::setHook(current_action(), $order_id);
             $this->orders->orderCreate($order_id);
+        }
+
+        /**
+         * Returns true if order was already processed via classic or Store API checkout hook.
+         */
+        private function checkout_order_already_processed(): bool
+        {
+            return (bool) (
+                did_action('woocommerce_checkout_order_processed')
+                || did_action('woocommerce_store_api_checkout_order_processed')
+            );
         }
 
         /**
@@ -681,10 +699,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 return;
             }
 
-            if (did_action('woocommerce_checkout_order_processed')) {
+            if ($this->checkout_order_already_processed()) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'There was a hook woocommerce_checkout_order_processed'
+                    'There was a hook woocommerce_checkout_order_processed or woocommerce_store_api_checkout_order_processed'
                 );
 
                 return;
@@ -818,12 +836,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             if (
                 WC_Retailcrm_Plugin::history_running() === true
-                || did_action('woocommerce_checkout_order_processed')
+                || $this->checkout_order_already_processed()
                 || did_action('woocommerce_new_order')
             ) {
                 WC_Retailcrm_Logger::info(
                     __METHOD__,
-                    'History in progress or already did actions (woocommerce_checkout_order_processed;woocommerce_new_order), skip'
+                    'History in progress or already did actions (woocommerce_checkout_order_processed;woocommerce_store_api_checkout_order_processed;woocommerce_new_order), skip'
                 );
 
                 return;
@@ -1106,7 +1124,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/retailcrm-loyalty-cart.js';
 
                 wp_register_script('retailcrm-loyalty-cart', $jsScriptPath, array('jquery'), filemtime($scriptPath), true);
-                wp_enqueue_script('retailcrm-loyalty-cart', $jsScriptPath, '', filemtime($scriptPath), true);
+                wp_enqueue_script('retailcrm-loyalty-cart');
                 wp_localize_script('retailcrm-loyalty-cart', 'RetailcrmAdminCoupon', [
                         'url' => get_admin_url(),
                         'nonce' => wp_create_nonce('woo-retailcrm-coupon-info-nonce'),
@@ -1129,6 +1147,20 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             try {
                 $this->loyalty->processingLoyaltyCoupon(true);
+            } catch (Throwable $exception) {
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
+            }
+        }
+
+        /**
+         * Applies the loyalty coupon outside the classic cart template (block-based cart).
+         */
+        public function apply_loyalty_coupon()
+        {
+            WC_Retailcrm_Logger::setHook(current_action());
+
+            try {
+                $this->loyalty->processingLoyaltyCoupon();
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
@@ -1237,8 +1269,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 $scriptDir = $jsScriptsPath . $scriptName . '.js';
                 $scriptPath = $jsScriptsPathDir . $scriptName . '.js';
 
-                wp_register_script($scriptName, $scriptDir, false, filemtime($scriptPath), true);
-                wp_enqueue_script($scriptName, $scriptDir, '', filemtime($scriptPath), true);
+                wp_register_script($scriptName, $scriptDir, ['jquery'], filemtime($scriptPath), true);
+                wp_enqueue_script($scriptName);
             }
 
             // In this method transfer wp-admin url in JS scripts.
@@ -1277,8 +1309,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $jsScriptsPath = plugins_url() . self::ASSETS_DIR . '/js/' . $scriptName . '.js';
             $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/' . $scriptName . '.js';
 
-            wp_register_script($scriptName, $jsScriptsPath, false, filemtime($scriptPath), true);
-            wp_enqueue_script($scriptName, $jsScriptsPath, '', filemtime($scriptPath), true);
+            wp_register_script($scriptName, $jsScriptsPath, ['jquery'], filemtime($scriptPath), true);
+            wp_enqueue_script($scriptName);
             wp_localize_script($scriptName, 'RetailcrmTracker', ['url' => get_admin_url()]);
         }
 
@@ -1531,8 +1563,8 @@ if (!class_exists('WC_Retailcrm_Base')) {
             $scriptDir = $jsScriptsPath . $jsScript . '.js';
             $scriptPath = plugin_dir_path( __FILE__ ) . '../assets/js/' . $jsScript . '.js';
 
-            wp_register_script($jsScript, $scriptDir, false, filemtime($scriptPath), true);
-            wp_enqueue_script($jsScript, $scriptDir, '', filemtime($scriptPath), true);
+            wp_register_script($jsScript, $scriptDir, ['jquery'], filemtime($scriptPath), true);
+            wp_enqueue_script($jsScript);
             wp_localize_script($jsScript, 'retailcrmLoyaltyUrl', $loyaltyUrl);
             wp_localize_script($jsScript, 'retailcrmCustomerId', $userId);
             wp_localize_script($jsScript, 'retailcrmMessagePhone', $messagePhone);
