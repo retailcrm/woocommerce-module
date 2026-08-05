@@ -274,6 +274,70 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_end_clean();
     }
 
+    public function test_get_cart_data_for_tracker_keeps_cart_id_until_cart_is_empty()
+    {
+        $product = WC_Helper_Product::create_simple_product();
+        $product->set_sku('SKU-123');
+        $product->set_price(159);
+        $product->save();
+
+        WC()->cart->empty_cart();
+        WC()->session->__unset(WC_Retailcrm_Base::TRACKER_CART_ID_SESSION_KEY);
+        WC()->cart->add_to_cart($product->get_id(), 2);
+
+        $initialCart = $this->baseRetailcrm->get_cart_data_for_tracker();
+
+        $this->assertNotEmpty($initialCart['cart_id']);
+        $this->assertTrue(wp_is_uuid($initialCart['cart_id']));
+        $this->assertCount(1, $initialCart['items']);
+        $this->assertEquals((string) $product->get_id(), $initialCart['items'][0]['id']);
+        $this->assertEquals('SKU-123', $initialCart['items'][0]['sku']);
+        $this->assertEquals(159.0, $initialCart['items'][0]['price']);
+        $this->assertEquals(2, $initialCart['items'][0]['quantity']);
+
+        $updatedCart = $this->baseRetailcrm->get_cart_data_for_tracker();
+
+        $this->assertEquals($initialCart['cart_id'], $updatedCart['cart_id']);
+
+        WC()->cart->empty_cart();
+        $emptyCart = $this->baseRetailcrm->get_cart_data_for_tracker();
+
+        $this->assertNull($emptyCart['cart_id']);
+        $this->assertSame([], $emptyCart['items']);
+        $this->assertNull(WC()->session->get(WC_Retailcrm_Base::TRACKER_CART_ID_SESSION_KEY));
+
+        WC()->cart->add_to_cart($product->get_id());
+        $newCart = $this->baseRetailcrm->get_cart_data_for_tracker();
+
+        $this->assertNotEquals($initialCart['cart_id'], $newCart['cart_id']);
+
+        WC()->cart->empty_cart();
+        WC()->session->__unset(WC_Retailcrm_Base::TRACKER_CART_ID_SESSION_KEY);
+    }
+
+    public function test_retailcrm_process_order_clears_tracker_cart_id_after_processing()
+    {
+        $orders = $this
+            ->getMockBuilder('\WC_Retailcrm_Orders')
+            ->disableOriginalConstructor()
+            ->setMethods(['orderCreate'])
+            ->getMock();
+        $orders
+            ->expects($this->once())
+            ->method('orderCreate')
+            ->with(123);
+
+        $ordersProperty = new ReflectionProperty(WC_Retailcrm_Base::class, 'orders');
+        $ordersProperty->setAccessible(true);
+        $ordersProperty->setValue($this->baseRetailcrm, $orders);
+
+        WC()->session->set(WC_Retailcrm_Base::TRACKER_CART_ID_SESSION_KEY, wp_generate_uuid4());
+
+        $this->baseRetailcrm->retailcrm_process_order(123);
+
+        $this->assertNull(WC()->session->get(WC_Retailcrm_Base::TRACKER_CART_ID_SESSION_KEY));
+    }
+
     public function test_initialize_whatsapp()
     {
         ob_start();

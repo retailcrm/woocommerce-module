@@ -23,6 +23,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
     class WC_Retailcrm_Base extends WC_Retailcrm_Abstracts_Settings
     {
         const ASSETS_DIR = '/woo-retailcrm/assets';
+        const TRACKER_CART_ID_SESSION_KEY = 'retailcrm_tracker_cart_id';
 
         /** @var WC_Retailcrm_Proxy|WC_Retailcrm_Client_V5|bool */
         protected $apiClient;
@@ -196,6 +197,16 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
         function get_cart_items_for_tracker()
         {
+            wp_send_json_success($this->get_cart_data_for_tracker());
+        }
+
+        /**
+         * Get the current cart data for the JS tracker.
+         *
+         * @return array
+         */
+        public function get_cart_data_for_tracker()
+        {
             $cartItems = [];
 
             foreach (WC()->cart->get_cart() as $item) {
@@ -209,7 +220,26 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 ];
             }
 
-            wp_send_json_success($cartItems);
+            $cartId = null;
+            $session = WC()->session;
+
+            if (empty($cartItems)) {
+                if ($session) {
+                    $session->__unset(self::TRACKER_CART_ID_SESSION_KEY);
+                }
+            } elseif ($session) {
+                $cartId = $session->get(self::TRACKER_CART_ID_SESSION_KEY);
+
+                if (empty($cartId)) {
+                    $cartId = wp_generate_uuid4();
+                    $session->set(self::TRACKER_CART_ID_SESSION_KEY, $cartId);
+                }
+            }
+
+            return [
+                'cart_id' => $cartId,
+                'items' => $cartItems,
+            ];
         }
 
         function get_customer_info_for_tracker()
@@ -531,6 +561,10 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             WC_Retailcrm_Logger::setHook(current_action(), $order_id);
             $this->orders->orderCreate($order_id);
+
+            if (WC()->session) {
+                WC()->session->__unset(self::TRACKER_CART_ID_SESSION_KEY);
+            }
         }
 
         /**
