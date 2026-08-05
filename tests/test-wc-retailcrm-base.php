@@ -274,7 +274,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         ob_end_clean();
     }
 
-    public function test_get_cart_data_for_tracker_keeps_cart_id_until_cart_is_empty()
+    public function test_cart_id_lifecycle()
     {
         $product = WC_Helper_Product::create_simple_product();
         $product->set_sku('SKU-123');
@@ -315,7 +315,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         WC()->session->__unset(WC_Retailcrm_Base::TRACKER_CART_ID_SESSION_KEY);
     }
 
-    public function test_retailcrm_process_order_clears_tracker_cart_id_after_processing()
+    public function test_cart_id_cleared_after_checkout()
     {
         $orders = $this
             ->getMockBuilder('\WC_Retailcrm_Orders')
