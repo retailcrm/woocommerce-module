@@ -278,6 +278,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
     {
         $product = WC_Helper_Product::create_simple_product();
         $product->set_sku('SKU-123');
+        $product->set_regular_price(159);
         $product->set_price(159);
         $product->save();
 
@@ -292,7 +293,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertCount(1, $initialCart['items']);
         $this->assertEquals((string) $product->get_id(), $initialCart['items'][0]['id']);
         $this->assertEquals('SKU-123', $initialCart['items'][0]['sku']);
-        $this->assertEquals(159.0, $initialCart['items'][0]['price']);
+        $this->assertEquals(wc_get_price_including_tax($product), $initialCart['items'][0]['price']);
         $this->assertEquals(2, $initialCart['items'][0]['quantity']);
 
         $updatedCart = $this->baseRetailcrm->get_cart_data_for_tracker();
