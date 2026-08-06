@@ -68,21 +68,23 @@ function startTrack(...trackerEvents)
 
     function sendCartChange()
     {
-        let cart = {};
-        cart.items = [];
+        getCartItems().then(function(response) {
+            if (!response?.cart_id || !Array.isArray(response.items) || response.items.length === 0) {
+                return;
+            }
 
-        getCartItems().then(function(cartItems) {
-            cartItems.forEach(item => {
-                cart.items.push({
-                    external_id: item.id,
-                    xml_id: item.sku,
-                    price: item.price,
-                    quantity: item.quantity
-                });
-            });
-        });
+            const cart = {
+                cart_id: response.cart_id,
+                items: response.items.map(function(item) {
+                    return {
+                        external_id: item.id,
+                        xml_id: item.sku,
+                        price: item.price,
+                        quantity: item.quantity
+                    };
+                })
+            };
 
-        if (cart.items !== []) {
             getCustomerInfo().then(function (customer) {
                 if (!customer?.externalId) {
                     return;
@@ -93,7 +95,7 @@ function startTrack(...trackerEvents)
                     ocapi.event('cart', cart);
                 }, 1000);
             });
-        }
+        });
     }
 
     async function getCustomerInfo() {

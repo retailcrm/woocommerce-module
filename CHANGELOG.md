@@ -1,3 +1,6 @@
+## 2026-08-05 5.0.15
+* Fix cart tracking event payload and cart ID lifecycle
+
 ## 2026-06-18 5.0.14
 * WordPress 7.0 compatibility: updated Tested up to
 * Fixed jQuery dependency registration for plugin scripts
