@@ -63,6 +63,10 @@ if (!class_exists('WC_Retailcrm_History')) :
                 unset($this->retailcrmSettings['stores_for_uploading']);
             }
 
+            if (isset($this->retailcrmSettings['shipping_store_mapping'])) {
+                unset($this->retailcrmSettings['shipping_store_mapping']);
+            }
+
             $this->retailcrm = $retailcrm;
             $this->startDate = new DateTime('-1 days');
         }

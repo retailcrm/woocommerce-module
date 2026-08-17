@@ -503,6 +503,17 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         ),
                 ];
 
+                $this->form_fields['shipping_store_mapping'] = [
+                    'title' => esc_html__('Pickup method and warehouse mapping', 'woo-retailcrm'),
+                    'type' => 'shipping_store_mapping',
+                    'shipping_methods' => get_wc_shipping_methods_by_zones(false),
+                    'stores' => $crmStores,
+                    'description' => esc_html__(
+                        'Mapped pickup methods are available only when every cart item has enough stock in the selected CRM warehouse.',
+                        'woo-retailcrm'
+                    ),
+                ];
+
                 /**
                  * UA options
                  */
@@ -872,6 +883,99 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
         <?php
 
         return ob_get_clean();
+    }
+
+    /**
+     * Generate shipping method to CRM warehouse mapping table.
+     *
+     * @param string $key
+     * @param array  $data
+     *
+     * @return string
+     *
+     * @codeCoverageIgnore
+     */
+    public function generate_shipping_store_mapping_html($key, $data)
+    {
+        $fieldKey = $this->get_field_key($key);
+        $mapping = $this->get_option($key, []);
+        $data = wp_parse_args($data, ['shipping_methods' => [], 'stores' => [], 'description' => '']);
+
+        ob_start();
+        ?>
+        <tr valign="top">
+            <th scope="row" class="titledesc">
+                <label><?php echo wp_kses_post($data['title']); ?></label>
+            </th>
+            <td class="forminp">
+                <table class="widefat striped" style="max-width: 700px;">
+                    <thead>
+                        <tr>
+                            <th><?php echo esc_html__('Shipping method', 'woo-retailcrm'); ?></th>
+                            <th><?php echo esc_html__('CRM warehouse', 'woo-retailcrm'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($data['shipping_methods'] as $rateId => $shippingMethod) : ?>
+                        <tr>
+                            <td>
+                                <?php
+                                echo esc_html(sprintf(
+                                    '%1$s — %2$s (%3$s)',
+                                    $shippingMethod['zone_name'],
+                                    $shippingMethod['title'],
+                                    $rateId
+                                ));
+                                ?>
+                            </td>
+                            <td>
+                                <select name="<?php echo esc_attr($fieldKey); ?>[<?php echo esc_attr($rateId); ?>]">
+                                    <option value=""><?php echo esc_html__('Not selected', 'woo-retailcrm'); ?></option>
+                                    <?php foreach ($data['stores'] as $storeCode => $storeName) : ?>
+                                        <option value="<?php echo esc_attr($storeCode); ?>" <?php selected($mapping[$rateId] ?? '', $storeCode); ?>>
+                                            <?php echo esc_html($storeName); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <p class="description"><?php echo wp_kses_post($data['description']); ?></p>
+            </td>
+        </tr>
+        <?php
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Validate shipping method to warehouse mapping.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return array
+     */
+    public function validate_shipping_store_mapping_field($key, $value)
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $mapping = [];
+
+        foreach ($value as $rateId => $storeCode) {
+            $rateId = sanitize_text_field(wp_unslash($rateId));
+            $storeCode = sanitize_text_field(wp_unslash($storeCode));
+
+            if ($rateId !== '' && $storeCode !== '') {
+                $mapping[$rateId] = $storeCode;
+            }
+        }
+
+        return $mapping;
     }
 
     /**
