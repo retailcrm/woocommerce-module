@@ -152,7 +152,7 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
             $successfulResponse,
             $failedResponse
         );
-        set_transient('wc_shipping_version', 'review-version');
+        set_transient('shipping-transient-version', 'review-version');
 
         $inventories = new WC_Retailcrm_Inventories($this->apiMock);
         $inventories->updateQuantity();
@@ -162,7 +162,10 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
             ['main' => 25, 'missing' => 0],
             $parent->get_meta(WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY, true)
         );
-        $this->assertNotEquals('review-version', get_transient('wc_shipping_version'));
+        $this->assertNotEquals(
+            'review-version',
+            WC_Cache_Helper::get_transient_version('shipping')
+        );
     }
 
     private function checkProductData($retailcrm, $response, $offerId, $entity)
