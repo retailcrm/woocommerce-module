@@ -426,6 +426,21 @@ msgstr "Almacenes disponibles en CRM"
 msgid "Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)"
 msgstr "Selecciona los almacenes para recibir el stock desde CRM. Para seleccionar varios mantén pulsado CTRL (para Windows y Linux) o ⌘ Command (para MacOS)"
 
+msgid "Pickup method and warehouse mapping"
+msgstr "Correspondencia entre métodos de recogida y almacenes"
+
+msgid "Mapped pickup methods are available only when every cart item has enough stock in the selected CRM warehouse."
+msgstr "Los métodos de recogida vinculados solo están disponibles si hay existencias suficientes de cada artículo del carrito en el almacén de CRM seleccionado."
+
+msgid "Shipping method"
+msgstr "Método de envío"
+
+msgid "CRM warehouse"
+msgstr "Almacén de CRM"
+
+msgid "Not selected"
+msgstr "No seleccionado"
+
 msgid "I agree to receive promotional newsletters"
 msgstr "Estoy de acuerdo en recibir los boletines informativos"
 

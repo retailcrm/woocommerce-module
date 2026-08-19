@@ -13,7 +13,7 @@ function get_wc_shipping_methods_by_zones($enhanced = false)
     $defaultZone = WC_Shipping_Zones::get_zone_by();
 
     $shippingZones[$defaultZone->get_id()] = [
-        $defaultZone->get_data(),
+        'zone_name' => $defaultZone->get_zone_name(),
         'zone_id' => $defaultZone->get_id(),
         'formatted_zone_location' => $defaultZone->get_formatted_location(),
         'shipping_methods' => $defaultZone->get_shipping_methods(false)
@@ -39,7 +39,8 @@ function get_wc_shipping_methods_by_zones($enhanced = false)
                         'name' => $shipping_method->method_title,
                         'enabled' => $shipping_method->enabled,
                         'description' => $shipping_method->method_description,
-                        'title' => $shipping_method->title
+                        'title' => $shipping_method->title,
+                        'zone_name' => $shippingZone['zone_name'] ?? '',
                     ];
                 }
 

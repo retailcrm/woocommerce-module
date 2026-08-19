@@ -199,6 +199,13 @@ return [
 		'birthday' => 'Cumpleaños',
         'Standard CRM fields' => 'Los campos del CRM por defecto',
         'Warehouses available in CRM' => 'Almacenes disponibles en CRM',
+        'Pickup method and warehouse mapping' =>
+            'Correspondencia entre métodos de recogida y almacenes',
+        'Mapped pickup methods are available only when every cart item has enough stock in the selected CRM warehouse.' =>
+            'Los métodos de recogida vinculados solo están disponibles si hay existencias suficientes de cada artículo del carrito en el almacén de CRM seleccionado.',
+        'Shipping method' => 'Método de envío',
+        'CRM warehouse' => 'Almacén de CRM',
+        'Not selected' => 'No seleccionado',
         'Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)' =>
             'Selecciona los almacenes para recibir el stock desde CRM. Para seleccionar varios mantén pulsado CTRL (para Windows y Linux) o ⌘ Command (para MacOS)',
         'I agree to receive promotional newsletters' =>

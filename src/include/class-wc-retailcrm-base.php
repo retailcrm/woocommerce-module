@@ -122,6 +122,13 @@ if (!class_exists('WC_Retailcrm_Base')) {
             add_action('wp_console_upload', [$this, 'console_upload'], 99, 2);
             add_action('wp_footer', [$this, 'add_retailcrm_tracking_script'], 102);
 
+            if ($this->get_option('sync') === static::YES) {
+                $shippingStock = new WC_Retailcrm_Shipping_Stock(
+                    $this->get_option('shipping_store_mapping', [])
+                );
+                add_filter('woocommerce_package_rates', [$shippingStock, 'filter_rates'], 10, 2);
+            }
+
             //Tracker
             add_action('wp_ajax_retailcrm_get_cart_items_for_tracker', [$this, 'get_cart_items_for_tracker'], 99);
             add_action('wp_ajax_retailcrm_get_customer_info_for_tracker', [$this, 'get_customer_info_for_tracker'], 99);

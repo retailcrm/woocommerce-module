@@ -124,6 +124,7 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         //Other settings
         $this->assertArrayHasKey('corporate_enabled', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('stores_for_uploading', $this->baseRetailcrm->form_fields);
+        $this->assertArrayHasKey('shipping_store_mapping', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('abandoned_carts_enabled', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('online_assistant', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('deactivate_update_order', $this->baseRetailcrm->form_fields);
@@ -135,6 +136,17 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayHasKey('loyalty', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('loyalty_terms', $this->baseRetailcrm->form_fields);
         $this->assertArrayHasKey('loyalty_personal', $this->baseRetailcrm->form_fields);
+    }
+
+    public function test_validate_shipping_mapping()
+    {
+        $this->assertEquals(
+            ['local_pickup:1' => 'main'],
+            $this->baseRetailcrm->validate_shipping_store_mapping_field(
+                'shipping_store_mapping',
+                ['local_pickup:1' => 'main', 'local_pickup:2' => '']
+            )
+        );
     }
 
     public function test_retailcrm_form_fields_value()

@@ -199,6 +199,13 @@ return [
 		'birthday' => 'День рождения',
         'Standard CRM fields' => 'Стандартные поля CRM',
         'Warehouses available in CRM' => 'Склады, доступные в CRM',
+        'Pickup method and warehouse mapping' =>
+            'Соответствие способов самовывоза и складов',
+        'Mapped pickup methods are available only when every cart item has enough stock in the selected CRM warehouse.' =>
+            'Привязанный способ самовывоза доступен, только если каждого товара в корзине достаточно на выбранном складе CRM.',
+        'Shipping method' => 'Способ доставки',
+        'CRM warehouse' => 'Склад CRM',
+        'Not selected' => 'Не выбрано',
         'Select warehouses to receive balances from CRM. To select several warehouses, hold down CTRL (for Windows and Linux) or ⌘ Command (for MacOS)' =>
             'Выберите склады для получения остатков из CRM. Для выбора нескольких складов зажмите CTRL (для Windows и Linux) или ⌘ Command (для MacOS)',
         'I agree to receive promotional newsletters' =>

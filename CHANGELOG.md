@@ -1,3 +1,6 @@
+## 2026-08-13 5.0.16
+* Add warehouse mapping for pickup shipping methods
+
 ## 2026-08-05 5.0.15
 * Fix cart tracking event payload and cart ID lifecycle
 

@@ -105,6 +105,22 @@ class WC_Retailcrm_History_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    public function test_shipping_mapping_excluded()
+    {
+        $options = $this->setOptions();
+        $options['shipping_store_mapping'] = ['local_pickup:1' => 'main'];
+        update_option(WC_Retailcrm_Base::$option_key, $options);
+
+        $history = new WC_Retailcrm_History($this->apiMock);
+        $settingsProperty = new ReflectionProperty(WC_Retailcrm_History::class, 'retailcrmSettings');
+        $settingsProperty->setAccessible(true);
+
+        $this->assertArrayNotHasKey(
+            'shipping_store_mapping',
+            $settingsProperty->getValue($history)
+        );
+    }
+
     public function test_history_order_create_with_empty_address_delivery()
     {
         $product = WC_Helper_Product::create_simple_product();
