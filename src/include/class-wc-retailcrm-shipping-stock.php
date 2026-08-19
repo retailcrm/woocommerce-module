@@ -55,12 +55,12 @@ if (!class_exists('WC_Retailcrm_Shipping_Stock')) :
                 foreach ($products as $item) {
                     $storeStocks = $item['product']->get_meta(WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY, true);
 
-                    // No meta means that this product has not been synchronized yet.
-                    if (!is_array($storeStocks)) {
+                    // Missing meta or store means that its stock has not been synchronized yet.
+                    if (!is_array($storeStocks) || !array_key_exists($storeCode, $storeStocks)) {
                         continue;
                     }
 
-                    if (($storeStocks[$storeCode] ?? 0) < $item['quantity']) {
+                    if ($storeStocks[$storeCode] < $item['quantity']) {
                         unset($rates[$rateId]);
                         break;
                     }

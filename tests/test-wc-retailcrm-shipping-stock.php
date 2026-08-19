@@ -89,7 +89,7 @@ class WC_Retailcrm_Shipping_Stock_Test extends WC_Retailcrm_Test_Case_Helper
         $this->assertArrayNotHasKey('local_pickup:1', $filter->filter_rates($rates, $package));
     }
 
-    public function test_missing_store_means_zero_stock()
+    public function test_missing_store()
     {
         $product = WC_Helper_Product::create_simple_product();
         $product->update_meta_data(WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY, ['other' => 10]);
@@ -101,6 +101,6 @@ class WC_Retailcrm_Shipping_Stock_Test extends WC_Retailcrm_Test_Case_Helper
             ['data' => $product, 'quantity' => 1],
         ]];
 
-        $this->assertArrayNotHasKey('local_pickup:1', $filter->filter_rates($rates, $package));
+        $this->assertArrayHasKey('local_pickup:1', $filter->filter_rates($rates, $package));
     }
 }
