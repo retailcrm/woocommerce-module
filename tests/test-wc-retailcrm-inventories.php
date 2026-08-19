@@ -135,10 +135,17 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
         );
     }
 
-    public function test_partial_sync_updates_parent_and_cache()
+    public function test_partial_sync()
     {
         $variableProduct = WC_Helper_Product::create_variation_product();
         $children = $variableProduct->get_children();
+        $variableProduct->set_manage_stock(true);
+        $variableProduct->set_stock_quantity(75);
+        $variableProduct->update_meta_data(
+            WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY,
+            ['main' => 75, 'missing' => 5]
+        );
+        $variableProduct->save();
         $firstPage = DataInventoriesRetailCrm::getResponseData();
         $firstPage['pagination']['totalPageCount'] = 2;
         $firstPage['offers'][0]['externalId'] = $children[0];
@@ -158,9 +165,16 @@ class WC_Retailcrm_Inventories_Test extends WC_Retailcrm_Test_Case_Helper
         $inventories->updateQuantity();
 
         $parent = wc_get_product($variableProduct->get_id());
+        $child = wc_get_product($children[0]);
+        $this->assertEquals(75, $parent->get_stock_quantity());
+        $this->assertEquals(
+            ['main' => 75, 'missing' => 5],
+            $parent->get_meta(WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY, true)
+        );
+        $this->assertEquals(50, $child->get_stock_quantity());
         $this->assertEquals(
             ['main' => 25, 'missing' => 0],
-            $parent->get_meta(WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY, true)
+            $child->get_meta(WC_Retailcrm_Inventories::STORE_STOCKS_META_KEY, true)
         );
         $this->assertNotEquals(
             'review-version',

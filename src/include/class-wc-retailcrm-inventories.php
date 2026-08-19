@@ -57,12 +57,14 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
             )));
             $variationProducts = [];
             $stocksUpdated = false;
+            $syncComplete = true;
 
             do {
                 /** @var WC_Retailcrm_Response $response */
                 $response = $this->retailcrm->storeInventories(['details' => true], $page, 250);
 
                 if (empty($response['offers']) || !$response->isSuccessful()) {
+                    $syncComplete = false;
                     break;
                 }
 
@@ -135,7 +137,7 @@ if (!class_exists('WC_Retailcrm_Inventories')) :
                 wp_cache_flush();
             } while ($page <= $totalPageCount);
 
-            if (!empty($variationProducts)) {
+            if ($syncComplete && !empty($variationProducts)) {
                 $chunks = array_chunk($variationProducts, 100, true);
 
                 foreach ($chunks as $chunk) {
