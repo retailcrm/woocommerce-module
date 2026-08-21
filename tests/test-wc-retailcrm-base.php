@@ -149,6 +149,52 @@ class WC_Retailcrm_Base_Test extends WC_Retailcrm_Test_Case_Helper
         );
     }
 
+    public function test_shipping_mapping_field_names_are_waf_safe()
+    {
+        $html = $this->baseRetailcrm->generate_shipping_store_mapping_html(
+            'shipping_store_mapping',
+            [
+                'title' => 'Warehouse mapping',
+                'shipping_methods' => [
+                    'local_pickup:1' => [
+                        'zone_name' => 'Peru',
+                        'title' => 'Pickup',
+                    ],
+                ],
+                'stores' => ['main' => 'Main warehouse'],
+            ]
+        );
+
+        preg_match_all('/name="([^"]+)"/', $html, $matches);
+
+        foreach ($matches[1] as $fieldName) {
+            $this->assertNotRegExp('/[\[\]:]/', $fieldName);
+        }
+    }
+
+    public function test_validate_shipping_mapping_from_waf_safe_fields()
+    {
+        $post = $_POST;
+        $fieldKey = 'woocommerce_integration-retailcrm_shipping_store_mapping';
+
+        try {
+            $_POST = [
+                $fieldKey => '',
+                $fieldKey . '_rate_0' => 'local_pickup:1',
+                $fieldKey . '_store_0' => 'main',
+                $fieldKey . '_rate_1' => 'local_pickup:2',
+                $fieldKey . '_store_1' => '',
+            ];
+
+            $this->assertEquals(
+                ['local_pickup:1' => 'main'],
+                $this->baseRetailcrm->validate_shipping_store_mapping_field('shipping_store_mapping', '')
+            );
+        } finally {
+            $_POST = $post;
+        }
+    }
+
     public function test_retailcrm_form_fields_value()
     {
         foreach ($this->getOptions() as $key => $value) {
