@@ -1,3 +1,6 @@
+## 2026-08-21 5.0.17
+* Fix WAF blocking warehouse mapping settings
+
 ## 2026-08-13 5.0.16
 * Add warehouse mapping for pickup shipping methods
 
