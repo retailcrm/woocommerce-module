@@ -908,6 +908,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                 <label><?php echo wp_kses_post($data['title']); ?></label>
             </th>
             <td class="forminp">
+                <input type="hidden" name="<?php echo esc_attr($fieldKey); ?>" value="">
                 <table class="widefat striped" style="max-width: 700px;">
                     <thead>
                         <tr>
@@ -916,6 +917,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                         </tr>
                     </thead>
                     <tbody>
+                    <?php $mappingIndex = 0; ?>
                     <?php foreach ($data['shipping_methods'] as $rateId => $shippingMethod) : ?>
                         <tr>
                             <td>
@@ -929,7 +931,12 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                                 ?>
                             </td>
                             <td>
-                                <select name="<?php echo esc_attr($fieldKey); ?>[<?php echo esc_attr($rateId); ?>]">
+                                <input
+                                    type="hidden"
+                                    name="<?php echo esc_attr($fieldKey . '_rate_' . $mappingIndex); ?>"
+                                    value="<?php echo esc_attr($rateId); ?>"
+                                >
+                                <select name="<?php echo esc_attr($fieldKey . '_store_' . $mappingIndex); ?>">
                                     <option value=""><?php echo esc_html__('Not selected', 'woo-retailcrm'); ?></option>
                                     <?php foreach ($data['stores'] as $storeCode => $storeName) : ?>
                                         <option value="<?php echo esc_attr($storeCode); ?>" <?php selected($mapping[$rateId] ?? '', $storeCode); ?>>
@@ -939,6 +946,7 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
                                 </select>
                             </td>
                         </tr>
+                        <?php $mappingIndex++; ?>
                     <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -960,22 +968,60 @@ abstract class WC_Retailcrm_Abstracts_Settings extends WC_Integration
      */
     public function validate_shipping_store_mapping_field($key, $value)
     {
-        if (!is_array($value)) {
-            return [];
+        if (is_array($value)) {
+            return $this->sanitize_shipping_store_mapping($value);
         }
 
+        $fieldKey = $this->get_field_key($key);
         $mapping = [];
 
-        foreach ($value as $rateId => $storeCode) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing
+        foreach ($_POST as $postKey => $postValue) {
+            if (
+                !is_string($postKey)
+                || !is_scalar($postValue)
+                || !preg_match('/^' . preg_quote($fieldKey, '/') . '_rate_(\d+)$/', $postKey, $matches)
+            ) {
+                continue;
+            }
+
+            $storeKey = $fieldKey . '_store_' . $matches[1];
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $storeCode = $_POST[$storeKey] ?? '';
+
+            if (is_scalar($storeCode)) {
+                $mapping[(string) $postValue] = (string) $storeCode;
+            }
+        }
+
+        return $this->sanitize_shipping_store_mapping($mapping);
+    }
+
+    /**
+     * Sanitize shipping method to warehouse mapping values.
+     *
+     * @param array $mapping
+     *
+     * @return array
+     */
+    private function sanitize_shipping_store_mapping(array $mapping)
+    {
+        $sanitizedMapping = [];
+
+        foreach ($mapping as $rateId => $storeCode) {
+            if (!is_scalar($rateId) || !is_scalar($storeCode)) {
+                continue;
+            }
+
             $rateId = sanitize_text_field(wp_unslash($rateId));
             $storeCode = sanitize_text_field(wp_unslash($storeCode));
 
             if ($rateId !== '' && $storeCode !== '') {
-                $mapping[$rateId] = $storeCode;
+                $sanitizedMapping[$rateId] = $storeCode;
             }
         }
 
-        return $mapping;
+        return $sanitizedMapping;
     }
 
     /**
