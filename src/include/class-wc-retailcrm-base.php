@@ -151,7 +151,7 @@ if (!class_exists('WC_Retailcrm_Base')) {
                 add_action('init', [$this, 'add_loyalty_endpoint'], 11, 1);
                 add_action('woocommerce_account_menu_items', [$this, 'add_loyalty_item'], 11, 1);
                 add_action('woocommerce_account_loyalty_endpoint', [$this, 'show_loyalty'], 11, 1);
-                add_action('wp_ajax_create_loyalty_coupon', [WC_Retailcrm_Loyalty::class, 'create_loyalty_coupon'], 104);
+                add_action('wp_ajax_create_loyalty_coupon', [$this, 'create_loyalty_coupon'], 104);
                 add_action('wp_ajax_apply_coupon_to_cart', [WC_Retailcrm_Loyalty::class, 'apply_coupon_to_cart'], 105);
 
                 // Add coupon hooks for loyalty program
@@ -1248,6 +1248,37 @@ if (!class_exists('WC_Retailcrm_Base')) {
             } catch (Throwable $exception) {
                 WC_Retailcrm_Logger::exception(__METHOD__, $exception);
             }
+        }
+
+        /**
+         * Creates a loyalty coupon for charging bonuses from the classic and block-based cart.
+         */
+        public function create_loyalty_coupon()
+        {
+            WC_Retailcrm_Logger::setHook(current_action());
+
+            $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+
+            if (!wp_verify_nonce($nonce, 'loyalty_coupon_nonce')) {
+                wp_send_json_error('Incorrect request');
+            }
+
+            $count = isset($_POST['count']) ? (int) $_POST['count'] : 0;
+
+            try {
+                $charge = $this->loyalty->getMaxChargeBonuses(get_current_user_id());
+            } catch (Throwable $exception) {
+                WC_Retailcrm_Logger::exception(__METHOD__, $exception);
+
+                $charge = null;
+            }
+
+            // The limit is checked on the server, otherwise any amount of bonuses could be charged by a direct request
+            if ($count <= 0 || $charge === null || $count > $charge['maxCharge']) {
+                wp_send_json_error('Incorrect bonus count');
+            }
+
+            WC_Retailcrm_Loyalty::create_loyalty_coupon();
         }
 
         public function reviewCreditBonus()

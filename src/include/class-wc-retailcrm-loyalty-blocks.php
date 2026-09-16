@@ -61,14 +61,24 @@ if (!class_exists('WC_Retailcrm_Loyalty_Blocks')) :
             wp_enqueue_script(
                 self::SCRIPT_HANDLE,
                 plugins_url() . WC_Retailcrm_Base::ASSETS_DIR . '/js/' . self::SCRIPT_HANDLE . '.js',
-                ['wc-blocks-checkout', 'wp-element', 'wp-plugins'],
+                ['wc-blocks-checkout', 'wc-blocks-data-store', 'wp-data', 'wp-element', 'wp-plugins'],
                 filemtime($scriptPath),
                 true
             );
 
             wp_localize_script(self::SCRIPT_HANDLE, 'RetailcrmLoyaltyBlocks', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                // The same nonce as in the classic cart, checked by create_loyalty_coupon
+                'nonce' => wp_create_nonce('loyalty_coupon_nonce'),
                 'translations' => [
                     'credit_bonuses' => __('Points will be awarded for this order', 'woo-retailcrm'),
+                    'bonus_count' => __('Bonus count', 'woo-retailcrm'),
+                    'use_bonuses' => __('Use bonuses', 'woo-retailcrm'),
+                    'possible_write_off' => __('It is possible to write off', 'woo-retailcrm'),
+                    'bonuses' => __('bonuses', 'woo-retailcrm'),
+                    'incorrect_count' => __('Incorrect count of bonuses', 'woo-retailcrm'),
+                    'using' => __('Using...', 'woo-retailcrm'),
+                    'error_occurred' => __('Error occurred', 'woo-retailcrm'),
                 ],
             ]);
         }
