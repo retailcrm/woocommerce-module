@@ -195,6 +195,12 @@ if (!class_exists('WC_Retailcrm_Base')) {
 
             $this->loyalty = new WC_Retailcrm_Loyalty($this->apiClient, $this->settings);
 
+            if (isLoyaltyActivate($this->settings)) {
+                // Loyalty data for the block-based cart and checkout, where the classic template hooks are not fired
+                $loyaltyBlocks = new WC_Retailcrm_Loyalty_Blocks($this->loyalty);
+                $loyaltyBlocks->init();
+            }
+
             // Deactivate hook
             add_action('retailcrm_deactivate', [$this, 'deactivate']);
 

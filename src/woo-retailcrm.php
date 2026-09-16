@@ -115,6 +115,7 @@ if (!class_exists( 'WC_Integration_Retailcrm')) :
             require_once(self::checkCustomFile('include/class-wc-retailcrm-orders.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-cart.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-loyalty.php'));
+            require_once(self::checkCustomFile('include/class-wc-retailcrm-loyalty-blocks.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-customers.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-shipping-stock.php'));
             require_once(self::checkCustomFile('include/class-wc-retailcrm-inventories.php'));

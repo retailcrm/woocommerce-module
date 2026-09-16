@@ -32,6 +32,15 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         /** @var bool Guard against nested coupon processing triggered by cart recalculation. */
         private static $isProcessingCoupon = false;
 
+        /** @var array Loyalty account checks for the read-only getters, cached for the request. */
+        private $checkedAccounts = [];
+
+        /** @var array Loyalty calculations for the read-only getters, cached for the request. */
+        private $cartCalculations = [];
+
+        /** @var bool Whether a loyalty calculation for the read-only getters failed in this request. */
+        private $hasCalculationError = false;
+
         public function __construct($apiClient, $settings)
         {
             $this->apiClient = $apiClient;
@@ -184,9 +193,13 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
 
         private function getDiscountLoyalty($cartItems, $site, $customerId)
         {
+            return $this->parseDiscountLoyalty($this->calculateDiscountLoyalty($cartItems, $site, $customerId));
+        }
+
+        private function parseDiscountLoyalty($response)
+        {
             $discount = 0;
             $chargeRate = 1;
-            $response = $this->calculateDiscountLoyalty($cartItems, $site, $customerId);
 
             if ($response === 0) {
                 return $discount;
@@ -681,6 +694,135 @@ if (!class_exists('WC_Retailcrm_Loyalty')) :
         private function getHtmlCreditBonuses($creditBonuses)
         {
             return '<b style="font-size: large">' . esc_html__("Points will be awarded upon completion of the order:", 'woo-retailcrm') . ' <u style="color: green"><i>' . $creditBonuses . '</u></i></b>';
+        }
+
+        /**
+         * Checks the customer's loyalty account once per request. Used by the read-only getters.
+         */
+        public function hasActiveLoyaltyAccount(int $customerId): bool
+        {
+            if (!array_key_exists($customerId, $this->checkedAccounts)) {
+                $isActive = $customerId > 0 && $this->validator->checkAccount($customerId);
+
+                $this->checkedAccounts[$customerId] = [
+                    'active' => $isActive,
+                    'levelType' => $isActive ? ($this->validator->loyaltyAccount['level']['type'] ?? null) : null,
+                ];
+            }
+
+            return $this->checkedAccounts[$customerId]['active'];
+        }
+
+        /**
+         * Read-only: bonuses available for charge in the current cart. Does not change the cart or coupons.
+         *
+         * @return array|null ['maxCharge' => float, 'chargeRate' => float], null if bonuses can not be charged
+         */
+        public function getMaxChargeBonuses(int $customerId): ?array
+        {
+            if (!$this->hasActiveLoyaltyAccount($customerId)) {
+                return null;
+            }
+
+            // The "discount" level is applied automatically as a coupon, bonuses are not charged manually
+            if ($this->checkedAccounts[$customerId]['levelType'] === 'discount') {
+                return null;
+            }
+
+            $discount = $this->parseDiscountLoyalty($this->getCartCalculation($customerId));
+
+            if (!is_array($discount)) {
+                return null;
+            }
+
+            [$lpDiscountSum, $lpChargeRate] = $discount;
+
+            if ($lpDiscountSum <= 0 || $lpChargeRate <= 0) {
+                return null;
+            }
+
+            return [
+                'maxCharge' => (float) ($lpDiscountSum / $lpChargeRate),
+                'chargeRate' => (float) $lpChargeRate,
+            ];
+        }
+
+        /**
+         * Read-only: bonuses that will be credited for the current cart, taking the applied loyalty coupon into account.
+         * Unlike getCreditBonuses() it does not remove and re-apply the coupon.
+         */
+        public function calculateCreditBonuses(int $customerId): float
+        {
+            if (!$this->hasActiveLoyaltyAccount($customerId)) {
+                return 0.0;
+            }
+
+            $response = $this->getCartCalculation($customerId, $this->getAppliedLoyaltyBonuses());
+
+            if ($response === 0) {
+                return 0.0;
+            }
+
+            return (float) ($response['order']['bonusesCreditTotal'] ?? 0);
+        }
+
+        /**
+         * Read-only: amount of the loyalty coupon applied to the current cart.
+         */
+        public function getAppliedLoyaltyBonuses(): float
+        {
+            $cart = WC()->cart;
+
+            if (!$cart) {
+                return 0.0;
+            }
+
+            foreach ($cart->get_applied_coupons() as $code) {
+                if ($this->isLoyaltyCoupon($code)) {
+                    return (float) (new WC_Coupon($code))->get_amount();
+                }
+            }
+
+            return 0.0;
+        }
+
+        /**
+         * Whether a loyalty calculation of the read-only getters failed in this request (e.g. CRM is unavailable).
+         */
+        public function hasCartCalculationError(): bool
+        {
+            return $this->hasCalculationError;
+        }
+
+        /**
+         * Loyalty calculation for the current cart, cached for the request so the read-only getters share API calls.
+         *
+         * @return WC_Retailcrm_Response|int 0 on failure
+         */
+        private function getCartCalculation(int $customerId, float $bonuses = 0.0)
+        {
+            $cart = WC()->cart;
+
+            if (!$cart || !$cart->get_cart()) {
+                return 0;
+            }
+
+            $key = implode('|', [$customerId, $cart->get_cart_hash(), $bonuses]);
+
+            if (!array_key_exists($key, $this->cartCalculations)) {
+                $site = $this->apiClient->getSingleSiteForKey();
+
+                // On a connection error the API proxy returns an error response instead of the site code
+                $this->cartCalculations[$key] = is_string($site) && $site !== ''
+                    ? $this->calculateDiscountLoyalty($cart->get_cart(), $site, $customerId, $bonuses)
+                    : 0;
+
+                if ($this->cartCalculations[$key] === 0) {
+                    $this->hasCalculationError = true;
+                }
+            }
+
+            return $this->cartCalculations[$key];
         }
 
         public function getLoyaltyHistory(int $loyaltyId)
