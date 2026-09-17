@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 if (!class_exists('WC_Retailcrm_Loyalty_Blocks')) :
     /**
      * PHP version 7.1

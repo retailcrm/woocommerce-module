@@ -1,3 +1,8 @@
+## 2026-09-17 5.0.18
+* Loyalty program support in block-based cart and checkout
+* Server-side validation of the charged bonuses count
+* WordPress 7.1 compatibility: updated Tested up to
+
 ## 2026-08-21 5.0.17
 * Fix WAF blocking warehouse mapping settings
 
