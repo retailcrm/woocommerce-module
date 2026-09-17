@@ -279,6 +279,7 @@ return [
         'bonuses' => 'bonificaciones',
         'Use coupon:' => 'Utiliza el cupón:',
         'Points will be awarded upon completion of the order:' => 'Los puntos se concederán al finalizar el pedido:',
+        'Points will be awarded for this order' => 'Puntos que se concederán por este pedido',
         'Unloading promotional prices of offers' => 'Descarga de precios promocionales de ofertas comerciales',
         'Every 4 hours' => 'Cada 4 horas',
         'Upload prices now' => 'Descargar precios ahora',

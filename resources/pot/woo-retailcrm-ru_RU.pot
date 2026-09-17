@@ -624,6 +624,9 @@ msgstr "Используйте купон:"
 msgid "Points will be awarded upon completion of the order:"
 msgstr "По завершению заказа будет начислено баллов:"
 
+msgid "Points will be awarded for this order"
+msgstr "За этот заказ будет начислено баллов"
+
 msgid "Unloading promotional prices of offers"
 msgstr "Выгрузка акционных цен торговых предложений"
 

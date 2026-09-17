@@ -283,6 +283,7 @@ return [
         'bonuses' => 'бонусов',
         'Use coupon:' => 'Используйте купон:',
         'Points will be awarded upon completion of the order:' => 'По завершению заказа будет начислено баллов:',
+        'Points will be awarded for this order' => 'За этот заказ будет начислено баллов',
         'Unloading promotional prices of offers' => 'Выгрузка акционных цен торговых предложений',
         'Every 4 hours' => 'Каждые 4 часа',
         'Upload prices now' => 'Выгрузить цены сейчас',

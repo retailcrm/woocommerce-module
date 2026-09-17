@@ -3,8 +3,8 @@ Contributors: retailcrm
 Tags: crm, marketing, e-com
 Requires PHP: 7.1
 Requires at least: 5.3
-Tested up to: 7.0
-Stable tag: 5.0.17
+Tested up to: 7.1
+Stable tag: 5.0.18
 License: MIT
 License URI: https://github.com/retailcrm/woocommerce-module/blob/master/LICENSE
 
@@ -46,6 +46,11 @@ Make sure you have a specific API key must for each store.
 2. A list of directories will pop up, in which you will have to set up delivery and payment methods, as well as order statuses. Check the "Unload leftovers" box if you want to unload leftovers from Simla.com to your store (for more details, see the description).
 
 == Changelog ==
+
+= 5.0.18 =
+* Loyalty program support in block-based cart and checkout
+* Server-side validation of the charged bonuses count
+* WordPress 7.1 compatibility: updated Tested up to
 
 = 5.0.17 =
 * Fix WAF blocking warehouse mapping settings

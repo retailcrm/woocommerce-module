@@ -358,6 +358,110 @@ class WC_Retailcrm_Loyalty_Test extends WC_Retailcrm_Test_Case_Helper
         }
     }
 
+    public function testGetMaxChargeBonuses()
+    {
+        $this->setCalculationResponse([
+            'calculations' => [['privilegeType' => 'loyalty_level', 'maxChargeBonuses' => 50]],
+            'order' => ['items' => [['discounts' => null]]],
+            'loyalty' => ['chargeRate' => 2],
+        ]);
+        $this->setValidatorMock(true, 'bonus_converting');
+        $this->fillCart();
+
+        $this->assertEquals(['maxCharge' => 50.0, 'chargeRate' => 2.0], $this->loyalty->getMaxChargeBonuses(1));
+    }
+
+    public function testGetMaxChargeBonusesForDiscountLevel()
+    {
+        $this->setValidatorMock(true, 'discount');
+        $this->fillCart();
+
+        $this->assertNull($this->loyalty->getMaxChargeBonuses(1));
+    }
+
+    public function testGetMaxChargeBonusesWithoutActiveAccount()
+    {
+        $this->setValidatorMock(false);
+        $this->fillCart();
+
+        $this->assertNull($this->loyalty->getMaxChargeBonuses(1));
+        $this->assertEquals(0.0, $this->loyalty->calculateCreditBonuses(1));
+    }
+
+    public function testCalculateCreditBonusesKeepsAppliedCoupon()
+    {
+        $this->setCalculationResponse([
+            'calculations' => [],
+            'order' => ['items' => [], 'bonusesCreditTotal' => 15],
+        ]);
+        $this->setValidatorMock(true, 'bonus_converting');
+        $this->fillCart();
+
+        $coupon = new WC_Coupon();
+        $coupon->set_amount(30);
+        $coupon->set_code('loyalty' . mt_rand());
+        $coupon->save();
+
+        WC()->cart->apply_coupon($coupon->get_code());
+
+        $this->assertEquals(30.0, $this->loyalty->getAppliedLoyaltyBonuses());
+        $this->assertEquals(15.0, $this->loyalty->calculateCreditBonuses(1));
+        $this->assertEquals([$coupon->get_code()], WC()->cart->get_applied_coupons());
+        $this->assertEquals($coupon->get_id(), (new WC_Coupon($coupon->get_code()))->get_id());
+
+        WC()->cart->empty_cart();
+        $coupon->delete(true);
+    }
+
+    public function testCalculationErrorIsReported()
+    {
+        $this->setMockResponse(
+            $this->apiMock,
+            'calculateDiscountLoyalty',
+            new WC_Retailcrm_Response(400, json_encode(['success' => false]))
+        );
+        $this->setValidatorMock(true, 'bonus_converting');
+        $this->fillCart();
+
+        $this->assertFalse($this->loyalty->hasCartCalculationError());
+        $this->assertEquals(0.0, $this->loyalty->calculateCreditBonuses(1));
+        $this->assertTrue($this->loyalty->hasCartCalculationError());
+    }
+
+    private function setCalculationResponse(array $response)
+    {
+        $this->setMockResponse(
+            $this->apiMock,
+            'calculateDiscountLoyalty',
+            new WC_Retailcrm_Response(200, json_encode($response))
+        );
+    }
+
+    private function setValidatorMock(bool $isActive, ?string $levelType = null)
+    {
+        $validator = $this->getMockBuilder(WC_Retailcrm_Loyalty_Validator::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['checkAccount'])
+            ->getMock();
+
+        $validator->method('checkAccount')->willReturn($isActive);
+        $validator->loyaltyAccount = ['level' => ['type' => $levelType]];
+
+        $property = new ReflectionProperty($this->loyalty, 'validator');
+        $property->setAccessible(true);
+        $property->setValue($this->loyalty, $validator);
+    }
+
+    private function fillCart()
+    {
+        if (!WC()->cart) {
+            wc_load_cart();
+        }
+
+        WC()->cart->empty_cart();
+        WC()->cart->add_to_cart(WC_Helper_Product::create_simple_product()->get_id(), 2);
+    }
+
     private function getPrivateMethod($method, $class)
     {
         $reflection = new ReflectionClass($class);
